@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.palm.pop
+Exec=/usr/bin/env LD_BIND_NOW=1 OPENSSL_CONF=/usr/lib/ssl11mail/mailssl.cnf LD_LIBRARY_PATH=/usr/lib/ssl11mail LD_PRELOAD=/usr/lib/ssl11mail/libssl_compat.so CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt /usr/bin/mojomail-pop -c '{"log":{"appender":{"type":"pmlog"},"levels":{"com.palm.pop":"info"}}}' PalmPre Palm-Pre/1.5
+Type=dynamic

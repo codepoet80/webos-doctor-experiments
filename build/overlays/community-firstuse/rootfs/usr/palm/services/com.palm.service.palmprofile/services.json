@@ -1,0 +1,160 @@
+{
+	"description": "Palm Profile Service",
+	"engine": "node",
+	"services":
+	[
+		{
+			"name": "com.palm.accountservices",
+			"description": "Palm Profile Service",
+			"assistant": "ServiceAssistant",
+			"commands":
+			[
+				{
+					"name": "getPreferences",
+					"assistant": "PreferencesCommandAssistant"
+				},
+				{
+					"name": "getURLForTerms",
+					"assistant": "GetURLForTermsCommandAssistant"
+				},
+				{
+				        "name": "getTermsAndConditions",
+				        "assistant": "GetTermsAndConditionsCommandAssistant"           
+				},
+				{
+					"name": "assignDeviceName",
+					"assistant": "AssignDeviceNameCommandAssistant"
+				},
+				{
+					"name": "isEmailAvailable",
+					"assistant": "IsEmailAvailableCommandAssistant"
+				},
+				{
+					"name": "createNovaAccount",
+					"assistant": "CreateProfileCommandAssistant"
+				},
+				{
+					"name": "getAccountToken",
+					"assistant": "GetTokenCommandAssistant"
+				},
+				{
+					"name": "getLocalProfileProperties",
+					"assistant": "GetLocalProfileAssistant"
+				},
+				{
+					"name": "setLocalProfileProperties",
+					"assistant": "SetLocalProfileAssistant"
+				},
+				{
+					"name": "authenticateAccount",
+					"assistant": "LoginProfileCommandAssistant"
+				},
+				{
+					"name": "isDeviceInUse",
+					"assistant": "IsDeviceInUseCommandAssistant"
+				},
+				{
+					"name": "isUserValid",
+					"assistant": "IsUserValidCommandAssistant"
+				},
+				{
+					"name": "getAllSecurityQuestions",
+					"assistant": "GetAllQuestionsCommandAssistant"
+				},
+				{
+					"name": "postLoginSettings",
+					"assistant": "PostLoginSettingsCommandAssistant"
+				},
+				{
+					"name": "changePassword",
+					"assistant": "ChangePasswordCommandAssistant"
+				},	
+				{
+					"name": "changeAccountPassword",
+					"assistant": "ChangeAccountPasswordCommandAssistant"
+				},	
+				{
+					"name": "requestPasswordResetEmail",
+					"assistant": "PasswordResetEmailCommandAssistant"
+				},
+				{
+					"name": "getAccountSecurityQuestion",
+					"assistant": "GetAccountSecurityQuestionCommandAssistant"
+				},
+				{
+					"name": "authenticateAccountFromSecurityQuestion",
+					"assistant": "AuthFromQuestionCommandAssistant"
+				},
+				{
+					"name": "getServerUrl",
+					"assistant": "GetServerUrlCommandAssistant"
+				},
+				{
+					"name": "getAccountInfo",
+					"assistant": "GetAccountInfoCommandAssistant"
+				},
+				{
+					"name": "updateAccountInfo",
+					"assistant": "UpdateAccountCommandAssistant"
+				},
+				{
+					"name": "updateDeviceProperties",
+					"assistant": "UpdateDevicePropsCommandAssistant"
+				},
+	            {
+	                    "name": "refreshJabberInfo",
+	                    "assistant": "RefreshJabberInfoCommandAssistant"
+	            },
+	            {
+					"name": "processMessage",
+					"assistant": "ProcessMessageCommandAssistant"
+				},
+				{
+					"name": "changeEmail",
+					"assistant": "ChangeEmailCommandAssistant"
+				},
+				{
+					"name": "requestResendVerificationEmail",
+					"assistant": "ResendVerificationEmailCommandAssistant"
+				},
+				{
+					"name": "getWaitPeriods",
+					"assistant": "GetWaitPeriodsCommandAssistant"
+				},
+				{
+					"name": "getAggregatedAccountInfo",
+					"assistant": "GetAccountInfoAggregateAssistant"
+				},
+				{
+					"name": "updateChallengeQuestion",
+					"assistant": "UpdateChallengeQuestionAssistant"
+				},
+				{
+				    "name": "dissociateCurrentDevice",
+				    "assistant": "DissociateDeviceAssistant"
+				},
+				{
+				    "name": "setTimeZoneFromIP",
+				    "assistant": "SetTimeZoneFromIP"
+				},
+				{
+					"name": "assignDeviceNameNoAcctInfoArgs",
+					"assistant": "AssignDeviceNameNoAcctInfoArgsCommandAssistant"
+				},
+				{
+					"name": "updateUsername",
+					"assistant": "UpdateUsernameCommandAssistant"
+				},
+				{
+					"name": "syncDeviceName",
+					"assistant": "SyncDeviceNameCommandAssistant"
+				},
+				{
+					"name": "signOut",
+					"assistant": "SignOutCommandAssistant"
+				}
+
+			]
+		}
+	]
+}

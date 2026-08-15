@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# usage: $0 [-a appid] [-b basecmdname] [cmd args...]
+
+# Used to set groups for invocations of PDK applications, both standalone and hybrid.
+
+. /etc/default/cpushareholder
+
+if [ "$1" = "-a" ] ; then
+	appid=$2
+	shift 2
+else
+	appid=""
+fi
+
+if [ "$1" = "-b" ] ; then
+	basecmd=$2
+	shift 2
+elif [ $# -ge 1 ] ; then
+	basecmd=`basename "$1"`
+else
+	basecmd=""
+fi
+
+cpushareholder_identify_pdk_group "$appid" "$basecmd"
+
+echo $pid > $CSHR_GROUPS/$CSHR_GROUP/tasks
+if [ -n "$CSHR_IONICE" ] ; then
+	exec /usr/bin/ionice $CSHR_IONICE "$@"
+else
+	exec "$@"
+fi

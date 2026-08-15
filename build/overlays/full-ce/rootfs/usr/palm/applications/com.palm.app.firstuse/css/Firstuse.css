@@ -1,0 +1,391 @@
+body, html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	position:relative;
+}
+body, input, button {
+	font-family: Prelude Medium, Segoe UI, Arial, Verdana, Helvetica;
+}
+body {
+	background:#26427a url(../images/bg_body_p.png) no-repeat 50% 50%;
+	color:rgba(255,255,255,1);
+	background-size:100%;
+}
+
+.contentDefaults {
+	text-align: left;
+	width: 504px;	
+}
+.contentDefaults2 {
+	text-align: left;
+	width: 550px;	
+}
+
+.header-bar-image {
+	padding: 0 10px 0 5px;
+	display: inline;
+}
+.account-info {
+	height: 100px;
+}
+.payment-method-image {
+	display: inline;
+	position: absolute;
+	top:5px;
+	right:5px;
+}
+.security-code-image {
+	display: inline;
+	position: absolute;
+	top:5px;
+	right:5px;
+	margin: 10px;
+}
+.languages .enyo-drawer-container, 
+.languages .enyo-item {
+	background-image:url(../images/bg_language_item.png);
+	background-repeat:no-repeat;
+	background-position:0 0;
+	border:0;
+	line-height:67px;
+	text-align:center;
+	padding:1px 0 0 0;
+	width:267px;
+	font-size:30px;
+}
+.languages .enyo-drawer-container.enyo-first {
+	background-position:0 -3px;
+}
+.languages .enyo-item {
+	color:rgba(255,255,255,1);
+}
+.languages.open {
+	color:rgba(255,255,255,0.5);
+}
+.language-btns .enyo-button .enyo-button-icon {
+	margin-bottom:-8px;
+}
+.login {
+	padding:0 0 50px;
+}
+.login .box {
+	width:500px;
+}
+.login .subtitle {
+	margin:0 50px 18px;
+}
+.terms {
+	padding:0 37px 50px;
+	line-height:1.25em;
+	font-size:14px;
+}
+.terms .section {
+	width:694px;
+	margin:0 auto;
+}
+.terms .box a.table-of-contents {
+	color:#b8ccf7;
+}
+.title {
+	font-size:24px;
+	text-align:center;
+	margin:50px 0 24px;
+}
+.subtitle {
+	font-size: 20px;
+	margin:0 20px 18px;
+}
+.popup {
+	color:#555;
+}
+.popup .enyo-button {
+	height:1.3em;
+	line-height:1.3em
+}
+.popup .enyo-button .enyo-activitybutton-spinner {
+	margin: -3px 0px;
+}
+.popup .enyo-text-body {
+	font-size:18px;
+	padding:0 0 15px 0;
+}
+.popup .enyo-text-body ul {
+	padding-left:20px ;
+}
+.popup .enyo-text-body li {
+	padding: 5px 0 0 0;
+}
+.popup .field {
+	min-height:42px;
+	height:42px;
+}
+.popup .message {
+	color:#d70000;
+}
+.box {
+	border-radius:12px;
+	-webkit-border-image: url(../images/bg_box.png) 12 repeat;
+	-webkit-box-sizing:border-box;
+	margin:0 0 15px 0;
+	padding:10px 10px 5px;
+	border-width:12px;
+}
+.box .header {
+	padding:10px 10px 0;
+	margin:0 -10px;
+}
+.box .footer {
+	border-top:1px solid #d8d8d8;
+	padding:10px 10px 0;
+	margin:0 -10px;
+}
+.form-row {
+	margin:0 0 20px 0;
+	width:100%;
+}
+.label {
+	font-size:20px;
+	line-height:1em;
+	margin:0 0 4px 2px;
+}
+.field {
+	background:transparent;
+	-webkit-border-image: url(../images/bg_field.png) 10 repeat;
+	border-width:10px;
+	width:100%;
+	height:48px;
+	min-height:48px;
+}
+.field .enyo-fancy-input-inner {
+	padding:0;
+	margin:0;
+}
+.field .enyo-fancy-input-input,
+.field .enyo-input-input {
+	line-height:30px;
+}
+.form-row .enyo-menucheckitem-caption {
+	color:#fff;
+}
+.enyo-popup .enyo-menuitem {
+	color:#333;
+}
+.enyo-appmenu .enyo-menuitem {
+	color: #fff;
+}
+.enyo-appmenu {
+	left: 0px; 
+}
+.enyo-popupmenucheckitem-caption {
+	line-height:30px;
+}
+.devices {
+	width:500px;
+}
+.devices .box {
+	margin:0 0 20px 0;
+	padding: 0;
+}
+.devices .list {
+	border-radius:10px;
+	margin:-10px
+}
+.devices .list .enyo-item {
+	height:120px;
+	font-size:16px;
+	border-top:1px solid;
+	border-top-color:rgba(255,255,255,0.05);
+	border-bottom-color:rgba(0,0,0,0.4);
+	padding:0 16px 0 32px;
+	color:#b8ccf7;
+}
+.devices .list .enyo-item.first {
+	border-top:0;
+	border-radius:7px 7px 0 0;
+}
+.devices .list .enyo-item.last {
+	border-bottom:0;
+	border-radius:0 0 7px 7px;
+}
+.devices .list .enyo-item.first.last {
+	border-radius:7px;
+}
+.devices .list .enyo-item.selected {
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(96,154,204,0.8)), to(rgba(60,123,175,0.8)));
+	background-color:rgba(47,110,169,0.4)
+}
+.devices .list .enyo-item .name {
+	color:rgba(255,255,255,0.9);
+	font-size:20px;
+	margin:0 0 6px
+}
+.devices .list .enyo-item .image {
+	width:120px;
+}
+/* buttons */
+.link-button {
+	text-decoration:underline;
+	color:#b8ccf7;
+	font-size:16px;
+}
+.enyo-button {
+	height:32px;
+	font-size:20px;
+	line-height:1.6em;
+	text-transform:none;
+	margin:0 0 5px;
+}
+.wifi-activity-button {
+	min-height:42px;
+	-webkit-box-pack:center;
+}
+.enyo-button.enyo-button-disabled {
+	color:rgba(255,255,255,0.4);
+}
+/* CUSTOM CSS */
+.enyo-button.restart {
+	width:130px;
+	bottom:5px;
+	left:5px;
+	background:none;
+	height:36px;
+	position:fixed;
+	border-width:0;
+	text-transform:uppercase;
+	font-size:14px;
+	color:rgba(255,255,255,0.9);
+}
+.enyo-button.restart .enyo-button-icon {
+	float:left;
+}
+.enyo-button.restart.enyo-button-down {
+	color:#fff;
+}
+.enyo-button.restart.enyo-button-down .enyo-button-icon {
+	background-position:0 -32px;
+}
+/* webOS Archive: sits beside .restart (fixed, bottom:5px/left:5px/width:130px) —
+   pinned to the same row rather than left in normal flow, which used to land it
+   on top of Start Over at the bottom of short cards. */
+.link-button.skip-setup {
+	position:fixed;
+	bottom:21px;
+	left:180px;
+	height:36px;
+	line-height:36px;
+	white-space:nowrap;
+	text-transform:uppercase;
+	text-decoration:none;
+	font-size:14px;
+}
+.enyo-scrim {
+	opacity: 0.7;
+}
+.scrollable {
+	-webkit-border-image: url(../images/bg_field.png) 10 7 10 7 stretch stretch;
+	border-width: 10px 7px;
+	margin: 0px;
+	overflow:hidden;
+}
+.scrollable .scrollable-inner {
+	margin:-5px -7px;
+}
+.scrollable .enyo-pane {
+	margin:-5px -7px;
+}
+.scrollable .enyo-group.labeled {
+	border-width:0
+}
+.secure-icon {
+	background-image: url(../images/secure-icon.png);
+}
+.wifi-icon-low {
+	background-image: url(../images/wifi-icon-low.png);
+}
+.wifi-icon-average {
+	background-image: url(../images/wifi-icon-average.png);
+}
+.wifi-icon-excellent {
+	background-image: url(../images/wifi-icon-excellent.png);
+}
+.wifi-Secure {
+	margin: 0px 5px 0px 0px;
+}
+.wifi-Strength {
+	margin: 4px 10px 0px 0px;
+}
+.wifi-list .enyo-group-label {
+	display:none;
+}
+.scrollable .enyo-group-inner {
+	margin:0;
+}
+.scrollable .enyo-group-inner {
+}
+.fu-wifi .wifi-list {
+	margin:-5px 0;
+}
+.fu-wifi .wifi-list .wifi-item-name {
+	overflow:hidden;
+	width:100%;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	line-height:30px;
+	
+}
+.wifi-itemName {
+	padding: 2px 10px 0px 10px;
+	vertical-align: middle;
+	line-height: 18px;
+	margin-top: 5px;
+}
+.wifi-Join {
+	padding: 4px 0px 0px 10px;
+	margin-top: 3px;
+}
+/* errors */
+.message {
+	color: #fbcf70;
+	line-height:25px;
+	font-weight:bold;
+	background:url(../images/bg_message.png) no-repeat 0 0;
+	font-size: 14px;
+	padding:0 0 0 30px;
+	margin:0 0 20px 0;
+}
+.form-row .message {
+	margin:10px 0 0 0;
+}
+.restore .box {
+	width:500px;
+}
+.errorcode, .errorcode2 {
+	color:rgba(255,255,255,0.4);
+	font-size: 14px;
+	margin-top:30px;
+}
+.errorcode2 {
+	margin-top:10px; /*smaller margin top*/
+}
+.errorcode3 {
+	color:blue;
+	margin-top:0px; /*smaller margin top*/
+	margin-bottom:15px; /*smaller margin top*/
+	font-size: 10pt;
+}
+.deviceinfo-textvalues {
+	color: black;
+	text-align: right;
+	text-transform: none;
+}
+
+.deviceinfo-nudidText {
+	color: black;
+	font-family: monospace;
+	font-size: 12pt;
+	padding-top: 2px;
+	text-align: left;
+	font-family: monospace;
+}
+

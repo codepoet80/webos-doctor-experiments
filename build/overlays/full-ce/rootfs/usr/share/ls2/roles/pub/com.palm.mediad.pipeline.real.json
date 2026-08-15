@@ -1,0 +1,7 @@
+{
+    "role": {
+        "exeName":"/usr/bin/media-pipeline.real",
+        "type": "regular",
+        "allowedNames": ["com.palm.mediad*", ""]
+    }
+}

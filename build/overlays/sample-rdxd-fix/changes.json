@@ -1,0 +1,5 @@
+{
+  "description": "Sample CE overlay: disable rdxd crash-report auto-upload (dead server).",
+  "ce_package": "org.webosarchive.ce-files",
+  "remove": []
+}

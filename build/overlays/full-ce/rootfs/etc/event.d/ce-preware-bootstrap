@@ -1,0 +1,26 @@
+# ce-preware-bootstrap — install Preware's ipkgservice ONCE, only after the
+# first-boot app-install has fully finished. Preware's bootstrap lives in its
+# DATA payload (control/postinst); `ipkg install` never runs it. Running it
+# in app-install's path (blocking or racing) breaks the staged-app install.
+
+start on stopped finish
+
+console none
+
+script
+    FLAG=/var/luna/preferences/ce-preware-bootstrapped
+    [ -f "$FLAG" ] && exit 0
+    PW=/media/cryptofs/apps/usr/palm/applications/org.webosinternals.preware
+    # wait for app-install to be idle for a sustained window (~60s), so the
+    # staged apps are done before we touch the ipkg DB.
+    quiet=0; i=0
+    while [ $i -lt 360 ]; do
+        if ps 2>/dev/null | grep -q "[a]pp-install"; then quiet=0; else quiet=$((quiet+1)); fi
+        [ $quiet -ge 12 ] && break
+        sleep 5; i=$((i+1))
+    done
+    [ -f "$PW/control/postinst" ] || exit 0
+    mount -o remount,rw / 2>/dev/null || true
+    IPKG_OFFLINE_ROOT=/media/cryptofs/apps sh "$PW/control/postinst" || true
+    mkdir -p /var/luna/preferences && touch "$FLAG"
+end script

@@ -1,0 +1,17 @@
+# ce-remove-preloads — webOS CE: HP preloads we don't ship.
+# Staged by sweatshop-hp-topaz into /usr/lib/luna/customization/apps and
+# installed to /media/cryptofs/apps on first boot by com.palm.service.customization.
+# Delete the staged ipks before that install runs; also clear any dir already placed.
+
+start on stopped configurator
+
+console none
+
+script
+    mount -o remount,rw / 2>/dev/null || true
+    for app in com.palm.app.kindle com.palm.app.enyo-facebook com.palm.app.youtube; do
+        rm -f  /usr/lib/luna/customization/apps/${app}_*.ipk
+        rm -rf /media/cryptofs/apps/usr/palm/applications/${app}
+    done
+    mount -o remount,ro / 2>/dev/null || true
+end script

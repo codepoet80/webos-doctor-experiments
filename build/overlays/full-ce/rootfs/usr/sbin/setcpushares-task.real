@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# usage: $0 [-p pid] [-t taskname] [cmd args...]
+
+# Used to set groups for command-line invocations of programs, either existing or newly launched.
+
+. /etc/default/cpushareholder
+
+if [ "$1" = "-p" ] ; then
+	shift
+	pid=$1
+	shift
+else
+	pid=$$
+fi
+
+if [ "$1" = "-t" ] ; then
+	shift
+	cpushareholder_identify_task_group "$1"
+	echo $pid > $CSHR_GROUPS/$CSHR_GROUP/tasks
+	if [ -n "$CSHR_IONICE" ] ; then
+		ionice $CSHR_IONICE -p $pid
+	fi
+	shift
+else
+	cpushareholder_identify_task_group "$1"
+	echo $pid > $CSHR_GROUPS/$CSHR_GROUP/tasks
+	if [ -n "$CSHR_IONICE" ] ; then
+		ionice $CSHR_IONICE -p $pid
+	fi
+fi
+
+exec "$@"

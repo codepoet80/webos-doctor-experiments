@@ -1,0 +1,21 @@
+--- a/com.palm.app.firstuse/source/tnc/Palm.js
++++ b/com.palm.app.firstuse/source/tnc/Palm.js
+@@ -1,6 +1,6 @@
+ label_dialog_palmTnc = rb.$L("Terms of Service");
+ label_popup_palm_header = rb.$L("Do you accept?");
+-label_popup_palm_body = rb.$L("To set up a webOS Account, you must accept the Terms. If you choose not to accept, you can close this app and keep using your device without an account.");
++label_popup_palm_body = rb.$L("To set up a webOS Account, you must accept the Terms. Or tap Skip Account Setup to finish without an account.");
+ 
+ label_button_accept = rb.$L("Accept");
+ label_button_decline = rb.$L("Decline");
+@@ -13,8 +13,8 @@
+ // webOS Archive: this popup doubles as the HTTPS-readiness gate. The account flow
+ // requires the community update's modern TLS (the service reaches our origin via
+ // the OTA's /usr/bin/curl); without it, the very first secure fetch (terms) fails.
+-label_popup_palm_error_header = rb.$L("Update required");
+-label_popup_palm_error_body = rb.$L("This app couldn't connect securely to the App Museum. It needs the latest webOS Community update, which enables secure connections. Please make sure you're online and updated, then reopen this app.");
++label_popup_palm_error_header = rb.$L("Connection Problem");
++label_popup_palm_error_body = rb.$L("Your TouchPad couldn't connect securely to the App Museum. Check your Wi-Fi and tap Close to try again. If the problem continues, visit webosarchive.org.");
+ label_popup_palm_error_button = rb.$L("Close");
+ 
+ 

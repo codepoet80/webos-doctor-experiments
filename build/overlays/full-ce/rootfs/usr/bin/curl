@@ -1,0 +1,4 @@
+#!/bin/sh
+[ -n "$CURL_CA_BUNDLE" ] || CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+export CURL_CA_BUNDLE LD_LIBRARY_PATH=/usr/lib/curl11
+exec /usr/lib/curl11/curl "$@"

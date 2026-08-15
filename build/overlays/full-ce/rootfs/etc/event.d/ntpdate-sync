@@ -1,0 +1,38 @@
+# NTP time sync for webOS TouchPad
+# webOS's built-in time sync targets dead palm.com servers, so the clock
+# free-runs and drifts (breaking TLS certificate validity windows). This job
+# syncs from public NTP.
+#
+# Reliability notes (v2):
+#  - At boot, webOS DNS (resolv.conf = 127.0.0.1) is not ready until Wi-Fi/DHCP
+#    completes, so the first ntpdate attempts fail with "can't find host". We
+#    therefore retry the INITIAL sync INDEFINITELY (every 10s) until it succeeds,
+#    instead of giving up and sleeping for hours.
+#  - We also pass a couple of stable anycast NTP IPs (Cloudflare, Google) so the
+#    clock can sync even if DNS for pool.ntp.org never resolves.
+
+start on stopped finish
+stop on runlevel [06]
+
+respawn
+respawn limit 0 0
+
+script
+    SERVERS="pool.ntp.org 0.pool.ntp.org 1.pool.ntp.org 162.159.200.123 162.159.200.1 216.239.35.0 216.239.35.4"
+
+    # Initial sync: keep trying until it works (Wi-Fi/DNS may take a while).
+    until /usr/bin/ntpdate -u -s -b -t 5 $SERVERS ; do
+        sleep 10
+    done
+    /sbin/hwclock -w -f /dev/rtc 2>/dev/null || true
+
+    # Periodic re-sync every 6h (retry a few times per cycle).
+    while true; do
+        sleep 21600
+        i=0
+        until /usr/bin/ntpdate -u -s -b -t 5 $SERVERS || [ $i -ge 12 ]; do
+            i=$((i+1)); sleep 10
+        done
+        /sbin/hwclock -w -f /dev/rtc 2>/dev/null || true
+    done
+end script

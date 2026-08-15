@@ -1,0 +1,99 @@
+--- a/com.palm.app.firstuse/FirstUse.js
++++ b/com.palm.app.firstuse/FirstUse.js
+@@ -34,9 +34,10 @@
+ 		languageCode: "",
+ 		serverURL: "",
+ 		googleTerms: "",
+-		dataConnection: true,
+-		dataConnectionType: "wifi",
+-		dataConnectionInitialized: true,
++		// webOS CE OOBE: stock values — run the real Wi-Fi join popup.
++		dataConnection: false,
++		dataConnectionType: "",
++		dataConnectionInitialized: false,
+ 		first: true,
+ 		createProfile: false,
+ 		firstName: "",
+@@ -76,10 +77,13 @@
+ 						// webOS Archive: this card is reached both at the end of sign-in and on
+ 						// a relaunch that finds an account already set up, so it points at the
+ 						// place that can actually do something with the account either way.
+-						{name: "wosaManageHint", content: rb.$L("Use the Accounts app to manage your account."), className: "subtitle", style: "margin-top: 12px;"},
++						// webOS CE OOBE: completion marks first-use done and shows a
++						// "finishing" state; the ce-finish-firstuse job reboots once
++						// app-install is done (firstuse must NOT reboot — it kills the
++						// concurrent staged-app install).
++						{name: "wosaManageHint", content: rb.$L("Tap Done to finish setting up your TouchPad."), className: "subtitle", style: "margin-top: 12px;"},
+ 						{kind: "SpinnerLarge", name: "spinner", showing: false},
+ 						{name: "completeDone", kind: "Button", caption: rb.$L("Done"), className: "enyo-button", style: "width: 220px; margin-top: 24px;", onclick: "completeDoneTap"},
+-						{name: "wosaLaunchAccounts", kind: "Button", caption: rb.$L("Launch Accounts"), className: "enyo-button", style: "width: 220px; margin-top: 12px;", onclick: "wosaLaunchAccountsTap"},
+ 					]}
+ 				]}
+ 			]}
+@@ -99,10 +103,8 @@
+ 			{content: rb.$L("Your device may need to restart to complete setup."), className: "enyo-text-body"},
+ 		]},
+ 
+-		// webOS Archive: self-update via App Museum II (webos-common Updater-Helper).
+-		// Checks the catalog entry titled "webOS Community Account Manager" and
+-		// prompts + installs via Preware when a newer version is listed.
+-		{kind: "Helpers.Updater", name: "updater", handleUI: true},
++		// webOS CE OOBE: no Museum self-updater — this in-ROM copy is updated by
++		// the CE OTA, and Preware does not exist during first use.
+ 		
+ 		{name: "SimStatusQuery", kind: "TelephonyService", method: "simStatusQuery",subscribe: true, onSuccess: "handleSimStatusQuery"},
+ 		{name: "PlatformQuery", kind: "TelephonyService", method: "platformQuery",subscribe: false, onSuccess: "handlePlatformQuery", onFailure: "handlePlatformQueryFail"},
+@@ -421,16 +423,8 @@
+ 	},
+ 
+ 	// webOS Archive: check the App Museum for a newer build of this app.
++	// webOS CE OOBE: no-op (this ROM copy is updated by the CE OTA).
+ 	wosaCheckForUpdates: function() {
+-		try {
+-			// firstuse's stylesheet paints text white (dark theme); the updater's
+-			// popup is light-backed — force readable text without editing the
+-			// vendored helper.
+-			this.$.updater.$.updatePopUp.addStyles("color: black;");
+-			this.$.updater.CheckForUpdate("webOS Community Account Manager");
+-		} catch (e) {
+-			console.info("WOSA: update check failed to start: " + e);
+-		}
+ 	},
+ 	
+ 	start: function() {
+@@ -946,7 +940,9 @@
+ 		// written by accountservices (createNovaAccount/authenticateAccount). Do NOT
+ 		// call the dead HP postLogin services, do NOT reset, do NOT shut down —
+ 		// leave the confirmation page up; the user dismisses it with Done.
+-		console.info("WOSA firstrun: account setup complete — showing confirmation (no reset, no erase, no shutdown).");
++		console.info("WOSA CE OOBE: account setup complete — applying customization.");
++		console.log("Set Customizations: " + this.countryCode + " : " + this.languageCode);
++		this.$.setCustomization.call({"language":this.languageCode,"country":this.countryCode});
+ 		this.updateCompletePage();
+ 	},
+ 
+@@ -965,8 +961,23 @@
+ 		this.closeApp();
+ 	},
+ 
++	// webOS CE OOBE: finishing first use. Mark it done (writes ran-first-use) and
++	// show a "Finishing Setup" screen — but do NOT reboot or close here. A device
++	// reboot from firstuse kills the concurrent first-boot app-install, which
++	// consumes staged ipks as it goes, so staged 1P apps would be lost. The
++	// ce-finish-firstuse upstart job performs the single reboot into the full
++	// launcher once app-install has finished. Every exit converges here: the Done
++	// button (completeDoneTap), the community Skip links (wosaSkipSetup), and
++	// firstUseComplete.
++	// webOS CE OOBE: finishing first use. markFirstUseDone() writes ran-first-use
++	// AND emits "first-use-finished", which powerd handles by rebooting the device
++	// into the full launcher — so this is the single, correct end of first use.
++	// By the time the user reaches here the first-boot app-install has finished
++	// (its Preware bootstrap runs in a separate post-install job, NOT in-line, so
++	// it never slows the install). Every exit converges here: Done
++	// (completeDoneTap), the community Skip links (wosaSkipSetup), firstUseComplete.
+ 	closeApp: function(){
+-		try { window.close(); } catch (e) { console.info("WOSA close err: " + e); }
++		try { PalmSystem.markFirstUseDone(); } catch (e) { console.info("WOSA markFirstUseDone err: " + e); }
+ 	},
+ 
+ 	// webOS Archive: called by both cards' "Skip Account Setup" link. Shows the
