@@ -1,0 +1,12 @@
+{
+	"id": "com.palm.app.accounts",
+	"version": "3.1.0",
+	"vendor": "HP",
+	"type": "web",
+	"main": "index.html",
+	"title": "Accounts",
+	"icon": "icon.png",
+	"uiRevision": 2,
+	"trustLevel": "trusted",
+	"requiredPermissions": ["accountsservice.management", "accountsservice.operation", "activity.operation", "application.operation", "database.operation", "imaccountvalidator.operation", "keymanager-service.operation", "mojomail-imap.operation", "mojomail-pop.operation", "mojomail-smtp.operation", "networkconnection.query", "networkconnection.management", "settings.read", "tempdatabase.operation", "wifi.query", "wifi.management"]
+}

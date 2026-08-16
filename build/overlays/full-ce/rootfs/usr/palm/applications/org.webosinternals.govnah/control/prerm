@@ -1,0 +1,32 @@
+#!/bin/sh
+
+PID="org.webosinternals.govnah"
+
+# Handle execution as pmPreRemove.script
+if [ -z "$IPKG_OFFLINE_ROOT" ]; then
+  IPKG_OFFLINE_ROOT=/media/cryptofs/apps
+  mount -o remount,rw /
+fi
+
+APPS=/media/cryptofs/apps
+
+[ -d $APPS ] || { echo "Requires webOS 1.3.5 or later" ; exit 1 ; }
+
+# Remove the govnah executable
+rm -f /var/usr/sbin/${PID}
+
+# Remove the dbus service
+rm -f /usr/share/dbus-1/system-services/${PID}.service /var/palm/system-services/${PID}.service
+
+# Remove the ls2 roles
+rm -f /usr/share/ls2/roles/prv/${PID}.json /var/palm/ls2/roles/prv/${PID}.json
+rm -f /usr/share/ls2/roles/pub/${PID}.json /var/palm/ls2/roles/pub/${PID}.json
+
+# Stop the service if running
+/sbin/stop ${PID} || true
+/usr/bin/killall -9 ${PID} || true
+
+# Remove the upstart script
+rm -f /etc/event.d/${PID} /var/palm/event.d/${PID} /var/palm/event.d/${PID}-settings
+
+exit 0

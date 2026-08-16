@@ -1,0 +1,35 @@
+.small-bubble {
+  background-size: 100%;
+  width:80%;
+}
+
+.big-bubble {
+  background-size: 100%;
+}
+
+.big-bubble > .value {
+  font-size: 1.7em;
+  color: white;
+  padding: 20px 0 0 0;
+  text-align:center;
+}
+
+.small-bubble > .value {
+  font-size: 1.5em;
+  color: white;
+  padding: 29px 0 0 0;
+  text-align:center;
+}
+
+.small-negative-rating {
+  background: url(../images/small_red_bubble.png) left bottom no-repeat;
+}
+.big-negative-rating {
+  background: url(../images/big_red_bubble.png) left bottom no-repeat;
+}
+.small-positive-rating {
+  background: url(../images/small_green_bubble.png) right bottom no-repeat;
+}
+.big-positive-rating {
+  background: url(../images/big_green_bubble.png) right bottom no-repeat;
+}

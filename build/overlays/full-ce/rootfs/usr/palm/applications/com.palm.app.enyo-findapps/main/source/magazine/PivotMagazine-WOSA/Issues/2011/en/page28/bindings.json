@@ -1,0 +1,63 @@
+{
+    "prefetch": [
+                "com.palm.app.kindle",
+                "com.palm.app.moviestore",
+                "com.preciouscoders.pre.auctionmateprohdbeta",
+                "com.iheartradio",
+                "com.audubon.birds",
+                "org.khanacademy",
+                "com.condenast.epicurious",
+                "com.mojojungle.translator-hd",
+                "com.palm.app.enyo-facebook",
+                "com.jeffyuan.coolclock"
+                ],
+
+	"portraitBgImage": "page28/images/portrait-bg.jpg",
+	"landscapeBgImage": "page28/images/landscape-bg.jpg",
+
+    "portraitHeaderTemplate": "common/layouts/portraitHeader.lo.js",
+    "landscapeHeaderTemplate": "common/layouts/landscapeHeader.lo.js",
+    "headerTemplateBindings": "common/layouts/header.json",
+
+    "appTemplate": "common/layouts/app.lo.js",
+    "app1BindingsPortrait": "common/apps/kindle/info.json",
+    "app2BindingsPortrait": "common/apps/facebook/info.json",
+    "app3BindingsPortrait": "common/apps/auctionmate/info.json",
+    "app4BindingsPortrait": "common/apps/moviestore/info.json",
+    "app5BindingsPortrait": "common/apps/birds/info.json",
+    "app6BindingsPortrait": "common/apps/iheartradio/info.json",
+    "app7BindingsPortrait": "common/apps/coolclock/info.json",
+    "app8BindingsPortrait": "common/apps/khanacademy/info.json",
+    "app9BindingsPortrait": "common/apps/epicurious/info.json",
+    "app10BindingsPortrait": "common/apps/translator/info.json",
+
+    "app1BindingsLandscape": "common/apps/kindle/info.json",
+    "app2BindingsLandscape": "common/apps/coolclock/info.json",
+    "app3BindingsLandscape": "common/apps/moviestore/info.json",
+    "app4BindingsLandscape": "common/apps/auctionmate/info.json",
+    "app5BindingsLandscape": "common/apps/epicurious/info.json",
+    "app6BindingsLandscape": "common/apps/iheartradio/info.json",
+    "app7BindingsLandscape": "common/apps/birds/info.json",
+    "app8BindingsLandscape": "common/apps/facebook/info.json",
+    "app9BindingsLandscape": "common/apps/khanacademy/info.json",
+
+	"featuredLinkText": "Featured Apps",
+	"featuredLinkTitle": "Featured Apps",
+    "featuredLinkQid": "HOME-DartfishQuery1",
+    "featuredLinkQueryFragment": "listId=HOT30&count=30&disableAutoPaging=true",
+
+    "topPaidLinkText": "Top Paid",
+    "topPaidLinkTitle": "Top Paid Applications",
+    "topPaidLinkQid": "HOME-DartfishQuery2",
+    "topPaidLinkQueryFragment": "paid=true&sort=RATING_DESC&count=30",
+
+    "topFreeLinkText": "Top Free",
+    "topFreeLinkTitle": "Top Free Applications",
+    "topFreeLinkQid": "HOME-DartfishQuery3",
+    "topFreeLinkQueryFragment": "paid=false&sort=RATING_DESC&count=30",
+
+    "newArrivalsLinkText": "New Arrival",
+    "newArrivalsLinkTitle": "New Arrivals",
+    "newArrivalsLinkQid": "HOME-DartfishQuery4",
+    "newArrivalsLinkQueryFragment": "sort=DATE_DESC&count=50"
+}

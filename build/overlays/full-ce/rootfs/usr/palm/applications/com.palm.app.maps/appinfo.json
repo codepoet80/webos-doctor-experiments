@@ -1,0 +1,12 @@
+{
+	"id": "com.palm.app.maps",
+	"version": "4.0.1",
+	"vendor": "HP",
+	"type": "web",
+	"main": "index.html",
+	"title": "Maps",
+	"icon": "icon.png",
+	"removable": false,
+	"uiRevision": 2,
+	"splashicon": "icon-256x256.png"
+}

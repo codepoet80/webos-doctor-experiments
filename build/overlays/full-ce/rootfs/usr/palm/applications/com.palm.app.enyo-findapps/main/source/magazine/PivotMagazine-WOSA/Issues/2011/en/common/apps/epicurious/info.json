@@ -1,0 +1,6 @@
+{
+    "_app_id": "com.condenast.epicurious",
+    "rating": "{$_app_rating}",
+    "reviewCount": "{$_app_reviewCount}",
+    "price": "{$_app_price}"
+}

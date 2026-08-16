@@ -1,0 +1,14 @@
+{
+  "role": {
+     "exeName":"/usr/sbin/org.webosinternals.ipkgservice",
+     "type": "privileged",
+     "allowedNames": ["org.webosinternals.ipkgservice"]
+  },
+  "permissions": [
+    {
+      "service":"org.webosinternals.ipkgservice",
+      "inbound":["*"],
+      "outbound":["*"]
+    }
+  ]
+}

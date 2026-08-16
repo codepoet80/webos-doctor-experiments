@@ -1,0 +1,15 @@
+﻿.enyo-stars {
+	position: relative;
+	width: 90px;
+	height: 16px;
+	background-image: url(images/stars_18_16.png);
+}
+
+.enyo-stars-red {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 90px;
+	height: 16px;
+	background: url(images/stars_18_16.png) 0px -16px;
+}	

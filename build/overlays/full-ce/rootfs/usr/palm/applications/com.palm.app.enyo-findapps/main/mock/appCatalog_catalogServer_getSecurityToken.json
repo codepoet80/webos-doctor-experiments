@@ -1,0 +1,6 @@
+// QA
+{"accountAlias":"anis.kadri@gmail.com","token":"T06AC932C51E15CAFEAC8B18D6086CF72","accountState":"B","uniqueId":"ACAC130824BE55CA78201595A192EB288","jabberId":"{\"port\":5222,\"service\":\"j002.qa.palmws.com\",\"user\":\"c166ecf0ac5c40eee49b\",\"url\":\"j002.qa.palmws.com\"}","returnValue":true}
+// SBDEV
+//{"accountAlias":"cat_recq8df853a8@palm.com","token":"V0F72BCAB12B654BD63C2C165000A7178","accountState":"B","uniqueId":"ACAC130824BE55CA78201595A192EB288","jabberId":"{\"port\":5222,\"service\":\"j002.qa.palmws.com\",\"user\":\"c166ecf0ac5c40eee49b\",\"url\":\"j002.qa.palmws.com\"}","returnValue":true}
+// SBQA      
+//{"accountAlias":"chad@sbqa.com","token":"UE002A07E4B04391250DB37DE69111DA6","accountState":"B","uniqueId":"ACAC130824BE55CA78201595A192EB288","jabberId":"{\"port\":5222,\"service\":\"j002.qa.palmws.com\",\"user\":\"c166ecf0ac5c40eee49b\",\"url\":\"j002.qa.palmws.com\"}","returnValue":true}

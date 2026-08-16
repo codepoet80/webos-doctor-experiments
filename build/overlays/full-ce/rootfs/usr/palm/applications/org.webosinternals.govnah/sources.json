@@ -1,0 +1,72 @@
+[
+    {"source": "app/models/service.js"},
+    {"source": "app/models/utility.js"},
+    {"source": "app/models/help.js"},
+    {"source": "app/models/cookies.js"},
+    {"source": "app/models/line-graph.js"},
+    {"source": "app/models/bar-graph.js"},
+    {"source": "app/models/profile.js"},
+    {"source": "app/models/default-profiles.js"},
+    {"source": "app/models/data-handler.js"},
+    {"source": "app/assistants/app-assistant.js"},
+    {
+        "scenes": "startup",
+        "source": "app/assistants/startup-assistant.js"
+    },
+    {
+        "scenes": "main",
+        "source": "app/assistants/main-assistant.js"
+    },
+    {
+        "scenes": "dock",
+        "source": "app/assistants/dock-assistant.js"
+    },
+    {
+        "scenes": "preferences",
+        "source": "app/assistants/preferences-assistant.js"
+    },
+    {
+        "scenes": "help",
+        "source": "app/assistants/help-assistant.js"
+    },
+    {
+        "scenes": "help-data",
+        "source": "app/assistants/help-data-assistant.js"
+    },
+    {
+        "scenes": "settings",
+        "source": "app/assistants/settings-assistant.js"
+    },
+    {
+        "scenes": "settings-cpufreq",
+        "source": "app/assistants/settings-cpufreq-assistant.js"
+    },
+    {
+        "scenes": "settings-voltage",
+        "source": "app/assistants/settings-voltage-assistant.js"
+    },
+    {
+        "scenes": "settings-compcache",
+        "source": "app/assistants/settings-compcache-assistant.js"
+    },
+    {
+        "scenes": "settings-iosched",
+        "source": "app/assistants/settings-iosched-assistant.js"
+    },
+    {
+        "scenes": "settings-tcpcong",
+        "source": "app/assistants/settings-tcpcong-assistant.js"
+    },
+    {
+        "scenes": "profile-save",
+        "source": "app/assistants/profile-save-assistant.js"
+    },
+    {
+        "scenes": "profiles",
+        "source": "app/assistants/profiles-assistant.js"
+    },
+    {
+        "scenes": "graph",
+        "source": "app/assistants/graph-assistant.js"
+    }
+]

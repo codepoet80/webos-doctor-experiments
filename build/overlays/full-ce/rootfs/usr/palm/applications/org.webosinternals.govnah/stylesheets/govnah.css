@@ -1,0 +1,529 @@
+/*
+ * Global Styles
+ */
+.scene-fade-top
+{
+	position: fixed; 
+	top: 0; 
+	z-index: 11000;
+	height: 30px; 
+	width: 100%;
+	background: url(../images/palm-default/scrollFade-top.png) top center repeat-x;
+	-webkit-palm-mouse-target: ignore;
+}
+.scene-fade-bottom
+{
+	position: fixed; 
+	bottom: 0; 
+	z-index: 11000;
+	height: 30px; 
+	width: 100%;
+	background: url(../images/palm-default/scrollFade-bottom.png) bottom center repeat-x;
+	-webkit-palm-mouse-target: ignore;
+}
+body.palm-dark .scene-fade-top
+{
+	background: url(../images/palm-dark/scrollFade-top.png) top center repeat-x;
+}
+body.palm-dark .scene-fade-bottom
+{
+	background: url(../images/palm-dark/scrollFade-bottom.png) bottom center repeat-x;
+}
+.palm-separator
+{
+  height: 2px;
+ /* margin: 0 -18px;*/
+  background: url(../images/palm-default/list-separator-light.png) bottom left repeat-x;
+}
+body.palm-dark .palm-separator
+{
+  background: url(../images/palm-dark/list-separator-dark.png) bottom left repeat-x;
+}
+.palm-list .palm-row-wrapper .sub
+{
+	top: -19px;
+	color: #999;
+	font-size: 14px;
+	padding-top: 0px;
+	margin-top: -14px;
+	padding-left: 16px;
+	padding-bottom: 6px;
+}
+
+
+/*
+ * Startup Scene Styles
+ */
+.startup #data .palm-divider.labeled .label
+{
+	text-transform: lowercase;
+}
+.startup #data
+{
+	font-size: 18px;
+}
+.startup #data .text
+{
+	padding-top: 4px;
+	padding-left: 17px;
+	padding-right: 15px;
+	padding-bottom: 10px;
+}
+.startup #data ul
+{
+	margin: 0px;
+	padding-left: 37px;
+	padding-right: 15px;
+	padding-bottom: 10px;
+}
+
+
+/*
+ * Main Scene Styles
+ */
+.main .palm-page-header-wrapper .icon
+{
+	width: 76px;
+	height: 75px;
+	background: url(../icon.png) center center no-repeat;
+}
+.main .palm-page-header-wrapper .title
+{
+	padding-left: 80px;
+}
+.main .palm-page-header-wrapper .title.main
+{
+	font-size: 30px;
+	padding-top: 5px;
+	padding-bottom: 0px;
+}
+.main .palm-page-header-wrapper .title .version
+{
+	font-size: 12px;
+	color: #888;
+	text-transform: lowercase;
+}
+.main .palm-page-header-wrapper .title .kernel
+{
+	font-size: 12px;
+	color: #888;
+}
+.main .palm-page-header-wrapper .title.sub
+{
+	font-size: 14px;
+	padding-top: 0px;
+	margin-top: 0px;
+}
+
+.main .palm-row .title.right .unknown
+{
+	color: #aaa;
+}
+
+.main .palm-row-wrapper
+{
+	position: relative;
+}
+.main canvas#freq1Canvas,
+.main canvas#freq2Canvas,
+.main canvas#tempCanvas,
+.main canvas#currCanvas,
+.main canvas#loadCanvas,
+.main canvas#memCanvas,
+.main canvas#stateCanvas
+{
+	position: absolute;
+	z-index: -5;
+	top: 22px;
+}
+.main canvas#stateCanvas
+{
+	right: 0px;
+}
+
+
+
+/*
+ * Dock Scene Styles
+ */
+body.dock
+{
+	background: #000 !important;
+	color: #fff;
+	font-weight: bold;
+}
+.dock .palm-list
+{
+	margin-top: 30px;
+}
+.dock .palm-row
+{
+	background: none;
+	/*border-bottom: 2px solid rgba(255, 255, 255, 0.3);*/
+}
+.dock .palm-row-wrapper
+{
+	position: relative;
+}
+.dock canvas#freq1Canvas,
+.dock canvas#freq2Canvas,
+.dock canvas#tempCanvas,
+.dock canvas#currCanvas,
+.dock canvas#loadCanvas,
+.dock canvas#memCanvas,
+.dock canvas#stateCanvas
+{
+	position: absolute;
+	z-index: -5;
+	top: 22px;
+}
+.dock .palm-row .title.right .unit
+{
+	float: right;
+	padding-left: 8px;
+	padding-top: 4px;
+	text-align: left;
+	color: rgba(255, 255, 255, 0.4);
+	font-size: 16px;
+}
+.dock .palm-row .title
+{
+	color: rgba(255, 255, 255, 0.8);
+	padding-top: 43px;
+}
+.dock .palm-row .label
+{
+	color: rgba(255, 255, 255, 0.6);
+	margin-top: 48px;
+}
+
+
+/*
+ * Settings List Scene Styles
+ */
+.settings .palm-row-wrapper.disabled .title
+{
+	color: #999;
+}
+
+
+
+/*
+ * Full-Screen Graph Scene Styles
+ */
+.graph > .graph
+{
+	position: relative;
+}
+.graph > .graph canvas
+{
+	position: absolute;
+	z-index: 100;
+	top: 0px;
+	left: 0px;
+}
+.graph > .graph .labels
+{
+	position: absolute;
+	z-index: 101;
+	top: 0px;
+	left: 0px;
+	bottom: -2px;
+	right: 0px;
+	background: url(../images/palm-default/fade-left.png) top left repeat-y;
+}
+body.palm-dark .graph > .graph .labels
+{
+	background: url(../images/palm-dark/fade-left.png) top left repeat-y;
+}
+.graph > .graph .labels div
+{
+	position: absolute;
+	top: 0px;
+	left: 5px;
+	font-size: 12px;
+	margin-top: -6px;
+	height: 10px;
+	line-height: 10px;
+	vertical-align: middle;
+	color: #666;
+	text-shadow: #e4e4e2 1px 1px 0px;
+}
+body.palm-dark .graph > .graph .labels div
+{
+	color: #7f7f7f;
+	text-shadow: #393e43 1px 1px 0px;
+}
+
+
+
+
+/*
+ * Governor Scene Styles
+ */
+.governor .palm-row .label
+{
+	max-width: 300px;
+}
+.governor .palm-row .palm-row-wrapper
+{
+	position: relative;
+}
+.governor .palm-row .palm-row-wrapper:not(.textfield-group)
+{
+	min-height: 53px;
+}
+.governor .palm-row .palm-row-wrapper.textfield-group
+{
+	min-height: 23px;
+}
+.governor .palm-row .palm-row-wrapper.textfield-group .help-overlay
+{
+	top: -15px;
+	left: -15px;
+}
+.governor .palm-row .palm-row-wrapper .help-overlay
+{
+	display: none;
+	position: absolute;
+	z-index: 10000;
+	width: auto;
+	height: auto;
+	border: 20px;
+	top: 2px;
+	left: 2px;
+	right: 2px;
+	bottom: 4px;
+	-webkit-border-image: url(../images/palm-default/helprow.png) 20 20 20 20 stretch stretch;
+}
+.governor.help .palm-row .palm-row-wrapper .help-overlay
+{
+	display: block;
+}
+.governor .palm-row.first .palm-row-wrapper .help-overlay
+{
+	-webkit-border-image: url(../images/palm-default/helprow-first.png) 20 20 20 20 stretch stretch;
+}
+.governor .palm-row.single .palm-row-wrapper .help-overlay
+{
+	-webkit-border-image: url(../images/palm-default/helprow-single.png) 20 20 20 20 stretch stretch;
+	bottom: 3px;
+}
+.governor .palm-row.last .palm-row-wrapper .help-overlay
+{
+	-webkit-border-image: url(../images/palm-default/helprow-last.png) 20 20 20 20 stretch stretch;
+	bottom: 3px;
+}
+.governor .help-toggle
+{
+	position: absolute;
+	right: 11px;
+	top: 11px;
+	width: 32px;
+	height: 32px;
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+	background-image: url(../images/palm-default/help-toggle.png);
+}
+.governor .help-toggle.selected
+{
+	background-position: 0px -32px;
+}
+
+
+/*
+ * Profile Scene Styles
+ */
+.profiles #profileList.governor .palm-row .sub,
+.profiles #profileList.name .palm-row .sub
+{
+	display: none;
+}
+.profiles #profileList.all .palm-row .right,
+.profiles #profileList.name .palm-row .right
+{
+	display: none;
+}
+.profiles .palm-row .sub
+{
+	padding-bottom: 16px;
+}
+.profiles .palm-row .sub .name
+{
+	padding-left: 10px;
+	text-transform: capitalize;
+}
+.profiles .palm-row .sub .value
+{
+	float: right;
+	padding-right: 10px;
+}
+.profiles .palm-row .right
+{
+	padding-top: 12px;
+	float: right;
+	color: #999;
+	padding-right: 10px;
+}
+
+
+/*
+ * Generic Form Styles
+ */
+.form .palm-row-wrapper .note
+{
+	clear: both;
+	padding-left: 10px;
+	font-style: italic;
+}
+.form .palm-row-wrapper .label.left
+{
+	padding-left: 6px;
+	-webkit-palm-mouse-target: ignore;
+}
+.form .palm-list-selector .label
+{
+	float: left;
+}
+.form .palm-list-selector .title
+{
+	text-align: right;
+}
+.form .palm-group.disabled
+{
+	opacity: 0.35;
+}
+.form .palm-row .title.right .unit
+{
+	float: right;
+	padding-left: 8px;
+	padding-top: 4px;
+	text-align: left;
+	color: #aaa;
+	font-size: 16px;
+}
+
+/*
+ * Help Scene Styles
+ */
+.help .list_scene
+{
+	position:relative;
+	left:48px;
+	top:10px;
+	width:32px; 
+	height:32px;
+	vertical-align:bottom;
+	padding: 0px 0px 0px 5px;
+	float:left;
+}
+.help .img_web
+{
+	position:relative;
+	left:8px;
+	top:10px;
+	width:32px; 
+	height:32px;
+	background: url(../images/help/application-web.png) no-repeat  bottom;
+	padding: 0px 0px 0px 5px;
+	float:left;
+}
+.help .img_email
+{
+	position:relative;
+	left:8px;
+	top:10px;
+	width:32px; 
+	height:32px;
+	background: url(../images/help/application-email.png) no-repeat bottom;
+	vertical-align:bottom;
+	padding: 0px 0px 0px 5px;
+	float:left;
+}
+.help .img_changelog
+{
+	position:relative;
+	left:8px;
+	top:10px;
+	width:32px; 
+	height:32px;
+	background: url(../images/help/scene-changelog.png) no-repeat  bottom;
+	padding: 0px 0px 0px 5px;
+	float:left;
+}
+.help #data
+{
+	padding: 10px;
+	font-size: 18px;
+}
+.help #data ul
+{
+	margin: 0px;
+	padding-top: 10px;
+	padding-left: 26px;
+	padding-right: 0px;
+	padding-bottom: 10px;
+}
+
+
+
+
+/*
+ * Generic Temp Icon Styles
+ */
+.main .palm-page-header-wrapper .icon.temp-15 { background-image: url(../images/icons/icon-15.png); }
+.main .palm-page-header-wrapper .icon.temp-16 { background-image: url(../images/icons/icon-16.png); }
+.main .palm-page-header-wrapper .icon.temp-17 { background-image: url(../images/icons/icon-17.png); }
+.main .palm-page-header-wrapper .icon.temp-18 { background-image: url(../images/icons/icon-18.png); }
+.main .palm-page-header-wrapper .icon.temp-19 { background-image: url(../images/icons/icon-19.png); }
+.main .palm-page-header-wrapper .icon.temp-20 { background-image: url(../images/icons/icon-20.png); }
+.main .palm-page-header-wrapper .icon.temp-21 { background-image: url(../images/icons/icon-21.png); }
+.main .palm-page-header-wrapper .icon.temp-22 { background-image: url(../images/icons/icon-22.png); }
+.main .palm-page-header-wrapper .icon.temp-23 { background-image: url(../images/icons/icon-23.png); }
+.main .palm-page-header-wrapper .icon.temp-24 { background-image: url(../images/icons/icon-24.png); }
+.main .palm-page-header-wrapper .icon.temp-25 { background-image: url(../images/icons/icon-25.png); }
+.main .palm-page-header-wrapper .icon.temp-26 { background-image: url(../images/icons/icon-26.png); }
+.main .palm-page-header-wrapper .icon.temp-27 { background-image: url(../images/icons/icon-27.png); }
+.main .palm-page-header-wrapper .icon.temp-28 { background-image: url(../images/icons/icon-28.png); }
+.main .palm-page-header-wrapper .icon.temp-29 { background-image: url(../images/icons/icon-29.png); }
+.main .palm-page-header-wrapper .icon.temp-30 { background-image: url(../images/icons/icon-30.png); }
+.main .palm-page-header-wrapper .icon.temp-31 { background-image: url(../images/icons/icon-31.png); }
+.main .palm-page-header-wrapper .icon.temp-32 { background-image: url(../images/icons/icon-32.png); }
+.main .palm-page-header-wrapper .icon.temp-33 { background-image: url(../images/icons/icon-33.png); }
+.main .palm-page-header-wrapper .icon.temp-34 { background-image: url(../images/icons/icon-34.png); }
+.main .palm-page-header-wrapper .icon.temp-35 { background-image: url(../images/icons/icon-35.png); }
+.main .palm-page-header-wrapper .icon.temp-36 { background-image: url(../images/icons/icon-36.png); }
+.main .palm-page-header-wrapper .icon.temp-37 { background-image: url(../images/icons/icon-37.png); }
+.main .palm-page-header-wrapper .icon.temp-38 { background-image: url(../images/icons/icon-38.png); }
+.main .palm-page-header-wrapper .icon.temp-39 { background-image: url(../images/icons/icon-39.png); }
+.main .palm-page-header-wrapper .icon.temp-40 { background-image: url(../images/icons/icon-40.png); }
+.main .palm-page-header-wrapper .icon.temp-41 { background-image: url(../images/icons/icon-41.png); }
+.main .palm-page-header-wrapper .icon.temp-42 { background-image: url(../images/icons/icon-42.png); }
+.main .palm-page-header-wrapper .icon.temp-43 { background-image: url(../images/icons/icon-43.png); }
+.main .palm-page-header-wrapper .icon.temp-44 { background-image: url(../images/icons/icon-44.png); }
+.main .palm-page-header-wrapper .icon.temp-45 { background-image: url(../images/icons/icon-45.png); }
+.main .palm-page-header-wrapper .icon.temp-46 { background-image: url(../images/icons/icon-46.png); }
+.main .palm-page-header-wrapper .icon.temp-47 { background-image: url(../images/icons/icon-47.png); }
+.main .palm-page-header-wrapper .icon.temp-48 { background-image: url(../images/icons/icon-48.png); }
+.main .palm-page-header-wrapper .icon.temp-49 { background-image: url(../images/icons/icon-49.png); }
+.main .palm-page-header-wrapper .icon.temp-50 { background-image: url(../images/icons/icon-50.png); }
+.main .palm-page-header-wrapper .icon.temp-51 { background-image: url(../images/icons/icon-51.png); }
+.main .palm-page-header-wrapper .icon.temp-52 { background-image: url(../images/icons/icon-52.png); }
+.main .palm-page-header-wrapper .icon.temp-53 { background-image: url(../images/icons/icon-53.png); }
+.main .palm-page-header-wrapper .icon.temp-54 { background-image: url(../images/icons/icon-54.png); }
+.main .palm-page-header-wrapper .icon.temp-55 { background-image: url(../images/icons/icon-55.png); }
+.main .palm-page-header-wrapper .icon.temp-56 { background-image: url(../images/icons/icon-56.png); }
+.main .palm-page-header-wrapper .icon.temp-57 { background-image: url(../images/icons/icon-57.png); }
+.main .palm-page-header-wrapper .icon.temp-58 { background-image: url(../images/icons/icon-58.png); }
+.main .palm-page-header-wrapper .icon.temp-59 { background-image: url(../images/icons/icon-59.png); }
+.main .palm-page-header-wrapper .icon.temp-60 { background-image: url(../images/icons/icon-60.png); }
+.main .palm-page-header-wrapper .icon.temp-61 { background-image: url(../images/icons/icon-61.png); }
+.main .palm-page-header-wrapper .icon.temp-62 { background-image: url(../images/icons/icon-62.png); }
+.main .palm-page-header-wrapper .icon.temp-63 { background-image: url(../images/icons/icon-63.png); }
+.main .palm-page-header-wrapper .icon.temp-64 { background-image: url(../images/icons/icon-64.png); }
+.main .palm-page-header-wrapper .icon.temp-65 { background-image: url(../images/icons/icon-65.png); }
+.main .palm-page-header-wrapper .icon.temp-66 { background-image: url(../images/icons/icon-66.png); }
+.main .palm-page-header-wrapper .icon.temp-67 { background-image: url(../images/icons/icon-67.png); }
+.main .palm-page-header-wrapper .icon.temp-68 { background-image: url(../images/icons/icon-68.png); }
+.main .palm-page-header-wrapper .icon.temp-69 { background-image: url(../images/icons/icon-69.png); }
+.main .palm-page-header-wrapper .icon.temp-70 { background-image: url(../images/icons/icon-70.png); }

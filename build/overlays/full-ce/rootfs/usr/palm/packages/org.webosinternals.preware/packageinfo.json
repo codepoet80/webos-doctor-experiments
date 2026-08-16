@@ -1,0 +1,10 @@
+{
+  "app": "org.webosinternals.preware",
+  "icon": "icon.png",
+  "id": "org.webosinternals.preware",
+  "loc_name": "Preware",
+  "miniicon": "miniicon.png",
+  "package_format_version": 2,
+  "vendor": "WebOS Internals",
+  "version": "1.9.18"
+}

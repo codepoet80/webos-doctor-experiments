@@ -1,0 +1,13 @@
+{
+    "id": "com.webosarchive.usbsettings.service",
+    "description": "USB Settings control bridge (writes control file, reads status)",
+    "activityTimeout": 30,
+    "services": [{
+        "name": "com.webosarchive.usbsettings.service",
+        "description": "USB control bridge to the root daemon",
+        "commands": [
+            { "name": "getStatus", "assistant": "GetStatusAssistant", "public": true },
+            { "name": "send",      "assistant": "SendAssistant",      "public": true }
+        ]
+    }]
+}

@@ -1,0 +1,109 @@
+/*
+An app level css file.  View specific css files are located
+within their individual scene folders.
+*/
+
+html {
+	width: 100%;
+	position: relative;
+}
+
+body, html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+body, input, button {
+	font-family: "Prelude Medium", "Segoe UI," Arial, Verdana, Helvetica;
+	font-size: 20px;
+}
+
+body {
+	background-color: #EAEAE9;
+}
+
+.header-bar-image {
+    padding: 0 10px 0 5px;
+    display: inline;
+}
+
+.enyo-disabled {
+	-webkit-border-image: url(../images/menu-toolbutton.png) 200 1 750 23;
+}
+
+.enyo-button {
+	
+}
+
+.splash-background {
+	background: url(../images/splash/background.png);
+}
+
+.box-center {
+	width:500px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.header-center {
+	
+}
+
+.radiohead .enyo-radiobutton {
+	width: auto !important;
+	min-width: 110px;
+}
+
+.showIcon .enyo-menuitem {
+  padding-left: 10px;
+}
+
+.showIcon .enyo-menucheckitem-caption {
+  margin-right: 10px;
+}
+
+.showIcon img.enyo-menuitem-icon {
+  display: none;
+}
+
+.appFilterBrowse {
+  margin-left: 480px;
+}
+
+.appFilterSearch {
+  margin-right: 14px;
+}
+
+.button-group {
+	padding-top: 6px;
+}
+
+/* styles for in-app purchase */
+@media all and (max-width: 320px) {
+      .box-center {
+			width: 320px;
+		}
+		.box-center .description {
+			margin: 0 12px !important;
+		}
+		.box-center .enyo-button {
+			margin-left: 14px !important;
+			margin-right: 14px !important;
+		}
+		.box-center .enyo-group {
+			margin-left: 12px !important;
+			margin-right: 12px !important;
+		}
+		
+		.box-center .button-group {
+			padding-bottom: 16px !important;
+		}
+}
+
+.magazine-error-page {
+    color: gray;
+	font-weight:bold;
+	text-align: center;
+	margin-top:330px;
+}

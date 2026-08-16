@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>enyo App Catalog</title>
+	<script type="text/javascript">
+		function timeSince(start) {
+			return start ? ((Date.now() - start) + " ms") : "(unknown)";
+		};
+	
+		//console.log("appcatalog window loaded at " + timeSince(window.windowLaunchTime));
+		
+	</script>
+	<!--<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" launch="debug" type="text/javascript"></script> -->
+	<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" type="text/javascript"></script>
+</head>
+<body>
+<script type="text/javascript">
+	//console.log("appcatalog sources loaded and framework initialized at " + timeSince(window.windowLaunchTime));
+	(function () {
+		console.log("App Catalog main.html loaded");
+		var unloadFunc = function(){
+			console.info("WINLOG: main window of App Catalog UNLOAD");
+			enyo.application.appcatwindow.destroy();
+			window.removeEventListener('unload', unloadFunc);
+		};
+		window.addEventListener('unload', unloadFunc);
+		enyo.application.appcatwindow = new findApps.AppCatalogWindow(enyo.windowParams).renderInto(document.body);
+		
+	})();
+	
+</script>
+</body>
+</html>

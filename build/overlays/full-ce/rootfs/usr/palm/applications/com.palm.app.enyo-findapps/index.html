@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+<title>Enyo FindApps</title>
+<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" type="text/javascript"></script>
+</head>
+<body>
+  <script type="text/javascript">
+    // noWindow launcher
+    (function () {
+		var appLauncher = enyo.application.appCatLauncher = new findApps.AppCatalogLauncher();
+		
+		enyo.applicationRelaunchHandler = function (params) {
+			enyo.application.appCatLauncher.relaunch(params);
+		};
+	
+		appLauncher.startup();
+	})();
+  </script>
+</body>
+</html>

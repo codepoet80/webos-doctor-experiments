@@ -72,28 +72,20 @@
  		this.updateCompletePage();
  	},
  
-@@ -965,8 +961,23 @@
+@@ -965,8 +961,15 @@
  		this.closeApp();
  	},
  
-+	// webOS CE OOBE: finishing first use. Mark it done (writes ran-first-use) and
-+	// show a "Finishing Setup" screen — but do NOT reboot or close here. A device
-+	// reboot from firstuse kills the concurrent first-boot app-install, which
-+	// consumes staged ipks as it goes, so staged 1P apps would be lost. The
-+	// ce-finish-firstuse upstart job performs the single reboot into the full
-+	// launcher once app-install has finished. Every exit converges here: the Done
-+	// button (completeDoneTap), the community Skip links (wosaSkipSetup), and
-+	// firstUseComplete.
-+	// webOS CE OOBE: finishing first use. markFirstUseDone() writes ran-first-use
-+	// AND emits "first-use-finished", which powerd handles by rebooting the device
-+	// into the full launcher — so this is the single, correct end of first use.
-+	// By the time the user reaches here the first-boot app-install has finished
-+	// (its Preware bootstrap runs in a separate post-install job, NOT in-line, so
-+	// it never slows the install). Every exit converges here: Done
-+	// (completeDoneTap), the community Skip links (wosaSkipSetup), firstUseComplete.
++	// webOS CE OOBE: the single, correct end of first use — every exit converges
++	// here: Done (completeDoneTap), the community Skip links (wosaSkipSetup) and
++	// firstUseComplete. markFirstUseDone() writes ran-first-use and emits the
++	// "first-use-finished" upstart event (activity registration); NOTHING in the
++	// OS reboots on that event — powerd only reboots when explicitly asked. So ask
++	// it, exactly as stock firstuse did (the reason shows up in the powerd log).
  	closeApp: function(){
 -		try { window.close(); } catch (e) { console.info("WOSA close err: " + e); }
 +		try { PalmSystem.markFirstUseDone(); } catch (e) { console.info("WOSA markFirstUseDone err: " + e); }
++		this.$.powerDown.call({reason: "firstuse complete"}, {method: "machineReboot"});
  	},
  
  	// webOS Archive: called by both cards' "Skip Account Setup" link. Shows the

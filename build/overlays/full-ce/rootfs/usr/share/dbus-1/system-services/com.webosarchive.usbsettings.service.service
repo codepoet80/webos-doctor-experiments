@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.webosarchive.usbsettings.service
+Exec=/usr/bin/usbctl-jsservice /usr/palm/services/com.webosarchive.usbsettings.service

@@ -1,0 +1,13 @@
+{
+    "prefetch": ["com.iheartradio"],
+
+	"portraitBgImage": "page19/images/portrait-bg.jpg",
+	"landscapeBgImage": "page19/images/landscape-bg.jpg",
+
+    "portraitHeaderTemplate": "common/layouts/portraitHeader.lo.js",
+    "landscapeHeaderTemplate": "common/layouts/landscapeHeader.lo.js",
+    "headerTemplateBindings": "common/layouts/header.json",
+
+    "appTemplate": "common/layouts/app.lo.js",
+    "app1Bindings": "common/apps/iheartradio/info.json"
+}

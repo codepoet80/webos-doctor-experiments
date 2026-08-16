@@ -1,0 +1,14 @@
+{
+  "role": {
+     "exeName":"/var/usr/sbin/org.webosinternals.govnah",
+     "type": "regular",
+     "allowedNames": ["org.webosinternals.govnah"]
+  },
+  "permissions": [
+    {
+      "service":"org.webosinternals.govnah",
+      "inbound":["*"],
+      "outbound":["*"]
+    }
+  ]
+}

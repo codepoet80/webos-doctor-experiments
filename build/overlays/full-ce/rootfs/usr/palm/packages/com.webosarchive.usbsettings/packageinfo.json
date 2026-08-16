@@ -1,0 +1,12 @@
+{
+  "app": "com.webosarchive.usbsettings",
+  "icon": "icon.png",
+  "id": "com.webosarchive.usbsettings",
+  "loc_name": "USB Settings",
+  "miniicon": "icon.png",
+  "package_format_version": 2,
+  "services": ["com.webosarchive.usbsettings.service"],
+  "vendor": "webOS Archive",
+  "vendorurl": "https://github.com/webOSArchive",
+  "version": "1.1.8"
+}

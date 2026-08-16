@@ -1,0 +1,41 @@
+# ce-language-patches — webOS CE: keep language-specific patched system files
+# aligned with the selected locale (exact language match, else english — which
+# is what the rootfs ships). Runs each boot after first use; no-op when the
+# files already match. Trees live in /usr/palm/ce-patches/lang/<lang>/.
+
+start on stopped finish
+
+console none
+
+script
+    [ -f /var/luna/preferences/ran-first-use ] || exit 0
+    BASE=/usr/palm/ce-patches/lang
+    [ -d "$BASE" ] || exit 0
+    LCODE=""
+    i=0
+    while [ $i -lt 12 ]; do
+        R=$(luna-send -n 1 palm://com.palm.systemservice/getPreferences '{"keys":["locale"]}' 2>/dev/null) || true
+        LCODE=$(echo "$R" | sed -n 's/.*"languageCode"[^"]*"\([a-zA-Z]*\)".*/\1/p')
+        if [ -n "$LCODE" ]; then break; fi
+        sleep 5; i=$((i+1))
+    done
+    [ -n "$LCODE" ] || exit 0
+    SRC="$BASE/$LCODE"
+    if [ ! -d "$SRC" ]; then SRC="$BASE/en"; fi
+    changed=0
+    cd "$SRC"
+    for f in $(find . -type f); do
+        rel=${f#./}
+        if ! cmp -s "$f" "/$rel"; then
+            mount -o remount,rw / 2>/dev/null || true
+            cp "$f" "/$rel"
+            changed=1
+        fi
+    done
+    if [ $changed -eq 1 ]; then
+        mount -o remount,ro / 2>/dev/null || true
+        # the UI loaded the old file this boot — one restart picks it up
+        stop LunaSysMgr 2>/dev/null || true
+        start LunaSysMgr 2>/dev/null || true
+    fi
+end script

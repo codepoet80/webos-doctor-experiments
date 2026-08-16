@@ -1,0 +1,87 @@
+description "Package Manager Service"
+
+start on stopped finish
+
+pre-start script
+   logger "org.webosinternals.ipkgservice upstart: script called"
+
+   APPS=/media/cryptofs/apps
+
+   # webOS CE: seed the ipkg config on first boot (the baked install
+   # replays what Preware's postinst would have written to cryptofs)
+   if [ -d /media/cryptofs/apps ] && [ ! -f $APPS/etc/ipkg/arch.conf ] ; then
+      mkdir -p $APPS/etc/ipkg $APPS/usr/lib/ipkg/cache $APPS/usr/lib/ipkg/lists
+      cp /etc/ipkg/arch.conf $APPS/etc/ipkg/arch.conf
+      echo "src/gz optware http://ipkg.preware.net/feeds/optware/all" > $APPS/etc/ipkg/optware.conf
+      echo "src/gz optware-armv7 http://ipkg.preware.net/feeds/optware/armv7" >> $APPS/etc/ipkg/optware.conf
+      echo "src/gz precentral http://weboslives.eu/feeds/precentral" > $APPS/etc/ipkg/precentral-weboslives.conf
+      echo "src/gz precentral http://weboslives.eu/feeds/wosa" > $APPS/etc/ipkg/wosa-appmuseum.conf.disabled
+      echo "src/gz precentral-themes http://ipkg.preware.net/feeds/precentral-themes" > $APPS/etc/ipkg/precentral-themes.conf.disabled
+      echo "src/gz pivotce http://feed.pivotce.com" > $APPS/etc/ipkg/pivotce.conf
+      echo "src/gz prethemer http://www.prethemer.com/feeds/preware/themes" > $APPS/etc/ipkg/prethemer.conf.disabled
+      echo "src/gz clock-themes http://webos-clock-themer.googlecode.com/svn/trunk/WebOS%20Clock%20Theme%20Builder/feed" > $APPS/etc/ipkg/clock-themes.conf.disabled
+      echo "src/gz webosinternals http://ipkg.preware.net/feeds/webos-internals/all" > $APPS/etc/ipkg/webos-internals.conf
+      echo "src/gz webosinternals-armv7 http://ipkg.preware.net/feeds/webos-internals/armv7" >> $APPS/etc/ipkg/webos-internals.conf
+      echo "src/gz webos-patches http://ipkg.preware.net/feeds/webos-patches/3.0.5" > $APPS/etc/ipkg/webos-patches.conf
+      echo "src/gz webos-kernels http://ipkg.preware.net/feeds/webos-kernels/3.0.5" > $APPS/etc/ipkg/webos-kernels.conf
+      echo "src/gz woce http://ipkg.preware.net/feeds/woce" > $APPS/etc/ipkg/woce.conf
+      echo "src/gz modernize http://stacks.webosarchive.org/feeds/modernize/ipkgs" > $APPS/etc/ipkg/modernize.conf
+   fi
+
+   # Remove erroneously large list database cache files
+   [ ! -d $APPS/usr/lib/ipkg/lists ] || find $APPS/usr/lib/ipkg/lists -size +10240k -delete
+   VERSION=3.0.5
+
+   # Configure the webos-patches feed
+   if [ -f $APPS/etc/ipkg/webos-patches.conf ] ; then
+      echo "src/gz webos-patches http://ipkg.preware.net/feeds/webos-patches/${VERSION:-unknown}" > $APPS/etc/ipkg/webos-patches.conf
+   fi  
+   if [ -f $APPS/etc/ipkg/webos-patches.conf.disabled ] ; then
+      echo "src/gz webos-patches http://ipkg.preware.net/feeds/webos-patches/${VERSION:-unknown}" > $APPS/etc/ipkg/webos-patches.conf.disabled
+   fi  
+
+   # Configure the alpha-patches feed
+   if [ -f $APPS/etc/ipkg/alpha-patches.conf ] ; then
+      echo "src/gz alpha-patches http://ipkg.preware.net/alpha/patches/${VERSION:-unknown}" > $APPS/etc/ipkg/alpha-patches.conf
+   fi  
+   if [ -f $APPS/etc/ipkg/alpha-patches.conf.disabled ] ; then
+      echo "src/gz alpha-patches http://ipkg.preware.net/alpha/patches/${VERSION:-unknown}" > $APPS/etc/ipkg/alpha-patches.conf.disabled
+   fi  
+
+   # Configure the beta-patches feed
+   if [ -f $APPS/etc/ipkg/beta-patches.conf ] ; then
+      echo "src/gz beta-patches http://ipkg.preware.net/beta/patches/${VERSION:-unknown}" > $APPS/etc/ipkg/beta-patches.conf
+   fi  
+   if [ -f $APPS/etc/ipkg/beta-patches.conf.disabled ] ; then
+      echo "src/gz beta-patches http://ipkg.preware.net/beta/patches/${VERSION:-unknown}" > $APPS/etc/ipkg/beta-patches.conf.disabled
+   fi  
+
+   # Configure the webos-kernels feed
+   if [ -f $APPS/etc/ipkg/webos-kernels.conf ] ; then
+      echo "src/gz webos-kernels http://ipkg.preware.net/feeds/webos-kernels/${VERSION:-unknown}" > $APPS/etc/ipkg/webos-kernels.conf
+   fi  
+   if [ -f $APPS/etc/ipkg/webos-kernels.conf.disabled ] ; then
+      echo "src/gz webos-kernels http://ipkg.preware.net/feeds/webos-kernels/${VERSION:-unknown}" > $APPS/etc/ipkg/webos-kernels.conf.disabled
+   fi  
+
+   # Configure the alpha-kernels feed
+   if [ -f $APPS/etc/ipkg/alpha-kernels.conf ] ; then
+      echo "src/gz alpha-kernels http://ipkg.preware.net/alpha/kernels/${VERSION:-unknown}" > $APPS/etc/ipkg/alpha-kernels.conf
+   fi  
+   if [ -f $APPS/etc/ipkg/alpha-kernels.conf.disabled ] ; then
+      echo "src/gz alpha-kernels http://ipkg.preware.net/alpha/kernels/${VERSION:-unknown}" > $APPS/etc/ipkg/alpha-kernels.conf.disabled
+   fi  
+
+   # Configure the beta-kernels feed
+   if [ -f $APPS/etc/ipkg/beta-kernels.conf ] ; then
+      echo "src/gz beta-kernels http://ipkg.preware.net/beta/kernels/${VERSION:-unknown}" > $APPS/etc/ipkg/beta-kernels.conf
+   fi  
+   if [ -f $APPS/etc/ipkg/beta-kernels.conf.disabled ] ; then
+      echo "src/gz beta-kernels http://ipkg.preware.net/beta/kernels/${VERSION:-unknown}" > $APPS/etc/ipkg/beta-kernels.conf.disabled
+   fi  
+
+end script
+
+exec /usr/sbin/org.webosinternals.ipkgservice
+
+respawn

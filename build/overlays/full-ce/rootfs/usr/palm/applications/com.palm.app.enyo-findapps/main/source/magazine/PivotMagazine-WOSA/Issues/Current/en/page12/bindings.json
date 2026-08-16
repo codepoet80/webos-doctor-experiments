@@ -1,0 +1,8 @@
+{
+	"portraitBgImage": "page12/images/portrait-bg.jpg",
+	"landscapeBgImage": "page12/images/landscape-bg.jpg",
+
+    "portraitHeaderTemplate": "common/layouts/portraitHeader.lo.js",
+    "landscapeHeaderTemplate": "common/layouts/landscapeHeader.lo.js",
+    "headerTemplateBindings": "common/layouts/header.json"
+}

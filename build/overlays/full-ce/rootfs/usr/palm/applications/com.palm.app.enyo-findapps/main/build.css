@@ -1,0 +1,1416 @@
+/* lib/stars/Stars.css */
+
+.enyo-stars {
+	position: relative;
+	width: 90px;
+	height: 16px;
+	background-image: url(lib/stars/images/stars_18_16.png);
+}
+
+.enyo-stars-red {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 90px;
+	height: 16px;
+	background: url(lib/stars/images/stars_18_16.png) 0px -16px;
+}	
+
+
+/* css/AverageRating.css */
+
+.small-bubble {
+  background-size: 100%;
+  width:80%;
+}
+
+.big-bubble {
+  background-size: 100%;
+}
+
+.big-bubble > .value {
+  font-size: 1.7em;
+  color: white;
+  padding: 20px 0 0 0;
+  text-align:center;
+}
+
+.small-bubble > .value {
+  font-size: 1.5em;
+  color: white;
+  padding: 29px 0 0 0;
+  text-align:center;
+}
+
+.small-negative-rating {
+  background: url(images/small_red_bubble.png) left bottom no-repeat;
+}
+.big-negative-rating {
+  background: url(images/big_red_bubble.png) left bottom no-repeat;
+}
+.small-positive-rating {
+  background: url(images/small_green_bubble.png) right bottom no-repeat;
+}
+.big-positive-rating {
+  background: url(images/big_green_bubble.png) right bottom no-repeat;
+}
+
+
+/* css/Purchase.css */
+
+html {
+	width: 100%;
+	position: relative;
+}
+
+body,html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+body,input,button {
+	font-family: Prelude, "Prelude Medium", "Segoe UI", Arial, Helvetica,
+		Sans-Serif;
+	font-size: 20px;
+	cursor: default;
+}
+
+body {
+	position: relative;
+}
+
+body,.background {
+	background-color: #e4e4e2;
+}
+
+/* css/AppCatalog.css */
+
+/*
+An app level css file.  View specific css files are located
+within their individual scene folders.
+*/
+
+html {
+	width: 100%;
+	position: relative;
+}
+
+body, html {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+body, input, button {
+	font-family: "Prelude Medium", "Segoe UI," Arial, Verdana, Helvetica;
+	font-size: 20px;
+}
+
+body {
+	background-color: #EAEAE9;
+}
+
+.header-bar-image {
+    padding: 0 10px 0 5px;
+    display: inline;
+}
+
+.enyo-disabled {
+	-webkit-border-image: url(images/menu-toolbutton.png) 200 1 750 23;
+}
+
+.enyo-button {
+	
+}
+
+.splash-background {
+	background: url(images/splash/background.png);
+}
+
+.box-center {
+	width:500px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.header-center {
+	
+}
+
+.radiohead .enyo-radiobutton {
+	width: auto !important;
+	min-width: 110px;
+}
+
+.showIcon .enyo-menuitem {
+  padding-left: 10px;
+}
+
+.showIcon .enyo-menucheckitem-caption {
+  margin-right: 10px;
+}
+
+.showIcon img.enyo-menuitem-icon {
+  display: none;
+}
+
+.appFilterBrowse {
+  margin-left: 480px;
+}
+
+.appFilterSearch {
+  margin-right: 14px;
+}
+
+.button-group {
+	padding-top: 6px;
+}
+
+/* styles for in-app purchase */
+@media all and (max-width: 320px) {
+      .box-center {
+			width: 320px;
+		}
+		.box-center .description {
+			margin: 0 12px !important;
+		}
+		.box-center .enyo-button {
+			margin-left: 14px !important;
+			margin-right: 14px !important;
+		}
+		.box-center .enyo-group {
+			margin-left: 12px !important;
+			margin-right: 12px !important;
+		}
+		
+		.box-center .button-group {
+			padding-bottom: 16px !important;
+		}
+}
+
+.magazine-error-page {
+    color: gray;
+	font-weight:bold;
+	text-align: center;
+	margin-top:330px;
+}
+
+
+/* css/ProgressPill.css */
+
+.enyo-progress-pill {
+	font-size:16px;
+	height: 34px;
+	border-width: 0 10px;
+	-webkit-border-image: url(images/pill/buy-and-progress-bar-sprite.png) 69 10 1 10 ;
+	-webkit-box-sizing: border-box;
+	color: white;
+}
+
+.enyo-progress-pill-inner {
+	height: 34px;
+	margin: 0 -10px;
+	border-width: 0 10px;
+	position: absolute;
+	-webkit-border-image: url(images/pill/progress-pill-fill.png) 1 10 1 10;
+}
+
+.enyo-progress-pill-client {
+	margin: 0 0px;
+	cursor: pointer;
+	text-align: center;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+.item-box .enyo-progress-pill {
+	font-size:14px;
+	min-width:64px;
+	max-height:28px;
+	line-height: 28px;
+	border-width: 0px 10px;
+	-webkit-border-image: url(images/pill/buy-and-progress-bar-sprite-small.png) 54 10 1 10;
+	-webkit-box-sizing: border-box;
+	color: white;
+}
+
+.item-box .enyo-progress-pill-inner {
+	height: 28px;
+	margin: 0 -12px;
+	border-width: 0 12px;
+	position: absolute;
+	-webkit-border-image: url(images/pill/progress-pill-fill-small.png) 0 7 1 7;
+}
+
+.item-box .enyo-progress-pill-client {
+	margin: 0 0px;
+}
+
+.item-box {
+	
+}
+.enyo-progress-button {
+	-webkit-box-sizing: border-box;
+    z-index: 0;
+}
+.enyo-progress-button.affirmative {
+	-webkit-border-image: url(images/progress-button-green.png) 5 5;
+}
+.button-down .enyo-progress-button.affirmative {
+     -webkit-border-image: url(images/progress-button-green-down.png) 5 5;
+}
+.progress-showing .enyo-progress-button.affirmative {
+     -webkit-border-image: url(images/progress-button-inset.png) 5 5;
+}
+.acc-progress-icon {
+	position:relative;
+	width:32px;
+	height:32px;
+}
+
+.enyo-progress-button-client {
+	margin: -3px 5px 0px;
+}
+
+/* css/Details.css */
+
+.white-background {
+	background-color: #fff;
+}
+
+/*.back-navigation-bar {
+	height: 37px;
+	background: url(images/bottom-chrome.png) repeat;
+	padding: 8px 5px 5px 15px;
+}*/
+
+.enyo-button.back-button {
+	/*color: #fff;*/
+	font-size:16px;
+}
+
+.enyo-header {
+	padding: 0;
+}
+
+.acc-header-listselector .enyo-menucheckitem-caption{
+	margin-left: 15px;
+	padding-right:0px; /* Reset */
+}
+.acc-header-listselector .enyo-menuitem-icon {
+	margin-right: -15px;
+}
+
+.enyo-button {
+	font-size:16px;
+}
+
+.enyo-progress-button {
+	font-size:16px;
+	/*	min-width:80px;*/
+}
+
+.enyo-progress-button.wide {
+	/*width:163px;*/
+}
+
+.enyo-progress-button .enyo-progress-button-client {
+	/*align:center;*/
+}
+
+.enyo-popup {
+
+}
+
+.enyo-popup.screenshot-thumbnail-popup {
+	-webkit-border-image: none;
+	border-width:0;
+	background-color: rgba(0,0,0,.6);
+}
+
+.details-header {
+	background: #fff url(images/top-chrome-details.png) bottom left repeat-x !important;
+	font-size:16px;
+	height: 92px !important;
+}
+
+.details-header-image {
+	width: 65px;
+	height:65px;
+	margin-right: 16px;
+	-webkit-border-radius: 8px;
+	border: 1px solid #adadad;
+}
+
+.details-header-title {
+    font-size:20px;
+    padding-bottom:2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.details-header-body {
+    font-size:15px;
+	color:#40454c;
+}
+
+.details-header-reviews {
+    font-size:14px;
+	color:#40454c;
+	margin-left:4px;
+}
+
+.details-header-body a {
+	text-decoration:none;
+	color:#40454c;
+}
+
+.details-header-price {
+    font-size:16px;
+	text-align:right;
+}
+
+.video-preview {
+	height:200px;
+	width:300px;
+	display:none;
+
+}
+
+.divider-text {
+    font-size:16px;
+	color:blue;
+	padding-top:-100px;
+}
+
+.linkButtonDiv {
+	width:200px;
+	margin: 0 auto;
+}
+
+.linkButtonDiv .linkButton, .linkButtonDiv .linkButton .enyo-button {
+	margin-bottom:10px;
+	color: #545454;
+	font-size:16px;
+}
+
+.rating-count-text {
+    font-size:24px;
+	color:white;
+}
+
+.rating-positive-text {
+    font-size:8px;
+	color:green;
+}
+
+.rating-negative-text {
+    font-size:8px;
+	color:red;
+}
+
+.rating-count-image {
+    padding-left:15px;
+    padding-top:15px;
+
+}
+
+.rating-bar-left {
+    padding-left:2px;
+    padding-top:2px;
+	height: 10px;
+	background-color: blue;
+	
+}
+
+.rating-bar-right {
+    padding-right:2px;
+    padding-top:2px;
+	height: 10px;
+	background-color: yellow;
+	
+}
+
+.application-info {
+    font-size:14px;
+	margin: 2px;
+	font-weight:medium;
+	color:#666666;	
+	white-space:pre-wrap;
+}
+
+.application-info-label {
+	font-size:14px;
+    color:#2e2e2e;
+	font-weight:bold;
+}
+
+.report-list-button {
+	margin-top:10px;
+}
+.report-header-image {
+    margin-right: 10px
+}
+.report-button-box {
+	margin-top:5px;
+}
+.averageRating { 
+	width: 230px;
+	margin: 0 auto;
+}
+
+.app-details-rate-app-header {
+	font-size:14px;
+	line-height:30px;
+	height: 30px;
+	margin:0 14px 0 14px;
+}
+
+.appSummary {
+	margin: 15px 20px;
+	padding:16px 2px 10px 2px;
+	border-top: 1px solid #cdcdcd;
+	border-bottom: 1px solid #cdcdcd;
+}
+
+.appSummary .application-info {
+	font-size: 14px;
+	color: #666;
+	margin-bottom: 5px;
+}
+
+.moreButton {
+	text-align:right;
+	font-size:14px;
+	font-weight: bold;
+	padding-right: 10px;
+	background-color: transparent !important;/* override framework */
+}
+
+.review-buttons {
+	font-size:14px;
+	margin-bottom:15px;
+	margin-left: 3px;
+	padding-bottom:15px;
+	border-bottom: 1px solid #d9d9d9;
+}
+
+.view-rating-label {
+	float: left;
+	padding: 0 15px;
+	height: 30px;
+	line-height: 40px;	
+}
+
+.review-buttons .enyo-radiobutton {
+	font-size:14px;
+}
+
+.review-sort-buttons {
+	width: 280px;
+}
+
+.enyo-button-light.helpful-button {
+	min-width:65px;
+	width:65px;
+	margin:0 5px;
+}
+
+.enyo-button-light.twin-button {
+	min-width:0px;
+	/*height:0px;*/
+	min-height:18px;
+	margin-right:10px;
+}
+
+.enyo-button.enyo-button-light.twin-button .twin-inner {
+	width:31px;
+	height:30px;
+	margin:-6px -10px;
+	background: url(images/toggle-saved.png) top left no-repeat;
+}
+
+.enyo-button.enyo-button-light.twin-button.enyo-button-depressed .twin-inner {
+	background: url(images/toggle-saved.png) bottom left no-repeat;
+}
+
+.enyo-button-light.single-button {
+	min-width:163px;
+	width:163px;
+}
+
+.appDescriptionHeader { 
+	padding: 15px;
+	font-size: 22px;
+}
+
+.app-description-review-header {
+	padding: 15px 16px;
+	font-size: 22px;
+	color:black;
+}
+
+.appDescriptionText {
+	margin-top: -10px;
+	color: #4b4b4b;
+	font-size: 14px; 
+	padding: 0 30px 0 15px;
+	margin-right:40px;
+	line-height: 22px;
+	white-space:pre-wrap;
+}
+
+.MoreLessLink {
+	font-size:14px;
+	background-color: transparent !important; /* override framework */
+	text-align: right;
+	padding-right:60px;
+	margin-top:10px;
+	font-weight:bold;
+}
+
+.addReview {
+	/*padding: 10px 28px;
+		margin: 15px 0;*/
+	-webkit-border-image: none;
+	border-radius:0;
+	-webkit-border-radius:0;
+	margin: 9px 15px;
+}
+
+.add-review-comment {
+	padding: 14px 10px;
+	margin: 4px -3px;
+	background-color: #f2f2f2;
+	border-top: 1px solid #d9d9d9;
+	border-bottom: 1px solid #d9d9d9;
+}
+
+.review-box .enyo-tabbutton. .review-count-on-button {
+	color: rgba(0,0,0, .5);
+	padding:20px 0;
+	text-align:center;
+}
+	.review-box .enyo-tabbutton.enyo-button-down .review-count-on-button,
+	.review-box .enyo-tabbutton.enyo-button-depressed .review-count-on-button {
+	color: rgba(255,255,255, .5);
+}
+
+.review-list-rows {
+	font-size: 14px;
+	color:#40454d; 
+	padding: 10px 10px 10px 3px;
+}
+
+.review-list-rows {
+	padding: 8px 19px 0 19px;
+}
+
+.review-list-rows .enyo-row {
+	border-bottom: 1px solid #d9d9d9;
+	padding-bottom:9px;	
+}
+
+.review-row-container {
+	padding: 0 15px;
+}
+
+.review-item-date {
+	padding-right: 15px;
+}
+
+.review-list-comment {
+	padding: 10px 0;
+}
+
+.review-list-author {
+	font-weight: bold;
+}
+
+.review-usefull-count {
+	padding: 4px 10px 4px 4px;
+	margin-bottom: 10px;
+	size: 12px; 
+	color: #999999;
+	font-style: italic;
+	height: 30px;
+	line-height: 35px;
+}
+
+.my-review-items {
+	padding: 15px;
+}
+
+.my-review-stars {
+	padding-right: 15px;
+}
+
+.my-review.enyo-row {
+	border-bottom:1px solid #D9D9D9;
+	margin-left: 3px;
+	margin-bottom:15px;
+}
+
+.my-review-comment-text {
+	font-color: ##40454D;
+	font-size: 14px;
+	padding: 0px 15px 15px 15px;
+}
+
+.my-review-date {
+	font-size: 14px;
+	text-align:right;
+	color: #40454D;
+	padding: 15px 15px 0 0;
+}
+
+.my-review-update-comment-button {
+	width: 160px;
+	margin: 0 0 15px 15px;
+}
+
+/*** THUMBNAIL SCROLLER *******/
+.details-body-thumbnail-img {
+	padding: 15px;
+	margin: 15px;
+	height: 260px;
+}
+
+
+.details-body-thumbnail-img {
+/*    width: 300px;
+	height: 200px;
+	margin: 2px;
+*/
+}
+
+.details-body-video-img {
+ 	padding: 15px;
+	margin: 15px;
+	height: 260px;
+	width: 346px;
+}
+
+
+.thumbnailScrollerClass {
+	height: 320px;
+	/*background: url(images/screenshot-background.png) repeat;*/
+	/*background: #4F4F4F url(images/menu/texture-background.png) repeat;*/
+}
+
+.thumbnail-scroller-background {
+	background: #4F4F4F url(images/menu/texture-background.png) repeat;
+}
+
+.details-body-video-img {
+	position:relative;
+}
+
+.item-buttons {
+	width:180px;
+}
+
+.saved-items .item-buttons {
+	width:180px;
+}
+
+.video-overlay {
+	position: absolute;
+	top: 29px;
+	border:none;
+	margin-left: 29px;
+	height: 234px;
+	width: 320px;
+	border-width:5px;
+	-webkit-border-image: url(images/AppCat_VideoCapture_bg.png) 5;
+}
+
+.video-overlay-play {
+	position:absolute;
+	width:54px;
+	height:54px;
+	left:50%;
+	top:50%;
+	margin: -27px 0 0 -27px;
+}
+
+.review-box {
+	width:100%;
+	background-color:#f2f2f2;
+}
+
+.relief-box {
+	-webkit-border-image: url(images/menu/scrollfade_box.png) 10 repeat;
+	border-width:10px;
+}
+
+.relief-box.light {
+	-webkit-border-image: url(images/menu/scrollfade_box_light.png) 10 repeat;
+}
+
+.relief-box-inner {
+	margin:-10px;
+}
+.review-count-on-button {
+	color: gray;
+	white-space:pre-wrap;
+}
+
+
+/* css/overrides.css */
+
+.enyo-button-icon {
+	/*display: inline-block;
+		vertical-align: baseline;
+		margin: 10px -16px;
+		width: 32px;
+		height: 32px;*/
+}
+
+.enyo-button-down .enyo-button-icon {
+	/*background-position: 0 -32px;*/
+}
+
+
+
+/*.enyo-radiobutton.enyo-middle {
+	padding: 0px 13px 0px 14px;
+	border-width: 0px 2px 0px 1px;
+	-webkit-border-image: url(images/radiobutton.png) 150 2 400 1;
+}
+
+.enyo-radiobutton.enyo-single {
+	padding: 0px 13px 0px 14px;
+	border-width: 0px 15px 0px 15px;
+	-webkit-border-image: url(images/radiobutton.png) 450 15 100 15;
+}
+
+.enyo-radiobutton.enyo-first {
+	padding: 0px 13px 0px 0px;
+	border-width: 0px 2px 0px 15px;
+	-webkit-border-image: url(images/radiobutton.png) 0 2 550 15;
+}
+
+.enyo-radiobutton.enyo-last {
+	padding: 0px 0px 0px 13px;
+	border-width: 0px 15px 0px 1px;
+	-webkit-border-image: url(images/radiobutton.png) 300 15 250 1;
+}
+
+.enyo-radiobutton.enyo-button-disabled {
+	color: Silver;
+}
+
+.enyo-button-hide {
+display: none;
+}
+.enyo-radiobutton.enyo-button-depressed,
+.enyo-radiobutton.enyo-button-down {
+	color: white;
+}*/
+
+/* down */
+
+/*.enyo-radiobutton.enyo-middle.enyo-button-depressed,
+.enyo-radiobutton.enyo-middle.enyo-button-down {
+	-webkit-border-image: url(images/radiobutton.png) 200 2 350 1;
+}
+
+.enyo-radiobutton.enyo-single.enyo-button-depressed,
+.enyo-radiobutton.enyo-single.enyo-button-down {
+	-webkit-border-image: url(images/radiobutton.png) 500 15 50 15;
+}
+
+.enyo-radiobutton.enyo-first.enyo-button-depressed,
+.enyo-radiobutton.enyo-first.enyo-button-down {
+	-webkit-border-image: url(images/radiobutton.png) 50 2 500 15;
+}
+
+.enyo-radiobutton.enyo-last.enyo-button-depressed,
+.enyo-radiobutton.enyo-last.enyo-button-down {
+	-webkit-border-image: url(images/radiobutton.png) 350 15 200 1;
+}*/
+
+/* disabled */
+
+/*.enyo-radiobutton.enyo-middle.enyo-button-disabled {
+	-webkit-border-image: url(images/radiobutton.png) 250 2 300 1;
+}
+
+.enyo-radiobutton.enyo-single.enyo-button-disabled {
+	-webkit-border-image: url(images/radiobutton.png) 550 15 0 15;
+}
+
+.enyo-radiobutton.enyo-first.enyo-button-disabled {
+	-webkit-border-image: url(images/radiobutton.png) 100 2 450 15;
+}
+
+.enyo-radiobutton.enyo-last.enyo-button-disabled {
+	-webkit-border-image: url(images/radiobutton.png) 400 15 150 1;
+}*/
+
+/*---
+	The menutoolbutton
+*/
+
+/*.enyo-menu-toolbutton {
+	white-space: nowrap;
+	color: #fff;
+	text-align: center;
+	cursor: default;
+	height: 50px;
+	min-width: 32px;
+	line-height: 50px;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.enyo-menu-toolbutton.enyo-first {
+	padding: 0px 13px 0px 0px;
+	border-width: 0px 1px 0px 23px;
+	-webkit-border-image: url(images/menu-toolbutton.png) 0 1 950 23;
+}
+
+.enyo-menu-toolbutton.enyo-middle {
+	padding: 0px 14px 0px 14px;
+	border-width: 0px 1px 0px 1px;
+	-webkit-border-image: url(images/menu-toolbutton.png) 250 1 700 1;
+}
+
+.enyo-menu-toolbutton.enyo-single {
+	padding: 0px 14px 0px 14px;
+	border-width: 0px 23px 0px 23px;
+	-webkit-border-image: url(images/menu-toolbutton.png) 750 23 200 23;
+}
+
+.enyo-menu-toolbutton.enyo-last {
+	padding: 0px 0px 0px 13px;
+	border-width: 0px 23px 0px 1px;
+	-webkit-border-image: url(images/menu-toolbutton.png) 500 23 450 1;
+}*/
+
+/* down */
+/*.enyo-menu-toolbutton.enyo-first.enyo-button-down {
+	-webkit-border-image: url(images/menu-toolbutton.png) 50 1 900 23;
+}
+
+.enyo-menu-toolbutton.enyo-middle.enyo-button-down {
+	-webkit-border-image: url(images/menu-toolbutton.png) 300 1 650 1;
+}
+
+.enyo-menu-toolbutton.enyo-single.enyo-button-down {
+	-webkit-border-image: url(images/menu-toolbutton.png) 800 23 150 23;
+}
+
+.enyo-menu-toolbutton.enyo-last.enyo-button-down {
+	-webkit-border-image: url(images/menu-toolbutton.png) 550 23 400 1;
+}*/
+
+/* depressed */
+/*.enyo-menu-toolbutton.enyo-first.enyo-button-depressed {
+	-webkit-border-image: url(images/menu-toolbutton.png) 100 1 850 23;
+}
+
+.enyo-menu-toolbutton.enyo-middle.enyo-button-depressed {
+	-webkit-border-image: url(images/menu-toolbutton.png) 350 1 600 1;
+}
+
+.enyo-menu-toolbutton.enyo-single.enyo-button-depressed {
+	-webkit-border-image: url(images/menu-toolbutton.png) 850 23 100 23;
+}
+
+.enyo-menu-toolbutton.enyo-last.enyo-button-depressed {
+	-webkit-border-image: url(images/menu-toolbutton.png) 600 23 350 1;
+}*/
+
+/* depressed + down */
+/*.enyo-menu-toolbutton.enyo-first.enyo-button-depressed.enyo-button-down {
+	-webkit-border-image: url(images/menu-toolbutton.png) 150 1 800 23;
+}
+
+.enyo-menu-toolbutton.enyo-middle.enyo-button-depressed.enyo-button-down {
+	-webkit-border-image: url(images/menu-toolbutton.png) 400 1 550 1;
+}
+
+.enyo-menu-toolbutton.enyo-single.enyo-button-depressed.enyo-button-down {
+	-webkit-border-image: url(images/menu-toolbutton.png) 900 23 50 23;
+}
+
+.enyo-menu-toolbutton.enyo-last.enyo-button-depressed.enyo-button-down {
+	-webkit-border-image: url(images/menu-toolbutton.png) 650 23 300 1;
+}
+*/
+/* disabled */
+/*.enyo-menu-toolbutton.enyo-first.enyo-button-disabled {
+	-webkit-border-image: url(images/menu-toolbutton.png) 200 1 750 23;
+}
+
+.enyo-menu-toolbutton.enyo-middle.enyo-button-disabled {
+	-webkit-border-image: url(images/menu-toolbutton.png) 450 1 500 1;
+}
+
+.enyo-menu-toolbutton.enyo-single.enyo-button-disabled {
+	-webkit-border-image: url(images/menu-toolbutton.png) 950 23 0 23;
+}
+
+.enyo-menu-toolbutton.enyo-last.enyo-button-disabled {
+	-webkit-border-image: url(images/menu-toolbutton.png) 700 23 250 1;
+}*/
+
+
+/* css/custom.css */
+
+.search-info {
+	background-color:#e7e7e7;
+	border-bottom:1px solid #9e9e9e;
+	line-height:50px;
+	padding:0 16px 0 16px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	color:#666666;
+}
+
+.search-info .search-string {
+	color:#000000;
+	font-weight:bold;
+}
+
+.search-categories {
+	border-right:1px solid #1c1c1c;
+	background:transparent url(images/menu/category-row-stripes-vertical.png);
+}
+
+.search-categories .enyo-item {
+	height:37px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	color:#333333;
+}
+
+.search-categories .enyo-item.enyo-held {
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#555), to(#888));
+}
+
+.search-category-name {
+	white-space: nowrap;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	height:32px;
+	line-height:32px;
+	margin-left:8px;
+	margin-right:8px;
+}
+.search-category-count {
+	padding-right:5px;
+	color: #828282;
+}
+.search-header-chrome {
+	background: #FFFFFF url(images/search-chrome.png) bottom left repeat-x;
+}
+
+/*average rating*/
+
+.average-rating {
+	font-size:12px;
+	color:#666666;
+}
+
+.grey-progress {
+	margin:2px 0 0 12px;
+	max-height:9px;
+}
+
+.enyo-progress-bar.grey-progress {
+	-webkit-border-image: none;
+	background:transparent url(images/progress-bar-empty.png) repeat-x;
+}
+
+.grey-progress > .enyo-progress-bar-inner { 
+	margin:0 0 0 0px;
+	-webkit-border-image: none;
+	background:transparent url(images/progress-bar-filler.png) repeat-x;
+}
+
+.category-selector {
+	margin:8px 0 0 8px;
+}
+
+.category-selector .enyo-popupmenuitem-icon {
+	margin-top: -8px;
+}
+
+.category-list {
+	/*color:#e3e3e3;*/
+	font-size:18px;
+	/*border-right:1px solid #1c1c1c;*/
+}
+
+.category-list .enyo-item {
+	/*border-bottom: 1px solid rgb(0,0,0,0.9);*/
+	border-top: 1px solid #f2f2f2;
+	border-bottom: 1px solid #cccccc;
+}
+
+.category-list {
+	background-color:#e5e5e5;
+	/*background:transparent url(images/menu/category-row-stripes-vertical.png);*/
+	/*background:transparent url(images/menu/list-background.png);*/
+}
+
+.category-list .enyo-item {
+	padding:7px;
+}
+
+.category-list .enyo-item.enyo-held {
+	/*background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#555), to(#888));*/
+	/*background:transparent url(images/menu/list-highlight.png);*/
+}
+
+.category-selector > .enyo-listselector-arrow {
+	background: transparent url(images/menu/list-arrow-down.png) no-repeat 100% 50%;
+	width:20px;
+}
+
+.category-selector .enyo-popupmenucheckitem-caption {
+	font-size:18px;
+}
+
+.page:nth-child(even) #appCatalogLauncher_findApps_BrowserView_browseCategories_apps_app_list_list_client:nth-child(odd) {
+	background-color:#e9e9e9;
+}
+
+.page:nth-child(odd) #appCatalogLauncher_findApps_BrowserView_browseCategories_apps_app_list_list_client:nth-child(even) {
+	background-color:#e9e9e9;
+}
+
+.page:nth-child(even) #appCatalogLauncher_findApps_SavedView_saved_saved_list_list_client:nth-child(odd) {
+	background-color:#e9e9e9;
+}
+
+.page:nth-child(odd) #appCatalogLauncher_findApps_SavedView_saved_saved_list_list_client:nth-child(even) {
+	background-color:#e9e9e9;
+}
+
+#appCatalogLauncher_findApps_SearchView_search_apps_result_list_client_client:nth-child(even) {
+	background-color:#e9e9e9;
+}
+
+.app-list-even {
+}
+
+.app-list {
+	background-color:#FFF;
+}
+
+.green-row {
+	z-index:100;
+	position:absolute;
+	right:0px;
+	left:240px;
+	height:62px;
+	background:transparent url(images/menu/category-header.png) repeat-x;
+}
+
+.green-row .enyo-listselector-arrow {
+	position:absolute;
+	right:14px;
+	top:14px;
+}
+
+.green-selector {
+	margin-top:-10px;
+}
+
+.radiohead {
+	min-height:50px;
+	background-image: url(images/menu/top-chrome.png);
+   	background-repeat: repeat-x;
+	background-color: #edeceb;
+	border-bottom:1px solid #9e9e9e;
+}
+
+.icon-with-text > .enyo-button-icon {
+	margin: 8px 8px;
+}
+
+.icon-with-text > div:not(.enyo-button-icon) {
+	text-transform: none;
+	display: inline-block;
+	vertical-align: top;
+	line-height:38px;
+}
+
+.icon-with-text > .enyo-button-icon {
+	margin:5px  0;
+}
+
+.navigation-bar .enyo-tabbutton {
+	height:54px;
+	padding: 7px 0px 8px;
+}
+.navigation-bar {
+	border-top:1px solid #B2B2B2;
+}
+
+.enyo-tabbutton.icon-with-text.enyo-button-down > .enyo-button-icon {
+	background-position:0px -32px;
+}
+
+.enyo-tabbutton.icon-with-text.enyo-button-depressed > .enyo-button-icon {
+	background-position:0px -32px;
+}
+
+/*The new radio button BG*/
+.enyo-radiogroup {
+	background-color:transparent;
+	/*margin:0px;*/
+}
+
+.enyo-radiobutton.icon-with-text {
+	margin: 0px 0px;
+	height:100%;
+}
+
+.enyo-radiobutton.icon-with-text.enyo-first {
+	padding: 0px 13px 0px 14px;
+	border-width: 0px 3px 0px 1px;
+	-webkit-border-image: url(images/menu/radio-group-sprite.png) 0 3 250 1;
+}
+
+.enyo-radiobutton.icon-with-text.enyo-middle {
+	padding: 0px 13px 0px 14px;
+	border-width: 0px 2px 0px 1px;
+	-webkit-border-image: url(images/menu/radio-group-sprite.png) 0 3 250 1;
+}
+
+.enyo-radiobutton.icon-with-text.enyo-last {
+	padding: 0px 13px 0px 14px;
+	border-width: 0px 2px 0px 1px;
+	-webkit-border-image: url(images/menu/radio-group-sprite.png) 100 1 150 1;
+}
+
+.enyo-radiobutton.icon-with-text.enyo-first.enyo-button-down {
+	-webkit-border-image: url(images/menu/radio-group-sprite.png) 50 3 200 1;
+}
+
+.enyo-radiobutton.icon-with-text.enyo-middle.enyo-button-down {
+	-webkit-border-image: url(images/menu/radio-group-sprite.png) 50 3 200 1;
+}
+
+.enyo-radiobutton.icon-with-text.enyo-last.enyo-button-down {
+	-webkit-border-image: url(images/menu/radio-group-sprite.png) 150 1 100 1;
+}
+
+.enyo-radiobutton.icon-with-text.enyo-first.enyo-button-depressed  {
+	-webkit-border-image: url(images/menu/radio-group-sprite.png) 50 3 200 1;
+}
+
+.enyo-radiobutton.icon-with-text.enyo-middle.enyo-button-depressed  {
+	-webkit-border-image: url(images/menu/radio-group-sprite.png) 50 3 200 1;
+}
+
+.enyo-radiobutton.icon-with-text.enyo-last.enyo-button-depressed  {
+	-webkit-border-image: url(images/menu/radio-group-sprite.png) 150 1 100 1;
+}
+
+.enyo-button-down > .enyo-button-icon{
+	background-position:top left;
+}
+
+.enyo-button.mini-button {
+	font-size:14px;
+	min-width:64px;
+	max-height:28px;
+	line-height: 28px;
+	border-width: 0px 10px;
+	-webkit-border-image: url(images/menu/save-button-small.png) 0 10 30 10;
+	margin-right:8px;
+}
+
+.enyo-button.mini-button.enyo-button-depressed {
+	-webkit-border-image: url(images/menu/save-button-small.png) 28 10 0 10 ;
+}
+
+.enyo-button.mini-button.enyo-button-down {
+	-webkit-border-image: url(images/menu/save-button-small.png) 28 10 0 10 ;
+}
+
+.enyo-button.mini-button.price {
+	-webkit-border-image: url(images/menu/buy-and-progress-bar-sprite-small.png) 0 10 55 10;
+}
+
+.enyo-button.mini-button.enyo-button-depressed.price {
+	-webkit-border-image: url(images/menu/buy-and-progress-bar-sprite-small.png) 27 10 28 10 ;
+}
+
+.enyo-button.mini-button.enyo-button-down.price {
+	-webkit-border-image: url(images/menu/buy-and-progress-bar-sprite-small.png) 27 10 28 10 ;
+}
+
+.icon.visa {
+	background: url(images/payment-visa.png) center center no-repeat;
+	width: 64px;
+	height: 50px;
+}
+
+.icon.mc {
+	background: url(images/payment-mastercard.png) center center no-repeat;
+	width: 64px;
+	height: 50px;	
+}
+
+/*.icon-with-text > .enyo-radiobutton > div.enyo-button-icon {
+	display: inline-block;
+	vertical-align: baseline;
+	margin: 10px -16px;
+	width: 32px;
+	height: 32px;
+}*/
+.upper-shadow {
+	width:100%;
+	height:9px;
+	margin-bottom:-9px;
+	background:transparent url(images/menu/scrollfade-top.png) repeat-x;
+}
+
+.apps-shadow {
+	z-index:100;
+	position:absolute;
+	right:0px;
+	left:240px;
+	height:9px;
+	margin-bottom:-9px;
+	background: url(images/menu/scrollfade-top.png) repeat-x;
+	/*background: url(images/payment-visa.png) repeat-x;*/
+}
+
+.lower-shadow {
+	width:100%;
+	height:5px;
+	margin-top:-5px;
+	background:transparent url(images/menu/scrollfade-bottom.png) repeat-x;
+}
+
+.shadow-right {
+	height:100%;
+	width:9px;
+	margin-left:-9px;
+	background: transparent url(images/menu/scrollfade-right.png) repeat-y;
+}
+
+.shadow-left {
+	height:100%;
+	width:5px;
+	margin-right:-5px;
+	background: transparent url(images/menu/scrollfade-left.png) repeat-y;
+}
+
+.top-shadow {
+	z-index:100;
+	position:absolute;
+	width:240px;
+	left:0px;
+	background:transparent url(images/menu/scrollfade-top.png) repeat-x;
+	height:9px;
+	margin-bottom:-9px;
+}
+
+.bottom-shadow {
+	z-index:100;
+	position:absolute;
+	right:0px;
+	left:0px;
+	height:9px;
+	background: transparent url(images/menu/scrollfade-bottom.png) repeat-x;
+}
+
+.right-shadow {
+	z-index:100;
+	position:absolute;
+	top:0px;
+	bottom:0px;
+	left:231px;
+	width:9px;
+	background: transparent url(images/menu/list-shadow-right.png) repeat-y;
+}
+
+.back-footer {
+	border-top: 1px solid #9E9E9E;
+}
+
+.back-footer .enyo-header-inner {
+	padding: 0px 8px;
+}
+
+
+/* css/AcceptTermsConditions.css */
+
+body { /* this should be the ID of the Terms page, which is not set */
+	background: #D7D7D7;
+}
+
+.terms {
+	padding:0;
+	line-height:22px;
+	font-size:14px;
+	color: #555;
+}
+
+.terms-header {
+	font-size:24px;
+	margin: 50px 0px 25px;
+}
+
+.terms-footer {
+}
+
+.terms-text-subhead {
+	font-weight:bold;
+}
+
+.terms-text {
+	margin-bottom:10px;
+}
+
+.terms-box {
+	width:694px;
+}
+
+.terms-footer {
+	margin-top:30px;
+}
+
+.box {
+	-webkit-border-image: url(images/bg_box.png) 12 repeat;
+	margin:0 auto;
+	padding:10px 10px 5px;
+	border-width:12px;
+}
+
+.box .header {
+	padding:10px 10px 0;
+	margin:0 -10px;
+}
+
+.box .footer {
+	border-top:1px solid #d8d8d8;
+	padding:10px 10px 0;
+	margin:0 -10px;
+}
+.country-box {
+	max-height: 260px;
+	width: 500px;
+	padding: 0;
+	margin-bottom:15px;
+}
+.country-item {
+	font-size: 20px;
+	padding: 5px 0;
+	text-align:center;
+}
+.box.country-box .enyo-virtual-scroller{
+	
+}

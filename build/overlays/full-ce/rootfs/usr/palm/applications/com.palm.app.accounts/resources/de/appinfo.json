@@ -1,0 +1,29 @@
+{
+	"icon": "../../icon.png",
+	"id": "com.palm.app.accounts",
+	"main": "../../index.html",
+	"title": "Konten",
+	"type": "web",
+	"uiRevision": 2,
+	"vendor": "HP",
+	"version": "3.1.0",
+	"trustLevel": "trusted",
+	"requiredPermissions": [
+		"accountsservice.management",
+		"accountsservice.operation",
+		"activity.operation",
+		"application.operation",
+		"database.operation",
+		"imaccountvalidator.operation",
+		"keymanager-service.operation",
+		"mojomail-imap.operation",
+		"mojomail-pop.operation",
+		"mojomail-smtp.operation",
+		"networkconnection.query",
+		"networkconnection.management",
+		"settings.read",
+		"tempdatabase.operation",
+		"wifi.query",
+		"wifi.management"
+	]
+}

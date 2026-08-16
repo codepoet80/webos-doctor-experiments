@@ -1,0 +1,366 @@
+.spaced {
+	margin: 4px;
+}
+
+.maps {
+	position: relative;
+}
+
+.no-wifi {
+	background: url(../images/no-wifi.png) center center no-repeat;
+}
+
+.bing-logo-mask {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 80px;
+	height: 40px;
+	overflow: hidden;
+}
+
+.reserved-labeled-value {
+	color: #a6a6a6;
+}
+
+.reserved-labeled-value input {
+	color: #a6a6a6;
+}
+/* ActionBar */
+
+.actionbar-search-mode {
+	padding: 0 7px;
+}
+
+.map-tool-button .enyo-tool-button-client {
+	position: absolute;
+	margin: -5px 0 0 7px;
+	-webkit-border-image: url(../images/button-toolbar.png) 4 4 4 4 repeat stretch;
+}
+
+.map-tool-button.enyo-button-down .enyo-tool-button-client {
+	-webkit-border-image: url(../images/button-down.png) 4 4 4 4 repeat stretch;
+}
+
+.map-tool-swap {
+	margin:-4px -2px -5px
+}
+
+.map-tool-button + .enyo-tool-input{
+	margin-left:50px;
+}
+
+/* Pullout sliding shawdow */
+
+.enyo-sliding-view-shadow.flyInFromLeft {
+	right: -20px;
+	left: auto;
+	background: url(../images/shadow-right.png) repeat-y;
+}
+
+.enyo-grabbutton.flyInFromLeft {
+	left: auto;
+	right: 0px;
+}
+
+/* Popup */
+
+.popup {
+	font-size: 16px;
+	border-width: 20px;
+	-webkit-border-image: url(../images/darkChromeContainer.png) 20 stretch;
+	padding:0 0px;     
+	width: 278px;
+}
+
+.popup-title {
+	font-weight: bold;
+	color: #fff;
+}
+
+.popup-close-button {
+	background: url(../images/menu-icon-stop.png) 0 0;
+	width: 32px;
+	height: 32px;
+}
+
+.popup-close-button.enyo-button-down {
+	background: url(../images/menu-icon-stop.png) 0 32px;
+}
+
+/* InfoBox */
+
+.infobox-group {
+	-webkit-border-image: url(../images/popup-group-bg.png) 10 repeat;
+	border-width: 10px;
+	margin: 2px -12px 3px -12px;      
+	color: #363636;
+}
+
+.infobox-title {      
+	color: #fff;
+	font-size: 18px;
+	font-weight: normal;
+	min-height: 30px;
+}
+
+.infobox-spaced {
+	padding: 0 16px;         
+	margin: 0 -8px;
+	height: 30px;
+	background-color: #eeeeee ;
+	border-bottom: 1px solid #bebebe;
+	border-top: 1px solid #fff;      
+	align: center;
+	height: 50px;      
+	background-position: 95% 50%;
+	background-repeat: no-repeat;
+}
+
+.info-actions-row{
+	margin: 0 -4px;
+}
+
+.infobox-spaced:first-child {
+	border-top: 0;
+}
+
+.infobox-spaced:last-child {
+	border-bottom: 0;
+}
+
+.infobox-directions-item {
+	padding-left: 6px;
+}
+
+/* TitleBox */
+
+.titlebox {
+	font-size: 14px;
+	border-width: 10px;
+	-webkit-border-image: url(../images/darkChromeContainer.png) 10 stretch;
+	min-width: 0;
+}
+
+.titlebox-title {
+	color: #fff;
+}
+
+/* LabeledToggle */
+
+.labeled-toggle-label {
+	padding-right: 20px;
+}
+
+/* SavedList */
+
+.savedlist-item-title {
+	margin-top: 10px;
+	font-size: 16px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.savedlist-item-details {
+	font-size: 14px;
+	color: #606060;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Route */
+
+.route-message {
+	background-color: white;
+	color: #555;
+	font-size: 14px;
+	padding: 10px 20px;
+	border-bottom: 1px solid #d9d9d9;
+}
+.route-message b{
+	font-size: 17px;
+}
+
+.travel-mode .enyo-radiobutton {
+	/* FIXME: override extra padding added by enyo-radiobutton */
+	padding: 0;
+}
+
+.travel-mode .enyo-radiobutton .enyo-button-icon {
+	margin: 2px -10px -4px;
+}
+.stats{
+	text-align: right;
+	font-size: 14px;
+	margin-top: 2px;
+	color: #1a1a1a;
+}
+
+.route-maneuver-icon {
+	margin-left: 16px;
+	margin-right: 16px;
+	width: 32px;
+	height: 25px;
+	background-image: url(../images/route-maneuver-icons.png);
+}
+
+/* Route itinerary & SearchResults item */
+
+.route-itinerary, .searchresults-item {
+	margin: 0 ;    
+	background-color: #fff;
+	padding: 10px 5px;
+	border-top: 0;
+	border-bottom: 1px solid #d9d9d9;
+	min-height: 60px;
+	color: #555555;
+	font-size: 15px;
+	word-wrap: break-word;
+}
+
+.route-itinerary.enyo-held, .searchresults-item.enyo-held {
+	color: #FFF;
+	border: 0;
+}
+
+.travel-mode-selector{
+	margin: 7px 15px 10px;
+                          
+}
+
+/* SearchResults */
+
+.searchresults-info-title {
+	padding-right: 20px;
+	font-weight: bold;
+}
+
+.searchresults-item-indicator {
+	width: 48px;
+	background: url(../images/poi_search.png) left center no-repeat;
+}
+
+.searchresults-item-num {
+	position: relative;
+	text-align: center;
+	top: 2px;
+	font-size: 10pt;
+	font-weight: bold;
+	color: white;
+}
+
+.searchresults-item-indicator.selected {
+	width: 48px;
+	background: url(../images/poi_active.png) left center no-repeat;
+}
+
+/* InfoFooter */
+
+.info-footer-outer {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	height: 50px;
+	overflow: hidden;
+}
+
+.info-footer {
+	-webkit-border-image: url(../images/darkChromeContainer.png) 10 8 repeat stretch;
+	border-width: 10px 8px;                    
+	height: 42px;
+	margin: auto 80px 10px 80px;
+	overflow: visible;
+}
+     
+.info-footer .wrapper {
+	margin: -8px 0 -10px 0;   
+	position: relative;
+	z-index: 1000;
+}
+
+.info-footer-button .enyo-tool-button-client {
+	-webkit-border-image: url(../images/button-toolbar.png) 4 4 4 4 stretch stretch;
+	border-style: none;
+	margin: -4px 0 0;
+	min-width: 40px;
+}
+
+.info-footer-detail {
+	padding-left: 10px;
+	color: #fff;
+	font-size: 12px;
+}
+
+.searchresults-info-title {
+	font-size: 14px;
+}
+
+.itinerary-info-description {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.itinerary-info-description div {
+	margin-left: 13px;
+}
+
+.itinerary-maneuver-icon {
+	margin-left: -8px;
+	margin-right: 8px;
+}
+
+/* Saves */
+
+.saves-header {
+	padding: 11px 0;
+	margin: 0 22px;
+}
+
+.saves-header .enyo-button-icon-text {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.saves-pane {
+	background-color: #fff;
+}
+
+/* Settings */
+
+.settings {
+	background-color: #fff;
+}
+
+.settings-divider {
+	color: #626262; 
+	background-color: #d3d3d3;
+	padding: 0 5px;
+}
+
+/* InputAssist */
+
+.inputassist {
+	/* FIXME: defeat enyo-popup min-width setting */
+	min-width: 0;
+}
+
+.inputassist .enyo-item {
+	min-height: 0;
+}
+
+/* CheckItem */
+
+.checkitem-description {
+	color: #393939;
+	font-size: 20px;
+	margin: 4px 0 auto 5px;
+}
+
+.checkitem-checked .checkitem-description {
+	background: url(../images/checkmark.png) center right no-repeat;
+}

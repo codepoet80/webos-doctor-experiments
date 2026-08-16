@@ -1,0 +1,73 @@
+.enyo-progress-pill {
+	font-size:16px;
+	height: 34px;
+	border-width: 0 10px;
+	-webkit-border-image: url(../images/pill/buy-and-progress-bar-sprite.png) 69 10 1 10 ;
+	-webkit-box-sizing: border-box;
+	color: white;
+}
+
+.enyo-progress-pill-inner {
+	height: 34px;
+	margin: 0 -10px;
+	border-width: 0 10px;
+	position: absolute;
+	-webkit-border-image: url(../images/pill/progress-pill-fill.png) 1 10 1 10;
+}
+
+.enyo-progress-pill-client {
+	margin: 0 0px;
+	cursor: pointer;
+	text-align: center;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+.item-box .enyo-progress-pill {
+	font-size:14px;
+	min-width:64px;
+	max-height:28px;
+	line-height: 28px;
+	border-width: 0px 10px;
+	-webkit-border-image: url(../images/pill/buy-and-progress-bar-sprite-small.png) 54 10 1 10;
+	-webkit-box-sizing: border-box;
+	color: white;
+}
+
+.item-box .enyo-progress-pill-inner {
+	height: 28px;
+	margin: 0 -12px;
+	border-width: 0 12px;
+	position: absolute;
+	-webkit-border-image: url(../images/pill/progress-pill-fill-small.png) 0 7 1 7;
+}
+
+.item-box .enyo-progress-pill-client {
+	margin: 0 0px;
+}
+
+.item-box {
+	
+}
+.enyo-progress-button {
+	-webkit-box-sizing: border-box;
+    z-index: 0;
+}
+.enyo-progress-button.affirmative {
+	-webkit-border-image: url(../images/progress-button-green.png) 5 5;
+}
+.button-down .enyo-progress-button.affirmative {
+     -webkit-border-image: url(../images/progress-button-green-down.png) 5 5;
+}
+.progress-showing .enyo-progress-button.affirmative {
+     -webkit-border-image: url(../images/progress-button-inset.png) 5 5;
+}
+.acc-progress-icon {
+	position:relative;
+	width:32px;
+	height:32px;
+}
+
+.enyo-progress-button-client {
+	margin: -3px 5px 0px;
+}

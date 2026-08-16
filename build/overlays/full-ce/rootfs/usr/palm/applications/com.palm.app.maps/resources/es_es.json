@@ -1,0 +1,11 @@
+{
+	"Add Bookmark": "Añadir favorito",
+	"Direction From Here": "Indicaciones desde aquí",
+	"Direction To Here": "Indicaciones hasta aquí",
+	"Directions to #{endPntLbl}": "Indicaciones para #{endPntLbl}",
+	"Drop a pin": "Poner un marcador",
+	"In the App Menu of Location Services, make sure to select a service in the 'Locate Me Using...' menu": "En el menú de la aplicación de servicios de ubicación, asegúrate de seleccionar un servicio en el menú 'Ubícame mediante...'.",
+	"Launch Location Services?": "¿Iniciar servicios de ubicación?",
+	"No Internet Connection.": "No hay conexión Internet.",
+	"OK": "Aceptar"
+}

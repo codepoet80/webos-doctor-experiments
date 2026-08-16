@@ -1,0 +1,6 @@
+// QA
+{"serverUrl":"https://ps.qa.palm.com/palmcsext/services/deviceJ/","returnValue":true}
+// SBDEV
+//{"serverUrl":"https://ps.sbdev.palm.com/palmcsext/services/deviceJ/","returnValue":true}
+// SBQA
+//{"serverUrl":"https://ps.sbqa.palm.com/palmcsext/services/deviceJ/","returnValue":true}

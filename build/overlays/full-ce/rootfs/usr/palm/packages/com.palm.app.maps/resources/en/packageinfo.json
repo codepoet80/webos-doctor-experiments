@@ -1,0 +1,9 @@
+{
+  "app": "com.palm.app.maps",
+  "icon": "icon.png",
+  "id": "com.palm.app.maps",
+  "loc_name": "Maps",
+  "package_format_version": 2,
+  "vendor": "HP",
+  "version": "4.0.1"
+}

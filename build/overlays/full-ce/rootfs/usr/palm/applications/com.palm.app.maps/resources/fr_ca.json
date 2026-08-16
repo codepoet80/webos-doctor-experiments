@@ -1,0 +1,8 @@
+{
+	"#{distance} #{distUnit} - #{duration} min": "#{distance} #{distUnit} - #{duration} min",
+	"#{duration} min": "#{duration} min",
+	"Launch Location Services?": "Lancer les services de positionnement?",
+	"Show More Info": "Afficher plus d’information",
+	"Turn on My Location?": "Activer ma position?",
+	"miles": "milles"
+}

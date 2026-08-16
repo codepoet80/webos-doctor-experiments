@@ -1,0 +1,7 @@
+description "Govnah Service"
+
+start on stopped finish
+
+exec /var/usr/sbin/org.webosinternals.govnah
+
+respawn

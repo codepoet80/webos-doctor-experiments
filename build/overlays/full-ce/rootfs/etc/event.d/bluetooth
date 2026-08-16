@@ -1,0 +1,6 @@
+description "Palm Bluetooth"
+
+start on stopped finish
+
+respawn
+exec /bin/sh -c 'echo 0 > /proc/sys/kernel/sysrq; export LD_PRELOAD=/usr/lib/libpmbtgamepad.so; export WEBOS_BT_SHIM_LOG=/var/log/btshim.log; export WEBOS_BT_SHIM_DUMP=0; exec /usr/bin/BluetoothMonitor'

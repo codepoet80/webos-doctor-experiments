@@ -1,0 +1,1018 @@
+.hidden { display: none; }
+.placeholder { background: #00dd00; opacity: .4; }
+
+.page-header {
+    height: 22px;
+    width: 22px;
+    position: absolute;
+    top: 14px;
+    left: 16px;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+/* use .highlight for debug and placement */
+.highlight .toc-hinge,
+.highlight .toc-hinge1,
+.highlight .toc-sphere,
+.highlight .toc-sphere1,
+.highlight .toc-sphere2,
+.highlight .toc-sphere3,
+.highlight .toc-sphere4,
+.highlight .toc-sphere5,
+.highlight .toc-sphere6,
+.highlight .toc-sphere7,
+.highlight .toc-sphere8,
+.highlight .toc-hub,
+.highlight .toc-hub1,
+.highlight .toc-orient,
+.highlight .toc-orient1,
+.highlight .toc-orient2,
+.highlight .toc-orient3,
+.highlight .toc-orient4,
+.highlight .toc-shutter,
+.highlight .toc-shutter1,
+.highlight .toc-index,
+.highlight .toc-index1,
+.highlight .toc-toc2,
+.highlight .toc-feature,
+.highlight .toc-feature1,
+.highlight .toc-index,
+.highlight .toc-index1,
+.highlight .toc-teaser,
+.highlight .toc-teaser1,
+.highlight .index-new,
+.highlight .index-paid,
+.highlight .index-featured,
+.highlight .index-free,
+.highlight .letter-email,
+.highlight .teaser-email {
+    background: #00dd00;
+    opacity: .4;
+}
+/* highlight */
+
+.landscape .version {
+    position: absolute;
+    right: 40px;
+    top: 626px;
+    font-size: 10px;
+}
+.portrait .version {
+    position: absolute;
+    right: 20px;
+    top: 878px;
+    font-size: 10px;
+}
+
+.portrait .letter-email {
+    display: block;
+    height: 76px;
+    width: 294px;
+    position: absolute;
+    top: 797px;
+    left: 390px;
+}
+.landscape .letter-email {
+    display: block;
+    height: 73px;
+    width: 294px;
+    position: absolute;
+    top: 525px;
+    left: 677px;
+}
+
+.portrait .teaser-email {
+    display: block;
+    height: 76px;
+    width: 348px;
+    position: absolute;
+    top: 845px;
+    right: 0;
+}
+.landscape .teaser-email {
+    display: block;
+    height: 92px;
+    width: 271px;
+    position: absolute;
+    top: 575px;
+    right: 0;
+}
+
+/* toc */
+.portrait .toc-hinge {
+    position: absolute;
+    top: 274px;
+    left: 45px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-hinge1 {
+    position: absolute;
+    top: 313px;
+    left: 45px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-sphere {
+    position: absolute;
+    top: 380px;
+    left: 45px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-sphere1 {
+    position: absolute;
+    top: 420px;
+    left: 45px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-sphere2 {
+    position: absolute;
+    top: 463px;
+    left: 45px;
+    height: 50px;
+    width: 284px;
+}
+.portrait .toc-sphere3 {
+    position: absolute;
+    top: 527px;
+    left: 45px;
+    height: 50px;
+    width: 284px;
+}
+.portrait .toc-sphere4 {
+    position: absolute;
+    top: 592px;
+    left: 45px;
+    height: 50px;
+    width: 284px;
+}
+.portrait .toc-sphere5 {
+    position: absolute;
+    top: 656px;
+    left: 45px;
+    height: 50px;
+    width: 284px;
+}
+.portrait .toc-sphere6 {
+    position: absolute;
+    top: 718px;
+    left: 45px;
+    height: 50px;
+    width: 284px;
+}
+.portrait .toc-sphere7 {
+    position: absolute;
+    top: 783px;
+    left: 45px;
+    height: 50px;
+    width: 284px;
+}
+.portrait .toc-sphere8 {
+    position: absolute;
+    top: 847px;
+    left: 45px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-hub {
+    position: absolute;
+    top: 380px;
+    left: 386px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-hub1 {
+    position: absolute;
+    top: 421px;
+    left: 386px;
+    height: 90px;
+    width: 284px;
+}
+.portrait .toc-orient {
+    position: absolute;
+    top: 547px;
+    left: 386px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-orient1 {
+    position: absolute;
+    top: 586px;
+    left: 386px;
+    height: 50px;
+    width: 284px;
+}
+.portrait .toc-orient2 {
+    position: absolute;
+    top: 650px;
+    left: 386px;
+    height: 50px;
+    width: 284px;
+}
+.portrait .toc-orient3 {
+    position: absolute;
+    top: 714px;
+    left: 386px;
+    height: 50px;
+    width: 304px;
+}
+.portrait .toc-orient4 {
+    position: absolute;
+    top: 777px;
+    left: 386px;
+    height: 50px;
+    width: 284px;
+}
+.portrait .toc-toc2 {
+    position: absolute;
+    top: 845px;
+    right: 0;
+    height: 74px;
+    width: 302px;
+}
+
+.landscape .toc-hinge {
+    position: absolute;
+    top: 231px;
+    left: 44px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-hinge1 {
+    position: absolute;
+    top: 272px;
+    left: 44px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-sphere {
+    position: absolute;
+    top: 337px;
+    left: 44px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-sphere1 {
+    position: absolute;
+    top: 378px;
+    left: 44px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-sphere2 {
+    position: absolute;
+    top: 422px;
+    left: 44px;
+    height: 50px;
+    width: 284px;
+}
+.landscape .toc-sphere3 {
+    position: absolute;
+    top: 485px;
+    left: 44px;
+    height: 50px;
+    width: 284px;
+}
+.landscape .toc-sphere4 {
+    position: absolute;
+    top: 549px;
+    left: 44px;
+    height: 50px;
+    width: 284px;
+}
+.landscape .toc-sphere5 {
+    position: absolute;
+    top: 230px;
+    left: 360px;
+    height: 50px;
+    width: 284px;
+}
+.landscape .toc-sphere6 {
+    position: absolute;
+    top: 294px;
+    left: 360px;
+    height: 50px;
+    width: 284px;
+}
+.landscape .toc-sphere7 {
+    position: absolute;
+    top: 358px;
+    left: 360px;
+    height: 50px;
+    width: 284px;
+}
+.landscape .toc-sphere8 {
+    position: absolute;
+    top: 423px;
+    left: 360px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-hub {
+    position: absolute;
+    top: 443px;
+    left: 360px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-hub1 {
+    position: absolute;
+    top: 486px;
+    left: 360px;
+    height: 90px;
+    width: 284px;
+}
+.landscape .toc-orient {
+    position: absolute;
+    top: 231px;
+    left: 675px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-orient1 {
+    position: absolute;
+    top: 272px;
+    left: 675px;
+    height: 50px;
+    width: 284px;
+}
+.landscape .toc-orient2 {
+    position: absolute;
+    top: 335px;
+    left: 675px;
+    height: 50px;
+    width: 284px;
+}
+.landscape .toc-orient3 {
+    position: absolute;
+    top: 400px;
+    left: 675px;
+    height: 50px;
+    width: 300px;
+}
+.landscape .toc-orient4 {
+    position: absolute;
+    top: 464px;
+    left: 675px;
+    height: 50px;
+    width: 284px;
+}
+.landscape .toc-toc2 {
+    position: absolute;
+    top: 562px;
+    right: 0;
+    height: 74px;
+    width: 300px;
+}
+
+.portrait .toc-feature {
+    position: absolute;
+    top: 614px;
+    left: 44px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-feature1 {
+    position: absolute;
+    top: 655px;
+    left: 44px;
+    height: 70px;
+    width: 312px;
+}
+.portrait .toc-shutter {
+    position: absolute;
+    top: 760px;
+    left: 44px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-shutter1 {
+    position: absolute;
+    top: 801px;
+    left: 44px;
+    height: 50px;
+    width: 284px;
+}
+.portrait .toc-index {
+    position: absolute;
+    top: 614px;
+    left: 386px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-index1 {
+    position: absolute;
+    top: 660px;
+    left: 386px;
+    height: 48px;
+    width: 284px;
+}
+.portrait .toc-teaser {
+    position: absolute;
+    top: 763px;
+    left: 386px;
+    height: 30px;
+    width: 284px;
+}
+.portrait .toc-teaser1 {
+    position: absolute;
+    top: 807px;
+    left: 386px;
+    height: 50px;
+    width: 284px;
+}
+
+.landscape .toc-feature {
+    position: absolute;
+    top: 428px;
+    left: 44px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-feature1 {
+    position: absolute;
+    top: 469px;
+    left: 44px;
+    height: 70px;
+    width: 305px;
+}
+.landscape .toc-shutter {
+    position: absolute;
+    top: 426px;
+    left: 359px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-shutter1 {
+    position: absolute;
+    top: 466px;
+    left: 359px;
+    height: 50px;
+    width: 284px;
+}
+.landscape .toc-index {
+    position: absolute;
+    top: 426px;
+    left: 675px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-index1 {
+    position: absolute;
+    top: 469px;
+    left: 675px;
+    height: 48px;
+    width: 284px;
+}
+.landscape .toc-teaser {
+    position: absolute;
+    top: 551px;
+    left: 675px;
+    height: 30px;
+    width: 284px;
+}
+.landscape .toc-teaser1 {
+    position: absolute;
+    top: 596px;
+    left: 675px;
+    height: 50px;
+    width: 284px;
+}
+/* toc */
+
+/* calendar */
+.portrait .calendar-app1 {
+    position: absolute;
+    left: 65px;
+    top: 368px;
+}
+.portrait .calendar-app2 {
+    position: absolute;
+    left: 288px;
+    top: 368px;
+}
+.portrait .calendar-app3 {
+    position: absolute;
+    left: 511px;
+    top: 368px;
+}
+.portrait .calendar-app4 {
+    position: absolute;
+    left: 65px;
+    top: 606px;
+}
+.portrait .calendar-app5 {
+    position: absolute;
+    left: 288px;
+    top: 606px;
+}
+.portrait .calendar-app6 {
+    position: absolute;
+    left: 511px;
+    top: 606px;
+}
+.portrait .calendar-app7 {
+    position: absolute;
+    left: 66px;
+    top: 845px;
+}
+.portrait .calendar-app8 {
+    position: absolute;
+    left: 288px;
+    top: 845px;
+}
+.portrait .calendar-app9 {
+    position: absolute;
+    left: 511px;
+    top: 845px;
+}
+
+.landscape .calendar-app1 {
+    position: absolute;
+    left: 81px;
+    top: 366px;
+}
+.landscape .calendar-app2 {
+    position: absolute;
+    left: 305px;
+    top: 366px;
+}
+.landscape .calendar-app3 {
+    position: absolute;
+    left: 526px;
+    top: 366px;
+}
+.landscape .calendar-app4 {
+    position: absolute;
+    left: 752px;
+    top: 366px;
+}
+.landscape .calendar-app5 {
+    position: absolute;
+    left: 81px;
+    top: 604px;
+}
+.landscape .calendar-app6 {
+    position: absolute;
+    left: 305px;
+    top: 604px;
+}
+.landscape .calendar-app7 {
+    position: absolute;
+    left: 526px;
+    top: 604px;
+}
+.landscape .calendar-app8 {
+    position: absolute;
+    left: 752px;
+    top: 604px;
+}
+.landscape .calendar-app9 {
+    position: absolute;
+    left: 752px;
+    top: 604px;
+}
+/* calendar */
+
+/* index */
+.portrait .index-app1 {
+    position: absolute;
+    left: 159px;
+    top: 197px;
+}
+.portrait .index-app2 {
+    position: absolute;
+    left: 491px;
+    top: 197px;
+}
+.portrait .index-app3 {
+    position: absolute;
+    left: 159px;
+    top: 332px;
+}
+.portrait .index-app4 {
+    position: absolute;
+    left: 491px;
+    top: 332px;
+}
+.portrait .index-app5 {
+    position: absolute;
+    left: 159px;
+    top: 464px;
+}
+.portrait .index-app6 {
+    position: absolute;
+    left: 491px;
+    top: 464px;
+}
+.portrait .index-app7 {
+    position: absolute;
+    left: 159px;
+    top: 598px;
+}
+.portrait .index-app8 {
+    position: absolute;
+    left: 491px;
+    top: 598px;
+}
+.portrait .index-app9 {
+    position: absolute;
+    left: 159px;
+    top: 734px;
+}
+.portrait .index-app10 {
+    position: absolute;
+    left: 491px;
+    top: 734px;
+}
+.portrait .index-new {
+    position: absolute;
+    top: 833px;
+    left: 53px;
+    width: 221px;
+    height: 58px;
+}
+.portrait .index-paid {
+    position: absolute;
+    top: 833px;
+    left: 495px;
+    width: 221px;
+    height: 58px;
+}
+.portrait .index-featured {
+    position: absolute;
+    top: 833px;
+    left: 53px;
+    width: 221px;
+    height: 58px;
+}
+.portrait .index-free {
+    position: absolute;
+    top: 833px;
+    left: 274px;
+    width: 221px;
+    height: 58px;
+}
+
+.landscape .index-app1 {
+    position: absolute;
+    left: 141px;
+    top: 202px;
+}
+.landscape .index-app2 {
+    position: absolute;
+    left: 453px;
+    top: 202px;
+}
+.landscape .index-app3 {
+    position: absolute;
+    left: 768px;
+    top: 202px;
+}
+.landscape .index-app4 {
+    position: absolute;
+    left: 141px;
+    top: 337px;
+}
+.landscape .index-app5 {
+    position: absolute;
+    left: 453px;
+    top: 337px;
+}
+.landscape .index-app6 {
+    position: absolute;
+    left: 768px;
+    top: 337px;
+}
+.landscape .index-app7 {
+    position: absolute;
+    left: 141px;
+    top: 471px;
+}
+.landscape .index-app8 {
+    position: absolute;
+    left: 453px;
+    top: 471px;
+}
+.landscape .index-app9 {
+    position: absolute;
+    left: 768px;
+    top: 471px;
+}
+.landscape .index-new {
+    position: absolute;
+    top: 574px;
+    left: 48px;
+    width: 307px;
+    height: 58px;
+}
+.landscape .index-paid {
+    position: absolute;
+    top: 574px;
+    left: 671px;
+    width: 307px;
+    height: 58px;
+}
+.landscape .index-featured {
+    position: absolute;
+    top: 574px;
+    left: 48px;
+    width: 307px;
+    height: 58px;
+}
+.landscape .index-free {
+    position: absolute;
+    top: 574px;
+    left: 360px;
+    width: 307px;
+    height: 58px;
+}
+/* index */
+
+/* sphere1 */
+.portrait .sphere1-app1 {
+    position: absolute;
+    top: 780px;
+    left: 394px;
+}
+.landscape .sphere1-app1 {
+    position: absolute;
+    top: 398px;
+    left: 365px;
+}
+/* sphere1 */
+
+/* sphere2 */
+.portrait .sphere2-app1 {
+    position: absolute;
+    top: 661px;
+    left: 52px;
+}
+.portrait .sphere2-app2 {
+    position: absolute;
+    top: 661px;
+    left: 394px;
+}
+.portrait .sphere2-app3 {
+    position: absolute;
+    top: 816px;
+    left: 52px;
+}
+
+.landscape .sphere2-app1 {
+    position: absolute;
+    top: 295px;
+    left: 730px;
+}
+.landscape .sphere2-app2 {
+    position: absolute;
+    top: 446px;
+    left: 730px;
+}
+.landscape .sphere2-app3 {
+    position: absolute;
+    top: 604px;
+    left: 730px;
+}
+/* sphere2 */
+
+/* sphere3 */
+.portrait .sphere3-app1 {
+    position: absolute;
+    top: 720px;
+    left: 394px;
+}
+.landscape .sphere3-app1 {
+    position: absolute;
+    top: 620px;
+    left: 681px;
+}
+/* sphere3 */
+
+/* sphere4 */
+.portrait .sphere4-app1 {
+    position: absolute;
+    top: 494px;
+    left: 357px;
+}
+.landscape .sphere4-app1 {
+    position: absolute;
+    top: 300px;
+    left: 642px;
+}
+/* sphere4 */
+
+/* sphere5 */
+.portrait .sphere5-app1 {
+    position: absolute;
+    top: 142px;
+    left: 508px;
+}
+.landscape .sphere5-app1 {
+    position: absolute;
+    top: 136px;
+    left: 767px;
+}
+/* sphere5 */
+
+/* sphere6 */
+.portrait .sphere6-app1 {
+    position: absolute;
+    top: 873px;
+    left: 394px;
+}
+.landscape .sphere6-app1 {
+    position: absolute;
+    top: 196px;
+    left: 682px;
+}
+/* sphere6 */
+
+/* feature1 */
+.portrait .feature1-app1 {
+    position: absolute;
+    top: 664px;
+    left: 101px;
+}
+.portrait .feature1-app2 {
+    position: absolute;
+    top: 664px;
+    left: 433px;
+}
+.portrait .feature1-app3 {
+    position: absolute;
+    top: 799px;
+    left: 101px;
+}
+
+.landscape .feature1-app1 {
+    position: absolute;
+    top: 545px;
+    left: 56px;
+}
+.landscape .feature1-app2 {
+    position: absolute;
+    top: 545px;
+    left: 407px;
+}
+.landscape .feature1-app3 {
+    position: absolute;
+    top: 545px;
+    left: 702px;
+}
+/* feature1 */
+
+/* orient1 */
+.portrait .orient1-app1 {
+    position: absolute;
+    top: 221px;
+    left: 508px;
+}
+.landscape .orient1-app1 {
+    position: absolute;
+    top: 221px;
+    left: 681px;
+}
+
+.portrait .orient1-app2 {
+    position: absolute;
+    top: 722px;
+    left: 393px;
+}
+.landscape .orient1-app2 {
+    position: absolute;
+    top: 241px;
+    left: 681px;
+}
+/* orient1 */
+
+/* orient2 */
+.portrait .orient2-app1 {
+    position: absolute;
+    top: 221px;
+    left: 394px;
+}
+.landscape .orient2-app1 {
+    position: absolute;
+    top: 221px;
+    left: 365px;
+}
+
+.portrait .orient2-app2 {
+    position: absolute;
+    top: 409px;
+    left: 395px;
+}
+.landscape .orient2-app2 {
+    position: absolute;
+    top: 407px;
+    left: 682px;
+}
+/* orient2 */
+
+/* orient3 */
+.portrait .orient3-app1 {
+    position: absolute;
+    top: 221px;
+    left: 394px;
+}
+.landscape .orient3-app1 {
+    position: absolute;
+    top: 221px;
+    left: 365px;
+}
+
+.portrait .orient3-app2 {
+    position: absolute;
+    top: 748px;
+    left: 395px;
+}
+.landscape .orient3-app2 {
+    position: absolute;
+    top: 401px;
+    left: 683px;
+}
+/* orient3 */
+
+/* orient4 */
+.portrait .orient4-app1 {
+    position: absolute;
+    top: 221px;
+    left: 395px;
+}
+.landscape .orient4-app1 {
+    position: absolute;
+    top: 221px;
+    left: 683px;
+}
+
+.portrait .orient4-app2 {
+    position: absolute;
+    top: 388px;
+    left: 395px;
+}
+.landscape .orient4-app2 {
+    position: absolute;
+    top: 388px;
+    left: 683px;
+}
+/* orient4 */
+
+/* shutter */
+.portrait .shutter-app1 {
+    position: absolute;
+    top: 307px;
+    left: 542px;
+}
+.portrait .shutter-app2 {
+    position: absolute;
+    top: 524px;
+    left: 60px;
+}
+.portrait .shutter-app3 {
+    position: absolute;
+    top: 507px;
+    left: 557px;
+}
+.portrait .shutter-app4 {
+    position: absolute;
+    top: 779px;
+    left: 99px;
+}
+.portrait .shutter-app5 {
+    position: absolute;
+    top: 724px;
+    left: 505px;
+}
+
+.landscape .shutter-app1 {
+    position: absolute;
+    top: 252px;
+    left: 717px;
+}
+.landscape .shutter-app2 {
+    position: absolute;
+    top: 429px;
+    left: 55px;
+}
+.landscape .shutter-app3 {
+    position: absolute;
+    top: 428px;
+    left: 800px;
+}
+.landscape .shutter-app4 {
+    position: absolute;
+    top: 620px;
+    left: 89px;
+}
+.landscape .shutter-app5 {
+    position: absolute;
+    top: 621px;
+    left: 717px;
+}
+/* shutter */

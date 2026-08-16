@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>PivotMagazine Preview</title>
+    <link rel="stylesheet" href="vendor/enyo-build.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { background: #1a1a1a; margin: 0; font-family: 'Helvetica Neue', sans-serif; color: #ccc; }
+
+        #toolbar {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 12px; background: #111; border-bottom: 1px solid #333;
+            font-size: 13px;
+        }
+        #toolbar button {
+            background: #2a2a2a; color: #ccc; border: 1px solid #444;
+            padding: 4px 10px; cursor: pointer; border-radius: 3px; font-size: 12px;
+        }
+        #toolbar button:hover { background: #3a3a3a; }
+        #toolbar input {
+            background: #222; color: #ccc; border: 1px solid #444;
+            padding: 3px 6px; border-radius: 3px; font-size: 12px; width: 80px;
+        }
+        #page-info { font-size: 13px; min-width: 60px; text-align: center; }
+        .sep { color: #555; }
+
+        #stage {
+            display: flex; justify-content: center; align-items: flex-start;
+            padding: 20px; min-height: calc(100vh - 44px); overflow: auto;
+        }
+        #viewport {
+            position: relative;
+            width: 768px; height: 1024px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+    </style>
+
+    <!-- Load order matters: pre-stubs → enyo SDK → UserSession → build.js → post-stubs → bootstrap -->
+    <script src="stubs-pre.js"></script>
+    <script src="vendor/enyo-build.js"></script>
+    <script src="/com.palm.app.enyo-findapps/UserSession.js"></script>
+    <script src="/com.palm.app.enyo-findapps/main/build.js"></script>
+    <script src="stubs-post.js"></script>
+    <script src="bootstrap.js"></script>
+</head>
+<body>
+    <div id="toolbar">
+        <button id="btn-prev">◀ Prev</button>
+        <span id="page-info">Page 0</span>
+        <button id="btn-next">Next ▶</button>
+        <span class="sep">|</span>
+        <button id="btn-portrait">Portrait</button>
+        <button id="btn-landscape">Landscape</button>
+        <span class="sep">|</span>
+        <label>Issue: <input id="issue-input" value="Current"></label>
+        <label>Lang: <input id="lang-input" value="en" style="width:40px"></label>
+        <button id="btn-reload">Reload</button>
+        <span class="sep">|</span>
+        <span style="color:#555;font-size:11px">serve from webos-appcatalog/ root · localhost:8080</span>
+    </div>
+    <div id="stage">
+        <div id="viewport"></div>
+    </div>
+</body>
+</html>

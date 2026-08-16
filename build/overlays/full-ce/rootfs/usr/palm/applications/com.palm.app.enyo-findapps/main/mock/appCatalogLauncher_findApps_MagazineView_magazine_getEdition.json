@@ -1,0 +1,10 @@
+{
+	"returnValue": true,
+	"results": [{
+		"_id": "1",
+		"_kind": "com.palm.appcatalog.editioninfo:3",
+		"numPages": "6",
+		"number": "1",
+		"publishDate": "03/31/2011 12:00:00"		
+	}]
+}

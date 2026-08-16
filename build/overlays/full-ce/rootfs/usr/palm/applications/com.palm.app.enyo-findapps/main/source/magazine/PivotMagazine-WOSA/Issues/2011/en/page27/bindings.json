@@ -1,0 +1,23 @@
+{
+    "prefetch": [
+                "com.mojojungle.translator-hd",
+                "com.palm.app.kindle",
+                "com.quickoffice.webos",
+                "com.jeffyuan.coolclock",
+                "com.fallentreegames.quellhd"
+                ],
+
+	"portraitBgImage": "page27/images/portrait-bg.jpg",
+	"landscapeBgImage": "page27/images/landscape-bg.jpg",
+
+    "portraitHeaderTemplate": "common/layouts/portraitHeader.lo.js",
+    "landscapeHeaderTemplate": "common/layouts/landscapeHeader.lo.js",
+    "headerTemplateBindings": "common/layouts/header.json",
+
+    "appTemplate": "common/layouts/app.lo.js",
+    "app1Bindings": "common/apps/translator/info.json",
+    "app2Bindings": "common/apps/kindle/info.json",
+    "app3Bindings": "common/apps/quickoffice/info.json",
+    "app4Bindings": "common/apps/coolclock/info.json",
+    "app5Bindings": "common/apps/quellhd/info.json"
+}

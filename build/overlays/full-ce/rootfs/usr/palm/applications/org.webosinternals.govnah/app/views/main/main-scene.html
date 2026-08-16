@@ -1,0 +1,85 @@
+<div class="main form">
+	
+	<div class="scene-fade-top" x-mojo-scroll-fade="top"></div>
+
+	<div class="palm-page-header multi-line">
+		<div class="palm-page-header-wrapper">
+			<div class="icon" id="icon"></div>
+			<div class="title main">
+				<span id="main-title">Govnah</span>
+				<span class="version" id="version">v0.0.0</span>
+				<span class="kernel" id="kernel"></span>
+			</div>
+			<div class="title sub" id="subTitle"></div>
+		</div>
+	</div>
+	
+	<div class="palm-list" id="list">
+		
+		<div class="palm-row" id="profileRow" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
+				<div class="label left" id="main-scene-profile">Profile</div>
+				<div class="title right" id="profileCurrent">N/A</div>
+			</div>
+		</div>
+		
+		<div class="palm-row" id="freq1Row" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
+				<canvas id="freq1Canvas" width="320" height="31"></canvas>
+				<div class="label left"id="main-scene-frequency1">CPU 1 Frequency</div>
+				<div class="title right" id="freq1Current">N/A</div>
+			</div>
+		</div>
+		
+		<div class="palm-row" id="freq2Row" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
+				<canvas id="freq2Canvas" width="320" height="31"></canvas>
+				<div class="label left"id="main-scene-frequency2">CPU 2 Frequency</div>
+				<div class="title right" id="freq2Current">N/A</div>
+			</div>
+		</div>
+		
+		<div class="palm-row" id="tempRow" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
+				<canvas id="tempCanvas" width="320" height="31"></canvas>
+				<div class="label left" id="main-scene-temperature">Temperature</div>
+				<div class="title right" id="tempCurrent">N/A</div>
+			</div>
+		</div>
+		
+		<div class="palm-row" id="currRow" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
+				<canvas id="currCanvas" width="320" height="31"></canvas>
+				<div class="label left" id="main-scene-battery-current">Battery Current</div>
+				<div class="title right" id="currCurrent">N/A</div>
+			</div>
+		</div>		
+		
+		<div class="palm-row" id="loadRow" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
+				<canvas id="loadCanvas" width="320" height="31"></canvas>
+				<div class="label left" id="main-scene-load-average">Load Average</div>
+				<div class="title right" id="loadCurrent">N/A</div>
+			</div>
+		</div>
+		
+		<div class="palm-row" id="memRow" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
+				<canvas id="memCanvas" width="320" height="31"></canvas>
+				<div class="label left" id="main-scene-memory-swap">Memory / Swap</div>
+				<div class="title right" id="memCurrent">N/A</div>
+			</div>
+		</div>
+		
+		<div class="palm-row" id="stateRow" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
+				<canvas id="stateCanvas" width="320" height="28"></canvas>
+				<div class="label left" id="main-scene-time-in-state">CPU Time In State</div>
+			</div>
+		</div>
+
+	</div>
+	
+	<div class="scene-fade-bottom" x-mojo-scroll-fade="bottom"></div>
+	
+</div>

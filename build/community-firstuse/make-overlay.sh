@@ -32,8 +32,13 @@ CA_BUNDLE="${CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}"
 ROOTFS_TGZ="$BUILD/work/webos/nova-cust-image-topaz.rootfs.tar.gz"
 OUT="$BUILD/overlays/community-firstuse"
 
-CURL_IPK="$(ls "$TLSIPKS"/org.webosinternals.curl-tls13_*_armv7.ipk | sort -V | tail -1)"
-NTP_IPK="$(ls "$TLSIPKS"/org.webosinternals.ntpdate-sync_*_armv7.ipk | sort -V | tail -1)"
+# prefer the project's AddToImage/PatchOrReplace copies (the user's statement
+# of intent for image contents); fall back to the OpenSSL-legacyWebOS repo.
+ATI_POR="$BUILD/../AddToImage/PatchOrReplace"
+CURL_IPK="$(ls "$ATI_POR"/org.webosinternals.curl-tls13_*_armv7.ipk 2>/dev/null | sort -V | tail -1)"
+[ -n "$CURL_IPK" ] || CURL_IPK="$(ls "$TLSIPKS"/org.webosinternals.curl-tls13_*_armv7.ipk | sort -V | tail -1)"
+NTP_IPK="$(ls "$ATI_POR"/org.webosinternals.ntpdate-sync_*_armv7.ipk 2>/dev/null | sort -V | tail -1)"
+[ -n "$NTP_IPK" ] || NTP_IPK="$(ls "$TLSIPKS"/org.webosinternals.ntpdate-sync_*_armv7.ipk | sort -V | tail -1)"
 
 for f in "$ROOTFS_TGZ" "$COMMUNITY/patches/FirstUse.js.patch" "$CURL_IPK" "$NTP_IPK" "$CA_BUNDLE"; do
     [ -e "$f" ] || { echo "ERROR: missing input: $f" >&2; exit 1; }

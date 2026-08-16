@@ -1,0 +1,238 @@
+.innershadow {
+  text-shadow: rgba(0, 0, 0, 0.5) 0 -1px;
+}
+.lightInnerShadow {
+  text-shadow: rgba(255, 255, 255, 0.5) 0 -1px;
+}
+/* Page0 */
+.page0 {
+  color: #FFF;
+  font-family: "Prelude Medium";
+  text-align: left;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  /**
+	**Featured Apps
+	**/
+
+}
+.page0 .headline {
+  position: relative;
+  left: -5px;
+}
+.page0 .introLine1, .page0 .introParagraph1 {
+  color: #e5e5e5;
+  margin-bottom: 20px;
+  text-shadow: rgba(0, 0, 0, 0.5) 0 -1px;
+}
+.page0 .introLine1 {
+  font: normal normal normal 27px/34px "Prelude Light";
+  color: #FFFFFF;
+  padding: 5px 0 10px 85px;
+  position: relative;
+  left: -4px;
+}
+.page0 .introParagraph1 {
+  color: #c0c0c0;
+  font: normal normal normal 15px/24px "Prelude Medium";
+}
+.page0 .featAppsWrapper {
+  padding: 55px 50px 0 20px;
+}
+.page0 .featuredSectionTitle {
+  color: #93959E;
+  font: normal normal normal 22px/22px "Prelude Bold";
+  text-shadow: rgba(0, 0, 0, 0.5) 0 -1px;
+  margin-bottom: 20px;
+}
+.page0 .featuredAppsBox {
+  width: 610px;
+  height: 460px;
+  overflow: hidden;
+  -webkit-border-radius: 9px;
+  border-radius: 9px;
+  -webkit-box-shadow: 0 -1px 7px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0 -1px 7px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 -1px 7px rgba(0, 0, 0, 0.75);
+}
+.page0 .appNav {
+  padding: 14px 13px;
+  -webkit-border-radius: 6px 6px 0 0;
+  border-radius: 6px 6px 0 0;
+  width: 100%;
+}
+.page0 .appNav .appTile:first-child {
+  margin-left: 0;
+}
+.page0 .leftCol {
+  width: 230px;
+  margin-right: 20px;
+}
+.page0 .rightCol {
+  width: 300px;
+}
+.page0 .appTile {
+  margin-left: 10px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  z-index: 101;
+  margin-top: 3px;
+  -webkit-box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+.page0 .appTile.first {
+  margin-left: 0;
+}
+.page0 .appHeader {
+  padding: 25px 25px 0px 25px;
+}
+.page0 .appTtl,
+.page0 .appSubTtl,
+.page0 .appRating,
+.page0 appImg {
+  margin: 0 0 0 0;
+}
+.page0 .appTtl {
+  color: #0281a6;
+  font: normal normal normal 16px/22px "Prelude Bold";
+}
+.page0 .appSubTtl {
+  color: #797a82;
+  font: normal normal normal 16px/22px "Prelude Medium";
+}
+.page0 .appRating {
+  height: 30px;
+}
+.page0 .appContent {
+  padding: 15px 25px 0 25px;
+  height: 300px;
+}
+.page0 .appImg {
+  -webkit-border-radius: 9px;
+  border-radius: 9px;
+  -webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+  -moz-box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.6);
+}
+.page0 .desc {
+  color: #696969;
+  font: normal normal normal 14px/20px "Prelude Medium";
+}
+.page0 .toolTips {
+  margin: 10px;
+}
+.page0 .largeTooltip {
+  margin: 10px 6px 0 6px;
+  color: #70747a;
+  -webkit-border-radius: 9px;
+  border-radius: 9px;
+  height: 105px;
+  /*
+		.ttl{
+			text-transform:uppercase;
+			padding:10px 10px 9px 43px;
+			border-bottom:1px dashed #bfc1c3;
+
+			font:normal normal normal 18px/20px @bold;	
+			background-position: 12px 7px;
+			background-repeat: no-repeat;
+		} */
+
+}
+.page0 .largeTooltip .body {
+  color: #CCC;
+  font: normal normal normal 14px/18px "Prelude Medium";
+  padding: 10px 15px 0 15px;
+}
+.page0 .carat {
+  position: relative;
+  background-position: top center;
+  background-repeat: no-repeat;
+  height: 13px;
+  top: -1px;
+}
+.page0 .scrollerPane {
+  background: transparent url('../images/light-bg.png') repeat scroll 0 0;
+  height: 350px;
+  overflow: hidden;
+}
+.page0 .appSlider {
+  width: 100%;
+}
+.page0 .rating {
+  margin-top: 5px;
+}
+.page0 .acButton {
+  color: #333333;
+  width: 308px;
+  height: 201px;
+  padding: 10px 30px;
+  margin: 15px 17px;
+}
+.page0 .acButton .acButtonHeadline {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: 85px;
+  text-align: center;
+  text-shadow: rgba(255, 255, 255, 0.5) 0 -1px;
+  color: #1b8ccf
+}
+.page0 .acButton .acButtonDescription {
+  margin-top: 10px;
+  color: #333;
+  font: normal normal normal 15px/22px "Prelude Medium";
+  text-align: center;
+  text-shadow: rgba(255, 255, 255, 0.5) 0 -1px;
+}
+.portrait {
+  width: 768px;
+  height: 1024px;
+  overflow: hidden;
+}
+.landscape {
+  width: 1024px;
+  height: 768px;
+  overflow: hidden;
+}
+.page0.portrait .introLine1 {
+  padding-top: 25px;
+  padding-bottom: 30px ;
+  margin-bottom: 0;
+}
+.page0.portrait .introParagraph1 {
+  margin-top: 0;
+}
+.page0.portrait .largeTooltip {
+  height: 155px;
+}
+.page0.portrait .largeTooltip .body {
+  font-size: 15px;
+  line-height: 22px;
+}
+.enyo-gemstone.enyo-button.saveBtn, .enyo-gemstone.enyo-button.buyBtn, .enyo-gemstone.enyo-button-affirmative {
+  width: 75px;
+  text-align: center;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  border: 1px solid #a5a5a5;
+  padding: 3px 0;
+  margin-left: 10px;
+  height: auto;
+  border-width: 1px;
+  -webkit-border-image: none;
+}
+.enyo-gemstone.enyo-button.saveBtn {
+  color: #333;
+  font: normal normal normal 14px/16px "Prelude Medium";
+  background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#e4e4e4));
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.18);
+}
+.enyo-gemstone.enyo-button.buyBtn, .enyo-gemstone.enyo-button-affirmative {
+  color: #FFF;
+  font: normal normal normal 15px/16px "Prelude Bold";
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.18);
+  background: -webkit-gradient(linear, left top, left bottom, from(#7ccc43), to(#7ab252));
+}

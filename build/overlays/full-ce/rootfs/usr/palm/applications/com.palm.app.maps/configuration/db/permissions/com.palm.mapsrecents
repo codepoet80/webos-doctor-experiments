@@ -1,0 +1,14 @@
+[	
+	{
+		"type"		: "db.kind",
+		"object"	: "com.palm.mapsrecents:1",
+		"caller"	: "com.palm.app.enyo-maps",
+		"operations":
+		{
+			"create": "allow",
+			"read"	: "allow",
+			"update": "allow",
+			"delete": "allow"
+		}
+	}
+]

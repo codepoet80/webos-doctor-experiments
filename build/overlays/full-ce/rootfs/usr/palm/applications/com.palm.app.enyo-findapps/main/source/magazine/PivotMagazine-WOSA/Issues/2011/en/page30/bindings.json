@@ -1,0 +1,57 @@
+{
+    "prefetch": [
+                "com.sooloos.sooloos",
+                "com.toondoctor.ted",
+                "com.weatherbug.weatherwindow",
+                "com.ondemandworld.wte"
+                ],
+
+	"portraitBgImage": "page30/images/portrait-bg.jpg",
+	"landscapeBgImage": "page30/images/landscape-bg.jpg",
+
+    "portraitHeaderTemplate": "common/layouts/portraitHeader.lo.js",
+    "landscapeHeaderTemplate": "common/layouts/landscapeHeader.lo.js",
+    "headerTemplateBindings": "common/layouts/header.json",
+
+    "appTemplate": "common/layouts/app.lo.js",
+    "app1BindingsPortrait": "common/apps/weatherbug/info.json",
+    "app2BindingsPortrait": "common/apps/wheretoeat/info.json",
+    "app3BindingsPortrait": "",
+    "app4BindingsPortrait": "",
+    "app5BindingsPortrait": "",
+    "app6BindingsPortrait": "",
+    "app7BindingsPortrait": "",
+    "app8BindingsPortrait": "",
+    "app9BindingsPortrait": "",
+    "app10BindingsPortrait": "",
+
+    "app1BindingsLandscape": "common/apps/soolos/info.json",
+    "app2BindingsLandscape": "common/apps/ted/info.json",
+    "app3BindingsLandscape": "common/apps/weatherbug/info.json",
+    "app4BindingsLandscape": "common/apps/wheretoeat/info.json",
+    "app5BindingsLandscape": "",
+    "app6BindingsLandscape": "",
+    "app7BindingsLandscape": "",
+    "app8BindingsLandscape": "",
+    "app9BindingsLandscape": "",
+
+	"featuredLinkText": "Featured Apps",
+	"featuredLinkTitle": "Featured Apps",
+    "featuredLinkQid": "HOME-DartfishQuery1",
+    "featuredLinkQueryFragment": "listId=HOT30&count=30&disableAutoPaging=true",
+
+    "topPaidLinkText": "Top Paid",
+    "topPaidLinkTitle": "Top Paid Applications",
+    "topPaidLinkQid": "HOME-DartfishQuery2",
+    "topPaidLinkQueryFragment": "paid=true&sort=RATING_DESC&count=30",
+
+    "topFreeLinkText": "Top Free",
+    "topFreeLinkTitle": "Top Free Applications",
+    "topFreeLinkQid": "HOME-DartfishQuery3",
+    "topFreeLinkQueryFragment": "paid=false&sort=RATING_DESC&count=30",
+
+    "newArrivalsLinkText": "New Arrival",
+    "newArrivalsLinkTitle": "New Arrivals",
+    "newArrivalsLinkQid": "HOME-DartfishQuery4",
+    "newArrivalsLinkQueryFragment": "sort=DATE_DESC&count=50"
+}

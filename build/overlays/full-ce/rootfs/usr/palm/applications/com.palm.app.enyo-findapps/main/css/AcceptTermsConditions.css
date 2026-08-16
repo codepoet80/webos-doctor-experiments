@@ -1,0 +1,66 @@
+body { /* this should be the ID of the Terms page, which is not set */
+	background: #D7D7D7;
+}
+
+.terms {
+	padding:0;
+	line-height:22px;
+	font-size:14px;
+	color: #555;
+}
+
+.terms-header {
+	font-size:24px;
+	margin: 50px 0px 25px;
+}
+
+.terms-footer {
+}
+
+.terms-text-subhead {
+	font-weight:bold;
+}
+
+.terms-text {
+	margin-bottom:10px;
+}
+
+.terms-box {
+	width:694px;
+}
+
+.terms-footer {
+	margin-top:30px;
+}
+
+.box {
+	-webkit-border-image: url(../images/bg_box.png) 12 repeat;
+	margin:0 auto;
+	padding:10px 10px 5px;
+	border-width:12px;
+}
+
+.box .header {
+	padding:10px 10px 0;
+	margin:0 -10px;
+}
+
+.box .footer {
+	border-top:1px solid #d8d8d8;
+	padding:10px 10px 0;
+	margin:0 -10px;
+}
+.country-box {
+	max-height: 260px;
+	width: 500px;
+	padding: 0;
+	margin-bottom:15px;
+}
+.country-item {
+	font-size: 20px;
+	padding: 5px 0;
+	text-align:center;
+}
+.box.country-box .enyo-virtual-scroller{
+	
+}

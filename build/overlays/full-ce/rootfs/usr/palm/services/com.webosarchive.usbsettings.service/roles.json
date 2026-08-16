@@ -1,0 +1,14 @@
+{
+    "role": {
+        "exeName": "js",
+        "type": "regular",
+        "allowedNames": ["com.webosarchive.usbsettings.service"]
+    },
+    "permissions": [
+        {
+            "service": "com.webosarchive.usbsettings.service",
+            "inbound": ["*"],
+            "outbound": ["*"]
+        }
+    ]
+}

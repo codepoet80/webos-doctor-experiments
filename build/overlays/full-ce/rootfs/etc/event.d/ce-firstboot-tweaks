@@ -1,0 +1,29 @@
+# ce-firstboot-tweaks — webOS CE: (a) point the default-wallpaper entries in
+# hp.tar's customization.json at a CE wallpaper before the customization
+# service runs them; (b) once per flash, drop stale /media/cryptofs copies of
+# apps this image bakes into the rootfs (cryptofs survives Doctor flashes and
+# a stale copy shadows the baked app).
+
+start on stopped configurator
+
+console none
+
+script
+    CUSTO=/usr/lib/luna/customization/customization.json
+    if [ -f "$CUSTO" ] && grep -q 'wallpapers/01.jpg' "$CUSTO"; then
+        mount -o remount,rw / 2>/dev/null || true
+        sed -i 's|/01\.jpg|/12.jpg|g; s|"01\.jpg"|"12.jpg"|g' "$CUSTO"
+        mount -o remount,ro / 2>/dev/null || true
+    fi
+    FLAG=/var/luna/preferences/ce-cryptofs-deshadowed
+    if [ ! -f "$FLAG" ]; then
+        APPS=/media/cryptofs/apps
+        for app in com.palm.app.maps com.palm.app.enyo-findapps org.webosinternals.preware com.webosarchive.usbsettings org.webosarchive.btgamepad; do
+            [ -d "$APPS/usr/palm/applications/$app" ] || continue
+            rm -rf "$APPS/usr/palm/applications/$app"
+            rm -f "$APPS/usr/lib/ipkg/info/$app".*
+            [ -f "$APPS/usr/lib/ipkg/status" ] && sed -i "/^Package: $app\$/,/^\$/d" "$APPS/usr/lib/ipkg/status" || true
+        done
+        mkdir -p /var/luna/preferences && touch "$FLAG"
+    fi
+end script

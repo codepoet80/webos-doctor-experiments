@@ -1,0 +1,13 @@
+.appsummary-label-text {
+    font-size:5px;
+    padding-right:4px;
+    padding-left:3px;
+    padding-bottom:2px;
+    color:gray;
+}
+
+.appsummary-morebutton {
+    color: black;
+    font-size: 13px; 
+    margin:5px;
+}

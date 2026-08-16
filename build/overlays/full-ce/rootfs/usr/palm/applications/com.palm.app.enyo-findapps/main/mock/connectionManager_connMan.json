@@ -1,0 +1,8 @@
+{
+	"isInternetConnectionAvailable":true,
+	"wifi":{"state":"disconnected"},
+	"wan":{"state":"disconnected"},
+	"vpn":{"state":"disconnected"},
+	"bridge":{"state":"disconnected"},
+	"returnValue": true	
+}

@@ -1,0 +1,60 @@
+<div class="form governor" id="container">
+	
+	<div class="scene-fade-top" x-mojo-scroll-fade="top"></div>
+	
+	<div class="palm-page-header multi-line">
+		<div class="palm-page-header-wrapper">
+			<div class="help-toggle" id="help-toggle" x-mojo-tap-highlight="persistent"></div>
+			<div class="icon" id="icon"></div>
+			<div class="title" id="cpu-frequency-title">CPU Frequency</div>
+		</div>
+	</div>
+	
+	<div class="palm-group">
+		<div class="palm-group-title" id="governor-selection-title">Governor Selection</div>
+		<div class="palm-list">
+			
+			<div class="palm-row single" id="row-governor">
+				<div class="palm-row-wrapper">
+					<div class="help-overlay" id="help-governor"></div>
+					<div id="governor" x-mojo-element="ListSelector"></div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	
+	<div class="palm-separator"></div>
+	
+    <div id="frequency_group">
+    	<div class="palm-group">
+    		<div class="palm-group-title" id="frequency-selection-title">Frequency Selection</div>
+    		<div class="palm-list" id="governor_freq">
+			
+    		</div>
+    	</div>
+    </div>
+
+    <div id="governor_group">
+    	<div class="palm-group">
+    		<div class="palm-group-title" id="governor-parameters-title">Governor Parameters</div>
+    		<div class="palm-list" id="governor_params">
+			
+    		</div>
+    	</div>
+    </div>
+
+    <div id="override_group">
+    	<div class="palm-group">
+    		<div class="palm-group-title" id="override-parameters-title">Override Parameters</div>
+    		<div class="palm-list" id="governor_override">
+			
+    		</div>
+    	</div>
+    </div>
+
+	<div id="saveButton" x-mojo-element="Button"></div>
+	
+	<div class="scene-fade-bottom" x-mojo-scroll-fade="bottom"></div>
+	
+</div>

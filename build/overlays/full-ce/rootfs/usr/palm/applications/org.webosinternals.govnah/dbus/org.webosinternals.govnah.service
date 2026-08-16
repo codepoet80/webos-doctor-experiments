@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.webosinternals.govnah
+Exec=/var/usr/sbin/org.webosinternals.govnah

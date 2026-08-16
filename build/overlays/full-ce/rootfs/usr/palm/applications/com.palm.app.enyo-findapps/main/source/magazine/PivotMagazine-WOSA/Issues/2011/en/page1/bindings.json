@@ -1,0 +1,12 @@
+{
+	"portraitBgImage": "page1/images/portrait-bg.jpg",
+	"landscapeBgImage": "page1/images/landscape-bg.jpg",
+
+    "portraitHeaderTemplate": "common/layouts/portraitHeader.lo.js",
+    "landscapeHeaderTemplate": "common/layouts/landscapeHeader.lo.js",
+    "headerTemplateBindings": "common/layouts/header.json",
+
+    "email": "pivot@hp.com?subject=Pivot Feedback",
+
+    "version": "1.21"
+}

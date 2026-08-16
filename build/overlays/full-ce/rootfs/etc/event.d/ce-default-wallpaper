@@ -1,0 +1,33 @@
+# ce-default-wallpaper — webOS CE: make the CE wallpaper the out-of-box
+# default. Only replaces the factory 01.jpg; any user choice is left alone.
+
+start on stopped finish
+
+console none
+
+script
+    [ -f /var/luna/preferences/ran-first-use ] || exit 0
+    FLAG=/var/luna/preferences/ce-default-wallpaper
+    if [ -f "$FLAG" ]; then exit 0; fi
+    lsq() {
+        luna-send -n 1 "$1" "$2" > /tmp/ce-wp.out 2>/dev/null &
+        P=$!
+        sleep 4
+        kill $P 2>/dev/null || true
+        cat /tmp/ce-wp.out 2>/dev/null || true
+    }
+    R=""
+    i=0
+    while [ $i -lt 30 ]; do
+        R=$(lsq palm://com.palm.systemservice/getPreferences '{"keys":["wallpaper"]}')
+        if echo "$R" | grep -q wallpaperName; then break; fi
+        sleep 4; i=$((i+1))
+    done
+    rm -f /tmp/ce-wp.out
+    echo "$R" | grep -q wallpaperName || exit 0
+    if echo "$R" | grep -q '"01.jpg"'; then
+        lsq palm://com.palm.systemservice/wallpaper/importWallpaper '{"target":"/media/internal/wallpapers/12.jpg","scale":1.0}' >/dev/null
+        lsq palm://com.palm.systemservice/setPreferences '{"wallpaper":{"wallpaperName":"12.jpg","wallpaperFile":"/media/internal/.wallpapers/12.jpg","wallpaperThumbFile":"/media/internal/.wallpapers/thumbs/12.jpg"}}' >/dev/null
+    fi
+    mkdir -p /var/luna/preferences && touch "$FLAG"
+end script

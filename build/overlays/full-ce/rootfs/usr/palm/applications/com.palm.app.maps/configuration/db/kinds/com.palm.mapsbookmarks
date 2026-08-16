@@ -1,0 +1,11 @@
+{
+	"id":"com.palm.mapsbookmarks:1",
+	"owner":"com.palm.app.maps",
+	"sync": true,
+	"indexes": [
+		{"name": "title", "props": [{"name": "title"}]},
+		{"name": "address", "props": [{"name": "address"}]},
+		{"name": "location", "props": [{"name": "location"}]},
+		{"name": "rev", "props": [{"name": "_rev"}]}
+	]
+}
