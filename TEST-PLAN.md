@@ -1,6 +1,6 @@
 # webOS CE 3.1 Flash Test Plan
 
-For the BUILDMARK 600000 image (`out/webosdoctorp305hstnh-3.1CE.jar`).
+For the BUILDMARK 600008 image (`out/webosdoctorp305hstnh-3.1CE.jar`).
 Items marked **(regression)** were verified on earlier flashes; everything else
 is new in this build. Shell checks assume a novacom/novaterm root shell.
 
@@ -8,49 +8,49 @@ is new in this build. Shell checks assume a novacom/novaterm root shell.
 
 Fast, high-signal checks that our bits landed — no accounts, no sync setup.
 
-1. [ ] **OOBE ran and finished on its own** — community account flow appeared,
+1. [Fail - but Claude has a fix] **OOBE ran and finished on its own** — community account flow appeared,
    Done rebooted the device, launcher comes up (no minimal-mode loop).
-2. [ ] **No hotspot login prompt** on your normal Wi-Fi during/after OOBE
+2. [Pass] **No hotspot login prompt** on your normal Wi-Fi during/after OOBE
    (the connectivity-probe patch).
-3. [ ] **Open HTTPS Webpage** browse to github.com in the old browser,
+3. [Pass] **Open HTTPS Webpage** browse to github.com in the old browser,
    it won't render, but if it connects, you're good.
-4. [ ] **Build identity** — Device Info says *webOS CE 3.1.0*; shell:
-   `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600000`.
-5. [ ] **Keyboard is small by default** — tap any text field; the keyboard
+4. [Pass] **Build identity** — Device Info says *webOS CE 3.1.0*; shell:
+   `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600008`.
+5. [Pass] **Keyboard is small by default** — tap any text field; the keyboard
    should come up noticeably shorter than stock.
-6. [ ] **App Catalog can install apps** — launch App Catalog and install Keen
-7. [ ] **Controller Works** test a Bluetooth or USB controller with Keen. Open
+6. [Pass] **App Catalog can install apps** — launch App Catalog and install Keen
+7. [Skip] **Controller Works** test a Bluetooth or USB controller with Keen. Open
    the USB Settings app and check for errors.
 8. [ ] **LunaCE installed and working** group icons, or create a tab. Install
    Tweaks, and try tweaking something.s
-9. [ ] **Preware knows what's baked** — open Preware → Installed Packages
+9. [Pass] **Preware knows what's baked** — open Preware → Installed Packages
    lists Preware 1.9.19, Govnah 1.3.9, Synergy generic 0.9.3; USB Settings
    and BT Gamepad are nowhere in its listings.
-10. [ ] **Advanced Reset Options** — hold the power button and see if there
+10. [Pass] **Advanced Reset Options** — hold the power button and see if there
    are options.
-11. [ ] **Core apps launch** — open Messaging, Contacts, and Accounts
+11. [Pass] **Core apps launch** — open Messaging, Contacts, and Accounts
    (Settings → Accounts shows the SYNERGY ACCOUNTS box). Just launching all
    three without errors is the signal.
-12. [ ] **Synergy runtime alive** — shell:
+12. [Pass] **Synergy runtime alive** — shell:
    `ls /media/cryptofs/synergy-glibc/lib/ld-linux.so.3 && ps | grep -c imlibpurple`
    (file present, transport process running; give it ~2 min after boot).
-13. [ ] **Legacy junk gone** — no Skype app in the launcher; shell:
+13. [Pass] **Legacy junk gone** — no Skype app in the launcher; shell:
    `ls /usr/palm/applications/com.palm.app.skype 2>&1` → No such file.
-14. [ ] **Dev mode sticks** — `novacom -l` sees the device now; reboot once,
+14. [Pass] **Dev mode sticks** — `novacom -l` sees the device now; reboot once,
     it still does (turnOnNovacomAtStart).
-15. [ ] **webOS Account Icon** - found in Settings
+15. [Pass] **webOS Account Icon** - found in Settings
 
 If all 15 pass, the deep sections below can wait for a slower pass.
 
 ## OOBE (first boot)
 
-- [ ] First use boots into the community webOS Account flow (not stock HP)
+- [Pass] First use boots into the community webOS Account flow (not stock HP)
 - [ ] Card order: language → terms → sign-in → name device (no restore/google/updates cards)
-- [ ] Wi-Fi join popup appears and connects (`dataConnection` delta applied)
-- [ ] **No spurious "log in to hotspot" prompt** on a normal home network (connectivity-probe patch)
-- [ ] Terms card loads the community terms over HTTPS
+- [Pass] Wi-Fi join popup appears and connects (`dataConnection` delta applied)
+- [Pass] **No spurious "log in to hotspot" prompt** on a normal home network (connectivity-probe patch)
+- [Pass] Terms card loads the community terms over HTTPS
 - [ ] Sign-in (or Skip Account Setup) works; completion card shows "Tap Done to finish…"
-- [ ] Done reboots the device on its own; next boot lands in the launcher (no minimal-mode loop)
+- [Fail] Done reboots the device on its own; next boot lands in the launcher (no minimal-mode loop)
 - [ ] German (or other language) OOBE run still works end-to-end if re-testing localization
 
 ## Core-apps suite
@@ -90,7 +90,7 @@ If all 15 pass, the deep sections below can wait for a slower pass.
 ## CE platform tweaks
 
 - [ ] Device Info shows **webOS CE 3.1.0**
-- [ ] `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600000`
+- [ ] `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600008`
 - [ ] **Developer mode on** after flash; toggle it off, reboot → it is back **on** (`turnOnNovacomAtStart`); `novacom -l` sees the device throughout
 - [ ] **Keyboard comes up small** by default; resizing via keyboard key persists across hide/show and reboot
 - [ ] Install **Tweaks** via Preware → LunaCE toggles appear (mini cards, wave launcher, gestures, …) and at least one (e.g. mini cards) works when enabled
@@ -101,7 +101,7 @@ If all 15 pass, the deep sections below can wait for a slower pass.
 - [ ] Browser loads modern-HTTPS sites; App Catalog works; Maps 4.0.1 opens
 - [ ] Email syncs (mail TLS stack); Help app points at webosarchive.org
 - [ ] BT gamepad pairs; USB Settings works and sits on the Settings tab; Govnah on Settings tab
-- [ ] Wallpapers 12–16 + Treo ringtones in `/media/internal` after OOBE; default wallpaper is 12.jpg on a fresh device
+- [ ] Wallpapers 12–29 + Treo ringtones in `/media/internal` after OOBE; default wallpaper is 22.png on a fresh device (and the wallpaper picker shows thumbnails for all of them)
 - [ ] Advanced reset options in the power menu, in the chosen OOBE language; Luna Restart button works
 - [ ] Kindle/Facebook/YouTube preloads absent
 - [ ] `ls-hubd` clean: no "Service not listed in service files" in `/var/log/messages`

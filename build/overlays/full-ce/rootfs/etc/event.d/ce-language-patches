@@ -2,8 +2,11 @@
 # aligned with the selected locale (exact language match, else english — which
 # is what the rootfs ships). Runs each boot after first use; no-op when the
 # files already match. Trees live in /usr/palm/ce-patches/lang/<lang>/.
+# Also triggers at first-use completion: the OOBE finishes without a reboot,
+# so the per-boot run happens before the language is even chosen.
 
 start on stopped finish
+start on first-use-finished
 
 console none
 

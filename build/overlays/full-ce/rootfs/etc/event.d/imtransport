@@ -23,6 +23,20 @@ pre-start script
         sleep 2
         i=$((i+1))
     done
+    # existence isn't enough: mapping a lib that cryptofs can't fully
+    # serve yet (mid-seed, or early after mount) SIGBUSes the transport
+    # in ld-linux. Full-read every runtime lib until two consecutive
+    # passes see the same byte count — complete and readable.
+    prev=-1
+    while [ $i -lt 90 ]; do
+        cur=$(cat /media/cryptofs/synergy-glibc/lib/* \
+                  /media/cryptofs/synergy-runtime/* \
+                  /media/cryptofs/synergy-purple-plugins/* 2>/dev/null | wc -c)
+        if [ "$cur" -gt 0 ] && [ "$cur" = "$prev" ]; then break; fi
+        prev=$cur
+        sleep 2
+        i=$((i+1))
+    done
 end script
 
 exec /var/imdaemon.sh

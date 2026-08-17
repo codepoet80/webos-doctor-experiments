@@ -147,6 +147,16 @@ def load_overlay(overlay_dir):
     cfg = {}
     if not overlay_dir:
         return adds, removes, symlinks, cfg
+    # A wrong --overlay path must fail the build, not silently produce a
+    # stock jar: the path is resolved relative to the caller's cwd, and an
+    # empty overlay is indistinguishable from a typo'd one.
+    if not os.path.isdir(overlay_dir):
+        sys.exit(f"[ce-harness] FATAL: overlay dir does not exist: {overlay_dir} "
+                 f"(paths resolve relative to the current directory)")
+    if not (os.path.exists(os.path.join(overlay_dir, "changes.json"))
+            or os.path.isdir(os.path.join(overlay_dir, "rootfs"))):
+        sys.exit(f"[ce-harness] FATAL: {overlay_dir} has neither changes.json "
+                 f"nor rootfs/ — not an overlay dir")
     cfg_path = os.path.join(overlay_dir, "changes.json")
     if os.path.exists(cfg_path):
         with open(cfg_path) as f:
