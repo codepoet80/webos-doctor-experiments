@@ -10,7 +10,7 @@
 				"help": "Enables the use of your own text as the carrier string.",
 				"key": "useCustomCarrierString",
 				"type": "ToggleButton",
-				"value": false
+				"value": true
 			},
 			{
 				"group": "status bar",
@@ -20,7 +20,7 @@
 				"help": "The text used as your custom carrier string.",
 				"key": "carrierString",
 				"type": "TextField",
-				"value": "HP webOS",
+				"value": "webOS CE",
 				"input": "text"
 			}
 		]

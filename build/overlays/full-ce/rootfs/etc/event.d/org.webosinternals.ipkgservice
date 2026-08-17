@@ -7,6 +7,21 @@ pre-start script
 
    APPS=/media/cryptofs/apps
 
+   # webOS CE: on the FIRST boot after a flash the cryptofs store both
+   # mounts late (finish post-start) and starts empty — app-install has
+   # not created $APPS yet when this pre-start runs, which silently
+   # skipped every seeding block below (seen live: Preware with no feeds
+   # until the next reboot). Wait for the mount, then create the tree
+   # ourselves; app-install and ipkg are fine with it existing.
+   i=0
+   while ! grep -q " /media/cryptofs " /proc/mounts && [ $i -lt 60 ]; do
+      sleep 5
+      i=$((i+1))
+   done
+   if grep -q " /media/cryptofs " /proc/mounts; then
+      mkdir -p $APPS/etc/ipkg $APPS/usr/lib/ipkg
+   fi
+
    # webOS CE: seed the ipkg config on first boot (the baked install
    # replays what Preware's postinst would have written to cryptofs)
    if [ -d /media/cryptofs/apps ] && [ ! -f $APPS/etc/ipkg/arch.conf ] ; then

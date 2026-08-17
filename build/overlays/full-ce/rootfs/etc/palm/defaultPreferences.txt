@@ -1,6 +1,8 @@
 { 
   "preferences": {
 		"x_palm_virtualkeyboard_settings": "{\"keyboard size\": -1}",
+		"sysUiUseCustomCarrierString": true,
+		"sysUiCarrierString": "webOS CE",
   		"useNetworkTime":		true,
 		"useNetworkTimeZone":	true,
 		"timeFormat":			"HH12",

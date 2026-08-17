@@ -1,0 +1,1 @@
+webOS CE: bind-mount target for /media/cryptofs/synergy-runtime (see imwrap.sh); this placeholder only exists so the flash creates the directory on the read-only root.

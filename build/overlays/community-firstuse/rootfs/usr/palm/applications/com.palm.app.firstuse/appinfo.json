@@ -1,0 +1,12 @@
+{
+	"id": "com.palm.app.firstuse",
+	"version": "1.1.12",
+	"vendor": "webOS Archive",
+	"type": "web",
+	"main": "index.html",
+	"title": "webOS Account",
+	"icon": "images/icon.png",
+	"visible": true,
+	"uiRevision": 2,
+	"keywords": ["wosa-settings"]
+}

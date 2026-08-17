@@ -936,6 +936,16 @@ def main():
         sys.exit(f"ERROR: missing {GLIBDIR}")
     for fn in sorted(os.listdir(GLIBDIR)):
         wcopy(f"{SEED}/synergy-runtime/{fn}", os.path.join(GLIBDIR, fn), 0o755)
+    # the bind-mount TARGET /usr/lib/synergy-runtime must pre-exist in the
+    # rootfs: imwrap.sh's own mkdir -p fails on the read-only root (the
+    # postinst created it with root remounted rw — a baked image has no
+    # postinst). A placeholder file makes the flash create the dir; the bind
+    # mount masks it at runtime. Confirmed live: without it the transport
+    # loses libstdc++/libtidy ("cannot open shared object file").
+    w("usr/lib/synergy-runtime/.keep",
+      "webOS CE: bind-mount target for /media/cryptofs/synergy-runtime "
+      "(see imwrap.sh); this placeholder only exists so the flash creates "
+      "the directory on the read-only root.\n", 0o644)
 
     # imtransport starts on ls-hubd_private-ready, but cryptofs (where its
     # seeded glibc lives) mounts late in boot (finish post-start) — without a
@@ -1333,6 +1343,21 @@ def main():
     if "VERSION=3.0.5" not in upst:
         sys.exit("ERROR: VERSION anchor not found in ipkgservice upstart")
     seed = (
+        "   # webOS CE: on the FIRST boot after a flash the cryptofs store both\n"
+        "   # mounts late (finish post-start) and starts empty — app-install has\n"
+        "   # not created $APPS yet when this pre-start runs, which silently\n"
+        "   # skipped every seeding block below (seen live: Preware with no feeds\n"
+        "   # until the next reboot). Wait for the mount, then create the tree\n"
+        "   # ourselves; app-install and ipkg are fine with it existing.\n"
+        "   i=0\n"
+        "   while ! grep -q \" /media/cryptofs \" /proc/mounts && [ $i -lt 60 ]; do\n"
+        "      sleep 5\n"
+        "      i=$((i+1))\n"
+        "   done\n"
+        "   if grep -q \" /media/cryptofs \" /proc/mounts; then\n"
+        "      mkdir -p $APPS/etc/ipkg $APPS/usr/lib/ipkg\n"
+        "   fi\n"
+        "\n"
         "   # webOS CE: seed the ipkg config on first boot (the baked install\n"
         "   # replays what Preware's postinst would have written to cryptofs)\n"
         "   if [ -d /media/cryptofs/apps ] && [ ! -f $APPS/etc/ipkg/arch.conf ] ; then\n"
@@ -1960,14 +1985,20 @@ def main():
     # (0 default, 1 large, -2 XS). Seeding only the size key is deliberate:
     # layout/language stay unset so the locale-driven first-use flow still
     # picks them, and the first saveSettings persists them WITH this size.
+    # ... and the status-bar carrier string: LunaCE falls back to a hardcoded
+    # "HP webOS" unless sysUiUseCustomCarrierString/sysUiCarrierString (the
+    # same systemservice prefs the Tweaks toggles write) say otherwise — HP
+    # is long gone, default to "webOS CE" out of the box.
     dp = sdata("./etc/palm/defaultPreferences.txt").decode()
     dp = sure_replace(dp, '"preferences": {',
                       '"preferences": {\n'
                       '\t\t"x_palm_virtualkeyboard_settings": '
-                      '"{\\"keyboard size\\": -1}",',
+                      '"{\\"keyboard size\\": -1}",\n'
+                      '\t\t"sysUiUseCustomCarrierString": true,\n'
+                      '\t\t"sysUiCarrierString": "webOS CE",',
                       "defaultPreferences preferences anchor", count=1)
     w("etc/palm/defaultPreferences.txt", dp, 0o644)
-    log("  default keyboard size -> small (-1)")
+    log("  default keyboard size -> small (-1); carrier string -> webOS CE")
 
     # 20) merge changes.json (carry over community-firstuse removals, add ours)
     cf_cfg = {}

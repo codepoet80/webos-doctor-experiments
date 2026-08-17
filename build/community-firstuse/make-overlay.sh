@@ -72,14 +72,36 @@ mkdir -p "$R/$APP" "$R/$SVC/utils" "$R/$SVC/handlers" \
          "$R/usr/lib/curl11" "$R/usr/bin" "$R/etc/ssl/certs" "$R/etc/event.d" "$R/var/gadget"
 
 echo ">> 2) first-use app: webosaccount app over com.palm.app.firstuse"
-# Every appinfo.json is excluded (top-level AND per-locale resources/ ones —
-# they carry id com.palm.app.webosaccount / visible:true; the stock firstuse
-# appinfo must stay authoritative). scripts/ is the author's dev tooling.
+# Every ipk appinfo.json is excluded (top-level AND per-locale resources/
+# ones — they carry id com.palm.app.webosaccount; the com.palm.app.firstuse
+# identity must survive or LunaSysMgr's firstuse-mode launch breaks).
+# scripts/ is the author's dev tooling.
 (cd "$SRC/app" && find . -type f ! -name appinfo.json ! -path "./scripts/*" -print0 \
     | while IFS= read -r -d '' f; do
         mkdir -p "$R/$APP/$(dirname "$f")"
         cp "$f" "$R/$APP/$f"
       done)
+# ... but unlike stock firstuse (visible:false), the app IS the account
+# manager post-OOBE: sign out and there'd be no way back in without a
+# launcher icon. Ship a CE appinfo: firstuse id kept, visible, titled
+# "webOS Account", on the Settings tab via the wosa-settings keyword.
+# A standalone launch (no locale on the URL) just closes like a normal
+# app — the 1.1.10+ closeApp only finishes OOBE for the firstuse launch.
+WOSA_VER="$(basename "$WOSA_IPK" | cut -d_ -f2)"
+cat > "$R/$APP/appinfo.json" <<APPINFO
+{
+	"id": "com.palm.app.firstuse",
+	"version": "$WOSA_VER",
+	"vendor": "webOS Archive",
+	"type": "web",
+	"main": "index.html",
+	"title": "webOS Account",
+	"icon": "images/icon.png",
+	"visible": true,
+	"uiRevision": 2,
+	"keywords": ["wosa-settings"]
+}
+APPINFO
 
 echo ">> 3) OOBE deltas on the app copy"
 # The ipk is the STANDALONE build (assumes Wi-Fi is up, never marks first use
