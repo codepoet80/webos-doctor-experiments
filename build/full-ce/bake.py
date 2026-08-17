@@ -12,6 +12,8 @@ regens md5sums and integchecks the result.
 Inputs come from <project>/AddToImage/ (the user's statement of intent):
   PatchOrReplace/  ipks that fix or replace an existing system component
   NewApps/         brand-new apps to pre-install
+  OOBE/            the firstuse replacement app (consumed by the community-
+                   firstuse overlay, which this script regenerates as its base)
   Media-Internal/  static content for /media/internal (delivered via the stock
                    customization copy_binaries mechanism at first boot — the
                    media partition survives Doctor flashes, so first-boot copy
@@ -26,14 +28,35 @@ Tiers (hard order — browser lays down /usr/lib/ssl11 that the rest need):
   6. LunaCE            -> prebuilt LunaSysMgr binary + launcher3 tab images
   7. App Catalog       -> BAKED to /usr/palm/applications (stock staged ipk removed)
   8. Maps 4.0.1        -> BAKED to /usr/palm/applications (stock staged ipk removed)
-  9. Accounts app      -> community build swapped over the stock rootfs app
+  9. core-apps suite   -> the community *-overwrite ipks (accounts, contacts,
+                          messaging, phone, chatthreader, service.accounts,
+                          contacts.linker, contacts.plugin.messaging,
+                          enyo-accounts, enyo-contactsui, messaging.library,
+                          luna-systemui) replayed at their final rootfs paths:
+                          dest.txt + payload.tar.gz (or files.txt surgical
+                          mode), preserve.txt = stock wins, symlinks.txt,
+                          db8-kinds/-permissions -> /etc/palm/db (replacing the
+                          stock member with the same basename, wherever it is)
+ 9b. Synergy generic   -> imlibpurpleservice runtime + libpurple 2.14 baked at
+                          real paths; cloud-auth/docviewer as rootfs apps;
+                          cryptofs-only pieces (synergy-glibc, synergy-runtime,
+                          purple plugins — the bind-mount contract connectors
+                          rely on) seeded once per flash from
+                          /usr/palm/ce-seed/synergy by ce-synergy-seed;
+                          device-setup replays (PmBtEngine + webkit-webm byte
+                          patches, mediastream reroute, Thai font, gst codecs,
+                          bt-a2dp-fix, QuickOffice/Photos staged-ipk repack)
+                          and the skype/legacy-IM/google-legacy retire lists
  10. help-redirect     -> Help app repointed at help.webosarchive.org
  11. rootcertsupdate   -> full trust-store replay: trustedcerts dir, hash links,
                           ca-certificates.crt bundle, calinks.tgz (host openssl,
                           -subject_hash_old to match the device's OpenSSL 0.9.8)
  12. UberKernel        -> /boot kernel + shipped /lib/modules subset
  13. Preware           -> BAKED app + ipkgservice in /usr/sbin + static dbus/ls2/
-                          upstart (feed seeding runs from the job's pre-start)
+                          upstart (feed seeding runs from the job's pre-start,
+                          which also seeds ipkg STATUS stanzas for Preware +
+                          Govnah so Preware shows them as installed — USB/BT
+                          deliberately stay unlisted)
  14. USB settings      -> BAKED app + service + /usr/bin daemons + upstart + roles
  15. BT gamepad        -> shim lib + udev rule + jail/bluetoothtab/upstart patches
  16. Media-Internal    -> /usr/lib/luna/customization/copy_binaries/media/internal
@@ -93,13 +116,32 @@ IPK = {
     "kernel":      ati_ipk(POR, "org.webosinternals.kernels.uber-kernel-touchpad"),
     "catalog":     ati_ipk(POR, "com.palm.app.enyo-findapps"),
     "maps":        ati_ipk(POR, "com.palm.app.maps"),
-    "accounts":    ati_ipk(POR, "org.webosarchive.accountsapp"),
     # NOTE the FILENAME has an underscore: com.palm_.rootcertsupdate_*
     "rootcerts":   ati_ipk(POR, "com.palm_.rootcertsupdate"),
+    "synergy":     ati_ipk(POR, "com.palm.synergy.generic"),
     "preware":     ati_ipk(NEWAPPS, "org.webosinternals.preware"),
     "govnah":      ati_ipk(NEWAPPS, "org.webosinternals.govnah"),
     "usb":         ati_ipk(NEWAPPS, "com.webosarchive.usbsettings"),
     "bt":          ati_ipk(NEWAPPS, "org.webosarchive.btgamepad"),
+}
+
+# The community core-apps suite: *-overwrite ipks (shared pmPostInstall.script
+# family) that replace a stock app/service/framework wholesale (payload.tar.gz
+# into the dir named by dest.txt) or surgically (files.txt + files.tar.gz).
+# Replayed by bake_overwrite_ipk(); order is not load-bearing.
+OVERWRITE_IPKS = {
+    "acct-app":     ati_ipk(POR, "com.palm.app.accounts"),
+    "contacts":     ati_ipk(POR, "com.palm.app.contacts"),
+    "messaging":    ati_ipk(POR, "com.palm.app.messaging"),
+    "phone":        ati_ipk(POR, "com.palm.app.phone"),
+    "chatthreader": ati_ipk(POR, "com.palm.messaging.chatthreader"),
+    "svc-accounts": ati_ipk(POR, "com.palm.service.accounts"),
+    "linker":       ati_ipk(POR, "com.palm.service.contacts.linker"),
+    "cpm":          ati_ipk(POR, "contacts.plugin.messaging"),
+    "enyo-acct":    ati_ipk(POR, "enyo-accounts"),
+    "enyo-cui":     ati_ipk(POR, "enyo-contactsui"),
+    "systemui":     ati_ipk(POR, "luna-systemui"),
+    "msg-lib":      ati_ipk(POR, "messaging.library"),
 }
 # org.webosarchive.tls-updates is a META package (README-only payload; its
 # Depends list is what we bake individually) — deliberately not consumed.
@@ -137,6 +179,118 @@ MAIL_PFX = ("/usr/bin/env LD_BIND_NOW=1 LD_LIBRARY_PATH=/usr/lib/ssl11mail "
 MAIL_OPENSSL_CONF = "OPENSSL_CONF=/usr/lib/ssl11mail/mailssl.cnf "
 
 CERT_EXTS = (".pem", ".cer", ".der", ".crt")
+
+# Synergy generic's skype-disable / legacy-im-disable / google-legacy-disable
+# retire lists, transcribed from its postinst. On-device these are ds_move'd to
+# a cryptofs backup (reversible); CE removes them from the image (recovery is
+# re-Doctoring). Entries name a file OR a directory (expanded against stock).
+# DELIBERATELY absent: /usr/lib/gstreamer-0.10/libpalmgstskype.so — the
+# Teams/Telegram/WhatsApp connector plugins carry a hard ELF NEEDED + RPATH on
+# it, and /usr/lib/purple-2/libjabber.* stays out of the legacy-IM section
+# because it's retired by the google section below (type_gtalk was its last
+# consumer).
+SYNERGY_RETIRE = [
+    # -- skype-disable (defunct Skype stack)
+    "/usr/share/dbus-1/system-services/com.palm.skype.service",
+    "/usr/share/dbus-1/system-services/com.palm.skypevalidator.service",
+    "/etc/palm/activities/com.palm.skype",
+    "/etc/palm/activities/com.palm.skypevalidator",
+    "/etc/event.d/skypekit",
+    "/etc/event.d/skypekit-offport",
+    "/usr/share/ls2/roles/prv/com.palm.skype.json",
+    "/usr/share/ls2/roles/prv/com.palm.skypevalidator.json",
+    "/etc/palm/db/kinds/com.palm.skype",
+    "/etc/palm/db/permissions/com.palm.skype",
+    "/etc/palm/tempdb/kinds/com.palm.skype",
+    "/etc/palm/tempdb/permissions/com.palm.skype",
+    "/usr/palm/public/accounts/com.palm.skype",
+    "/usr/palm/applications/com.palm.app.skype",
+    "/usr/bin/skypem",
+    "/usr/bin/skypevalidator",
+    "/usr/bin/linux-armv7-skypekit-voicepcm-videortp",
+    "/var/skypekit",
+    # -- legacy-im-disable: AOL/AIM
+    "/usr/palm/public/accounts/com.palm.aol",
+    "/usr/bin/imaccountvalidator",
+    "/usr/share/ls2/roles/prv/com.palm.imaccountvalidator.json",
+    "/usr/share/dbus-1/system-services/com.palm.imaccountvalidator.service",
+    # -- legacy-im-disable: Yahoo! IM
+    "/usr/bin/imyahootransport",
+    "/usr/share/ls2/roles/prv/com.palm.imyahoo.json",
+    "/usr/share/dbus-1/system-services/com.palm.imyahoo.service",
+    "/etc/palm/activities/com.palm.imyahoo",
+    "/etc/palm/db/kinds/com.palm.imcommand.yahoo",
+    "/etc/palm/db/kinds/com.palm.imloginstate.yahoo",
+    "/etc/palm/db/kinds/com.palm.immessage.yahoo",
+    "/etc/palm/db/kinds/com.palm.contact.imyahoo",
+    "/etc/palm/tempdb/kinds/com.palm.imbuddystatus.yahoo",
+    # -- legacy-im-disable: Yahoo! contacts sync
+    "/usr/palm/services/com.palm.service.contacts.yahoo",
+    "/usr/share/ls2/roles/prv/com.palm.service.contacts.yahoo.json",
+    "/usr/share/ls2/roles/pub/com.palm.service.contacts.yahoo.json",
+    "/usr/share/dbus-1/system-services/com.palm.service.contacts.yahoo.service",
+    "/etc/palm/db/kinds/com.palm.contact.yahoo",
+    "/etc/palm/db/kinds/com.palm.contact.transport.yahoo",
+    "/etc/palm/db/kinds/com.palm.account.contacts.yahoo",
+    "/etc/palm/db/permissions/com.palm.contact.yahoo",
+    "/etc/palm/db/permissions/com.palm.contact.transport.yahoo",
+    "/etc/palm/db/permissions/com.palm.account.contacts.yahoo",
+    # -- legacy-im-disable: Yahoo! calendar sync
+    "/usr/palm/services/com.palm.service.calendar.yahoo",
+    "/usr/share/ls2/roles/prv/com.palm.service.calendar.yahoo.json",
+    "/usr/share/ls2/roles/pub/com.palm.service.calendar.yahoo.json",
+    "/usr/share/dbus-1/system-services/com.palm.service.calendar.yahoo.service",
+    "/etc/palm/db/kinds/com.palm.calendar.yahoo",
+    "/etc/palm/db/kinds/com.palm.calendarevent.yahoo",
+    "/etc/palm/db/kinds/com.palm.calendar.transport.yahoo",
+    "/etc/palm/db/kinds/com.palm.calendarevent.transport.yahoo",
+    "/etc/palm/db/kinds/com.palm.account.calendar.yahoo",
+    "/etc/palm/db/permissions/com.palm.calendar.yahoo",
+    "/etc/palm/db/permissions/com.palm.calendarevent.yahoo",
+    # -- legacy-im-disable: Yahoo! master/auth service + account template
+    "/usr/bin/yahoo-service",
+    "/usr/share/ls2/roles/prv/com.palm.yahoo.json",
+    "/usr/share/dbus-1/system-services/com.palm.yahoo.service",
+    "/etc/palm/db/kinds/com.palm.yahoo.authservice",
+    "/usr/palm/public/accounts/com.palm.yahoo",
+    # -- legacy-im-disable: orphaned oscar/AIM/ICQ plugins + redundant SSL backends
+    "/usr/lib/purple-2/libaim.so",
+    "/usr/lib/purple-2/libicq.so",
+    "/usr/lib/purple-2/liboscar.so",
+    "/usr/lib/purple-2/liboscar.so.0",
+    "/usr/lib/purple-2/liboscar.so.0.0.0",
+    "/usr/lib/purple-2/ssl-gnutls.so",
+    "/usr/lib/purple-2/ssl-nss.so",
+    # -- google-legacy-disable: contacts sync
+    "/usr/palm/services/com.palm.service.contacts.google",
+    "/usr/share/ls2/roles/prv/com.palm.service.contacts.google.json",
+    "/usr/share/ls2/roles/pub/com.palm.service.contacts.google.json",
+    "/usr/share/dbus-1/system-services/com.palm.service.contacts.google.service",
+    "/etc/palm/db/kinds/com.palm.contact.google",
+    "/etc/palm/db/kinds/com.palm.contact.transport.google",
+    "/etc/palm/db/kinds/com.palm.account.contacts.google",
+    "/etc/palm/db/permissions/com.palm.contact.google",
+    "/etc/palm/db/permissions/com.palm.contact.transport.google",
+    "/etc/palm/db/permissions/com.palm.account.contacts.google",
+    # -- google-legacy-disable: calendar sync
+    "/usr/palm/services/com.palm.service.calendar.google",
+    "/usr/share/ls2/roles/prv/com.palm.service.calendar.google.json",
+    "/usr/share/ls2/roles/pub/com.palm.service.calendar.google.json",
+    "/usr/share/dbus-1/system-services/com.palm.service.calendar.google.service",
+    "/etc/palm/db/kinds/com.palm.calendar.google",
+    "/etc/palm/db/kinds/com.palm.calendarevent.google",
+    "/etc/palm/db/kinds/com.palm.calendar.transport.google",
+    "/etc/palm/db/kinds/com.palm.calendarevent.transport.google",
+    "/etc/palm/db/kinds/com.palm.account.calendar.google",
+    "/etc/palm/db/permissions/com.palm.calendar.google",
+    "/etc/palm/db/permissions/com.palm.calendarevent.google",
+    # -- google-legacy-disable: account template + orphaned jabber/xmpp plugins
+    "/usr/palm/public/accounts/com.palm.google",
+    "/usr/lib/purple-2/libjabber.so",
+    "/usr/lib/purple-2/libjabber.so.0",
+    "/usr/lib/purple-2/libjabber.so.0.0.0",
+    "/usr/lib/purple-2/libxmpp.so",
+]
 
 
 def log(m): print(f"[bake] {m}")
@@ -179,6 +333,26 @@ def read_rootfs(tgz, exact=(), prefixes=()):
     return out
 
 
+def ipk_version(path):
+    """Version component of an ipk FILENAME (<pkg>_<version>_<arch>.ipk)."""
+    parts = os.path.basename(path).split("_")
+    if len(parts) < 3:
+        sys.exit(f"ERROR: cannot parse version from ipk filename: {path}")
+    return parts[-2]
+
+
+def read_rootfs_names(tgz, prefixes):
+    """Streaming pass collecting the NAMES of file/symlink members under the
+    given prefixes (no data — cheap even for large subtrees)."""
+    prefixes = tuple(prefixes)
+    names = set()
+    with tarfile.open(tgz, mode="r|gz") as tf:
+        for m in tf:
+            if (m.isfile() or m.issym()) and m.name.startswith(prefixes):
+                names.add(m.name)
+    return names
+
+
 def w(relpath, data, mode=0o644):
     """Write a regular file into the overlay rootfs tree."""
     p = os.path.join(OUT_ROOT, relpath)
@@ -204,31 +378,32 @@ def symlink(relpath, target):
     log(f"  symlink /{relpath} -> {target}")
 
 
-def bake_tree(srcroot, quiet=True):
-    """Bake an extracted payload tree into the overlay at identical paths.
-    Skips the _ar scratch dir. Files keep exec-ness (755/644); symlinks kept."""
-    n = 0
+def bake_tree(srcroot, quiet=True, destprefix=""):
+    """Bake an extracted payload tree into the overlay (at identical paths, or
+    under destprefix). Skips the _ar scratch dir. Files keep exec-ness
+    (755/644); symlinks kept. Returns the set of baked overlay relpaths."""
+    baked = set()
     for dp, dns, fns in os.walk(srcroot):
         dns[:] = [x for x in dns if x != "_ar"]
         for fn in fns:
             full = os.path.join(dp, fn)
             rel = os.path.relpath(full, srcroot)
+            if destprefix:
+                rel = os.path.join(destprefix, rel)
+            p = os.path.join(OUT_ROOT, rel)
+            os.makedirs(os.path.dirname(p), exist_ok=True)
             if os.path.islink(full):
-                p = os.path.join(OUT_ROOT, rel)
-                os.makedirs(os.path.dirname(p), exist_ok=True)
                 if os.path.lexists(p):
                     os.remove(p)
                 os.symlink(os.readlink(full), p)
             else:
                 mode = 0o755 if (os.stat(full).st_mode & 0o111) else 0o644
-                p = os.path.join(OUT_ROOT, rel)
-                os.makedirs(os.path.dirname(p), exist_ok=True)
                 shutil.copyfile(full, p)
                 os.chmod(p, mode)
-            n += 1
+            baked.add(rel)
     if quiet:
-        log(f"  baked {n} entries from {os.path.basename(srcroot)}")
-    return n
+        log(f"  baked {len(baked)} entries from {os.path.basename(srcroot)}")
+    return baked
 
 
 def sure_replace(text, old, new, what, count=None):
@@ -281,12 +456,14 @@ def cert_fingerprint(b):
 
 def main():
     for req in (ROOTFS_TGZ, os.path.join(LUNACE, "bin", "LunaSysMgr-LunaCE-topaz"),
-                *IPK.values()):
+                *IPK.values(), *OVERWRITE_IPKS.values()):
         if not os.path.exists(req):
             sys.exit(f"ERROR: missing required input: {req}")
     if not os.path.isdir(MEDIA):
         sys.exit(f"ERROR: missing {MEDIA}")
     for k, v in sorted(IPK.items()):
+        log(f"input {k:12s} {os.path.basename(v)}")
+    for k, v in sorted(OVERWRITE_IPKS.items()):
         log(f"input {k:12s} {os.path.basename(v)}")
 
     # 0) re-extract a PRISTINE OEM rootfs. build-ce-doctor.sh's build step copies
@@ -313,7 +490,6 @@ def main():
     os.makedirs(tmp)
 
     # stock files needed for the replays — ONE streaming pass over the tarball
-    ACCOUNTS_PFX = "./usr/palm/applications/com.palm.app.accounts/"
     TRUSTED_PFX = "./etc/ssl/certs/trustedcerts/"
     HELP_SRC = "./usr/palm/applications/com.palm.app.help/help/source/"
     BT_MODEL = "./usr/palm/applications/com.palm.app.bluetoothtab/app/models/Bluetooth.js"
@@ -339,12 +515,63 @@ def main():
         "./usr/share/dbus-1/system-services/com.palm.imap.service",
         "./usr/share/dbus-1/system-services/com.palm.pop.service",
         "./usr/share/dbus-1/system-services/com.palm.smtp.service",
-    ], prefixes=[ACCOUNTS_PFX, TRUSTED_PFX])
+        # synergy device-setup replay targets
+        "./usr/bin/PmBtEngine",
+        "./usr/palm/frameworks/mediastream/submission/24mediastream.js",
+        "./usr/palm/frameworks/mediastream/submission/24/concatenated.js",
+        "./usr/palm/frameworks/mediastream/submission/24/javascript/StreamingPlayEngine.js",
+        "./usr/palm/services/com.palm.service.photos/photos-src/base/Utils.js",
+        "./usr/palm/services/com.palm.service.photos/photos-src/base/Sync-Manager.js",
+        # stock staged ipks repacked with the synergy QuickOffice/Photos patches
+        "./usr/palm/ipkgs/com.quickoffice.webos_2.1.2113_ARM_release-arm.ipk",
+        "./usr/palm/ipkgs/com.quickoffice.ar_10.3.484_ARM_release-arm.ipk",
+        "./usr/palm/ipkgs/com.palm.app.photos/com.palm.app.photos_3.0.8001_all.ipk",
+    ], prefixes=[TRUSTED_PFX])
 
     def sdata(name):
         return stock[name]["data"]
 
+    # stock member NAMES under everything the overwrite replays diff against:
+    # the replaced app/service/framework trees (to compute removals of stock
+    # files the new build no longer ships), the staged-ipk store (to remove the
+    # stock ipks of apps we bake — they'd install an OLD copy into cryptofs at
+    # first boot, and cryptofs shadows the rootfs), and /etc/palm/db (to
+    # replace stock db8 kind/permission files wherever they actually live —
+    # some sit in per-owner SUBDIRS, e.g. kinds/com.palm.app.phone/).
+    log("scanning stock member names for the overwrite replays")
+    stock_names = read_rootfs_names(ROOTFS_TGZ, [
+        "./usr/palm/applications/com.palm.app.accounts/",
+        "./usr/palm/applications/com.palm.app.phone/",
+        "./usr/palm/applications/com.palm.app.enyo-findapps/",
+        "./usr/palm/services/com.palm.messaging.chatthreader/",
+        "./usr/palm/services/com.palm.service.accounts/",
+        "./usr/palm/services/com.palm.service.contacts.linker/",
+        "./usr/palm/frameworks/contacts.plugin.messaging/",
+        "./usr/palm/frameworks/messaging.library/",
+        "./usr/palm/frameworks/enyo/0.10/framework/lib/accounts/",
+        "./usr/palm/frameworks/enyo/0.10/framework/lib/contactsui/",
+        "./usr/palm/ipkgs/",
+        "./etc/palm/db/",
+        "./etc/palm/tempdb/",
+        # synergy retire-list entries (each is a file or a whole directory;
+        # expanded precisely — exact member or members under <entry>/ — below)
+        *("./" + e.lstrip("/") for e in SYNERGY_RETIRE),
+    ])
+
     removes = []
+
+    def remove_staged_ipk(appid):
+        """Remove the stock staged-ipk subdir (ipk + icon + manifest) for an
+        app this image bakes into the rootfs. app-install would otherwise
+        install the OLD stock version into cryptofs at first boot, shadowing
+        the baked app."""
+        members = sorted(n for n in stock_names
+                         if n.startswith(f"./usr/palm/ipkgs/{appid}/"))
+        if not members:
+            log(f"  note: no stock staged ipk for {appid} (nothing to remove)")
+        for n in members:
+            removes.append(n[1:])
+            log(f"  remove staged {n[1:]}")
 
     # 2) browser-tls13 : /usr/lib/ssl11 stack + RPATH'd BrowserServer
     log("tier: browser-tls13")
@@ -446,49 +673,443 @@ def main():
         if os.path.exists(src):
             wcopy(f"usr/palm/sysmgr/images/launcher3/{img}", src, 0o644)
 
-    # 8) App Catalog : BAKE the community enyo-findapps into the rootfs as a
-    # system app, and remove the stock staged 5.0.2900 ipk so first-boot
-    # app-install can't put an old copy in cryptofs that would shadow ours.
+    # 8) App Catalog : BAKE the community enyo-findapps over the stock rootfs
+    # app, removing stock files the new build no longer ships. (This Doctor's
+    # stock catalog is a plain rootfs app — there is no staged findapps ipk;
+    # an earlier flat-path remove here matched nothing and is gone.)
     log(f"tier: App Catalog BAKED ({os.path.basename(IPK['catalog'])})")
     d = ipk_extract_data(IPK["catalog"], os.path.join(tmp, "catalog"))
-    bake_tree(d)
-    removes.append("/usr/palm/ipkgs/com.palm.app.enyo-findapps_5.0.2900_all.ipk")
+    baked_cat = bake_tree(d)
+    CAT_PFX = "./usr/palm/applications/com.palm.app.enyo-findapps/"
+    cat_removes = sorted(n[1:] for n in stock_names
+                         if n.startswith(CAT_PFX) and n[2:] not in baked_cat)
+    removes.extend(cat_removes)
+    log(f"  {len(cat_removes)} stale stock catalog files removed")
 
-    # 9) Maps : BAKE 4.0.1 as a system app; remove the stock staged 3.0.1 ipk.
+    # 9) Maps : BAKE 4.0.1 as a system app; remove the stock staged 3.0.1 ipk
+    # (it lives in a per-app SUBDIR of /usr/palm/ipkgs — ipk + icon + manifest).
     log(f"tier: Maps BAKED ({os.path.basename(IPK['maps'])})")
     d = ipk_extract_data(IPK["maps"], os.path.join(tmp, "maps"))
     bake_tree(d)
-    removes.append("/usr/palm/ipkgs/com.palm.app.maps_3.0.1_all.ipk")
+    remove_staged_ipk("com.palm.app.maps")
 
-    # 10) Accounts : the community build REPLACES the stock rootfs app. Its
-    # payload ships as one tarball (postinst extracts it over the app dir after
-    # an rm -rf) — replay: bake every payload file, remove stock files the new
-    # build no longer has.
-    log(f"tier: Accounts app swap ({os.path.basename(IPK['accounts'])})")
-    d = ipk_extract_data(IPK["accounts"], os.path.join(tmp, "accounts"))
-    pay = os.path.join(d, "media/cryptofs/webosarchive-accounts-overwrite/payload.tar.gz")
-    appdst = os.path.join(tmp, "accounts_app")
-    os.makedirs(appdst)
-    with tarfile.open(pay) as tf:
-        tf.extractall(appdst, filter="data")
-    baked_acc = set()
-    for dp, _dn, fns in os.walk(appdst):
+    # 10) core-apps suite : replay each community *-overwrite ipk. The shared
+    # pmPostInstall.script family stages ONE subdir per package under
+    # /media/cryptofs/<group>-overwrite/<pkg>/ holding:
+    #   dest.txt      the absolute dir the package replaces/patches
+    #   payload.tar.gz  whole-dir mode: extracted INTO dest after rm -rf
+    #   files.txt + files.tar.gz  surgical mode: only the listed files change
+    #   preserve.txt  subpaths whose ON-DEVICE content survives the replace —
+    #                 at bake time "on-device" = pristine stock, so stock wins
+    #   symlinks.txt  "relpath<TAB>target" links (cryptofs can't hold symlinks)
+    #   db8-kinds/ db8-permissions/  kind/permission files for /etc/palm/db —
+    #                 the postinst also putKinds them live; on a Doctor-fresh
+    #                 device com.palm.configurator loads /etc/palm/db itself,
+    #                 so baking the files is the complete replay
+    # A dest under /media/cryptofs/apps/ means the stock app was cryptofs-
+    # installed from a staged ipk: bake it as a ROOTFS app instead (the proven
+    # maps/catalog pattern) and remove the stock staged ipk.
+    def bake_overwrite_ipk(key):
+        ipk = OVERWRITE_IPKS[key]
+        d = ipk_extract_data(ipk, os.path.join(tmp, f"ow-{key}"))
+        dests = glob.glob(os.path.join(d, "media/cryptofs/*-overwrite/*/dest.txt"))
+        if len(dests) != 1:
+            sys.exit(f"ERROR: {os.path.basename(ipk)}: expected exactly one "
+                     f"staged dest.txt, found {len(dests)}")
+        ov = os.path.dirname(dests[0])
+        dest = open(dests[0]).read().strip()
+        cryptofs_app = None
+        if dest.startswith("/media/cryptofs/apps/"):
+            destrel = dest[len("/media/cryptofs/apps/"):]
+            if not destrel.startswith("usr/palm/applications/"):
+                sys.exit(f"ERROR: {key}: unexpected cryptofs dest {dest}")
+            cryptofs_app = os.path.basename(destrel)
+        else:
+            destrel = dest.lstrip("/")
+        # stock /usr/palm/frameworks/enyo/1.0 is a SYMLINK to 0.10 — bake at
+        # the real path so the flash never turns the link into a directory
+        destrel = destrel.replace("usr/palm/frameworks/enyo/1.0/",
+                                  "usr/palm/frameworks/enyo/0.10/", 1)
+        log(f"tier: overwrite replay {os.path.basename(ipk)} -> /{destrel}")
+
+        if os.path.exists(os.path.join(ov, "files.txt")):
+            # surgical mode: only the listed files change; nothing is removed
+            fdir = os.path.join(tmp, f"ow-{key}-files")
+            os.makedirs(fdir)
+            with tarfile.open(os.path.join(ov, "files.tar.gz")) as tf:
+                tf.extractall(fdir, filter="data")
+            listed = [ln.strip() for ln in open(os.path.join(ov, "files.txt"))
+                      if ln.strip()]
+            baked = bake_tree(fdir, destprefix=destrel)
+            if {os.path.join(destrel, x) for x in listed} != baked:
+                sys.exit(f"ERROR: {key}: files.txt does not match files.tar.gz")
+        else:
+            # whole-dir mode
+            pdir = os.path.join(tmp, f"ow-{key}-payload")
+            os.makedirs(pdir)
+            with tarfile.open(os.path.join(ov, "payload.tar.gz")) as tf:
+                tf.extractall(pdir, filter="data")
+            stock_pfx = "./" + destrel + "/"
+            stock_under = {n for n in stock_names if n.startswith(stock_pfx)}
+
+            preserve = []
+            pv = os.path.join(ov, "preserve.txt")
+            if os.path.exists(pv):
+                preserve = [ln.strip() for ln in open(pv) if ln.strip()]
+            # a preserve path only "wins" if stock actually has content there
+            preserved = [p for p in preserve
+                         if any(n == stock_pfx + p or n.startswith(stock_pfx + p + "/")
+                                for n in stock_under)]
+
+            def under_preserved(rel):
+                return any(rel == p or rel.startswith(p + "/") for p in preserved)
+
+            baked = set()
+            for dp, _dn, fns in os.walk(pdir):
+                for fn in fns:
+                    full = os.path.join(dp, fn)
+                    rel = os.path.relpath(full, pdir)
+                    if under_preserved(rel):
+                        continue                      # stock wins
+                    p = os.path.join(OUT_ROOT, destrel, rel)
+                    os.makedirs(os.path.dirname(p), exist_ok=True)
+                    if os.path.islink(full):
+                        if os.path.lexists(p):
+                            os.remove(p)
+                        os.symlink(os.readlink(full), p)
+                    else:
+                        mode = 0o755 if (os.stat(full).st_mode & 0o111) else 0o644
+                        shutil.copyfile(full, p)
+                        os.chmod(p, mode)
+                    baked.add(rel)
+            if not baked:
+                sys.exit(f"ERROR: {key}: empty payload")
+            if "applications/" in destrel and "appinfo.json" not in baked:
+                sys.exit(f"ERROR: {key}: app payload has no appinfo.json")
+            sl = os.path.join(ov, "symlinks.txt")
+            if os.path.exists(sl) and os.path.getsize(sl):
+                for ln in open(sl):
+                    if not ln.strip():
+                        continue
+                    rel, target = ln.rstrip("\n").split("\t", 1)
+                    symlink(os.path.join(destrel, rel), target)
+                    baked.add(rel)
+            n_rm = 0
+            for n in sorted(stock_under):
+                rel = n[len(stock_pfx):]
+                if rel in baked or under_preserved(rel):
+                    continue
+                removes.append(n[1:])
+                n_rm += 1
+            log(f"  {len(baked)} files baked, {n_rm} stock files removed"
+                + (f", stock-preserved: {', '.join(preserved)}" if preserved else ""))
+
+        # db8 kind/permission files -> /etc/palm/db, REPLACING the stock member
+        # with the same basename wherever it lives (several sit in per-owner
+        # subdirs, e.g. kinds/com.palm.app.phone/com.palm.phonecall); brand-new
+        # ones land flat. Copied raw, exactly like the postinst's cp — the
+        # owner-injection there is only for its live putKind call.
+        for sub, base in (("db8-kinds", "etc/palm/db/kinds"),
+                          ("db8-permissions", "etc/palm/db/permissions")):
+            kd = os.path.join(ov, sub)
+            if not os.path.isdir(kd):
+                continue
+            for fn in sorted(os.listdir(kd)):
+                full = os.path.join(kd, fn)
+                if not os.path.isfile(full):
+                    continue
+                cands = [n for n in stock_names
+                         if n.startswith(f"./{base}/") and os.path.basename(n) == fn]
+                if len(cands) > 1:
+                    sys.exit(f"ERROR: {key}: ambiguous stock {sub} member {fn}: {cands}")
+                rel = cands[0][2:] if cands else f"{base}/{fn}"
+                wcopy(rel, full, 0o644)
+        return cryptofs_app
+
+    for key in sorted(OVERWRITE_IPKS):
+        appid = bake_overwrite_ipk(key)
+        if appid:
+            remove_staged_ipk(appid)
+
+    # 10b) Synergy Revival generic runtime (com.palm.synergy.generic).
+    # Replay of its postinst, adapted to the baked image:
+    #  - rootfs-overwrite tree -> baked at its real paths (transport binary,
+    #    imtransport job, /var launch scripts, libpurple 2.14 + plugins, db8
+    #    kinds/permissions/activities, ls2 roles, dbus launcher, _cloudcore)
+    #  - its cryptofs-app payloads (cloud-auth, docviewer) -> baked as ROOTFS
+    #    apps (the maps/catalog pattern)
+    #  - its cryptofs-only payloads CANNOT be baked (the transport's ELF
+    #    interpreter is hardcoded to /media/cryptofs/synergy-glibc/lib/
+    #    ld-linux.so.3, and imwrap.sh bind-mounts /media/cryptofs/
+    #    synergy-{purple-plugins,runtime} over /usr/lib on every launch — a
+    #    contract later Preware-installed connectors rely on, so it must stay).
+    #    They ship under /usr/palm/ce-seed/synergy/ and /etc/event.d/
+    #    ce-synergy-seed copies them into cryptofs once per flash.
+    #  - device-setup fixes: PmBtEngine BT-HFG byte patch, mediastream webm
+    #    reroute (their own sh/awk script run on pristine stock), Thai font,
+    #    gst opus/ogg/vpx/matroska/speex/audioresample plugins, bt-a2dp-fix
+    #    job, db8-clean tool, and the skype/legacy-IM/google-legacy retire
+    #    lists as image removals. The libWebKitLuna webm-MIME byte patch is
+    #    applied in the version-prefix tier (same file, one write).
+    #  - QuickOffice/Photos integration targets apps installed at first boot
+    #    from stock staged ipks — those ipks are repacked here with the
+    #    patches applied (webOS ipkg does not verify signatures).
+    #  Skipped on purpose: whatsapp-e164 migration (live-db8 migration for
+    #  EXISTING data — a fresh flash has none), videoplayer-webm's
+    #  libmp-autoplug shim (breaks mp4 playback; postinst skips it too), and
+    #  the gstreamer registry-cache cleanup (no cache exists on a fresh /var).
+    log(f"tier: Synergy generic ({os.path.basename(IPK['synergy'])})")
+    d = ipk_extract_data(IPK["synergy"], os.path.join(tmp, "synergy"))
+    SREV = os.path.join(d, "media/cryptofs/synergy-revival")
+    RO = os.path.join(SREV, "rootfs-overwrite", "com.palm.synergy.generic")
+    DSDIR = os.path.join(SREV, "device-setup")
+    if not os.path.isdir(RO) or not os.path.isdir(DSDIR):
+        sys.exit("ERROR: synergy ipk missing rootfs-overwrite/device-setup staging")
+    SEED = "usr/palm/ce-seed/synergy"
+    CRYPT_APP_PFX = "media/cryptofs/apps/usr/palm/applications/"
+    syn_apps = []
+    n_root = n_seed = 0
+    for dp, _dn, fns in os.walk(RO):
         for fn in fns:
             full = os.path.join(dp, fn)
-            rel = os.path.relpath(full, appdst)
-            tgt = f"usr/palm/applications/com.palm.app.accounts/{rel}"
+            rel = os.path.relpath(full, RO)
+            if rel == ".symlinks":
+                continue
+            if rel.startswith(CRYPT_APP_PFX):
+                tgt = "usr/palm/applications/" + rel[len(CRYPT_APP_PFX):]
+                appid = rel[len(CRYPT_APP_PFX):].split("/", 1)[0]
+                if appid not in syn_apps:
+                    syn_apps.append(appid)
+            elif rel.startswith("media/cryptofs/"):
+                sub = rel[len("media/cryptofs/"):]
+                if not sub.startswith(("synergy-glibc/", "synergy-runtime/")):
+                    sys.exit(f"ERROR: synergy: unexpected cryptofs payload path {rel}")
+                tgt = f"{SEED}/{sub}"
+                n_seed += 1
+            else:
+                tgt = rel
+                n_root += 1
             mode = 0o755 if (os.stat(full).st_mode & 0o111) else 0o644
-            p = os.path.join(OUT_ROOT, tgt)
-            os.makedirs(os.path.dirname(p), exist_ok=True)
-            shutil.copyfile(full, p)
-            os.chmod(p, mode)
-            baked_acc.add("./" + tgt)
-    if not any(n.endswith("/appinfo.json") for n in baked_acc):
-        sys.exit("ERROR: accounts payload has no appinfo.json — wrong payload?")
-    acc_removes = [n[1:] for n in stock
-                   if n.startswith(ACCOUNTS_PFX) and n not in baked_acc]
-    removes.extend(acc_removes)
-    log(f"  {len(baked_acc)} files baked, {len(acc_removes)} stock files removed")
+            if tgt.startswith("var/") and tgt.endswith(".sh"):
+                mode = 0o755          # the postinst chmods these explicitly
+            wcopy(tgt, full, mode)
+    log(f"  {n_root} rootfs files, {n_seed} seed files, apps baked: {', '.join(syn_apps)}")
+    # .symlinks manifest: "abs-dst<TAB>target" (libpurple.so{,.0} -> 0.14.13,
+    # replacing the stock links to 0.5.1)
+    for ln in open(os.path.join(RO, ".symlinks")):
+        if not ln.strip():
+            continue
+        dst, target = ln.rstrip("\n").split("\t", 1)
+        symlink(dst.lstrip("/"), target)
+    # seed copies of the generic purple-2 plugins: imwrap.sh bind-mounts
+    # /media/cryptofs/synergy-purple-plugins OVER /usr/lib/purple-2 on every
+    # transport launch, which would otherwise mask the baked plugins with an
+    # empty dir. (The baked /usr/lib/purple-2 copies stay too — they are the
+    # modernized stock files, and they are what a pre-mount reader sees.)
+    p2 = os.path.join(RO, "usr/lib/purple-2")
+    for fn in sorted(os.listdir(p2)):
+        wcopy(f"{SEED}/synergy-purple-plugins/{fn}", os.path.join(p2, fn), 0o755)
+
+    # imtransport starts on ls-hubd_private-ready, but cryptofs (where its
+    # seeded glibc lives) mounts late in boot (finish post-start) — without a
+    # gate the doomed launches burn the job's respawn limit (30/hour) before
+    # the interpreter even exists. Wait in pre-start instead of failing.
+    imt = open(os.path.join(RO, "etc/event.d/imtransport")).read()
+    imt = sure_replace(
+        imt, "exec /var/imdaemon.sh",
+        "# webOS CE: cryptofs mounts late in boot (finish post-start) and the\n"
+        "# transport's ELF interpreter lives there (seeded by ce-synergy-seed) —\n"
+        "# wait for it so respawn isn't burned on launches that cannot succeed.\n"
+        "pre-start script\n"
+        "    i=0\n"
+        "    while [ ! -f /media/cryptofs/synergy-glibc/lib/ld-linux.so.3 ] && [ $i -lt 90 ]; do\n"
+        "        sleep 2\n"
+        "        i=$((i+1))\n"
+        "    done\n"
+        "end script\n"
+        "\n"
+        "exec /var/imdaemon.sh",
+        "imtransport pre-start gate", count=1)
+    w("etc/event.d/imtransport", imt, 0o644)
+
+    # once-per-flash cryptofs seeding + an unconditional kick for imtransport
+    w("etc/event.d/ce-synergy-seed",
+      "# ce-synergy-seed — webOS CE: the Synergy transport's glibc, runtime libs and\n"
+      "# purple plugins live on /media/cryptofs (hardcoded ELF interpreter path +\n"
+      "# imwrap.sh's bind mounts — a contract Preware-installed connectors rely on).\n"
+      "# cryptofs survives flashes but is not in the image: seed it once per flash\n"
+      "# from the rootfs copy (/var is wiped by the Doctor, so a /var flag = once),\n"
+      "# then kick imtransport in case it exhausted its respawn limit waiting.\n"
+      "\n"
+      "start on stopped finish\n"
+      "\n"
+      "console none\n"
+      "\n"
+      "script\n"
+      "    SEED=/usr/palm/ce-seed/synergy\n"
+      "    FLAG=/var/luna/preferences/ce-synergy-seeded\n"
+      "    if [ -d /media/cryptofs ] && [ ! -f \"$FLAG\" ]; then\n"
+      "        for d in synergy-glibc synergy-runtime synergy-purple-plugins; do\n"
+      "            if [ -d \"$SEED/$d\" ]; then\n"
+      "                mkdir -p \"/media/cryptofs/$d\"\n"
+      "                cp -rf \"$SEED/$d/.\" \"/media/cryptofs/$d/\"\n"
+      "            fi\n"
+      "        done\n"
+      "        mkdir -p /var/luna/preferences && touch \"$FLAG\"\n"
+      "    fi\n"
+      "    /sbin/initctl start imtransport > /dev/null 2>&1 || true\n"
+      "end script\n", 0o644)
+
+    # retire lists -> image removals (expanded precisely against stock names)
+    n_ret = 0
+    for e in SYNERGY_RETIRE:
+        pfx = "./" + e.lstrip("/")
+        members = sorted(n for n in stock_names
+                         if n == pfx or n.startswith(pfx + "/"))
+        if not members:
+            log(f"  note: retire target has no stock file members (skipped): {e}")
+            continue
+        removes.extend(n[1:] for n in members)
+        n_ret += len(members)
+    log(f"  retired {n_ret} stock members (skype / legacy-IM / google-legacy)")
+
+    # device-setup: PmBtEngine BT-HFG gate patch (1 byte: the Skype-transport
+    # branch at 119792 becomes unconditional, 0x0a -> 0xea in the B->BAL word)
+    btb = bytearray(sdata("./usr/bin/PmBtEngine"))
+    if bytes(btb[119792:119796]) != b"\x31\x00\x00\x0a":
+        sys.exit("ERROR: PmBtEngine bytes at 119792 are not the expected "
+                 "pre-patch value — unknown build, refusing to patch")
+    btb[119795] = 0xEA
+    w("usr/bin/PmBtEngine", bytes(btb), 0o755)
+
+    # device-setup: mediastream webm/mkv reroute — run their own pure-sh/awk
+    # patch script against pristine stock; verify its patched markers landed
+    for msrel in ("usr/palm/frameworks/mediastream/submission/24mediastream.js",
+                  "usr/palm/frameworks/mediastream/submission/24/concatenated.js",
+                  "usr/palm/frameworks/mediastream/submission/24/javascript/StreamingPlayEngine.js"):
+        msp = os.path.join(tmp, "mediastream", os.path.basename(msrel))
+        os.makedirs(os.path.dirname(msp), exist_ok=True)
+        with open(msp, "wb") as f:
+            f.write(sdata("./" + msrel))
+        subprocess.run(["sh", os.path.join(DSDIR, "videoplayer-webm/src/patch-mediastream.sh"),
+                        msp], check=True, stdout=subprocess.DEVNULL)
+        msdata = open(msp, "rb").read()
+        if b"video/ogg" not in msdata or b"_msrc" not in msdata:
+            sys.exit(f"ERROR: mediastream patch did not take on {msrel}")
+        w(msrel, msdata, 0o644)
+
+    # device-setup: Thai font fallback, gst codec plugins, db8-clean, bt-a2dp
+    wcopy("usr/share/fonts/HeiT_nb.ttf",
+          os.path.join(DSDIR, "fonts/NotoSansThai-Regular.ttf"), 0o644)
+    wcopy("usr/lib/libopus.so.0",
+          os.path.join(DSDIR, "gst-opus-codec/prebuilt/libopus.so.0"), 0o644)
+    symlink("usr/lib/libopus.so", "libopus.so.0")
+    for sub, so in (("gst-opus-codec", "libgstopus.so"),
+                    ("gst-opus-codec", "libgstogg.so"),
+                    ("gst-plugins-base-audioresample", "libgstaudioresample.so"),
+                    ("gst-video-codecs", "libgstvpx.so"),
+                    ("gst-video-codecs", "libgstmatroska.so"),
+                    ("gst-video-codecs", "libgstspeex.so")):
+        wcopy(f"usr/lib/gstreamer-0.10/{so}",
+              os.path.join(DSDIR, sub, "prebuilt", so), 0o644)
+    wcopy("usr/local/bin/db8-clean.sh",
+          os.path.join(DSDIR, "db8-maintenance/db8-clean.sh"), 0o755)
+    wcopy("usr/sbin/bt-a2dp-fix.sh",
+          os.path.join(DSDIR, "bt-a2dp-fix/bt-a2dp-fix.sh"), 0o755)
+    wcopy("etc/event.d/bt-a2dp-fix",
+          os.path.join(DSDIR, "bt-a2dp-fix/bt-a2dp-fix.upstart"), 0o644)
+
+    # QuickOffice + Photos app integration: the targets are installed at first
+    # boot from stock staged ipks — repack those ipks with the patches applied.
+    def run_patch(cwd, patchfile, args=(), target=None):
+        cmd = ["patch", "-s", "-f", *args]
+        if target:
+            cmd.append(target)
+        else:
+            cmd[1:1] = ["-p1"]
+        with open(patchfile, "rb") as pf:
+            r = subprocess.run(cmd, cwd=cwd, stdin=pf, capture_output=True)
+        if r.returncode != 0:
+            sys.exit(f"ERROR: patch {os.path.basename(patchfile)} failed in {cwd}:\n"
+                     + r.stdout.decode() + r.stderr.decode())
+
+    def repack_staged_ipk(member, appid, edit_fn):
+        wd = os.path.join(tmp, "repack-" + appid)
+        ar = os.path.join(wd, "ar")
+        os.makedirs(ar)
+        orig = os.path.join(ar, "orig.ipk")
+        with open(orig, "wb") as f:
+            f.write(sdata(member))
+        order = subprocess.run(["ar", "t", orig], capture_output=True,
+                               text=True, check=True).stdout.split()
+        subprocess.run(["ar", "x", "orig.ipk"], cwd=ar, check=True)
+        datadir = os.path.join(wd, "data")
+        os.makedirs(datadir)
+        with tarfile.open(os.path.join(ar, "data.tar.gz")) as tf:
+            tf.extractall(datadir, filter="data")
+        approot = os.path.join(datadir, "usr/palm/applications", appid)
+        if not os.path.isdir(approot):
+            sys.exit(f"ERROR: {member}: no {appid} app dir in payload")
+        edit_fn(approot)
+        subprocess.run(["tar", "--owner=0", "--group=0",
+                        "-czf", os.path.join(ar, "data.tar.gz"), "."],
+                       cwd=datadir, check=True)
+        newipk = os.path.join(wd, "new.ipk")
+        subprocess.run(["ar", "rc", newipk, *order], cwd=ar, check=True)
+        w(member[2:], open(newipk, "rb").read(), 0o644)
+        log(f"  repacked staged ipk with integration patches: {member[2:]}")
+
+    QOI = os.path.join(DSDIR, "quickoffice-integration")
+
+    def edit_qo(approot):
+        shutil.copy(os.path.join(QOI, "source/RemoteFileService.js"),
+                    os.path.join(approot, "source/"))
+        shutil.copy(os.path.join(QOI, "source/FileStore.js"),
+                    os.path.join(approot, "source/"))
+        run_patch(approot, os.path.join(QOI, "patches/FolderContentsList.js.patch"))
+        run_patch(approot, os.path.join(QOI, "patches/FolderContentsPane.js.patch"))
+        shutil.copy(os.path.join(QOI, "assets/toolbar-icon-refresh.png"),
+                    os.path.join(approot, "images/"))
+
+    PHI = os.path.join(DSDIR, "photos-integration")
+
+    def edit_photos(approot):
+        run_patch(approot, os.path.join(PHI, "patches/LibraryNavigationPanel.css.patch"))
+        # these two patches carry junk header paths ("a/photos-src/base/...
+        # (app) modes/..." / bare filenames) — target the files directly
+        run_patch(os.path.join(approot, "source/modes"),
+                  os.path.join(PHI, "patches/PictureMode.js.patch"),
+                  target="PictureMode.js")
+        run_patch(os.path.join(approot, "source"),
+                  os.path.join(PHI, "patches/AlbumModeMultiselectControls.js.patch"),
+                  target="AlbumModeMultiselectControls.js")
+        for png in sorted(glob.glob(os.path.join(PHI, "assets/syn-*.png"))):
+            shutil.copy(png, os.path.join(approot, "images/"))
+
+    repack_staged_ipk("./usr/palm/ipkgs/com.quickoffice.webos_2.1.2113_ARM_release-arm.ipk",
+                      "com.quickoffice.webos", edit_qo)
+    repack_staged_ipk("./usr/palm/ipkgs/com.quickoffice.ar_10.3.484_ARM_release-arm.ipk",
+                      "com.quickoffice.ar", edit_qo)
+    repack_staged_ipk("./usr/palm/ipkgs/com.palm.app.photos/com.palm.app.photos_3.0.8001_all.ipk",
+                      "com.palm.app.photos", edit_photos)
+
+    # Photos SERVICE half (rootfs): dynamic PHOTO.UPLOAD source routing +
+    # remote-first deletion. Utils.js's hunk 1 context has two whitespace-only
+    # lines that don't byte-match stock (blank vs tab-indented) — apply with
+    # -l --fuzz=3 and hard-verify both hunks' markers landed at the right spot.
+    PSVC = "usr/palm/services/com.palm.service.photos/photos-src/base"
+    psdir = os.path.join(tmp, "photos-svc")
+    os.makedirs(os.path.join(psdir, "photos-src/base"))
+    for fn in ("Utils.js", "Sync-Manager.js"):
+        with open(os.path.join(psdir, "photos-src/base", fn), "wb") as f:
+            f.write(sdata(f"./{PSVC}/{fn}"))
+    run_patch(psdir, os.path.join(PHI, "patches/Sync-Manager.js.patch"))
+    run_patch(psdir, os.path.join(PHI, "patches/Utils.js.patch"), args=("-l", "--fuzz=3"))
+    ut = open(os.path.join(psdir, "photos-src/base/Utils.js")).read()
+    if "Synergy-revival: ANY PHOTO.UPLOAD" not in ut or "doLocalRemoval" not in ut:
+        sys.exit("ERROR: photos-service Utils.js patch markers missing after apply")
+    for fn in ("Utils.js", "Sync-Manager.js"):
+        wcopy(f"{PSVC}/{fn}", os.path.join(psdir, "photos-src/base", fn), 0o644)
 
     # 11) help-redirect : replay the postinst seds on the stock Help app source.
     # Base URL (drives tips/clips/featured/search) + device.do link + the
@@ -675,6 +1296,36 @@ def main():
         "      echo \"src/gz modernize http://stacks.webosarchive.org/feeds/modernize/ipkgs\" > $APPS/etc/ipkg/modernize.conf\n"
         "   fi\n"
     )
+    # Status seeding: Preware, Govnah and the Synergy generic runtime are
+    # baked into the rootfs, so ipkg has no record of them and Preware (whose
+    # isInstalled check is a pure name-match against ipkg's status file) would
+    # offer them as plain installs. Seed a correctly-formed stanza at the
+    # baked version so they show as installed with no update/downgrade
+    # offered. Idempotent (per-package grep gate, every boot — survives the
+    # ce-firstboot-tweaks de-shadow sed, which runs earlier in the same first
+    # boot); a REAL later ipkg install/upgrade rewrites its own stanza in
+    # place. USB Settings and BT Gamepad deliberately stay unlisted (they
+    # should stay invisible in Preware). See
+    # preware-modernize-feed/WEBOS-CE-STATUS-SEEDING.md.
+    for skey in ("preware", "govnah", "synergy"):
+        sipk = IPK[skey]
+        pkg = os.path.basename(sipk).split("_")[0]
+        arch = os.path.basename(sipk).rsplit("_", 1)[-1][:-len(".ipk")]
+        seed += (
+            f"   if [ -d /media/cryptofs/apps ] && ! grep -q \"^Package: {pkg}$\" $APPS/usr/lib/ipkg/status 2>/dev/null ; then\n"
+            "      mkdir -p $APPS/usr/lib/ipkg\n"
+            "      {\n"
+            "         echo \"\"\n"
+            f"         echo \"Package: {pkg}\"\n"
+            f"         echo \"Version: {ipk_version(sipk)}\"\n"
+            "         echo \"Depends: \"\n"
+            "         echo \"Status: install ok installed\"\n"
+            f"         echo \"Architecture: {arch}\"\n"
+            f"         echo \"Installed-Time: {int(os.path.getmtime(sipk))}\"\n"
+            "         echo \"\"\n"
+            "      } >> $APPS/usr/lib/ipkg/status\n"
+            "   fi\n"
+        )
     upst = sure_replace(upst, "   APPS=/media/cryptofs/apps\n",
                         "   APPS=/media/cryptofs/apps\n\n" + seed,
                         "ipkgservice upstart APPS anchor", count=1)
@@ -960,8 +1611,10 @@ def main():
     default_wp = next((f for f in wps if f.lower().startswith("default-wallpaper")),
                       wps[0] if wps else None)
     BAKED_APP_IDS = ("com.palm.app.maps com.palm.app.enyo-findapps "
-                     "org.webosinternals.preware com.webosarchive.usbsettings "
-                     "org.webosarchive.btgamepad")
+                     "org.webosinternals.preware org.webosinternals.govnah "
+                     "com.webosarchive.usbsettings org.webosarchive.btgamepad "
+                     "com.palm.app.contacts com.palm.app.messaging "
+                     "com.palm.app.cloud-auth com.palm.app.docviewer")
     wp_block = ""
     if default_wp:
         log(f"tier: first-boot tweaks (default wallpaper {default_wp} + cryptofs de-shadow)")
@@ -1118,7 +1771,14 @@ def main():
         patch_version_prefix(rel, open(os.path.join(OUT_ROOT, rel), "rb").read(), 0o755)
     # stock binaries not otherwise touched
     patch_version_prefix("usr/bin/mediaserver", sdata("./usr/bin/mediaserver"), 0o755)
-    patch_version_prefix("usr/lib/libWebKitLuna.so", sdata("./usr/lib/libWebKitLuna.so"), 0o555)
+    # libWebKitLuna also gets the synergy webkit-webm-mime byte patch (its MIME
+    # table's sole "video/x-ms-wmv" entry becomes "video/webm", NUL-padded to
+    # the same length) — done here so the file is written exactly once.
+    wk = sdata("./usr/lib/libWebKitLuna.so")
+    if wk.count(b"video/x-ms-wmv") != 1:
+        sys.exit("ERROR: expected exactly one 'video/x-ms-wmv' in libWebKitLuna.so")
+    wk = wk.replace(b"video/x-ms-wmv", b"video/webm\x00\x00\x00\x00", 1)
+    patch_version_prefix("usr/lib/libWebKitLuna.so", wk, 0o555)
 
     # 20) merge changes.json (carry over community-firstuse removals, add ours)
     cf_cfg = {}
@@ -1128,11 +1788,19 @@ def main():
     all_removes = sorted(set(cf_cfg.get("remove", [])) | set(removes))
     changes = {
         "description": ("Full CE overlay, everything BAKED at final rootfs paths: "
-                        "community first-use swap + modern TLS (browser/luna/"
-                        "downloadmgr/mail ssl11 stacks + mojomail patches) + LunaCE "
-                        "+ App Catalog + Maps 4.0.1 + community Accounts + "
+                        "community first-use swap (AddToImage/OOBE webosaccount) "
+                        "+ modern TLS (browser/luna/downloadmgr/mail ssl11 stacks "
+                        "+ mojomail patches) + LunaCE + App Catalog + Maps 4.0.1 "
+                        "+ the community core-apps suite (accounts/contacts/"
+                        "messaging/phone/chatthreader/service.accounts/contacts."
+                        "linker/contacts.plugin.messaging/enyo-accounts/enyo-"
+                        "contactsui/messaging.library/luna-systemui) + Synergy "
+                        "Revival generic (imlibpurple runtime baked, cryptofs "
+                        "pieces seeded at first boot, device-setup fixes, "
+                        "skype/legacy-IM/google-legacy stacks retired) + "
                         "help-redirect + full root-cert trust-store replay + "
-                        "UberKernel + Preware/USB-settings/BT-gamepad pre-installed "
+                        "UberKernel + Preware/Govnah/USB-settings/BT-gamepad "
+                        "pre-installed (Preware+Govnah ipkg status seeded) "
                         "+ Media-Internal via copy_binaries + 'webOS CE 3.1.0' "
                         "version string (with 'HP webOS '->'webOS CE ' parser "
                         "patch in LunaSysMgr/libWebKitLuna/media binaries), "

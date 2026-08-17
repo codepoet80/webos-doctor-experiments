@@ -1,7 +1,8 @@
 {
 	"icon": "../../icon.png",
 	"id": "com.palm.app.accounts",
-	"main": "../../index.html",
+	"splashicon": "../../icon-256x256.png",
+  "main": "../../index.html",
 	"title": "Konten",
 	"type": "web",
 	"uiRevision": 2,

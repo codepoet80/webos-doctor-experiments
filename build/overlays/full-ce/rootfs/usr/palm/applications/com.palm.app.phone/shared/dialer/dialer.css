@@ -1,0 +1,19 @@
+
+.dialpad {
+	height: 20px;
+}
+
+.dialer-addressing {
+	height: 50px;
+	font-size: 28px;
+	padding: 0 16px;
+	color: #fff;
+}
+
+.dialer-addressing .enyo-input {
+    -webkit-text-fill-color: white;      
+	font-size: 16px;
+}
+.dialer-string-empty {
+    font-size: 16px !important;
+}

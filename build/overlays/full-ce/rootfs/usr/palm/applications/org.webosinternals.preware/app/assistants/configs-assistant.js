@@ -172,12 +172,14 @@ ConfigsAssistant.prototype.onFeeds = function(payload)
 				var tmpSplit1 = payload.configs[x].contents.split('<br>');
 				for (var c = 0; c < tmpSplit1.length; c++)
 				{
-					if (tmpSplit1[c]) 
-					{
-						var tmpSplit2 = tmpSplit1[c].split(' ');
-						feedObj.urls.push(tmpSplit2[2]);
-						feedObj.data.push(tmpSplit2)
-					}
+					// Same whitespace-tolerant parse as the feed loader uses, so this
+					// screen and the loader can never disagree about a config file.
+					// A url of undefined here used to throw while rendering the list.
+					var parsed = feedsModel.parseConfigLine(tmpSplit1[c]);
+					if (!parsed) continue;
+
+					feedObj.urls.push(parsed.url);
+					feedObj.data.push(parsed.tokens)
 				}
 				
 			    }

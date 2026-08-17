@@ -1,0 +1,52 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta name="viewport" content="height=device-height">
+		<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" type="text/javascript"></script>
+		<!-- add "launch=debug" to load individual enyo files vs minified. Helps for debugging -->
+		<!-- <script src="/usr/palm/frameworks/enyo/0.8/framework/enyo.js" type="text/javascript"></script> -->
+	</head>
+	<body>
+		<script type="text/javascript">
+                        //enyo.log(" -- CREATING A NEW PHONE APP CARD --");
+			new PhoneAppCard().renderInto(document.body);
+			
+			// sysmgr requires that we activate ourselves if launched in first use mode
+			if ( window.PalmSystem && PalmSystem.isMinimal && ! enyo.application.hidden ) {
+				PalmSystem.activate();
+			}
+			
+			// only allow portrait orientation
+			if (!enyo.application.isTablet) {
+				enyo.setAllowedOrientation("up");
+			}
+			
+			// track whether this window is hidden or not. See comment below for why this is necessary
+			window.hidden = false;
+			
+			// Mojo.show and Mojo.hide are called directly by sysmgr ONLY for the phoneapp
+			// because the phoneapp card doesn't actually close when you flick it off.
+			// These methods are required to let us know when sysmgr is showing and hiding our card.
+			// We send special phoneAppShow/phoneAppHide events for this unique functionality.
+			Mojo.show = function(params) {
+				window.hidden = false;
+				
+				enyo.windows.events.dispatchEvent(window, {type: "phoneAppShow"});
+				
+				// Mojo.show is called in lieu of Mojo.relaunch if the card is open but hidden.
+				// Simulate a relaunch by telling enyo.application directly.
+				enyo.application.applicationRelaunchHandler(enyo.json.parse(params || "{}"));
+			};
+			
+			Mojo.hide = function() {
+				window.hidden = true;
+					
+				enyo.windows.events.dispatchEvent(window, {type: "phoneAppHide"});
+				
+				// let state machine know in case current state wants to transition
+				enyo.application.UI.event('closed');
+			}
+					
+		</script>
+	</body>
+</html>

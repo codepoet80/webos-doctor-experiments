@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+	<title>Cloud Account</title>
+	<!-- This app only exists as the generic cloud-account customUI validator (oauth.html);
+	     index.html is the required appinfo "main" and renders the same view. -->
+	<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" type="text/javascript"></script>
+	<link href="stylesheets/cloud-auth.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body>
+	<script type="text/javascript">
+		new CloudAuth().renderInto(document.body);
+	</script>
+</body>
+</html>

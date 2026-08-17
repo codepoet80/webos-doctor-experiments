@@ -1,0 +1,33 @@
+{
+    "id": "com.palm.imserver:1",
+    "owner": "com.palm.app.messaging",
+    "indexes": [
+        {
+            "name": "byRemoteId",
+            "props": [{"name": "serviceName"}, {"name": "remoteId"}]
+        },
+        {
+            "name": "byAccountId",
+            "props": [{"name": "accountId"}]
+        },
+        {
+            "name": "byservice",
+            "props": [{"name": "serviceName"}]
+        },
+        {
+            "name": "displayNameRevision",
+            "props": [{"name": "displayNameRevSet"}]
+        },
+        {
+            "name": "deleted",
+            "incDel": true,
+            "props": [{"name": "_del"}, {"name": "_rev"}]
+        }
+    ],
+    "revSets": [
+        {
+            "name": "displayNameRevSet",
+            "props": [{"name": "displayName"}]
+        }
+    ]
+}

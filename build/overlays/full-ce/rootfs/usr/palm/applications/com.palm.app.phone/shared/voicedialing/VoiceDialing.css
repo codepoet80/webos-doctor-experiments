@@ -1,0 +1,158 @@
+﻿
+/* 
+ *  Fixed/static classes
+ */
+.vc-tutorial-text {
+	color: #fff;
+	text-align: center;
+	font-size: 16px;
+}
+	
+.vc-title {
+	color: #fff;
+	text-align: center;
+	font-size: 22px;
+	font-weight: bold;
+}
+
+
+.vc-options-title {
+	font-size: 24px;
+	padding-top:10px;
+}
+
+.vc-options-title-subtext {
+	font-size: 14px;
+	margin-top: 20px;
+}
+
+.vc-text {
+	color: #fff;
+	text-align: center;
+	font-size: 16px;
+	margin-top: 20px;
+}
+
+.vc-button-text {
+	color: #fff;
+}
+
+.vc-button-text.enyo-button-pressed {
+	background-color: #f0f;
+}
+
+.paiwouhegvc-button-text.enyo-button-down {
+	background-color: #0f0;
+}
+
+.asdfvc-button-text.enyo-held {
+	background-color: red;
+	border-color: tranparent;
+	-webkit-border-image: none;
+	background-image: none;
+}
+
+.vc-button-selected {
+	border-width: 0;
+	-webkit-border-image: none;
+	background-color: rgba(0,0,0,.3);
+}
+
+.vc-location-text {
+        text-transform: uppercase;
+        color: #999;
+}
+	
+.vc-spinner {
+}
+
+/*
+ * Dynamically applied classes
+ */
+
+.mic-container {
+	height: 175px;
+	margin-top:40px;
+	background: url(images/voice-command-mic-background.png) center center no-repeat;
+}
+
+.vc-microphone-icon.recording {
+	background: url(images/voice-command-mic-sprite-11.png) left center no-repeat;
+	width: 60px;
+	height: 135px;
+}
+.vc-microphone-icon.recording.bluetooth {
+	background: url(images/voice-command-mic-sprite-11-bt.png) left center no-repeat;
+	width: 60px;
+	height: 135px;
+}
+
+
+.vc-microphone-icon.playback,
+.vc-microphone-icon.calling {
+    background: url(images/voice-command-mic-playback.png) center center no-repeat;
+	width: 176px;
+	height: 175px;
+}
+
+.vc-microphone-icon.notrecognized {
+    background: url(images/voice-command-mic-not-recognized.png) center center no-repeat;
+	width: 180px;
+	height: 135px;
+}
+
+.vc-microphone-icon.recording.level-0 {
+		background-position: 0px center;
+}
+.vc-microphone-icon.recording.level-1 {
+		background-position: -60px center;
+}
+.vc-microphone-icon.recording.level-2 {
+		background-position: -120px center;
+}
+.vc-microphone-icon.recording.level-3 {
+		background-position: -120px center;
+}
+.vc-microphone-icon.recording.level-4 {
+		background-position: -180px center;
+}
+.vc-microphone-icon.recording.level-5 {
+		background-position: -240px center;
+}
+.vc-microphone-icon.recording.level-6 {
+		background-position: -300px center;
+}
+.vc-microphone-icon.recording.level-7 {
+		background-position: -360px center;
+}
+.vc-microphone-icon.recording.level-8 {
+		background-position: -420px center;
+}
+.vc-microphone-icon.recording.level-9 {
+		background-position: -480px center;
+}
+.vc-microphone-icon.recording.level-10 {
+		background-position: -540px center;
+}
+.vc-microphone-icon.recording.level-11 {
+		background-position: -600px center;
+}
+
+.vc-fixed-bottom {
+ 	position: fixed;
+	bottom: 5px;
+	z-index: 50000;
+}
+
+/* Voicemail Greeting Styles */
+.cancel-button {
+    float: left;
+    /*margin: 25px 10px 25px 0px;*/
+	margin: 25px 40px 25px 10px;
+    width: 50px;
+    height: 50px;
+    pointer-events: auto;
+}
+.cancel-button.selected { background-position: 0px -50px; }
+
+

@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="viewport" content="height=device-height">
+		<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" type="text/javascript"></script>
+	</head>
+	<body class="pinCardBackground">
+		<script type="text/javascript">		
+			try {
+				new PhonePinCard().renderInto(document.body);
+			} catch (e ) {
+				document.write(JSON.stringify(e));
+				throw e;
+			}
+			
+                        if (!enyo.application.isTablet) {
+			    enyo.setAllowedOrientation("up");
+                        }
+			
+			// workaround for CFISH-3795: something (not sure what yet) is trying to close
+			// this window. This should NEVER happen since sysmgr will crash.
+			window.close = function() {
+				try{throw e;}catch(e){ enyo.error("Warning (NOT AN EXCEPTION): tried to close PhoneAppPincode window. Stack: " + e.stack); }
+			};
+			
+		</script>
+	</body>
+</html>

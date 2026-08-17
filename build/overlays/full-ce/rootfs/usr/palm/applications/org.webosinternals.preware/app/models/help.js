@@ -57,8 +57,8 @@ helpData.lookup =
 	
 	'ignoreDevices':
 	{
-		title: $L('Ignore Device Compat.'),
-		data: $L('Preware normally only shows apps that are compatible with your device. When this option is on, Preware will show all apps, regardless of device compatibility. Note that apps that are not compatible with your device may not operate correctly.')
+		title: $L('Ignore Compatibility'),
+		data: $L('Preware normally only shows packages that are compatible with your device and with your version of webOS. When this option is on, Preware will show them all regardless, and will warn you when you install one instead. Note that packages marked as incompatible may not operate correctly.')
 	},
 	
 	'showAvailableTypes':

@@ -1,0 +1,28 @@
+{
+	"start": true,
+	"activity": {
+		"name": "chatThreader.lockedImChatGroup",
+		"description": "watch for changes to the 'locked' flag in ImChatGroup records",
+		"type": {
+			"persist":true,
+			"immediate": true,
+			"priority": "normal"
+		},
+		"trigger": {
+			"method": "palm://com.palm.db/watch",
+			"key": "fired",
+			"params": {
+				"query": {
+					"from": "com.palm.imgroupchat:1",
+					"where": [
+						{"prop": "lockedRevSet", "op": ">", "val": 0}
+					]
+				}
+			}
+		},
+		"callback": {
+			"method": "palm://com.palm.messaging.chatthreader/lockedImGroupChat",
+			"params": { "lockedRev":0 }
+		}
+	}
+}

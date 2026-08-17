@@ -1,0 +1,11 @@
+.change-to-video-button .enyo-button-icon{
+	background-position: 0 -8px ;
+	width: 68px;
+	height: 68px;
+}
+.change-to-video-button.enyo-button-down .enyo-button-icon{
+	background-position: 0 -81px ;
+}
+.change-to-video-button.enyo-button-disabled .enyo-button-icon{
+	background-position: 0 -81px ;
+}

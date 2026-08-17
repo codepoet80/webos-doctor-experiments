@@ -1,0 +1,25 @@
+# ce-synergy-seed — webOS CE: the Synergy transport's glibc, runtime libs and
+# purple plugins live on /media/cryptofs (hardcoded ELF interpreter path +
+# imwrap.sh's bind mounts — a contract Preware-installed connectors rely on).
+# cryptofs survives flashes but is not in the image: seed it once per flash
+# from the rootfs copy (/var is wiped by the Doctor, so a /var flag = once),
+# then kick imtransport in case it exhausted its respawn limit waiting.
+
+start on stopped finish
+
+console none
+
+script
+    SEED=/usr/palm/ce-seed/synergy
+    FLAG=/var/luna/preferences/ce-synergy-seeded
+    if [ -d /media/cryptofs ] && [ ! -f "$FLAG" ]; then
+        for d in synergy-glibc synergy-runtime synergy-purple-plugins; do
+            if [ -d "$SEED/$d" ]; then
+                mkdir -p "/media/cryptofs/$d"
+                cp -rf "$SEED/$d/." "/media/cryptofs/$d/"
+            fi
+        done
+        mkdir -p /var/luna/preferences && touch "$FLAG"
+    fi
+    /sbin/initctl start imtransport > /dev/null 2>&1 || true
+end script

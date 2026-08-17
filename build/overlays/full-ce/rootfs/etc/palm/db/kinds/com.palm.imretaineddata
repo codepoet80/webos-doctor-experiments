@@ -1,0 +1,27 @@
+{
+    "id": "com.palm.imretaineddata:1",
+    "owner": "com.palm.imlibpurple",
+    "indexes": [
+        {
+            "name": "byAccountId",
+            "props": [{"name": "accountId"}]
+        },
+        {
+            "name": "byServiceName",
+            "props": [{"name": "serviceName"}]
+        },
+        {
+            "name": "byServiceAndUsername",
+            "props": [{"name": "serviceName"}, {"name": "username"}]
+        },
+        {
+            "name": "byDeletedAt",
+            "props": [{"name": "deletedAt"}]
+        },
+        {
+            "name": "deleted",
+            "incDel": true,
+            "props": [{"name": "_del"}, {"name": "_rev"}]
+        }
+    ]
+}

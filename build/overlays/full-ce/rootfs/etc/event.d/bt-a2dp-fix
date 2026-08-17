@@ -1,0 +1,5 @@
+# bt-a2dp-fix - ensure Bluetooth A2DP media actually streams (see /usr/sbin/bt-a2dp-fix.sh)
+# Installed as /etc/event.d/bt-a2dp-fix
+start on stopped finish
+respawn
+exec /bin/sh -c '/usr/sbin/bt-a2dp-fix.sh >> /var/log/bt-a2dp-fix.log 2>&1'

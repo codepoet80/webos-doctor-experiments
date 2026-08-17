@@ -1,0 +1,30 @@
+{
+	"start": true,
+	"replace": true,
+	"activity": {
+		"name": "chatThreader.changedAvailability",
+		"description": "watch for changes to imbuddystatus availability",
+		"type": {
+			"explicit":true,
+			"immediate": true,
+			"priority": "normal"
+		},
+		"trigger": {
+			"method": "palm://com.palm.tempdb/watch",
+			"key": "fired",
+			"params": {
+				"subscribe": true,
+				"query": {
+					"from": "com.palm.imbuddystatus:1",
+					"where": [
+						{"prop": "availabilityRevSet", "op": ">", "val": 0}
+					]
+				}
+			}
+		},
+		"callback": {
+			"method": "palm://com.palm.messaging.chatthreader/changedAvailability",
+			"params": {"revision":0}
+		}
+	}
+}

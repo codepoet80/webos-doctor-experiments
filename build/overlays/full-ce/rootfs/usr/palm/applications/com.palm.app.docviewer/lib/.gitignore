@@ -1,0 +1,7 @@
+# Vendored render libraries are intentionally NOT committed (size + license hygiene).
+# Fetch the pinned versions listed in README.md and drop them at these paths; the
+# harness loads them at runtime and degrades to a message if any is absent.
+pdfjs/pdf.js
+pdfjs/pdf.worker.js
+mammoth/mammoth.browser.min.js
+sheetjs/xlsx.full.min.js

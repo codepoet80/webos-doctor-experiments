@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Media</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #111; }
+  body { display: -webkit-box; -webkit-box-pack: center; -webkit-box-align: center; }
+  audio, video { width: 94%; max-height: 100%; outline: none; }
+</style>
+</head>
+<body>
+<script>
+// Lightweight local media player opened by the Messaging app in Atlas. The attachment URL is passed
+// as ?src=<encoded>&type=audio|video. Atlas bundles the Opus/Ogg/Vorbis codecs the system media
+// pipeline lacks, so this plays WhatsApp voice notes (Opus) that the stock video player cannot.
+(function () {
+	function qp(name) {
+		var m = new RegExp("[?&]" + name + "=([^&]*)").exec(window.location.search || "");
+		return m ? decodeURIComponent(m[1].replace(/\+/g, " ")) : "";
+	}
+	var src = qp("src");
+	var type = qp("type") === "video" ? "video" : "audio";
+	if (!src) { return; }
+	var el = document.createElement(type);
+	el.setAttribute("src", src);
+	el.setAttribute("controls", "controls");
+	el.setAttribute("autoplay", "autoplay");
+	el.setAttribute("playsinline", "playsinline");
+	document.body.appendChild(el);
+	// Nudge playback (some builds need an explicit play() after append).
+	try { el.play(); } catch (e) {}
+})();
+</script>
+</body>
+</html>

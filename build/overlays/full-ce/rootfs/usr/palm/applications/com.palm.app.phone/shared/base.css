@@ -1,0 +1,9 @@
+﻿/* this file is shared among all phone app windows/cards and should only 
+   contain styles common to ALL of them */
+
+.phone-background {
+	background: #25394a url(../images/backdrop-phone.png) left top repeat-x;
+}
+.phone-background.no-corner{
+	background: #25394a url(../images/backdrop-phone-no-corner.png) left top repeat-x;
+}

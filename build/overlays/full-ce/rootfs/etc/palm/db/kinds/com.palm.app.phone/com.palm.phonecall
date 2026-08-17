@@ -1,0 +1,171 @@
+/* note: 'from', 'to', and 'timestamp' will eventually be inherited from supertype 'Communication'. See https://wiki.palm.com/display/Bedlam/Communication */
+ {
+    "id": "com.palm.phonecall:1",
+	"sync": true,
+    "schema": {
+        "type": "object",
+        "properties": {
+            "from": {
+                "type": "object",
+                "description": "Address call is originating from. Will be an account on this device for type == outgoing. An object with keys 'addr', 'service', 'normalizedAddr' (for cleanup service), and also 'personId' and 'name' if the entry is associated with a person. More person metadata may also be present. Valid values for 'service' are currently 'skype' or 'phone'."
+            },
+            "to": {
+                "type": "array",
+                "description": "Address call of recipient. Will be an account on this device for type != outgoing. An array with a single object with keys 'addr', 'service', 'normalizedAddr' (for cleanup service), and also 'personId' and 'name' if the entry is associated with a person. Valid values for 'service' are currently 'skype' or 'phone'."
+            },
+            "timestamp": {
+                "type": "integer",
+                "description": "Start time of the phone call in ms utc timestamp."
+            },
+            "type": {
+                "type": "string",
+                "enum": ["incoming", "outgoing", "missed", "ignored"],
+                "description": "Type of call. Enum values are DBModels.PhoneCall.TYPES"
+            },
+            "timestampInSecs": {
+                "type": "integer",
+                "description": "WORKAROUND NOV-93332. Value is timestamp / 1000. This is for the Bluetooth service that can't yet read large numbers (like ms timestamps)."
+            },
+            "duration": {
+                "type": "integer",
+                "description": "Call duration in ms. Empty for type=missed|ignored.",
+                "optional": true
+            },
+            "groups": {
+                "type": ["array", "null"],
+                "description": "Group ids this call is a member of"
+            }
+        }
+    },
+    "indexes": [
+    {
+        "name": "query_groups",
+        "props": [
+        {
+            "name": "groups",
+            "default": null
+        },
+        {
+            "name": "timestamp"
+        }
+        ],
+        "description": "Used by the watch to query orphaned calls to attach it to a group. Also used by the list drawer to query deduped calls for an entry."
+    },
+    {
+        "name": "query_lastoutgoingcall",
+        "props": [
+        {
+            "name": "type"
+        },
+        {
+            "name": "timestamp"
+        }
+        ],
+        "description": "Used by the phone app to query the last outgoing call to redial."
+    },
+    {
+        "name": "bt_query_all",
+        "props": [
+        {
+            "name": "to.service"
+        },
+        {
+            "name": "from.service"
+        },
+        {
+            "name": "timestamp"
+        }
+        ],
+        "description": "For BT team to query all calls regardless of type. Used when querying type = 'outgoing' and to.service = 'phone' and from.service = 'phone' and ordering by 'timestamp' descending."
+    },
+    {
+        "name": "bt_query_type",
+        "props": [
+        {
+            "name": "type"
+        },
+        {
+            "name": "to.service"
+        },
+        {
+            "name": "from.service"
+        },
+        {
+            "name": "timestamp"
+        }
+        ],
+        "description": "For BT team when querying calls of a specific type. Used when querying to.service = 'phone' and from.service = 'phone' and ordering by 'timestamp' descending."
+    },
+    {
+        "name": "bt_watch_rev",
+        "props": [
+        {
+            "name": "_rev"
+        }
+        ],
+        "description": "Used by bluetooth to watch for new phonecalls"
+    },
+    {
+        "name": "contacts_plugin_added_outgoing",
+        "props": [
+        {
+            "name": "to.normalizedAddr"
+        },
+        {
+            "name": "to.service"
+        },
+        {
+            "name": "to.personId",
+            "default": null
+        },
+        {
+            "name": "type"
+        }
+        ],
+        "description": "For contacts.plugin.phone library querying unassociated outgoing calls matching a normalizedAddr and a service."
+    },
+    {
+        "name": "contacts_plugin_added_incoming",
+        "props": [
+        {
+            "name": "from.normalizedAddr"
+        },
+        {
+            "name": "from.service"
+        },
+        {
+            "name": "from.personId",
+            "default": null
+        },
+        {
+            "name": "type"
+        }
+        ],
+        "description": "For contacts.plugin.phone library querying unassociated incoming calls matching a normalizedAddr and a service."
+    },
+    {
+        "name": "contacts_plugin_assoc_person_outgoing",
+        "props": [
+        {
+            "name": "to.personId"
+        },
+        {
+            "name": "type"
+        }
+        ],
+        "description": "Used by contacts.plugin.phone to find calls associated with a person"
+    },
+    {
+        "name": "contacts_plugin_assoc_person_incoming",
+        "props": [
+        {
+            "name": "from.personId"
+        },
+        {
+            "name": "type"
+        }
+        ],
+        "description": "Used by contacts.plugin.phone to find calls associated with a person"
+    }
+    ]
+}

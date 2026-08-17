@@ -1,0 +1,142 @@
+body {
+   color: #FFF;
+   font-family: Prelude, 'Prelude Medium', 'Segoe UI', Arial, Helvetica, sans-serif;
+   margin: 0;
+   background:transparent;
+}
+.incoming-call {
+	background-color: transparent;
+	background-size: 100% auto;
+	background-repeat: no-repeat;
+	background-position: 0 10%;
+	border-width: 0 0;
+
+
+	-webkit-border-image: none;
+
+	/* Allow full-width images to bleed into the border */
+	-webkit-background-origin: border-box;
+}
+
+.incoming-call.incoming-call-wide {
+	border-width: 0 4px;
+	-webkit-border-image: none;
+}
+
+.incoming-call.incoming-call-full {
+	-webkit-border-image: none;
+}
+
+.incoming-call-wrapper {
+	height: 130px;
+}
+
+.incoming-call-small .incoming-call-wrapper {
+	height: 110px;
+}
+
+.incoming-small-has-image .incoming-call-wrapper {
+	height: 130px;
+}
+
+.incoming-call-wide .incoming-call-wrapper {
+	margin: 0 -4px;
+}
+
+.truncating-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.incoming-reject-button,
+.incoming-answer-button {
+	height: 70px;
+	width: 70px;
+	background: url(../images/button-ignore-answer.png) right top no-repeat;
+}
+
+.incoming-answer-button.enyo-button-down {
+	background-position: right bottom;
+}
+
+.incoming-reject-button {
+	background-position: left top;
+}
+
+.incoming-reject-button.enyo-button-down {
+	background-position: left bottom;
+}
+
+
+.incoming-small-has-image .incoming-answer-button
+{
+	position: relative;
+	top: 26px;
+	margin-right: 5px;
+}
+
+.incoming-small-has-image .incoming-reject-button
+{
+	position: relative;
+	top: 26px;
+	margin-left: 5px;
+}
+
+
+
+.incoming-text-container {
+	height: 82px;
+	font-size: 18px;
+	border: 0px solid transparent;
+	border-width: 0 0;
+	padding: 8px 0 10px;
+	color: #ffffff;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space:nowrap;
+	text-align: center;
+	-webkit-border-image: none;
+}
+
+.video-request-text-container {
+	height: 82px;
+	font-size: 18px;
+	border: 0px solid transparent;
+	border-width: 0 0;
+	padding: 8px 0 10px;
+	color: #ffffff;
+	-webkit-border-image: none;
+}
+
+.incoming-text-container.enyo-button-down {
+	-webkit-border-image: none;
+}
+
+.incoming-text-container.enyo-button-disabled {
+	-webkit-border-image: none;
+}
+
+.incoming-display-name,
+.incoming-display-number,
+.incoming-number-type {
+	line-height: 18px;
+	width: 100%;  
+	height: 20px;
+}
+
+.incoming-display-name{
+	font-weight: bold;
+}
+
+.enyo-button-down .incoming-display-number {
+	color: #ffffff;
+}
+
+.incoming-number-type {
+	font-size: 14px;
+}
+.incoming-button .enyo-button-icon{
+	height: 28px;
+	margin-right: 0px;
+}

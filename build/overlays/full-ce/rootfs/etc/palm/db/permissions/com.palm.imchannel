@@ -1,0 +1,81 @@
+[
+    {
+        "type": "db.kind",
+        "object": "com.palm.imchannel:1",
+        "caller": "*",
+        "operations": {
+            "extend": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imchannel:1",
+        "caller": "com.palm.*",
+        "operations": {
+            "extend": "allow",
+            "read": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imchannel:1",
+        "caller": "com.webos.*",
+        "operations": {
+            "extend": "allow",
+            "read": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imchannel:1",
+        "caller": "org.webosports.*",
+        "operations": {
+            "extend": "allow",
+            "read": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imchannel:1",
+        "caller": "com.palm.imlibpurple",
+        "operations": {
+            "create": "allow",
+            "delete": "allow",
+            "read": "allow",
+            "update": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imchannel:1",
+        "caller": "com.palm.app.messaging",
+        "operations": {
+            "create": "allow",
+            "delete": "allow",
+            "read": "allow",
+            "update": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imchannel:1",
+        "caller": "org.webosports.app.messaging",
+        "operations": {
+            "create": "allow",
+            "delete": "allow",
+            "read": "allow",
+            "update": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imchannel:1",
+        "caller": "com.palm.messaging.chatthreader",
+        "operations": {
+            "create": "allow",
+            "delete": "allow",
+            "read": "allow",
+            "update": "allow"
+        }
+    }
+]

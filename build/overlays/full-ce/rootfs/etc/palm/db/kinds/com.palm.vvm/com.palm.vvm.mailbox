@@ -1,0 +1,78 @@
+{
+   "id": "com.palm.vvm.mailbox:1",
+	"schema": {
+		"type": "object",
+		"properties": {
+			"service": {
+				"type": "string",
+				"description": "Service name.",
+			},
+			"account": {
+				"type": "string",
+				"description": "foreign key to the account manager account"
+			},
+			"status": {
+				"type": "string",
+				"enum": ["none", "pending", "active"],
+				"description": "mailbox status"
+			},
+			"isCarrierVoicemail": {
+				"type": "boolean",
+				"description": "true if we should NOT show the 'Call carrier voicemail' list item above the list of all vvms",
+				"optional": true
+			},
+			"lastSync": {
+				"type": "number",
+				"description": "UTC ms timestamp of last voicemail sync. (we show in app menu)",
+				"optional": true
+			},
+			"voicemailNumber": {
+				"type": "string",
+				"description": "Fallback number for voicemail.",
+				"optional": true
+			},
+			"greetingPath": {
+				"type": ["string","null"],
+				"description": "Path of voicemail greeting set by the service and read by the phoneapp. Empty string for no error.",
+				"default": null,
+				"optional": true
+			},
+			"defaultGreeting": {
+				"type": "boolean",
+				"description": "True if the default greeting is set on the carrier side.",
+				"default": true,
+				"optional": true
+			},
+			"error": {
+				"type": "string",
+				"optional": true,
+				"description": "Error message. If this exists, we will show the 'tap to call voicemail' row in the vvm mailbox."
+			},
+			"setGreetingNumber": {
+				"type": "string",
+				"optional": true,
+				"description": "phone number to call to set the greeting."
+			},
+			"refreshMessages": {
+				"type": "string",
+				"enum": ["none", "normal", "force"],
+				"description": "Set to normal or force if app requests vvm refresh. Service is responsible for resetting it to none."
+			},
+			"accountSetupApp": {
+				"type": "string",
+				"optional": true,
+				"description": "Voicemail service account setup application name."
+			},
+         "saveMessageResult": {
+             "type": "string",
+             "enum": ["none", "success", "failed"],
+             "optional": true,
+             "description": "Return of saveMessage. Service sets result of saving. App is responsible for resetting to none."
+         },
+		}
+	},
+   "indexes": [
+           ] 
+       }
+   ]
+}

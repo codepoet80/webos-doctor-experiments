@@ -1,0 +1,377 @@
+/*---------
+Background
+-----------*/
+.body-placeholder {
+    background: #F9f9f9 url(../images/defaultview-panel-tile.png) bottom left repeat-x;
+}
+
+.loading-background {
+    background:  url(../images/loading-bg.png) top left repeat-x;
+}
+
+/*----------------------
+Status Availability
+----------------------*/
+.status {
+	margin-left: 5px;
+	margin-right: 6px;
+	width: 16px;
+	height: 16px;
+}
+.status-available,
+.status-available-partial,
+.status-away,
+.status-away-partial,
+.status-invisible,
+.status-no-presence,
+.status-offline {
+	background: url(../images/online-status.png) left top no-repeat;
+}
+.status-available-partial { background-position: left -16px; }
+.status-away { background-position: left -32px; }
+.status-away-partial { background-position: left -48px; }
+.status-invisible { background-position: left -64px; }
+.status-offline { background-position: left -80px; }
+.status-no-presence { background-position: left -80px; }
+.status-button {
+	padding: 6px 7px 1px 5px;
+	margin-right:10px;
+}
+.messaging-availability .status {
+	margin-left: 0;
+	padding: 0 8px;
+}
+.status-spinner {
+ 	margin-left:6px;
+}
+
+.messaging-availability .enyo-input {
+	width:255px;
+}
+
+
+
+.messaging-availability .enyo-input-input {
+	color:#222;
+	font-size:20px;
+}
+/*
+.messaging-availability .enyo-input-focus .enyo-input-input {
+	padding-right:40px
+}
+*/
+
+.messaging-availability .enyo-input-focus .enyo-input-input {
+	padding-right: 0;
+}
+
+
+.commitbutton {
+	display: block;
+	position:absolute;
+	right:10px;
+}
+
+
+.individual-account  .custom-status .enyo-menuitem-caption {
+	padding-left: 53px;
+	border-bottom: none;
+
+}
+
+.individual-account .available-status {
+	border-top: 1px solid rgba(255,255,255,0.5);
+}
+
+.all-accounts .available-status {
+	border-top: none;
+}
+
+.available-status .enyo-menuitem {
+	border-top: none;
+}
+
+.individual-account  .av-status {
+	margin-left:17px;margin-top:0px;margin-right:10px;
+}
+
+.individual-account .av-arrow {
+	margin-right:-10px;
+} 
+
+
+.all-accounts  .av-status {
+	margin-top: -2px;
+	margin-left:-5px;
+}
+
+.all-accounts .av-arrow  {
+	margin-right: -10px;
+}
+
+.all-accounts .custom-status .enyo-menuitem-caption {
+	padding-left: 30px;
+}
+
+.account-login-state .enyo-menuitem-arrow {
+	background-image: url(../images/menuitem-arrow-dark.png);
+}
+
+
+.enyo-menuitem-arrow {
+	margin-top:0px;margin-right:0;position:absolute;left:92%;
+}
+
+.enyo-menuitem-arrow.enyo-button-down {
+	margin-top: 3px;
+}
+/*
+.availabilities .enyo-menuitem {
+	min-height: 48px;
+	box-sizing: border-box;
+}
+*/
+.availability-text
+{
+	width: 12em;
+	font-style:italic;
+	margin-top:0px;
+}
+
+.adjust-text-for-no-spinner {
+	margin-left: -18px;
+	width: 13em;
+}
+
+/*----------------------
+TabGroup Buttons
+----------------------*/
+.messaging-radiobuttons.enyo-radiogroup {
+	margin-top:0;
+	/* Keep the framework's -webkit-box layout (do NOT override display - inline-block broke the tab
+	 * cells). The buttons looked left-packed because the box was only as wide as its content, giving
+	 * box-pack:center (set via pack:"center" in Messaging.js) no room. Force the strip full-width so
+	 * the centering has space to work. */
+	width: 100%;
+	-webkit-box-sizing: border-box;
+}
+.messaging-radiobuttons .enyo-tabbutton {
+	padding: 10px 0px 7px;
+}
+.messaging-radiobuttons .enyo-button-icon {
+	display: block;
+	/* Center the fixed-width icon within its tab cell. margin:0 14px pinned it 14px from the left,
+	 * so in a cell wider than the icon it read as off-centre; auto L/R margins centre it. */
+	margin: 0 auto;
+	width:44px;
+	background-size: auto auto;
+}
+.messaging-radiobuttons .enyo-button-down .enyo-button-icon,
+.messaging-radiobuttons .enyo-button-depressed .enyo-button-icon {
+	background-position: 0 -32px;
+}
+.chat-button {
+	background-image: url(../images/menu-icon-conversation.png);
+}
+.chat-button-plus {
+	background-image: url(../images/menu-icon-conversation-plus.png);
+}
+.chat-button-text {
+	color:#fff;
+	/* Prelude is the webOS system face; the count text was inheriting a fallback face inside the
+	 * button chrome, so pin it explicitly (same stack as dashboards/class0.css). */
+	font-family: Prelude, 'Prelude Medium', 'Segoe UI', Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	padding-top:4px;
+	margin-left:-1px;
+}
+.messaging-radiobuttons .enyo-button-down .chat-button-text,
+.messaging-radiobuttons .enyo-button-depressed .chat-button-text {
+	color:#234766;
+}
+/*----------------------
+Thread/Buddy List
+----------------------*/
+.contactItem {
+	padding: 12px 5px 12px 16px;
+	border-bottom:1px solid #d8d8d8;
+}
+.contactItem.enyo-first {
+	border-top:none;
+}
+.contactItem.enyo-last {
+	border-top:none;
+}
+.contactItem .contact-image{
+	margin-right:3px;
+}
+.contactItem .contact-name{
+	overflow: hidden;
+	padding-bottom:3px;
+}
+.status-box {
+	padding: 6px 3px 5px 0;
+}
+.status-buddy {
+	margin-top:6px;
+	margin-right:9px;
+}
+
+.enyo-swipeableitem .enyo-confirmprompt .enyo-button {
+	min-width:100px;
+}
+
+.sent-received {
+	width: 17px;
+	height: 17px;
+	background: url(../images/incoming-outgoing.png) left top no-repeat;
+}
+.message-outgoing {
+	background-position: left bottom;
+}
+.contact-name-box {
+	height:24px;
+	margin-bottom:4px;
+}
+.contact-name {
+	font-size: 18px;
+}
+.status-message,
+.message-preview{
+	font-size:14px;
+	color:#333333;
+}
+.contact-message {
+	font-size:14px;
+	font-style:italic;
+	color:#888888;
+}
+.contact-name,
+.status-message,
+.message-preview,
+.contact-message {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-width:190px;
+	white-space: nowrap;
+}
+.contact-name-unread-favorite {
+	font-weight: bold;
+	max-width:150px;
+}
+.contact-name-no-messaging-account {
+	color:#888888;
+}
+.contact-name-unread {
+	font-weight: bold;
+	max-width:170px;
+}
+.contact-name-favorite {
+	max-width:175px;
+}
+.contact-image {
+	height: 50px;
+	width: 50px;
+	margin: 1px 0 -4px 1px;
+	-webkit-border-radius: 4px;
+}
+.contact-image-border {
+	position: absolute;
+	height: 52px;
+	width: 52px;
+	background: url(../images/list-view-avatar-frame.png) left top no-repeat;
+}
+/* Group-chat provider logos (Discord/Telegram/...) already carry their own smooth rounded edges,
+ * so ThreadItem hides the square photo frame for them (it clashed) and tags them with this class.
+ * Keep them the SAME 50x50 footprint as real user photos (inherited from .contact-image) so the
+ * two line up; just tone the logo down a touch so it reads soft rather than full-brightness. */
+.contact-image.contact-image-service {
+	opacity: 0.82;
+	/* People render at the 52px avatar-frame footprint; the frameless provider logos looked a
+	 * touch small at the base 50px, so match the framed size and nudge to the frame's origin. */
+	height: 52px;
+	width: 52px;
+	margin: 0 0 -4px 0;
+}
+.unread-count {
+	padding:0 6px;
+	color: #f2f2f2;
+	text-align: center;
+	vertical-align: middle;
+	/* Pin Prelude: the badge number was inheriting a fallback face and reading as a different font. */
+	font-family: Prelude, 'Prelude Medium', 'Segoe UI', Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	line-height: 23px;
+	height: 24px;
+	width:24px;
+	-webkit-border-radius: 12px;
+	background: url(../images/list-unread.png) center center no-repeat;
+}
+/* Server/channel rows put the unread badge flush right (the flex:1 title column pushes it over).
+ * Aggregate server counts run large ("99+"), which clips inside the fixed 24px list-unread.png
+ * circle - so render these as a grey PILL that grows with its content (auto width + min-width),
+ * replacing the fixed-size background image. Keeps the light text from .unread-count. */
+.server-unread,
+.channel-unread {
+	margin-left: 8px;
+	margin-right: 8px;
+	width: auto;
+	min-width: 24px;
+	padding: 0 9px;
+	-webkit-box-sizing: border-box;
+	background: #8f8f8f;
+	-webkit-border-radius: 12px;
+}
+
+.favorite-icon{
+	margin-left: 6px;
+	background: url(../images/favorites-star-blue.png) left top no-repeat;
+	width:24px;
+	height:24px;
+}
+.messageTexts,
+.messaging-listsDivider {
+	background-color: #e4e4e2;
+}
+.messageTexts {
+	color:#797979;
+	font-size: 16px;
+	padding:14px;
+}
+/*----------------------
+Add buddy dialog
+----------------------*/
+.account-username-text {
+	font-size: 12px;
+	color:#797979;
+	overflow: hidden;
+}
+.skype-directory-search {
+    height:320px;
+    width:280px;
+}
+
+/*----------------------
+First Launch / Preferences & Accounts
+----------------------*/
+
+.connect-phone {
+	margin-top: 30px;
+}
+
+/*----------------------
+  Servers / Rooms tab (Milestone 2)
+  (no custom rows/chevron styling needed - reuses contactItem, and the back
+   affordance is a framework GrabButton "|||" gripper in the bottom toolbar.)
+
+  Move the Servers tab button to the LEFT of the strip WITHOUT changing its
+  component index (index drives RadioButton value routing). The TabGroup lays its
+  buttons out in a -webkit-box, so box-ordinal-group reorders them visually only.
+----------------------*/
+
+.messaging-radiobuttons .enyo-tabbutton {
+	-webkit-box-ordinal-group: 2;
+}
+.messaging-radiobuttons .enyo-tabbutton.servers-tab-left {
+	-webkit-box-ordinal-group: 1;
+}

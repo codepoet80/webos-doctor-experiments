@@ -1,0 +1,57 @@
+{
+    "engine":"node",
+    "services":
+    [
+        {
+            "name": "com.palm.messaging.chatthreader",
+            "globalized": true,
+            "commands":
+            [
+                {
+                    "name": "newMessages",
+                    "assistant": "NewMessagesCommandAssistant"
+                },
+                {
+                    "name": "deletedMessage",
+                    "assistant": "DeletedMessageCommandAssistant"
+                },
+                {
+                    "name": "newBuddies",
+                    "assistant": "NewBuddiesCommandAssistant"
+                },
+                {
+                    "name": "newImGroupChat",
+                    "assistant": "NewGroupChatCommandAssistant"
+                },
+                {
+                    "name": "changeImGroupChatDisplayName",
+                    "assistant": "ChangeImGroupChatDisplayNameCommandAssistant"
+                },
+                {
+                    "name": "lockedImGroupChat",
+                    "assistant": "LockedGroupChatCommandAssistant"
+                },
+                {
+                    "name": "deletedImGroupChat",
+                    "assistant": "DeletedGroupChatCommandAssistant"
+                },
+                {
+                    "name": "changedAvailability",
+                    "assistant": "ChangedAvailabilityCommandAssistant"
+                },
+                {
+                    "name": "readFlagChanged",
+                    "assistant": "ReadFlagChangedCommandAssistant"
+                },
+                {
+                    "name": "ping",
+                    "assistant": "PingCommandAssistant"
+                },
+                {
+                    "name": "restoreFinished",
+                    "assistant": "RestoreAssistant"
+                }
+            ]
+        }
+    ]
+}

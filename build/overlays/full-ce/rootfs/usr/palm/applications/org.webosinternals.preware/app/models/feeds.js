@@ -40,6 +40,38 @@ feedsModel.prototype.getFeedUrl = function(name)
 	return false;
 }
 
+// Parse a single line of an ipkg feed config, the way ipkg itself does: fields are
+// separated by any run of whitespace, and '#' starts a comment.
+//
+// Returns the parsed feed, or null for a line there is nothing to parse in (blank
+// or a comment), or false for a line that should have been a feed but isn't -- the
+// caller reports that one, since it means a feed the user configured won't load.
+//
+// This lives in one place because it used to be duplicated, and both copies split
+// on a single space -- so a tab or a double space shifted every field along and
+// silently produced a feed whose url was really the feed name, while a url
+// containing a space was truncated at the space rather than reported as broken.
+//
+// Deliberately avoids String#trim() for the sake of the older browser on webOS 1.x.
+feedsModel.parseConfigLine = function(line)
+{
+	if (!line) return null;
+
+	var trimmed = line.replace(/^\s+/, '').replace(/\s+$/, '');
+	if (!trimmed || trimmed.charAt(0) == '#') return null;
+
+	var tokens = trimmed.split(/\s+/);
+	if (tokens.length < 3 || tokens[2].indexOf('://') == -1) return false;
+
+	return {
+		gzipped:	(tokens[0] == "src/gz" ? true : false),
+		name:		tokens[1],
+		url:		tokens[2],
+		tokens:		tokens,
+		line:		trimmed
+	};
+};
+
 feedsModel.prototype.onConfigs = function(payload, callback)
 {
 	try {
@@ -67,15 +99,25 @@ feedsModel.prototype.onConfigs = function(payload, callback)
 			    if (payload.configs[x].enabled && payload.configs[x].contents) {
 					var tmpSplit1 = payload.configs[x].contents.split('<br>');
 					for (var c = 0; c < tmpSplit1.length; c++) {
-						if (tmpSplit1[c]) {
-							var tmpSplit2 = tmpSplit1[c].split(' ');
-							var feedObj = {};
-							feedObj.gzipped = (tmpSplit2[0] == "src/gz" ? true : false);
-							feedObj.name = tmpSplit2[1];
-							feedObj.url = tmpSplit2[2];
-							// alert("Adding feed '"+feedObj.name+"' at '"+feedObj.url+"'");
-							this.feeds.push(feedObj);
+						var feedObj = feedsModel.parseConfigLine(tmpSplit1[c]);
+						if (feedObj === false) {
+							// Say so rather than adding a feed we know is wrong
+							Mojo.Log.error('feeds#onConfigs: ignoring unparseable line in ' +
+										   payload.configs[x].config + ': ' + tmpSplit1[c]);
 						}
+						if (!feedObj) continue;
+
+						// An ipkg feed line is exactly three fields.  Extra ones mean
+						// something unintended got into the url -- that is how an
+						// unparsed OS version string leaked into the patch feed url on
+						// webOS CE and then got truncated at its first space, looking
+						// for all the world like a working feed.  Use it, but say so.
+						if (feedObj.tokens.length > 3) {
+							Mojo.Log.error('feeds#onConfigs: feed line in ' + payload.configs[x].config +
+										   ' has extra fields, url may be truncated: ' + feedObj.line);
+						}
+						// alert("Adding feed '"+feedObj.name+"' at '"+feedObj.url+"'");
+						this.feeds.push(feedObj);
 					}
 				
 			    }

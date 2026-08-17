@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.palm.imlibpurple
+Exec=/var/imwrap.sh -c {\"log\":{\"appender\":{\"type\":\"stdout\"},\"levels\":{\"imlibpurple\":\"info\"}}} PalmPre Palm-Pre/1.5

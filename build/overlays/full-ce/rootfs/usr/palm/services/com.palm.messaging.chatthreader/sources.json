@@ -1,0 +1,23 @@
+[
+	{ "library": { "name": "underscore", "version": "1.0" } },
+	{ "library": { "name": "foundations", "version": "1.0" } },
+	{ "library": { "name": "messaging.library", "version": "1.0" } },
+	{ "library": { "name": "contacts", "version": "1.0" } },
+	{ "source": "prologue.js" },
+	{ "source": "models/dbmodels.js" },
+	{ "source": "models/imchatgroup.js" },
+	{ "source": "models/imserver.js" },
+	{ "source": "models/imchannel.js" },
+	{ "source": "models/utils.js" },
+	{ "source": "assistants/changedavailabilityassistant.js" },
+	{ "source": "assistants/groupchatdisplaynamechangedassistant.js" },
+	{ "source": "assistants/newmessageassistant.js" },
+	{ "source": "assistants/deletedmessageassistant.js" },
+	{ "source": "assistants/newbuddiesassistant.js" },
+	{ "source": "assistants/newgroupchatassistant.js" },
+	{ "source": "assistants/lockedgroupchatassistant.js" },
+	{ "source": "assistants/deletedgroupchatassistant.js" },
+	{ "source": "assistants/readflagchangedassistant.js" },
+	{ "source": "assistants/pingassistant.js" },
+	{ "source": "assistants/restoreAssistant.js" }
+]

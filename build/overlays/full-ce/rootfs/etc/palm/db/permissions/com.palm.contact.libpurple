@@ -1,0 +1,29 @@
+[
+    {
+        "type":"db.kind",
+        "object":"com.palm.contact.libpurple:1",
+        "caller":"com.palm.*",
+        "operations":{
+            "read":"allow",
+            "update":"allow"
+        }
+    },
+    {
+        "type":"db.kind",
+        "object":"com.palm.contact.libpurple:1",
+        "caller":"com.webos.*",
+        "operations":{
+            "read":"allow",
+            "update":"allow"
+        }
+    },
+    {
+        "type":"db.kind",
+        "object":"com.palm.contact.libpurple:1",
+        "caller":"org.webosports.*",
+        "operations":{
+            "read":"allow",
+            "update":"allow"
+        }
+    }
+]

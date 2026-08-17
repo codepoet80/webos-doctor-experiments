@@ -1,0 +1,28 @@
+description "Keep imlibpurpletransport resident for push messages"
+# The transport is normally a hub-launched on-demand LS2 service (com.palm.imlibpurple), which
+# the luna hub idle-reaps after a quiet period. When it is reaped, EVERY connector
+# (Signal/Facebook/WhatsApp/Discord/Telegram/Teams) dies at once and any message pushed during
+# the down-window is lost until the next on-demand restart. Running it as a respawning upstart
+# daemon grabs the com.palm.imlibpurple name at boot so the hub routes to this instance and
+# can't reap what it didn't launch. Additive: does NOT replace the .service, so worst case it
+# simply doesn't help — it cannot break the existing launch path.
+#
+# The transport lives on the PRIVATE bus, ready after ls-hubd_private emits ls-hubd_private-ready.
+# db8/activitymanager may not be up yet at that point; respawn retries until all deps are ready.
+start on ls-hubd_private-ready
+stop on runlevel [06]
+respawn
+respawn limit 30 3600
+console none
+# webOS CE: cryptofs mounts late in boot (finish post-start) and the
+# transport's ELF interpreter lives there (seeded by ce-synergy-seed) —
+# wait for it so respawn isn't burned on launches that cannot succeed.
+pre-start script
+    i=0
+    while [ ! -f /media/cryptofs/synergy-glibc/lib/ld-linux.so.3 ] && [ $i -lt 90 ]; do
+        sleep 2
+        i=$((i+1))
+    done
+end script
+
+exec /var/imdaemon.sh

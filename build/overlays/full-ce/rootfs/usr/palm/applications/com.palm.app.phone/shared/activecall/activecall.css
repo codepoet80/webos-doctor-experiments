@@ -1,0 +1,422 @@
+.active-call-button {
+	height: 70px;
+	font-size: 11px;
+	font-weight: normal;
+	line-height: 4px;
+	color: rgba(255, 255, 255, .5);
+	text-align: center;
+	-webkit-border-image: url(../images/phone-menu-button-tall.png) 0 25 210 25 repeat repeat;
+	border-width: 0 25px;
+	min-width: 60px;
+	width: 80px;
+	margin: 0;
+}
+
+
+
+.active-call-button.enyo-button-down {
+	-webkit-border-image: url(../images/phone-menu-button-tall.png) 70 25 140 25 repeat repeat;
+}
+
+.active-call-button.enyo-button-depressed {
+	-webkit-border-image: url(../images/phone-menu-button-tall.png) 140 25 70 25 repeat repeat;
+}
+
+.active-call-button.enyo-button-depressed.enyo-button-down {
+	-webkit-border-image: url(../images/phone-menu-button-tall.png) 210 25 0 25 repeat repeat;
+}
+
+.active-call-button-wrapper {
+	/* Reclaim space taken by .active-call-button's border */
+	margin: 0 -22px 0 -19px;
+}
+.active-call-button div{
+	margin: 0 -22px 0 -22px;
+}
+.active-call-button .enyo-button-icon{
+	margin: 10px -16px;
+}
+
+
+.active-call-button-row {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+
+	/* Stack on top of opaque button, which is stacked higher because it is
+	 * created dynamically and added later in the DOM than this row
+	 */
+	z-index: 1;
+}
+
+.active-call-button-row .enyo-button .enyo-button-icon{
+	margin-bottom: 8px;
+}
+
+.single-call-fullscreen {
+	background-position: 50% 30%;
+	background-repeat: no-repeat;
+	-webkit-background-size: cover;
+}
+
+.glass-footer,
+.single-call-glass,
+.single-call-header {
+	border-width: 0 22px;
+}
+
+.single-call-header {
+	height: 61px;
+}
+
+.single-call-glass-client {
+	margin: 0 -22px;
+}
+
+.single-call-simple {
+	/*hack: add background to each call to prevent nasty transition between partially transparent divs*/
+	background: #25394a url(../../images/backdrop-phone.png) left top repeat-x;
+	bottom: 71px;
+}
+
+.single-call-fullscreen .single-call-glass {
+	-webkit-border-image: url(../images/active-call-sprite.png) 61 22 1602 22 stretch stretch;
+}
+
+.single-call-simple .single-call-glass {
+	-webkit-border-image: url(../images/glass-panel.png) 61 22 100 22 stretch stretch;
+	position: relative;
+}
+
+.single-call-fullscreen .single-call-header {
+	-webkit-border-image: url(../images/active-call-sprite.png) 0 22 1663 22 stretch stretch;
+}
+
+.single-call-simple .single-call-header {
+	-webkit-border-image: url(../images/glass-panel.png) 0 22 323 22 stretch stretch;
+}
+
+.glass-footer {
+	height: 22px;
+	-webkit-border-image: url(../images/glass-panel.png) 362 22 0 22 stretch stretch;
+}
+
+.single-call-display-name {
+	font-size: 18px;
+	color: #ffffff;
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space:nowrap;
+	text-align: center;
+	line-height: 36px;
+}
+
+/* Stack the address (number/handle) above the network label ("SIGNAL"), both centered - instead of
+ * side-by-side, where a long IM address (e.g. a Signal UUID) wrapped and shoved the label off-screen
+ * ("SIGN"). single-call-info is an HFlexBox in JS; flip it to a vertical, centered box here. */
+.single-call-info {
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-webkit-box-align: center;
+	-webkit-box-pack: center;
+}
+
+.single-call-address {
+	font-size: 16px;
+	color: #ffffff;
+	/* one centered line; a long UUID ellipsizes instead of wrapping */
+	-webkit-box-flex: 0;
+	max-width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: center;
+}
+
+.single-call-label {
+	font-size: 14px;
+	color: #999999;
+	padding-top: 1px;
+
+	/* centered on its own line below the address (no side margin now) */
+	margin-left: 0;
+	-webkit-box-flex: 0;
+	white-space: nowrap;
+	text-align: center;
+}
+
+.single-call-hangup {
+	border-width: 0 26px;
+}
+
+.single-call-fullscreen .single-call-hangup {
+	height: 137px;
+	-webkit-border-image: none;
+	background: url(../images/active-call-disconnect-sprite.png) 0 0 repeat;
+}
+
+.single-call-fullscreen .single-call-hangup.enyo-button-down {
+	-webkit-border-image: none;
+	background: url(../images/active-call-disconnect-sprite.png) 0 -274px repeat;
+
+}
+
+.single-call-simple .single-call-hangup {
+	height: 66px;
+	background-image: none;
+	-webkit-border-image: url(../images/disconnect-button.png) 0 26 132 26 repeat repeat;
+}
+
+.single-call-simple .single-call-hangup.enyo-button-down {
+	-webkit-border-image: url(../images/disconnect-button.png) 132 26 0 26 repeat repeat;
+}
+
+.single-call-simple .single-call-hangup.enyo-button-disabled {
+	-webkit-border-image: url(../images/disconnect-button.png) 66 26 66 26 repeat repeat;
+}
+
+.single-call-fullscreen .single-call-timer {
+	-webkit-border-image: url(../images/active-call-bottom-gradient.png) 0 2 0 2 stretch;	
+	border-width: 0 2px;
+}
+
+.single-call-timer {
+	margin: 0 -18px;
+	color: #ffffff;
+	font-size: 16px;
+	height: 45px;
+	padding: 3px;
+}
+
+.single-call-stamp-timer-position {
+	width: 100%;
+	position: absolute;
+	bottom: 0%;
+	margin: 0 auto;
+}
+
+.single-call-info{
+	margin-top: -5px;
+}
+.single-call-stamp-frame {
+	height: 146px;
+	width: 176px;
+	background: url(../images/active-photo-overlay.png) left top no-repeat;
+	position: absolute;
+	top: -3px;
+	left: -3px;
+}
+
+.single-call-image {
+	height: 140px;
+	width: 170px;
+	-webkit-background-size: cover;
+	background-position: 50% 30%;
+	background-repeat: no-repeat;
+}
+
+.single-call-pausewait {
+	height: 26px;
+	width: 100%;
+	background-color: grey;
+	/*position: absolute;
+	top: -500px;
+	border: 1px solid red;*/
+}
+
+.add-contact-button {
+	position: absolute;
+	right: 13px;
+	width: 48px;
+	-webkit-border-image: none;
+    background-color: transparent;
+}
+
+.add-contact-button.enyo-button-down {
+	-webkit-border-image: none;	
+}
+
+.add-contact-button-dartfish {
+	width: auto;
+}
+
+
+.change-to-video-button {
+	-webkit-border-image: none;
+	border-width: 0;
+	left: 26px;
+	position: absolute;
+}
+
+.change-to-video-button.enyo-button-down {
+	-webkit-border-image: none;
+}
+
+.conference-call-list-item {
+	color: #ffffff;
+	border-bottom-color: #0b0b0b;
+	border-top-color: #4b4b4b;
+	margin-left: 5px;
+	margin-right: 5px;
+	padding: 0;
+}
+
+.conference-call-display-name {
+	min-height: 48px;
+}
+
+.conference-call-list-extract,
+.conference-call-list-hangup {
+	background: url(../images/conf-list-buttons.png) left top no-repeat;
+	width: 155px;
+	height: 48px;
+}
+
+.conference-call-list-hangup.enyo-button-down {
+	background-position: left -96px;
+}
+
+.conference-call-list-extract {
+	background-position: left -144px;
+}
+
+.conference-call-list-extract.enyo-button-down {
+	background-position: left -240px;
+}
+
+.enyo-scrollfades-top,
+.enyo-scrollfades-bottom {
+	height: 20px;
+	border-width: 0 22px;
+	background-image: none;
+	-webkit-box-sizing: border-box;
+}
+
+.enyo-scrollfades-top {
+	-webkit-border-image: url(../images/conf-fade-top.png) 0 22 0 22 repeat repeat;
+}
+
+.enyo-scrollfades-bottom {
+	-webkit-border-image: url(../images/conf-fade-bottom.png) 0 22 0 22 repeat repeat;
+}
+
+.disconnect-all-button {
+	border-width: 0 26px;
+	padding-bottom: 8px;
+	font-size: 14px;
+	color: #888888;
+	height: 68px;
+	-webkit-border-image: url(../images/multicall-disconnect-button-full-all.png) 0 26 136 26 repeat repeat;
+}
+
+.disconnect-all-button.enyo-button-down {
+	color: #303030;
+	-webkit-border-image: url(../images/multicall-disconnect-button-full-all.png) 68 26 68 26 repeat repeat;
+}
+
+.dartfish-width {
+	width: 320px;
+	margin-left: -2px;
+}
+
+.multicall-disconnect-button,
+.multicall-merge-button,
+.multicall-resume-button,
+.multicall-switch-button,
+.multicall-switch-button-full,
+.multicall-merge-button-full {
+	height: 64px;
+	border-width: 0 26px;
+}
+
+.multicall-disconnect-button {
+	-webkit-border-image: url(../images/multicall-disconnect-button.png) 0 26 128 26 repeat repeat;
+}
+
+.multicall-disconnect-button.enyo-button-down {
+	-webkit-border-image: url(../images/multicall-disconnect-button.png) 64 26 64 26 repeat repeat;
+}
+
+.multicall-disconnect-button.enyo-button-disabled {
+	-webkit-border-image: url(../images/multicall-disconnect-button.png) 128 26 0 26 repeat repeat;
+}
+
+.multicall-merge-button {
+	-webkit-border-image: url(../images/multicall-merge-button.png) 0 26 128 26 repeat repeat;
+}
+
+.multicall-merge-button.enyo-button-down {
+	-webkit-border-image: url(../images/multicall-merge-button.png) 64 26 64 26 repeat repeat;
+}
+
+.multicall-merge-button.enyo-button-disabled {
+	-webkit-border-image: url(../images/multicall-merge-button.png) 128 26 0 26 repeat repeat;
+}
+
+.multicall-resume-button {
+	-webkit-border-image: url(../images/multicall-resume-button.png) 0 26 128 26 repeat repeat;
+}
+
+.multicall-resume-button.enyo-button-down {
+	-webkit-border-image: url(../images/multicall-resume-button.png) 64 26 64 26 repeat repeat;
+}
+
+.multicall-resume-button.enyo-button-disabled {
+	-webkit-border-image: url(../images/multicall-resume-button.png) 128 26 0 26 repeat repeat;
+}
+
+.multicall-switch-button {
+	-webkit-border-image: url(../images/multicall-switch-button.png) 0 26 128 26 repeat repeat;
+}
+
+.multicall-switch-button.enyo-button-down {
+	-webkit-border-image: url(../images/multicall-switch-button.png) 64 26 64 26 repeat repeat;
+}
+
+.multicall-switch-button.enyo-button-disabled {
+	-webkit-border-image: url(../images/multicall-switch-button.png) 128 26 0 26 repeat repeat;
+}
+
+.multicall-switch-button-full {
+	-webkit-border-image: url(../images/multicall-switch-button-full.png) 0 26 128 26 repeat repeat;
+}
+
+.multicall-switch-button-full.enyo-button-down {
+	-webkit-border-image: url(../images/multicall-switch-button-full.png) 64 26 64 26 repeat repeat;
+}
+
+.multicall-switch-button-full.enyo-button-disabled {
+	-webkit-border-image: url(../images/multicall-switch-button-full.png) 128 26 0 26 repeat repeat;
+}
+
+.multicall-merge-button-full {
+	-webkit-border-image: url(../images/multicall-merge-button-full.png) 0 26 128 26 repeat repeat;
+}
+
+.multicall-merge-button-full.enyo-button-down {
+	-webkit-border-image: url(../images/multicall-merge-button-full.png) 64 26 64 26 repeat repeat;
+}
+
+.multicall-merge-button-full.enyo-button-disabled {
+	-webkit-border-image: url(../images/multicall-merge-button-full.png) 128 26 0 26 repeat repeat;
+}
+
+.dtmfpad-activecall-name {
+	/*border-width: 0 26px;*/
+	height: 32px;
+	text-align: center;
+	color: #fff;
+	font-size: 16px;
+	line-height: 35px;
+	background: url(images/dialpad-dtmf.png) 0px -456px;
+	/*-webkit-border-image: url(../images/active-call-sprite.png) 0 0 1135 32 repeat repeat;*/
+}
+
+.audio-route-popup .enyo-popup-inner{
+	margin: 0px -13px;
+}
+.audio-route-popup .enyo-item{
+	height: 49px;
+	overflow: hidden;
+}

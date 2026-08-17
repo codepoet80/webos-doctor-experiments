@@ -1,0 +1,9 @@
+enyo.depends(
+	"$enyo-lib/accounts/",
+    "FirstLaunchConstants.js",
+    "FirstLaunchScene.js",
+    "FirstLaunch.js",
+    "ConnectPhone.js",
+    "ConnectSkype.js",
+    "Launcher.js"
+);

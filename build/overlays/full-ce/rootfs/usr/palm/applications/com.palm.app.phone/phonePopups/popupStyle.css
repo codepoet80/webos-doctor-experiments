@@ -1,0 +1,108 @@
+body {
+	color: #FFF;
+	font-family: Prelude, 'Prelude Medium', 'Segoe UI', Arial, Helvetica, sans-serif;
+	margin: 0;
+	background:transparent;
+}
+.title {
+	margin-bottom:5px;
+	font-size: 18px;
+	font-weight: bold;
+	color: #fff;
+}
+
+.message {
+	font-size: 14px;
+	font-weight: bold;
+	color: #fff;
+}       
+
+.notification-container {
+	margin:0 10px 10px;
+}
+
+.outofnetwork {
+	font-size: 18px;
+	height: 220px;
+}
+
+.outofnetwork-notification-box {
+	height: 80px;
+	padding: 4px 0 6px 0;
+	color: #ffffff;
+	border-width: 0 14px;
+	-webkit-border-image: url(../images/notification-bg.png) 0 14 80 14 repeat stretch;
+}
+.notification-text-container{
+	padding: 2px 10px;
+}
+.dropped-call-frame {
+	width: 64px;
+	height: 64px;
+	background: url(../images/popup-icon-dropped.png) left top no-repeat;
+}
+
+.popups-bg {
+	background: transparent;
+	font-size: 18px;
+}
+
+.dialfail-popups-bg {
+	background: transparent;
+	font-size: 18px;
+	padding: 4px 0 6px 0;
+	min-height: 125px;
+	max-height: 150px;
+}
+
+.dialfail-frame {
+	width: 64px;
+	height: 64px;
+	background: url(../images/popup-icon-error.png) left top no-repeat;
+}
+
+.notification-message .notification-text {
+	font-size: 16px;
+	font-weight: bold;
+	color: #fff;
+}
+
+.notification-message .notification-text .title {
+	font-size: 18px;
+	font-weight: bold;
+	color: #fff;
+}
+
+.notification-message .message-text {
+	font-size: 16px;
+	line-height: normal;
+}
+
+.title {
+	padding-right: 0px;
+	font-size: 18px;
+	font-weight: bold;
+	color: #fff;
+}
+
+.msg-text {
+	padding-right: 0px;
+	font-size: 12px;
+	color: #fff;
+}
+.enyo-checkbox{
+	margin-right: 10px;
+}
+.truncating-text {
+	overflow:auto;
+}
+
+.airplane-mode-frame {
+	width: 64px;
+	height: 64px;
+	background: url(../images/flight-mode-icon.png) left top no-repeat;
+}
+.dropped-call-message {
+	white-space: pre-wrap;
+}
+

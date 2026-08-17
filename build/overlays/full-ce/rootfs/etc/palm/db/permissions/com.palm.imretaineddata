@@ -1,0 +1,45 @@
+[
+    {
+        "type": "db.kind",
+        "object": "com.palm.imretaineddata:1",
+        "caller": "*",
+        "operations": {
+            "extend": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imretaineddata:1",
+        "caller": "com.palm.*",
+        "operations": {
+            "read": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imretaineddata:1",
+        "caller": "com.webos.*",
+        "operations": {
+            "read": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imretaineddata:1",
+        "caller": "org.webosports.*",
+        "operations": {
+            "read": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.imretaineddata:1",
+        "caller": "com.palm.imlibpurple",
+        "operations": {
+            "create": "allow",
+            "delete": "allow",
+            "read": "allow",
+            "update": "allow"
+        }
+    }
+]

@@ -3,30 +3,31 @@
 # overlay that swaps stock first-use for the community webOS Account flow.
 #
 # What lands in the overlay (see README.md here for the full story):
-#   1. com.palm.app.firstuse patched IN PLACE (id unchanged): the community
-#      account patches from ../webos-community-account, plus the OOBE deltas in
-#      oobe/ (real Wi-Fi join, markFirstUseDone + reboot completion, no Museum
-#      self-updater), plus the trimmed OOBE card list (oobe/config.js).
-#   2. com.palm.service.palmprofile patched to the webOS Archive backend, plus
-#      the three community assistants (updateUsername/syncDeviceName/signOut).
+#   1. com.palm.app.firstuse replaced IN PLACE (id unchanged) with the community
+#      webOS Account app from AddToImage/OOBE (org.webosarchive.webosaccount
+#      ipk — the full app source, already carrying the community account flow),
+#      plus the OOBE deltas in oobe/ (real Wi-Fi join, markFirstUseDone + reboot
+#      completion, no Museum self-updater) and the trimmed OOBE card list
+#      (oobe/config.js). The ipk's appinfo.json files are all EXCLUDED — the
+#      app must keep the stock com.palm.app.firstuse identity or LunaSysMgr's
+#      firstuse-mode launch can't find it.
+#   2. com.palm.service.palmprofile: the ipk's service/ files laid over the
+#      stock service (services.json + sources.json at the service root,
+#      palm_profile_util.js -> utils/, the assistants -> handlers/) — the
+#      webOS Archive backend plus updateUsername/syncDeviceName/signOut.
 #   3. The account flow's hard transport prerequisites, baked into the rootfs:
 #      modern curl (TLS 1.3) from the OpenSSL-legacyWebOS ipk, the ntpdate-sync
 #      upstart job (TLS needs a sane clock), and a current CA bundle.
 #   4. /var/gadget/novacom_enabled — every CE device is dev-unlocked out of the
 #      box (community decision; deviceTool never needed again).
 #
-# We ship diffs, not HP source: everything HP-derived is patched at build time
-# from the OEM rootfs already in work/, so this repo stays clean.
-#
 # Usage:  ./make-overlay.sh          (from build/community-firstuse/)
-# Env:    COMMUNITY=<path to webos-community-account>   (default ../../..)
-#         TLSIPKS=<path to OpenSSL-legacyWebOS/ipks>
+# Env:    TLSIPKS=<path to OpenSSL-legacyWebOS/ipks>
 #         CA_BUNDLE=<current Mozilla bundle>            (default: host's)
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"                    # build/community-firstuse
 BUILD="$(dirname "$HERE")"                               # build/
-COMMUNITY="${COMMUNITY:-$BUILD/../../webos-community-account}"
 TLSIPKS="${TLSIPKS:-$BUILD/../../OpenSSL-legacyWebOS/ipks}"
 CA_BUNDLE="${CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}"
 ROOTFS_TGZ="$BUILD/work/webos/nova-cust-image-topaz.rootfs.tar.gz"
@@ -40,9 +41,15 @@ CURL_IPK="$(ls "$ATI_POR"/org.webosinternals.curl-tls13_*_armv7.ipk 2>/dev/null 
 NTP_IPK="$(ls "$ATI_POR"/org.webosinternals.ntpdate-sync_*_armv7.ipk 2>/dev/null | sort -V | tail -1)"
 [ -n "$NTP_IPK" ] || NTP_IPK="$(ls "$TLSIPKS"/org.webosinternals.ntpdate-sync_*_armv7.ipk | sort -V | tail -1)"
 
-for f in "$ROOTFS_TGZ" "$COMMUNITY/patches/FirstUse.js.patch" "$CURL_IPK" "$NTP_IPK" "$CA_BUNDLE"; do
+# the firstuse replacement app: newest webosaccount ipk in AddToImage/OOBE
+# (mtime, not version — a corrected rebuild can reuse the same version string)
+ATI_OOBE="$BUILD/../AddToImage/OOBE"
+WOSA_IPK="$(ls -t "$ATI_OOBE"/org.webosarchive.webosaccount_*.ipk 2>/dev/null | head -1)"
+
+for f in "$ROOTFS_TGZ" "$WOSA_IPK" "$CURL_IPK" "$NTP_IPK" "$CA_BUNDLE"; do
     [ -e "$f" ] || { echo "ERROR: missing input: $f" >&2; exit 1; }
 done
+echo ">> firstuse source: $(basename "$WOSA_IPK")"
 
 APP=usr/palm/applications/com.palm.app.firstuse
 SVC=usr/palm/services/com.palm.service.palmprofile
@@ -50,65 +57,56 @@ SVC=usr/palm/services/com.palm.service.palmprofile
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-echo ">> 0) extract stock first-use + palmprofile files from the OEM rootfs"
-tar xzf "$ROOTFS_TGZ" -C "$TMP" \
-    "./$APP/FirstUse.js" "./$APP/source/signin/Signin.js" "./$APP/source/tnc/Palm.js" \
-    "./$APP/css/Firstuse.css" \
-    "./$SVC/utils/palm_profile_util.js" \
-    "./$SVC/handlers/LoginProfileCommandAssistant.js" \
-    "./$SVC/handlers/IsEmailAvailableCommandAssistant.js" \
-    "./$SVC/handlers/GetTermsAndConditionsCommandAssistant.js" \
-    "./$SVC/handlers/GetTokenCommandAssistant.js" \
-    "./$SVC/handlers/GetAccountInfoAggregateAssistant.js" \
-    "./$SVC/services.json" "./$SVC/sources.json"
+echo ">> 0) extract the webosaccount ipk (full app + service source)"
+mkdir -p "$TMP/wosaipk" && (cd "$TMP/wosaipk" && ar x "$WOSA_IPK" && tar xzf data.tar.gz)
+SRC="$TMP/wosaipk/usr/palm/webosarchive/webosaccount"
+for f in "$SRC/app/FirstUse.js" "$SRC/app/source/tnc/Palm.js" "$SRC/service/services.json" \
+         "$SRC/service/sources.json" "$SRC/service/palm_profile_util.js"; do
+    [ -e "$f" ] || { echo "ERROR: webosaccount ipk payload missing $f" >&2; exit 1; }
+done
 
-# apply <file-under-$TMP> <patch> — patch -f so a mismatch fails the build loudly.
-apply() { patch -s -f "$TMP/$1" "$2"; echo "   patched $1"; }
-
-echo ">> 1) palmprofile service -> webOS Archive backend"
-apply "$SVC/utils/palm_profile_util.js"                        "$COMMUNITY/patches/palm_profile_util.js.patch"
-apply "$SVC/handlers/LoginProfileCommandAssistant.js"          "$COMMUNITY/patches/LoginProfileCommandAssistant.js.patch"
-apply "$SVC/handlers/IsEmailAvailableCommandAssistant.js"      "$COMMUNITY/patches/IsEmailAvailableCommandAssistant.js.patch"
-apply "$SVC/handlers/GetTermsAndConditionsCommandAssistant.js" "$COMMUNITY/patches/GetTermsAndConditionsCommandAssistant.js.patch"
-apply "$SVC/handlers/GetTokenCommandAssistant.js"              "$COMMUNITY/patches/GetTokenCommandAssistant.js.patch"
-apply "$SVC/handlers/GetAccountInfoAggregateAssistant.js"      "$COMMUNITY/patches/GetAccountInfoAggregateAssistant.js.patch"
-apply "$SVC/services.json"                                     "$COMMUNITY/patches/services.json.patch"
-apply "$SVC/sources.json"                                      "$COMMUNITY/patches/sources.json.patch"
-
-echo ">> 2) first-use app: community account flow + OOBE deltas"
-apply "$APP/FirstUse.js"             "$COMMUNITY/patches/FirstUse.js.patch"
-apply "$APP/source/signin/Signin.js" "$COMMUNITY/patches/Signin.js.patch"
-apply "$APP/source/tnc/Palm.js"      "$COMMUNITY/patches/Palm.js.patch"
-apply "$APP/css/Firstuse.css"        "$COMMUNITY/patches/Firstuse.css.patch"   # skip-button styling
-apply "$APP/FirstUse.js"             "$HERE/oobe/FirstUse-oobe.patch"
-apply "$APP/source/tnc/Palm.js"      "$HERE/oobe/Palm-oobe.patch"
-
-echo ">> 3) assemble overlay rootfs"
+echo ">> 1) assemble overlay rootfs"
 rm -rf "$OUT"
 R="$OUT/rootfs"
-mkdir -p "$R/$APP/source/signin" "$R/$APP/source/tnc" "$R/$APP/css" "$R/$SVC/utils" "$R/$SVC/handlers" \
+mkdir -p "$R/$APP" "$R/$SVC/utils" "$R/$SVC/handlers" \
          "$R/usr/lib/curl11" "$R/usr/bin" "$R/etc/ssl/certs" "$R/etc/event.d" "$R/var/gadget"
 
-# patched app + service files
-cp "$TMP/$APP/FirstUse.js"                "$R/$APP/FirstUse.js"
-cp "$TMP/$APP/source/signin/Signin.js"    "$R/$APP/source/signin/Signin.js"
-cp "$TMP/$APP/source/tnc/Palm.js"         "$R/$APP/source/tnc/Palm.js"
-cp "$TMP/$APP/css/Firstuse.css"           "$R/$APP/css/Firstuse.css"
-cp "$HERE/oobe/config.js"                 "$R/$APP/config.js"
-cp "$TMP/$SVC/utils/palm_profile_util.js" "$R/$SVC/utils/palm_profile_util.js"
-for h in LoginProfileCommandAssistant IsEmailAvailableCommandAssistant \
-         GetTermsAndConditionsCommandAssistant GetTokenCommandAssistant \
-         GetAccountInfoAggregateAssistant; do
-    cp "$TMP/$SVC/handlers/$h.js" "$R/$SVC/handlers/$h.js"
-done
-cp "$TMP/$SVC/services.json" "$R/$SVC/services.json"
-cp "$TMP/$SVC/sources.json"  "$R/$SVC/sources.json"
-# the three community-authored assistants (ours, no stock counterpart)
-for a in UpdateUsernameCommandAssistant SyncDeviceNameCommandAssistant SignOutCommandAssistant; do
-    cp "$COMMUNITY/service/$a.js" "$R/$SVC/handlers/$a.js"
+echo ">> 2) first-use app: webosaccount app over com.palm.app.firstuse"
+# Every appinfo.json is excluded (top-level AND per-locale resources/ ones —
+# they carry id com.palm.app.webosaccount / visible:true; the stock firstuse
+# appinfo must stay authoritative). scripts/ is the author's dev tooling.
+(cd "$SRC/app" && find . -type f ! -name appinfo.json ! -path "./scripts/*" -print0 \
+    | while IFS= read -r -d '' f; do
+        mkdir -p "$R/$APP/$(dirname "$f")"
+        cp "$f" "$R/$APP/$f"
+      done)
+
+echo ">> 3) OOBE deltas on the app copy"
+# The ipk is the STANDALONE build (assumes Wi-Fi is up, never marks first use
+# done); the oobe/ deltas turn it into a real OOBE. patch -f: a mismatch with a
+# new app build must fail the build loudly, not ship a half-OOBE image.
+(cd "$R/usr/palm/applications" && patch -p1 -s -f) < "$HERE/oobe/FirstUse-oobe.patch"
+echo "   patched $APP/FirstUse.js"
+(cd "$R/usr/palm/applications" && patch -p1 -s -f) < "$HERE/oobe/Palm-oobe.patch"
+echo "   patched $APP/source/tnc/Palm.js"
+cp "$HERE/oobe/config.js" "$R/$APP/config.js"   # trimmed OOBE card list
+grep -q "markFirstUseDone" "$R/$APP/FirstUse.js" \
+    || { echo "ERROR: OOBE completion delta missing from FirstUse.js" >&2; exit 1; }
+
+echo ">> 4) palmprofile service files from the ipk"
+# The ipk ships the service files flat; the stock service layout is
+# services.json + sources.json at the root, utils/ and handlers/ below —
+# exactly how the ipk's own sources.json references them.
+cp "$SRC/service/services.json"        "$R/$SVC/services.json"
+cp "$SRC/service/sources.json"         "$R/$SVC/sources.json"
+cp "$SRC/service/palm_profile_util.js" "$R/$SVC/utils/palm_profile_util.js"
+for f in "$SRC/service/"*.js; do
+    b="$(basename "$f")"
+    [ "$b" = "palm_profile_util.js" ] && continue
+    cp "$f" "$R/$SVC/handlers/$b"
 done
 
-echo ">> 4) modern curl (TLS 1.3) baked into the rootfs"
+echo ">> 5) modern curl (TLS 1.3) baked into the rootfs"
 # Same layout the ipk's postinst produces on-device, minus the symlink: the
 # binary's DT_NEEDED is libcurl.so.4, so ship the library under that name.
 mkdir -p "$TMP/curlipk" && (cd "$TMP/curlipk" && ar x "$CURL_IPK" && tar xzf data.tar.gz)
@@ -128,19 +126,19 @@ WRAP
 cp "$R/usr/bin/curl11" "$R/usr/bin/curl"
 chmod 755 "$R/usr/bin/curl" "$R/usr/bin/curl11"
 
-echo ">> 5) clock + trust: ntpdate-sync job, current CA bundle"
+echo ">> 6) clock + trust: ntpdate-sync job, current CA bundle"
 mkdir -p "$TMP/ntpipk" && (cd "$TMP/ntpipk" && ar x "$NTP_IPK" && tar xzf data.tar.gz)
 cp "$TMP/ntpipk/usr/palm/applications/org.webosinternals.ntpdate-sync/files/ntpdate-sync" \
    "$R/etc/event.d/ntpdate-sync"
 chmod 755 "$R/etc/event.d/ntpdate-sync"
 cp "$CA_BUNDLE" "$R/etc/ssl/certs/ca-certificates.crt"
 
-echo ">> 6) dev unlock out of the box"
+echo ">> 7) dev unlock out of the box"
 : > "$R/var/gadget/novacom_enabled"
 
 cat > "$OUT/changes.json" <<'JSON'
 {
-  "description": "Community first-use swap: com.palm.app.firstuse patched in place to the webOS Archive account flow (OOBE variant), palmprofile service -> device.php backend, + its transport prerequisites (modern curl/TLS 1.3, ntpdate-sync, current CA bundle) and novacom enabled. Generated by community-firstuse/make-overlay.sh - do not edit by hand.",
+  "description": "Community first-use swap: com.palm.app.firstuse replaced in place with the AddToImage/OOBE webosaccount app (OOBE deltas applied), palmprofile service -> device.php backend, + its transport prerequisites (modern curl/TLS 1.3, ntpdate-sync, current CA bundle) and novacom enabled. Generated by community-firstuse/make-overlay.sh - do not edit by hand.",
   "ce_package": "org.webosarchive.ce-files"
 }
 JSON

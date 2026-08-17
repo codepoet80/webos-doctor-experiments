@@ -1,0 +1,15 @@
+{
+	"submission": "12.1",
+	"files": {
+		"javascript": [
+			"prologue.js",
+			"personAdded.js",
+			"personChanged.js",
+			"personRemoved.js",
+			"utils.js"
+		],
+		"images": "*",
+		"views": "*",
+		"stylesheets": "*"
+	}
+}

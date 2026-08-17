@@ -1,0 +1,89 @@
+/*.enyo-addressing-list {
+}*/
+/*
+.enyo-addressing-item-divider {
+	text-transform:uppercase;
+}
+
+.enyo-addressing-item-addresses {
+}
+
+.enyo-addressing-padding {
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+.enyo-addressing-address {
+
+}*/
+
+.enyo-addressing-item-selected {
+	background: lightblue;
+}
+
+.enyo-addressing-type {
+	float: right;
+	margin-right: 14px;
+	font-size: 14px;
+}
+
+.enyo-addressing-favorite {
+	display: inline-block;
+	background: url(../images/addressing-favorite.png);
+	width: 16px;
+	height: 16px;
+	top: 2px;
+	margin-left: 4px;
+}
+
+.enyo-addressing-GAL {
+	border-top: 1px solid rgba(0,0,0,0.2);
+}
+.enyo-addressing-GAL-message {
+	margin-left:14px;
+	color:gray;
+}
+
+.enyo-addressing-GAL-message:after {
+	color:gray;
+	content:"...";
+}
+
+.enyo-addressing-GAL-padding {
+	margin-top:10px;
+	margin-bottom:10px;
+}
+
+.enyo-addressing-GAL-spinner {
+	margin-right:14px;
+}
+
+.enyo-addressing-noresults {
+	color: gray;
+	text-align: center;
+}
+
+
+.enyo-addressing-buddyOnline {
+	display: inline-block;
+	background: url(../images/skype-available.png) center -32px no-repeat;
+	width: 20px;
+	height: 32px;
+	top: 2px;    
+	margin: 0 0 0 20px; 
+}
+.enyo-addressing-buddyOffline {
+	display: inline-block;
+	background: url(../images/skype-available.png) top center no-repeat;
+	width: 20px;
+	height: 32px;
+	top: 2px;
+	margin: 0 0 0 20px; 
+}
+.enyo-addressing-videoOnline {
+	display: inline-block;
+	background: url(../images/Camera-Icon.png) 0 0 no-repeat;
+	width: 37px;
+	height: 35px;  
+	margin-right: 6px;
+}

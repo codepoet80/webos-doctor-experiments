@@ -1,0 +1,17 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			enyo.require(window[enyo.windowParams.popupType], "Unknown popup type " + enyo.windowParams.popupType);
+			var component = new window[enyo.windowParams.popupType]().renderInto(document.body);
+			
+			window.addEventListener('unload', function() {
+				component.destroy();
+			}, true);			
+		</script>
+	</body>
+</html>
+

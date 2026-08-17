@@ -1,0 +1,3 @@
+Emoji artwork: EmojiOne (legacy) — https://www.joypixels.com
+Licensed CC-BY 4.0. Provided via the emoji-datasource-emojione dataset.
+Filenames canonicalized to code-point hex (FE0F/FE0E variation selectors stripped).

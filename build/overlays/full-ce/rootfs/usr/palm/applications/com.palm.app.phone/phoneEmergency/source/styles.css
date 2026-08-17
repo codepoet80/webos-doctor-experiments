@@ -1,0 +1,30 @@
+.button-primary,
+.button-secondary {
+	height: 45px;
+	margin-top: 10px;
+	font-size: 20px;
+	color: #fff;
+	text-align: center;
+	line-height: 45px;
+	-webkit-box-sizing: border-box;
+	border-width: 0px 20px 0px 20px;    
+}
+
+.button-primary { -webkit-border-image: url(../../images/button-notification-affirmative.png) 0 20 45 20; }
+.button-primary:active { -webkit-border-image: url(../../images/button-notification-affirmative.png) 45 20 0 20; }
+
+.button-secondary { -webkit-border-image: url(../../images/button-notification-dismiss.png) 0 20 45 20; }
+.button-secondary:active { -webkit-border-image: url(../../images/button-notification-dismiss.png) 45 20 0 20; }
+
+.emergency-mode-text {
+	color: white;
+	font-weight: bold;
+	font-size: 48px;
+	text-align: center;
+}
+
+.palm-dark-background {
+	background: #000000; 
+	}
+
+

@@ -1,0 +1,961 @@
+this._root["__MojoFramework_mediastream"] = function(MojoLoader, exports, root) {
+
+
+//@ sourceURL=mediastream/MediaController.js
+
+/* Copyright 2009 Palm, Inc.  All rights reserved. */
+/*globals Mojo exports root*/
+
+var MediaController = function(player, playEngine, app){
+	this.player = player;
+	this.playEngine = playEngine;
+	this.app = app;
+	
+	// is this a static stream? (not a live stream)
+	this.isStaticStream = false;
+	
+	//Start Time helps update UI with time, will be reset from 0 in updateTime
+	this._startTime = 0;
+	
+	this.player.addEventListener ('durationchange', this._updateDuration.bind(this), false);
+	this.timeInterval = this.app.controller.window.setInterval (this._updateTime.bind(this), this.UPDATE_TIME_INTERVAL);
+	this.updateInterval = this.app.controller.window.setInterval (this._updateBuffering.bind(this), 500);
+};
+
+MediaController.prototype = {
+	
+	tearDown: function(){
+		if (this.timeInterval){
+			this.app.controller.window.clearInterval(this.timeInterval);
+		}
+		if (this.updateInterval){
+			this.app.controller.window.clearInterval(this.updateInterval);
+		}
+	},
+	
+	/**
+     * Called by the play button.
+     */
+    play: function(){
+	
+		var currentState = this.playEngine.getCurrentState();
+	
+		if (currentState != this.playEngine.STATE_STOPPED){
+			if (this._ended && this.isStaticStream){
+				// if we ended on a static stream, seek to the beginning
+				this.player.currentTime = 0;
+				this._ended = false;
+			}
+	        this.playEngine.handleEvent(this.playEngine.EVENT_PLAY_BUTTON);
+		} else {
+			// we are stopped, need to reconnect
+			this.playEngine.load();
+		}
+		
+    },
+
+	stop: function(){
+		// todo: make this actually unload the pipeline
+		
+		this.player.pause();
+		// simulate being unloaded
+		 this.playEngine.handleEvent(this.playEngine.EVENT_EMPTIED);
+	},
+
+    
+    /**
+     * Called by the pause button.
+     */
+    pause: function(){		
+         this.playEngine.handleEvent(this.playEngine.EVENT_PAUSE_BUTTON);
+    },
+    
+	/**
+     * Called by tapping the next button (not holding)..
+     */
+    forward: function(){
+        // does nothing
+    },
+    
+    
+    /**
+     * Called by tapping the previous button (not holding).
+     */
+    backward: function(){
+        if (this.eatTrackClick) {
+            this.eatTrackClick = false;
+            return;
+        }
+        
+        this.player.currentTime = 0;
+    },
+    
+
+	/**
+	* The amount the song should seek, increasing with the number of seeks.
+	*
+	* @param {Integer} numSeeks the amount of seeks that happened before this one
+	*/
+	_calcSeekAmount: function(numSeeks){
+		var amount;
+
+		if (numSeeks > 10) {
+			amount = 30;
+		} else if (numSeeks > 5) {
+			amount = 15;
+		} else {
+			amount = 5;
+		}
+
+		return amount;
+	},
+
+
+	/**
+	* Call periodically when a seek button is held.
+	*
+	* @param {Boolean} isForward are we seeking forward
+	* @param {Integer} numSeeks how many times we have seeked
+	*/
+	_seekCallback: function (isForward, numSeeks)
+	{
+
+		if (this.seekHeld)
+		{
+			this.eatTrackClick = true;
+			var seekAmount = this._calcSeekAmount(numSeeks);
+			numSeeks++;
+
+			if (isForward)
+			{
+
+				if (this.player.currentTime + seekAmount >= this.player.duration)
+				{
+					// go to the end, stop seeking
+					this.player.currentTime = this.player.duration;
+					this.seekHeld = false;
+				}
+				else {
+					this.player.currentTime+=seekAmount;
+					this.app.controller.window.setTimeout(function(){
+						this._seekCallback(true, numSeeks);
+					}.bind(this), 600);
+				}
+
+			}
+			else
+			{
+				if (this.player.currentTime - seekAmount <= 0)
+				{
+					// go back to the beginning, stop seeking
+					this.player.currentTime = 0;
+					this.seekHeld = false;
+				}
+				else {
+					this.player.currentTime-=seekAmount;
+					this.app.controller.window.setTimeout(function(){
+						this._seekCallback(false, numSeeks);
+					}.bind(this), 600);
+				}
+
+			}
+		}
+	},
+
+	/**
+	* Called when one of the seek buttons is pressed down.
+	*
+	* @param {Boolean} isForward if the seek is forward (as in fast-forward, vs rewind)
+	*/
+	pressSeek: function(isForward)
+	{
+		this.seekHeld = true;
+		this.app.controller.window.setTimeout (function(){
+			this._seekCallback(isForward, 0);
+		}.bind(this), 1000);
+	},
+
+	/**
+	* Called when the seek button is released.
+	*/
+	releaseSeek: function()
+	{
+		this.seekHeld = false;
+	},
+
+
+	
+	timeFormatter: function(secs){
+		if (secs < 0){
+			secs = 0;
+		}
+		
+		var hrs = Math.floor(secs / 3600);
+		var mins = Math.floor(secs / 60) - hrs * 60;
+		secs = secs % 60;
+		
+		var displayHours = "";
+		if (hrs > 0){
+			displayHours = hrs + ":";
+		}
+
+		var result = displayHours + ((mins < 10) ? "0" + mins : mins)  + ":" + ((secs < 10) ? "0" + secs : secs);
+
+		return result;
+	},
+	
+	
+	_updateTime: function(){
+		// don't show progress for live streams
+		if (!this.isStaticStream){
+			return;
+		}
+		
+		var getStartTime = function(sysTime, playerTime){
+			return (sysTime - (playerTime * 1000));
+		}
+		
+		
+		var time = this.player.currentTime;
+		var sysTime = (new Date()).getTime();
+		
+		//if video is paused, always go with players time
+		if(this.player.paused){
+			if(Math.floor(this._lastUpdateTime) !== Math.floor(time)){
+				this.app.updateTime(Math.floor(time));
+				this._lastUpdateTime = time;
+				this._startTime = getStartTime(sysTime, time);
+			}
+			return;
+		}
+
+		var newTime = (sysTime - this._startTime) / 1000;
+		if (!this.playEngine._reconnecting && time !== undefined &&
+			this.player.duration > 0 && Math.abs(time-newTime)>this.MAX_TIME_DIFF){
+				this._startTime = getStartTime(sysTime, time);
+				newTime = time;
+		}
+		
+		if(Math.floor(this._lastUpdateTime) !== Math.floor(newTime)){
+			this.app.updateTime(Math.floor(newTime));
+			this._lastUpdateTime = time;
+		}
+		
+	},
+	
+	_updateBuffering: function(){
+		if (this.isStaticStream &&
+			this.player.buffered && this.player.buffered.length > 0) {				
+			var startPercentage = (this.player.buffered.start(0) / this.player.duration);
+			var endPercentage = (this.player.buffered.end(0) / this.player.duration);
+			
+			this.app.updateBuffering(startPercentage, endPercentage);
+		}
+	},
+	
+	_updateDuration: function(){
+		var secs = this.player.duration;
+		
+		Mojo.Log.info ("update duration call, duration: " + secs);
+		
+		if (secs >= 0.1 && secs != Infinity) {
+			this.isStaticStream = true;
+			this.app.showProgressInfo();
+		}
+		
+		Mojo.Log.info ("duration changed, calling update time");
+		this._updateTime();
+	},
+	UPDATE_TIME_INTERVAL: 450,
+	MAX_TIME_DIFF: 2.5
+};
+
+exports.MediaController = MediaController;
+root.MediaController = MediaController;
+
+
+
+//@ sourceURL=mediastream/StreamingPlayEngine.js
+
+/* Copyright 2009 Palm, Inc.	All rights reserved. */
+
+/*globals Mojo MojoLoader exports root setTimeout MediaError*/
+/*globals DisconnectedState DisconnectingState ConnectingState CannotPlayBufferingState CanPlayBufferingState
+PlayingState PausedState StoppedState EmptiedState ErrorState*/
+
+var StreamingPlayEngine = function(player, mediaExt, app, url, initialPos, setBlockPlayEvents) {
+	this.app = app;
+	this.url = url;
+	this.player = player;
+	this.mediaExt = mediaExt;
+	this.initialPos = initialPos;
+	this.blockPlayEvents = !!setBlockPlayEvents;
+	this.pendingLoad = false;
+
+	this._initializeStates(player, app);
+
+	this.player.addEventListener ('canplay', this._canPlayHandler.bind(this), false);
+	this.player.addEventListener ('canplaythrough', this._canPlayThroughHandler.bind(this), false);
+	this.player.addEventListener ('play', this._playEventHandler.bind(this), false);
+	this.player.addEventListener ('pause', this._pauseEventHandler.bind(this), false);
+	this.player.addEventListener ('waiting', this._waitingHandler.bind(this), false);
+	this.player.addEventListener ('error', this._errorHandler.bind(this), false);
+	this.player.addEventListener ('emptied', this._emptiedHandler.bind(this), false);
+	this.player.addEventListener ('dataunavailable', this._dataUnavailableHandler.bind(this), false);
+	this.player.addEventListener ('canshowcurrentframe', this._canShowCurrentFrameHandler.bind(this), false);
+	this.player.addEventListener ('x-palm-disconnect', this.mediaServerDisconnect.bind(this), false);
+	this.player.addEventListener ('x-palm-connect', this.mediaServerConnect.bind(this), false);
+	this.player.addEventListener ('x-palm-watchdog-triggered', this.mediaServerWatchdog.bind(this), false);
+	
+	setTimeout(function(){
+			this.load(initialPos);
+	}.bind(this), 0);
+};
+
+StreamingPlayEngine.prototype = {
+
+	/*
+	 * The various states the state machine can have.
+	 */
+	STATE_CANNOT_PLAY_BUFFERING: 'cannotPlayBuffering',
+	STATE_CAN_PLAY_BUFFERING: 'canPlayBuffering',
+	STATE_PLAYING: 'playing',
+	STATE_PAUSED: 'paused',
+	STATE_STOPPED: 'stopped',
+	STATE_CONNECTING: 'connecting',
+	STATE_DISCONNECTED: 'disconnected',
+	STATE_DISCONNECTING: 'disconnecting',
+	STATE_EMPTIED: 'emptied',
+	STATE_ERROR: 'error',
+	
+	/* 
+	 * Events that will transition the state machine.
+	 */
+	EVENT_CAN_PLAY: 'canplay',
+	EVENT_CAN_PLAY_THROUGH: 'canplaythrough',
+	EVENT_WAITING: 'waiting',
+	EVENT_PLAY_BUTTON: 'playbutton',
+	EVENT_PAUSE_BUTTON: 'pausebutton',
+	EVENT_PLAYING: 'play',
+	EVENT_PAUSED: 'pause',
+	EVENT_ERROR: 'error',
+	EVENT_LOAD: 'load',
+	EVENT_EMPTIED: 'emptied',
+	EVENT_STOP: 'stop',
+	EVENT_CONNECTED: 'connected',
+	EVENT_CONNECTING: 'connecting',
+	EVENT_DISCONNECT: 'disconnect',
+	EVENT_DATA_UNAVAILABLE: 'dataunavailable',
+	EVENT_CAN_SHOW_CURRENT_FRAME: 'canshowcurrentframe',
+	
+	load: function(initialPos){
+		if (initialPos){
+			this.initialPos = initialPos;
+		}
+		
+		switch (this.currentState){
+			case this.STATE_STOPPED:
+				this.doLoad();
+				break;
+			case this.STATE_DISCONNECTED:
+				this.pendingLoad = true;
+				this._doNotAutoPlay = true;
+				this._reconnect();
+				break;			
+			default:
+				this.pendingLoad = true;
+		}
+ },
+
+	//change the videoPath to a new url
+	//useful when we want to view the video we just trimmed
+	changePath : function(path){
+		this.changeState(this.STATE_STOPPED);
+		this.url = path;
+		this.initialPos = 0;
+		this._doNotAutoPlay = true;
+		this.load();
+	},
+
+	disconnect: function(){
+		if (this.currentState !== this.STATE_DISCONNECTED && 
+			this.currentState !== this.STATE_DISCONNECTING &&
+			this.currentState !== this.STATE_ERROR){
+				
+			this.changeState(this.STATE_DISCONNECTING);
+		}
+ },
+
+ _reconnect: function(){
+	this._reconnecting = true;
+	
+	this.handleEvent(this.EVENT_CONNECTING);		
+ },
+
+	doLoad: function(){
+		var url = this.url;
+
+		var initialPos = this.initialPos;
+
+		if (!url){
+			this.throwError();
+			return;
+		}
+
+		//prepend the url with 'file://' if no protocol was specified
+		if (!this.app.inPalmHost && url[0] == "/"){
+			url = "file://" + url;
+		}
+	
+		var previousState = this.player.networkState;
+
+		Mojo.Log.info ("setting src to : " + url);
+		// WebKit's supportsType() rejects video/webm; hand it a <source> mime it accepts
+		// (video/ogg) so its engine loads, then the media server typefinds and decodes the
+		// real WebM. Only webm/mkv are rerouted; every other format keeps its direct src.
+		if (/\.(webm|mkv)(\?|#|$)/i.test(url)) {
+			this.player.removeAttribute('src');
+			while (this.player.firstChild) { this.player.removeChild(this.player.firstChild); }
+			var _msrc = this.player.ownerDocument.createElement('source');
+			_msrc.setAttribute('src', url);
+			_msrc.setAttribute('type', 'video/ogg');
+			this.player.appendChild(_msrc);
+			this.player.load();
+		} else {
+			this.player.src = url;
+		}
+
+		// safari seems to need this		
+		if (previousState !== 0 /* NETWORK_EMPTY */ || this.app.inPalmHost){
+			this.player.load();
+		}
+
+		this.pendingSeek = this.initialPos; 
+		this.player.autoplay = false;
+		this.pendingLoad = false;
+
+		this.handleEvent(this.EVENT_LOAD);
+	},
+
+
+	/*
+	 *	Remove when NOV-48999 is implemented
+	 */
+	isRtsp: function(url){
+		var result = false;
+		
+		Mojo.Log.info ("url: " + url);
+		// stupid, but check if the url begins with 'rtsp'
+		if (url && url[0] != "/" && (url.substr(0, 4) == "rtsp" || url.substr(0, 4) == "mobi")){
+			result = true;
+		}
+
+		return result;
+	},
+	
+
+	/**
+	 * Create the states for the state machine
+	 * 
+	 * @param {Object} player the video player in the app
+	 * @param {Object} app the video player app
+	 */
+	_initializeStates: function(player, app){
+		this.states = [];
+		this.currentState = null;
+		
+		Mojo.Log.info ("begin setting up states");
+		this.states[this.STATE_DISCONNECTED] = new DisconnectedState(this, player, app);
+		this.states[this.STATE_DISCONNECTING] = new DisconnectingState(this, player, app);
+		this.states[this.STATE_CONNECTING] = new ConnectingState(this, player, app);
+		this.states[this.STATE_CANNOT_PLAY_BUFFERING] = new CannotPlayBufferingState(this, player, app);
+		this.states[this.STATE_CAN_PLAY_BUFFERING] = new CanPlayBufferingState(this, player, app);
+		this.states[this.STATE_PLAYING] = new PlayingState(this, player, app);
+		this.states[this.STATE_PAUSED] = new PausedState(this, player, app);
+		this.states[this.STATE_STOPPED] = new StoppedState(this, player, app);
+		this.states[this.STATE_EMPTIED] = new EmptiedState(this, player, app);
+		this.states[this.STATE_ERROR] = new ErrorState(this, player, app);
+		
+		Mojo.Log.info ("finished setting up states");
+		this.changeState(this.STATE_STOPPED);
+	},
+
+	setBlockPlayEvents: function(block){
+		Mojo.Log.info ("block play events" + block);
+		this.blockPlayEvents = block;
+	},
+	
+	handleEvent: function(event) {
+		Mojo.Log.info ("state machine handling event: " + event);
+		Mojo.Log.info ("current state: " + this.currentState);
+		
+		if (event === this.EVENT_ERROR) {
+			if (this.currentState !== this.STATE_ERROR){
+				this.changeState(this.STATE_ERROR);
+			}
+		} else{
+			this.states[this.currentState].onevent(event);	
+		}		
+		
+		Mojo.Log.info ("done handling event");
+	},
+	
+	changeState: function(newState){
+		Mojo.Log.info ("change states to " + newState);
+		
+		if (this.currentState){
+			this.states[this.currentState].onexit();
+		}
+				
+		this.currentState = newState;
+		this.states[this.currentState].onenter();
+		
+		if (this.app.notifyStateChange){
+			this.app.notifyStateChange(this.currentState);
+		}
+	},
+
+	getCurrentState: function(){
+		return this.currentState;
+	},
+	
+	_canPlayHandler: function(){
+		if (this.pendingSeek){
+				this.player.currentTime = this.pendingSeek;
+				this.pendingSeek = 0;
+		}
+						
+		if (this.mediaExt && this.mediaExt.pausable == 'false'){
+				Mojo.Log.info ("signalling pause is unsupported");
+				this.app.pauseIsUnsupported();
+		}
+		
+		
+		this.handleEvent(this.EVENT_CAN_PLAY);
+	},
+	
+	_canPlayThroughHandler: function(){
+		this.handleEvent(this.EVENT_CAN_PLAY_THROUGH);
+	},
+
+	_playEventHandler: function(){
+			this.handleEvent(this.EVENT_PLAYING);
+	},
+
+	_pauseEventHandler: function(){
+			this.handleEvent(this.EVENT_PAUSED);
+	},
+	
+	_waitingHandler: function(){
+		this.handleEvent(this.EVENT_WAITING);
+	},
+
+	_emptiedHandler: function(){
+		this.handleEvent(this.EVENT_EMPTIED);
+	},
+
+	throwError: function(){
+		this.handleEvent(this.EVENT_ERROR);
+	},
+	
+
+	_errorHandler: function(){
+		var code = this.player.error.code;
+		//circumvents NOV-100470
+		if(this.currentState !== this.STATE_DISCONNECTED && 
+			this.currentState !== this.STATE_DISCONNECTING){
+			if (code != MediaError.MEDIA_ERR_ABORTED){
+					this.handleEvent(this.EVENT_ERROR);			
+			}
+
+		}
+	},
+	
+	_dataUnavailableHandler: function(){
+		this.handleEvent(this.EVENT_DATA_UNAVAILABLE);
+	},
+	
+	_canShowCurrentFrameHandler: function(){
+		this.handleEvent(this.EVENT_CAN_SHOW_CURRENT_FRAME);
+	},
+
+	mediaServerDisconnect: function() {
+		if (this.currentState === this.STATE_DISCONNECTING){
+			this.handleEvent(this.EVENT_DISCONNECT);
+		} else {
+			// if we were not expecting this event, something went wrong, and it indicates an error
+			this.handleEvent(this.EVENT_ERROR);
+		}
+	}, 
+
+	mediaServerConnect: function() {
+		this.handleEvent(this.EVENT_CONNECTED);
+	},
+		
+	mediaServerWatchdog: function() {
+		this.handleEvent(this.EVENT_ERROR);			
+	}	
+};
+
+var _localStrings = root.Mojo.Locale.readStringTable("strings.json", 
+		root.Mojo.Locale.current, MojoLoader.root + "resources");
+var $LF = function(stringToLocalize){
+		return root.Mojo.Locale.localizeString(stringToLocalize, _localStrings);
+};
+
+exports.StreamingPlayEngine = StreamingPlayEngine;
+root.StreamingPlayEngine = StreamingPlayEngine;
+
+
+
+//@ sourceURL=mediastream/StreamingStates.js
+
+/*
+ *
+ * Disconnectected -> Stopped -> CannotPlayBuffering -> CanPlayBuffering -> Playing/Paused -> Disconnecting -> Disconnected
+ * 
+ 
+Copyright 2009 Palm, Inc.	 All rights reserved.
+
+*/
+
+/*globals Mojo $LF MojoLoader MediaError*/
+//todo: MediaError isn't defined anywhere?
+
+var StreamingState = function(engine, player, app) {
+	this.engine = engine;
+	this.app = app;
+	this.player = player;
+};
+
+/*
+ * This state simply fixes the UI after the stream has been stopped
+ */
+var EmptiedState = function(engine, player, app){
+	StreamingState.call(this, engine, player, app);
+};
+
+EmptiedState.prototype = {
+	onenter: function() {
+		Mojo.Log.info ("entering emptied");
+		this.app.showPlayButton(true);
+		this.app.showControls();
+		this.app.hideStatus();
+
+		this.engine.changeState(this.engine.STATE_STOPPED);
+	},
+	
+	onexit: function() {},
+	onevent: function(event) {}
+};
+
+
+/* 
+ *	Do not have an open connection with the media server.
+ */
+var DisconnectedState = function(engine, player, app){
+	StreamingState.call(this, engine, player, app);
+};
+
+DisconnectedState.prototype = {
+	onenter: function() {
+		Mojo.Log.info ("entering disconnected");
+	},
+	
+	onexit: function() {},
+	
+	onevent: function(event) {
+		if(event == this.engine.EVENT_CONNECTING){
+			Mojo.Log.info ("disconnected state got connected event");
+			this.engine.changeState(this.engine.STATE_CONNECTING);
+		}
+	}
+};
+
+/* 
+ *	Disconnecting from the memory server, probably in response to a low-memory alert
+ */
+
+var DisconnectingState = function(engine, player, app){
+	StreamingState.call(this, engine, player, app);
+};
+
+DisconnectingState.prototype = {
+	onenter: function() {
+		Mojo.Log.info ("entering disconnecting");
+
+		var mediaextension = MojoLoader.require(
+			{name: "mediaextension", version: "1.0"}
+		).mediaextension;
+		
+		if(mediaextension.MediaPlayer) {
+			mediaextension.MediaPlayer.setup(this.app, {endpointUri: "com.palm.mediaserver"});
+			mediaextension.MediaPlayer.getInstance(function(response){
+				response.unload();
+				this.engine.mediaServerDisconnect();
+			}.bind(this), {element: 'player'});
+		}
+		
+	},
+	
+	onexit: function() {},
+	
+	onevent: function(event) {
+		if(event == this.engine.EVENT_DISCONNECT){
+			this.engine.changeState(this.engine.STATE_DISCONNECTED);
+		}
+	}
+};
+
+var ConnectingState = function(engine, player, app){
+	StreamingState.call(this, engine, player, app);
+};
+
+ConnectingState.prototype = {
+	onenter: function() {
+		Mojo.Log.info ("entering connecting");
+		this.engine.mediaServerConnect();
+	},
+	
+	onexit: function() {},
+	
+	onevent: function(event) {
+		if(event == this.engine.EVENT_CONNECTED){
+			this.engine.changeState(this.engine.STATE_STOPPED);
+		}
+	}
+};
+
+var StoppedState = function(engine, player, app){
+	StreamingState.call(this, engine, player, app);
+};
+
+StoppedState.prototype = {
+	onenter: function() {
+		Mojo.Log.info ("entering stopped");
+
+		// if there was a pending load, do it now
+		if (this.engine.pendingLoad){
+			this.engine.doLoad();
+		}
+	},
+	
+	onexit: function() {},
+	
+	onevent: function(event) {
+		Mojo.Log.info ("stopped on event: " + JSON.stringify(event));
+		if(event == this.engine.EVENT_LOAD){
+			this.engine.changeState(this.engine.STATE_CANNOT_PLAY_BUFFERING);
+		}
+	}
+};
+
+var CannotPlayBufferingState = function(engine, player, app){
+	StreamingState.call(this, engine, player, app);
+};
+
+CannotPlayBufferingState.prototype = {
+	onenter: function() {
+		this.app.showStatus();
+		this.app.showPlayButton(false, false);
+	},
+	
+	onexit: function() {},
+	
+	onevent: function(event) {	
+		switch(event){
+			case this.engine.EVENT_CAN_PLAY:
+				this.engine.changeState(this.engine.STATE_CAN_PLAY_BUFFERING);
+				break;
+			case this.engine.EVENT_PLAY:
+				this.engine.changeState(this.engine.STATE_PLAYING);
+				break;
+			case this.engine.EVENT_PLAYING:
+				this.engine.changeState(this.engine.STATE_PLAYING);
+				break;
+			case this.engine.EVENT_CAN_PLAY_THROUGH:
+				if (!this.engine.blockPlayEvents && !this.engine._reconnecting){
+					this.player.play();
+				} else{
+					this.engine._reconnecting = false;
+					this.engine.changeState(this.engine.STATE_PAUSED);
+				}
+				break;
+			case this.engine.EVENT_EMPTIED:
+				this.engine.changeState(this.engine.STATE_EMPTIED);
+				break;
+			default:
+				break;
+		}
+	}
+};
+
+var CanPlayBufferingState = function(engine, player, app){
+	StreamingState.call(this, engine, player, app);
+};
+
+CanPlayBufferingState.prototype = {
+	onenter: function() {
+		
+		var isLocal = function(url){
+			var localProtocol = "file:";
+			return url[0] == "/" || url.substring (0, localProtocol.length).toLowerCase() === localProtocol;
+		};
+		
+		if(!isLocal(this.engine.player.src)){
+			this.app.showControls();
+		}
+		this.app.showStatus();
+		this.app.showPlayButton(true);
+	},
+	
+	onexit: function() {},
+	
+	onevent: function(event) {
+		switch(event){
+			case this.engine.EVENT_CAN_PLAY_THROUGH:
+				Mojo.Log.info ("block play: ", this.engine.blockPlayEvents);
+				if (!this.engine.blockPlayEvents && !this.engine._doNotAutoPlay){
+					this.player.play();
+				} else{
+					Mojo.Log.info("play blocked, paused");
+					this.engine._doNotAutoPlay = false;
+					this.engine._reconnecting = false;
+					this.engine.changeState(this.engine.STATE_PAUSED);
+				}
+				break;
+			case this.engine.EVENT_PLAY:
+				this.engine.changeState(this.engine.STATE_PLAYING);
+				break;
+			case this.engine.EVENT_PLAYING:
+				this.engine.changeState(this.engine.STATE_PLAYING);
+				break;
+			case this.engine.EVENT_PLAY_BUTTON:
+				this.player.play();
+				break;
+			case this.engine.EVENT_WAITING:
+				this.engine.changeState(this.engine.STATE_CANNOT_PLAY_BUFFERING);
+				break;
+			case this.engine.EVENT_EMPTIED:
+				this.engine.changeState(this.engine.STATE_EMPTIED);
+				break;
+			default:
+				break;
+		}
+	}
+};
+
+var PlayingState = function(engine, player, app){
+	StreamingState.call(this, engine, player, app);
+};
+
+PlayingState.prototype = {	 
+	onenter: function() {
+		this.app.showPauseButton(true);
+		this.app.hideStatus();
+		//if we've gotten to the playing state, we shouldn't block plays unless the app is carded etc.
+		this.engine.blockPlayEvents = false;
+		this.engine._reconnecting = false;
+	},
+
+	onexit: function() {},
+
+	onevent: function(event) {	
+		switch(event){
+		case this.engine.EVENT_PAUSE_BUTTON:
+			this.engine.changeState(this.engine.STATE_PAUSED);
+			this.player.pause();
+			break;
+		case this.engine.EVENT_PAUSED:
+			this.engine.changeState(this.engine.STATE_PAUSED);
+			break;
+		case this.engine.EVENT_WAITING:
+		
+			// send an explicit pause
+			this.player.pause();
+			this.engine.changeState(this.engine.STATE_CANNOT_PLAY_BUFFERING);
+			break;
+		case this.engine.EVENT_EMPTIED:
+			this.engine.changeState(this.engine.STATE_EMPTIED);
+			break;
+		default:
+			break;
+		}
+	}
+};
+
+var PausedState = function(engine, player, app){
+	StreamingState.call(this, engine, player, app);
+};
+
+PausedState.prototype = {
+	onenter: function() {
+		//if a scene pops in the middle of playing a video,
+		//we get a paused event, not an error
+		//this just double checks to make sure we still have the scene(controller)
+		if(this.app.controller){
+			this.app.showPlayButton(true);
+			this.app.showControls();
+			this.app.hideStatus();
+		}
+	},
+	
+	onexit: function() {},
+	
+	onevent: function(event) {
+		switch(event){
+			case this.engine.EVENT_PLAY_BUTTON:
+				this.player.play();
+				break;
+			case this.engine.EVENT_PLAYING:
+				this.engine.changeState(this.engine.STATE_PLAYING);			 
+				break;
+			case this.engine.EVENT_WAITING:
+				this.engine.changeState(this.engine.STATE_CANNOT_PLAY_BUFFERING);
+				break;
+			case this.engine.EVENT_EMPTIED:
+				this.engine.changeState(this.engine.STATE_EMPTIED);
+				break;
+			default:
+				break;
+		}
+	}
+};
+
+
+/**
+ * If we get here, show's over folks.
+ */
+var ErrorState = function(engine, player, app){
+	StreamingState.call(this, engine, player, app);
+};
+
+ErrorState.prototype = {
+	onenter: function() { 
+		var code = -1;
+		if (this.player.error){	code = this.player.error.code; }
+		var errorMessage;
+	
+		if (code == MediaError.MEDIA_ERR_NETWORK){
+			Mojo.Log.info ("network error");
+			errorMessage = $LF("There was an error playing the file");
+		}
+		else if (code == MediaError.MEDIA_ERR_DECODE){
+			Mojo.Log.info ("decode error");
+			errorMessage = $LF("There was an error playing the file");
+		}
+		else{
+			Mojo.Log.info ("generic error");
+			errorMessage = $LF("There was an error playing the file");
+		}
+
+		this.app.hideStatus();
+		this.app.showError(errorMessage);
+	},
+	
+	onexit: function() {},
+
+	onevent: function(event) {}
+};
+
+}

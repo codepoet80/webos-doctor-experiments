@@ -1,0 +1,97 @@
+.enyo-popup-menu .enyo-popup-inner{
+	margin: -7px -13px;
+}
+
+.edit-photo-image {
+	float: right;
+	width: 34px;
+	height: 34px;
+	margin: 4px 10px 0px 0px;
+	-webkit-border-radius: 8px;
+}
+
+.default-row {
+	padding: 6px;
+}
+
+.greyed-out {
+	color: #999999;
+}
+
+.edit-caption {
+	margin: 10px 15px;
+}
+
+.edit-toggle {
+	margin: -6px 15px;
+	float: right;
+}
+
+.header {
+	height: 15px;
+}
+
+.phone-icon {
+	width: 32px;
+	height: 32px;
+	margin: -3px 2px 0px 0px;
+}
+
+.network-type-list {
+	width: 115px;
+	height: 30px;
+	color: rgb(31, 117, 191);
+	font-size: 12px;
+}
+
+.data-roaming-list {
+	width: 100px;
+	height: 30px;
+	color: rgb(31, 117, 191);
+	font-size: 12px;
+}
+
+.info-text {
+	text-align: center;
+	font-size: 13px;
+	color: #665;
+}
+
+.info-text-left {
+	text-align: left;
+	font-size: 13px;
+	color: #665;
+}
+
+#networknamerow {
+	border: 0 !important;
+	background: none !important;
+}
+
+.lock-button {
+	background: url(../images/lock.png) left center no-repeat;
+	width: 40px;
+	height: 46px;
+}
+
+.warning-button {
+	background: url(../images/warning-icon.png) left center no-repeat;
+	width: 32px;
+	height: 29px;
+}
+
+.unlock-pin-screen{                         
+	-webkit-border-image: url(../images/dialpad-bg.png) 8;
+	padding: 20px 5px 0 0 ;
+}
+
+.unlock-pin-screen .dialpad-backspace{
+ 	background: none;
+	-webkit-border-image: none;
+	border-radius: 0;
+
+}
+.unlock-pin-screen .dialpadbutton-bottom-left,
+.unlock-pin-screen .dialpadbutton-bottom-right{
+	border-bottom: 0;
+}

@@ -1,0 +1,98 @@
+[
+    {
+        "type": "db.kind",
+        "object": "com.palm.phonecallgroup:1",
+        "caller": "com.palm.service.datapop",
+        "operations": {
+			"create": "allow",
+			"read": "allow",
+			"update": "allow",
+			"delete": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.phonecall:1",
+        "caller": "com.palm.service.datapop",
+        "operations": {
+			"create": "allow",
+			"read": "allow",
+			"update": "allow",
+			"delete": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.phonecall:1",
+        "caller": "com.palm.bluetooth",
+        "operations": {
+            "read": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.phonecall:1",
+        "caller": "com.palm.pmvoicecommand",
+        "operations": {
+            "read": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.phonecall:1",
+        "caller": "com.palm.btcontacts",
+        "operations": {
+            "read": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.phonecall:1",
+        "caller": "com.palm.service.contacts.linker",
+        "operations": {
+			"create": "allow",
+			"read": "allow",
+			"update": "allow",
+			"delete": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.phonecallgroup:1",
+        "caller": "com.palm.service.contacts.linker",
+        "operations": {
+			"create": "allow",
+			"read": "allow",
+			"update": "allow",
+			"delete": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.vvm.voicemessages:1",
+        "caller": "com.palm.app.phone",
+        "operations": {
+			"read": "allow",
+			"update": "allow",
+			"delete": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.vvm.mailbox:1",
+        "caller": "com.palm.app.phone",
+        "operations": {
+			"read": "allow",
+			"update": "allow",
+			"delete": "allow"
+        }
+    },
+    {
+        "type": "db.kind",
+        "object": "com.palm.callcapabilities:1",
+        "caller": "com.palm.bluetooth",
+        "operations": {
+			"read": "allow"
+        }
+    }
+]

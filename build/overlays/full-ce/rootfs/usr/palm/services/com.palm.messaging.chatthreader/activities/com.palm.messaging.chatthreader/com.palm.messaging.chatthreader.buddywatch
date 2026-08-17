@@ -1,0 +1,29 @@
+{
+	"start": true,
+	"replace": true,
+	"activity": {
+		"name": "chatThreader.emptyDisplayName",
+		"description": "watch for imbuddystatus records with no displayName",
+		"type": {
+			"explicit":true,
+			"background": true
+		},
+		"trigger": {
+			"method": "palm://com.palm.tempdb/watch",
+			"key": "fired",
+			"params": {
+				"subscribe": true,
+				"query": {
+					"from": "com.palm.imbuddystatus:1",
+					"where": [
+						{"prop": "displayName", "op": "=", "val": ""}
+					]
+				}
+			}
+		},
+		"callback": {
+			"method": "palm://com.palm.messaging.chatthreader/newBuddies",
+			"params": {}
+		}
+	}
+}

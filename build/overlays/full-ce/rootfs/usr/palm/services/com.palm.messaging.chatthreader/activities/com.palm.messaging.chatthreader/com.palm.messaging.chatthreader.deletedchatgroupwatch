@@ -1,0 +1,29 @@
+{
+	"start": true,
+	"activity": {
+		"name": "chatThreader.deletedImChatGroup",
+		"description": "watch for deleted ImChatGroup records",
+		"type": {
+			"persist":true,
+			"immediate": true,
+			"priority": "normal"
+		},
+		"trigger": {
+			"method": "palm://com.palm.db/watch",
+			"key": "fired",
+			"params": {
+				"query": {
+					"from": "com.palm.imgroupchat:1",
+					"where": [
+						{"prop": "_del", "op": "=", "val": true},
+						{"prop": "_rev", "op": ">", "val": 0}
+					]
+				}
+			}
+		},
+		"callback": {
+			"method": "palm://com.palm.messaging.chatthreader/deletedImGroupChat",
+			"params": { "revision":0 }
+		}
+	}
+}

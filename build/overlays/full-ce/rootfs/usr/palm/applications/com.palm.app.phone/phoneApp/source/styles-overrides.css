@@ -1,0 +1,892 @@
+.phone-background{
+	background: url(../images/phone-background.png);
+}             
+.active-call-scrim{
+	z-index: 1;
+	background: rgba(0,0,0, .5);
+}
+.panes{
+	position: relative;
+	height: 802px;
+}               
+.active-call-button{
+	background-color: transparent;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+.phone-command-menu-main {    
+	position: absolute;
+	top: 0;   
+	font-weight: bold;
+	border-width: 0px 0px;
+	background: url(../images/search-header-shadow.png) repeat-x bottom left;
+	-webkit-border-image: none;
+	width: 100%;
+	min-height: 74px;	
+}
+.phone-command-menu .enyo-grouped-toolbutton {
+	margin-top: -10px;
+	-webkit-box-sizing: border-box;
+	border-width: 0px 34px;
+	padding: 5px 0 0 0;
+	color: #c8c8c8;
+	cursor: default;
+	text-transform: uppercase;
+	font-size: 10px;
+	height: 65px;
+	text-shadow: #000000 1px 1px 3px;
+}
+.phone-command-menu .enyo-grouped-toolbutton div.enyo-button-icon{
+	margin-top: 2px;
+	margin-bottom: 0;
+}
+.phone-command-menu .voicemail-icon > .enyo-button-icon {
+	width: 40px;
+}
+.enyo-richtext.enyo-fancy-input-input.enyo-richtext-hint {
+	color: #999999;
+}
+.phone-command-menu .enyo-grouped-toolbutton.enyo-first, 
+.phone-command-menu .enyo-grouped-toolbutton.enyo-middle,  
+.phone-command-menu .enyo-grouped-toolbutton.enyo-last {
+	-webkit-border-image: url(../images/tab-button.png) 0 34 136 34;
+	color: #c8c8c8;
+}
+.phone-command-menu .enyo-grouped-toolbutton.enyo-first.enyo-button-down,
+.phone-command-menu .enyo-grouped-toolbutton.enyo-middle.enyo-button-down,
+.phone-command-menu .enyo-grouped-toolbutton.enyo-single.enyo-button-down,
+.phone-command-menu .enyo-grouped-toolbutton.enyo-last.enyo-button-down
+{
+	-webkit-border-image: url(../images/tab-button.png) 68 34 68 34;
+	color: #fff;
+}
+.phone-command-menu .enyo-grouped-toolbutton.enyo-first.enyo-button-depressed,
+.phone-command-menu .enyo-grouped-toolbutton.enyo-middle.enyo-button-depressed,
+.phone-command-menu .enyo-grouped-toolbutton.enyo-last.enyo-button-depressed  {
+	-webkit-border-image: url(../images/tab-button.png) 136 34 0 34;
+	color: #fff;
+}
+/***********
+Call Log 
+************/
+.call-log, .favorites, .favorite-add, .contact-list{ 
+	border: 2px solid #1f2121;
+	border-radius: 6px;  
+	margin: 30px;
+	text-align: left;
+	height: 87%;
+	top: 60px;
+	color: #fff;
+}
+.phone-contacts
+{
+	border: 2px solid #1f2121;
+	border-radius: 6px;
+	top: 0px;
+	margin: 15px 30px 100px 30px;
+	color: #AAA;
+}
+.call-log .phone-command-menu{
+	display: none;
+}
+.clv-drawerItem-displayNm{
+	width: auto;       
+	height: 32px;
+	color: #fff;
+}
+.clv-drawerItem-truncated-displayNm {
+	width: 60%;
+	height: 32px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.call-history-subitem {
+	font-size: 14px;
+	color: #6f7070;
+	height: 36px;
+}
+.clv-draweritem-displayArea{
+	padding: 5px 8px 4px 12px;      
+}
+.draweritem-displayicon{
+	position: absolute;
+	right: 140px;
+	top: 6px;
+}
+.clv-draweritem-displayLblRight, .clv-draweritem-displayLblRightSub{
+	text-align: right;
+	position: absolute;
+	right: 80px;
+	top: 5px;
+	font-size: 14px;
+}
+.clv-draweritem-displayLblRight {
+    font-size: 15px;
+	color: #ccc;
+}
+.drawer-subItem-callTimeLbl {
+    margin-right: 6px;
+    width: 62px;
+}
+.image-toggle-button-pillCountLbl{
+	position: relative;
+	margin-left: 10px;
+	-webkit-border-image: url(../images/dashboard-unread.png) 0 9 0 9;
+	border-width: 0px 9px 0px 9px;
+	pointer-events: none;
+    height: 24px;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 15px;
+	line-height: 24px;
+}
+.clv-drawerItem-favoritesIcon {
+    width: 16px;
+    height: 16px;
+    background: url(../images/addressing-favorite.png) left top no-repeat;
+	margin: 0 0 0 5px;
+}
+.hidden-drawer-item01{
+	-webkit-border-image:  url(../images/call-log-drawer-sub-item-bg.png) 10 repeat;
+	border-width:  10px 10px 0px 10px;
+}
+.hidden-drawer-item{
+	-webkit-border-image:  url(../images/call-log-drawer-sub-item-bg.png) 10 repeat;
+	border-width: 0px 10px 10px 10px;
+}                          
+.clv-fonts-contents {
+  margin-left: .5em;
+  display: -webkit-box;
+  -webkit-box-flex: 1;
+  -webkit-box-orient: vertical;
+  -webkit-box-pack: center;
+}
+.drawer-subitem.minHeight {
+	min-height: 48px;
+	position: relative;
+}
+.hidden-drawer-item div[rowindex]:last-child{
+	margin-bottom: -10px;
+}
+.call-log .drawerItem .enyo-drawer .drawer-subitem{
+	background: transparent;
+	padding-left: 60px;
+	position: relative;
+}
+.call-log .drawer-subItem-itemTextLbl{
+	width: 73%;                        
+	color: #cbcbcb;     
+	margin-top: 5px;
+} 
+
+.call-log-icon, .call-log-icon-colors{
+	border: solid transparent;
+    border-width: 0 0 0 0;
+    width: 24px;
+    height: 24px;
+}
+.call-log-icon.missed {
+	background: url(../images/call-log-list-light-sprite.png) 0 0 no-repeat;  	
+}
+
+.call-log-icon.incoming {
+	background: url(../images/call-log-list-light-sprite.png) 0 -21px no-repeat;  	
+}
+
+.call-log-icon.outgoing {
+	background: url(../images/call-log-list-light-sprite.png) 0 -46px no-repeat;  	
+}
+
+.call-log-icon.ignored {
+	background: url(../images/call-log-list-light-sprite.png) 0 -70px no-repeat;  	
+}
+.call-log-icon-colors.missed {
+	background: url(../images/call-log-list-sprite.png) 0 0 no-repeat; 
+}
+.call-log-icon-colors.incoming {
+	background: url(../images/call-log-list-sprite.png) 0 -21px no-repeat;  	
+}
+.call-log-icon-colors.outgoing {
+	background: url(../images/call-log-list-sprite.png) 0 -46px no-repeat;  	
+}
+.call-log-icon-colors.ignored {
+	background: url(../images/call-log-list-sprite.png) 0 -70px no-repeat;  	
+}                
+.call-log .drawer-subItem-itemPrefixTextLbl{
+	position: absolute;
+	left: 60px;
+	text-transform: uppercase;
+	color: #6f7070;
+}
+.clv-drawerItem-displayDetails {
+	font-size: 18px;
+	position: relative;
+	margin-left: 60px;
+	margin-bottom: 5px;
+}
+.call-log .clv-drawerItem-displayLbl{
+	color: #9d9e9f;
+	font-size: 12px;       
+	text-transform: uppercase;
+	padding: 0;
+	top: -10px;
+	position: relative;
+}
+.clv-drawerItem-displayLbl {
+	font-size: 14px;
+	padding-top: 5px;
+	white-space:nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.clv-drawerItem-displayVideoIcon-relative {
+	position: relative;
+	top: -8px;
+	margin: 0px 0px 0px 4px;
+    width: 20px;
+    height: 12px;
+	background: url(../images/icon-videocall-list.png) 0px 0px no-repeat;
+}
+.clv-drawerItem-displayVideoIcon-absolute {
+	position: absolute;
+	top: 37px;
+	margin: 0px 0px 0px 4px;
+    width: 20px;
+    height: 12px;
+	background: url(../images/icon-videocall-list.png) 0px 0px no-repeat;
+}
+.call-log-separator {
+	height: 2px;
+	background: url(../images/call-log-list-separator.png) top left repeat-x;
+}
+/*TODO: resolve the usage of call-log-separator & call-log-separator2 once VVM, Favorites, & CallLog have all been moved to either a DbList or VirtualList*/
+.call-log-separator2 {
+	margin-left: -20px; margin-right: -20px;
+	height: 2px;
+	background: url(../images/call-log-list-separator.png) top left repeat-x;
+}
+.clv-draweritem-avatar {
+	position: absolute;
+	top: 0px;
+	right: 15px;
+}
+.drawerItem .enyo-confirmprompt .enyo-button {
+	-webkit-border-image: url(../images/call-log-button-up.png) 4;
+	background-color: rgba(240, 242, 242, 0.5);
+	border-bottom-left-radius: 5px 5px;
+	border-bottom-right-radius: 5px 5px;
+	border-top-left-radius: 5px 5px;
+	border-top-right-radius: 5px 5px;
+	border-width: 4px;
+	height: auto;
+}
+.drawerItem .enyo-confirmprompt .enyo-button.enyo-button-down {
+	-webkit-border-image: url(../images/call-log-button-down.png) 4;
+}
+.drawerItem .enyo-confirmprompt .enyo-button-negative {
+	-webkit-border-image: url(../images/call-log-button-up.png) 4;
+	background-color: #BE0003;
+}
+.drawerItem .enyo-confirmprompt .enyo-button-negative.enyo-button-down {
+	-webkit-border-image: url(../images/call-log-button-down.png) 4;
+}
+.dialer-addressing{
+	margin-top: 10px;   
+}
+.dialer-addressing input{
+	text-align: center;
+}
+.dialer-string-empty input{
+	text-align: left;
+}
+.dialer-string-empty .enyo-input-disabled{
+	-webkit-text-fill-color: white;
+	opacity: 1;
+}
+.contacts-button{
+	display: none;
+}              
+/********
+ DIALER 
+*********/
+.phoneDialer{
+	position: relative;
+	top: 80px;
+}
+/* This class is added when there are two calls */
+.phoneDialer-backtoActiveCall{
+	position: relative;
+	top: 100px;
+}
+.dialpadButton.enyo-button-blue{
+	z-index: 999;
+}
+.dialermain{ 
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-left: -168px;
+	margin-top: -270px;
+	height: 458px;
+	width: 337px;
+	z-index: 120;
+}
+.dialer{                   
+	height: 458px;
+	width: 337px;       
+	-webkit-border-image: url(../images/dialpad-bg.png) 20 stretch;
+	border-width: 20px;
+}
+.dialstring-input{
+	border-width: 0;
+}
+.dtmfpad-activecall-name{
+	background-image: none;
+}
+.active-call-scene{
+	background-color: transparent;
+	margin-top: 150px;
+	height: 523px;
+	width: 337px;       
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+}           
+.active-call-scene-video{
+	top: 0px;
+	margin: 0px;
+	height: 100%;
+	width: 100%;
+}
+.change-to-video-button{
+	left: -2px;
+	top: 3px;
+	position: absolute;
+	-webkit-border-image: none;
+	border-width: 0;
+	background-color: transparent;
+	border-radius: 0;
+}     
+.add-to-contacts-button{
+	-webkit-border-image: url(../images/call-action-buttons.png) 0 10 210 10 repeat repeat;
+	border-width: 0px 10px;
+	font-weight: normal;
+	height: 70px;
+	width: 300px;
+	font-size: 18px;
+	line-height: 70px;
+	padding: 0px;                         
+	color: #fff;
+	background-color: transparent;
+	border-radius: 0;
+}
+.add-to-contacts-button.enyo-button-down{
+	-webkit-border-image: url(../images/call-action-buttons.png) 140 10 70 10 repeat repeat; 
+}
+.single-call-fullscreen .single-call-glass{
+-webkit-border-image: url(../images/active-call-sprite.png) 61 22 1602 22 stretch stretch;
+}                
+.single-call-simple{
+	-webkit-border-image: url(../images/dialpad-bg.png) 10 stretch;
+	border-width: 10px;
+	background: none;
+}
+.single-call-fullscreen .single-call-header{
+	-webkit-border-image: url(../images/active-call-sprite.png) 0 22 1663 22 stretch stretch;
+}
+.single-call-simple .single-call-header{
+	margin-top: 17px;
+  -webkit-border-image: none; 
+}                 
+.single-call-simple .single-call-glass{
+  -webkit-border-image: none;
+}
+.single-call-fullscreen .single-call-hangup{
+	-webkit-border-image: url(../images/active-call-sprite.png) 452 26 1135 26 repeat repeat;
+	background-image: none;
+}
+.single-call-fullscreen .single-call-hangup.enyo-button-down{
+	-webkit-border-image: url(../images/active-call-sprite.png) 452 26 1135 26 repeat repeat;
+	background-image: none;
+}
+.single-call-glass-client{
+	margin-top: 0px;
+	margin-right: -4px;
+	margin-bottom: 0px;
+	margin-left: -4px;
+}
+.contactsButtonDisplayed{
+	display: -webkit-box;
+}
+/********
+ Dialpad
+********/
+.dialpad-container{ 
+	margin: 0px -10px;  
+	height: 278px; 
+	border-bottom: 1px solid #000;
+}
+.dialpadbutton-top-left, 
+.dtfmpad-call-min-height-scroller .dialpadbutton-top-left{
+	-webkit-border-image: none; 
+	border-top: 1px solid #434444;
+	border-left: none;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+}
+.dialpadbutton-top-left.enyo-button-down,
+.dtfmpad-call-min-height-scroller .dialpadbutton-top-left.enyo-button-down  {
+	border-width: 1px 1px 1px 0;
+	-webkit-border-image: url(../images/dialpad-button-down.png) 5;
+}
+
+.dialpadbutton-top-middle,
+.dtfmpad-call-min-height-scroller .dialpadbutton-top-middle{
+	border-width: 1px;
+	border-top: 1px solid #434444;
+	border-left: 1px solid #434444;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	-webkit-border-image: none;	
+}
+.dialpadbutton-top-middle.enyo-button-down
+.dtfmpad-call-min-height-scroller .dialpadbutton-top-middle.enyo-button-down {
+	border-width: 1px;
+	-webkit-border-image: url(../images/dialpad-button-down.png) 5;
+}
+
+.dialpadbutton-top-right,
+.dtfmpad-call-min-height-scroller .dialpadbutton-top-right{
+	border-top: 1px solid #434444;
+	border-left: 1px solid #434444;
+	border-right: none;
+	border-bottom: 1px solid #000;
+	-webkit-border-image: none;
+}
+.dialpadbutton-top-right.enyo-button-down,
+.dtfmpad-call-min-height-scroller .dialpadbutton-top-right.enyo-button-down {
+	border-width: 1px 0 1px 1px;
+	-webkit-border-image: url(../images/dialpad-button-down.png) 5;
+}
+
+.dialpadbutton-left{
+	border-top: 1px solid #434444;
+	border-left: none;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	-webkit-border-image: none;
+}
+.dialpadbutton-left.enyo-button-down {
+	border-width: 1px 1px 1px 0;
+	-webkit-border-image: url(../images/dialpad-button-down.png) 5;
+}
+
+.dialpadbutton-middle{
+	border-top: 1px solid #434444;
+	border-left: 1px solid #434444;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	-webkit-border-image: none;
+}
+.dialpadbutton-middle.enyo-button-down {
+	border-width: 1px;
+	-webkit-border-image: url(../images/dialpad-button-down.png) 5;
+}
+
+.dialpadbutton-right{
+	border-top: 1px solid #434444;
+	border-left: 1px solid #434444;
+	border-right: none;
+	border-bottom: 1px solid #000;
+	-webkit-border-image: none;
+}
+.dialpadbutton-right.enyo-button-down {
+	border-width: 1px 0 1px 1px;
+	-webkit-border-image: url(../images/dialpad-button-down.png) 5;
+}                                
+
+.dialpadbutton-bottom-left {
+	border-top: 1px solid #434444;
+	border-left: none;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	-webkit-border-image: none;    
+}
+.dialpadbutton-bottom-left.enyo-button-down {
+	border-width: 1px 1px 1px 0;
+	-webkit-border-image: url(../images/dialpad-row-3-sprite.png) 2 214 26 320;
+}
+
+.dialpadbutton-bottom-middle {
+	border-top: 1px solid #434444;
+	border-left: 1px solid #434444;
+	border-right: 1px solid #000;
+	border-bottom: none;
+	-webkit-border-image: none;    
+}
+.dialpadbutton-bottom-middle.enyo-button-down {
+	border-width: 1px;
+	-webkit-border-image: url(../images/dialpad-row-3-sprite.png) 2 106 26 426;
+}
+
+.dialpadbutton-bottom-right {
+	border-top: 1px solid #434444;
+	border-left: 1px solid #434444;
+	border-right: none;
+	border-bottom: 1px solid #000;
+ 	-webkit-border-image: none;    
+}
+.dialpadbutton-bottom-right.enyo-button-down {
+	border-width: 1px 0 1px 1px;
+	-webkit-border-image: url(../images/dialpad-row-3-sprite.png) 2 0 26 534;
+}
+
+.dialpadbutton-top-left,
+.dialpadbutton-top-middle,
+.dialpadbutton-top-right {
+	border-width: 1px; 
+}
+
+.dialpadbutton-bottom-left,
+.dialpadbutton-bottom-middle,
+.dialpadbutton-bottom-right {
+	border-width: 1px; 
+}
+
+.dialpadbutton-left,
+.dialpadbutton-middle,
+.dialpadbutton-right {
+	border-width: 1px;
+}
+.dialpadbutton-top-left > .keypad-digit, .dialpadbutton-top-middle > .keypad-digit, .dialpadbutton-top-right > .keypad-digit{
+	margin-top: 0;
+}
+.dial-button{
+	height: 70px;
+	margin: 0px -12px -12px -14px;
+	-webkit-border-image: url(../images/dial-button.png) 0 27 155 27 repeat repeat;
+	border-width: 0px 27px;
+}
+.dial-button.enyo-button-down{
+	-webkit-border-image: url(../images/dial-button.png) 150 27 5 27 repeat repeat;
+
+}
+.single-call-simple .single-call-hangup,
+.single-call-simple .disconnect-all-button{
+	height: 72px;
+	margin: 0px -2px 0 -4px;
+	-webkit-border-image: url(../images/disconnect-button.png) 0 26 154 26 repeat repeat;
+}
+.single-call-simple .single-call-hangup.enyo-button-down,
+.single-call-simple .disconnect-all-button.enyo-button-down{
+	-webkit-border-image: url(../images/disconnect-button.png) 150 26 3 26 repeat repeat;
+}
+.single-call-simple .single-call-hangup.enyo-button-disabled,
+.single-call-simple .disconnect-all-button.enyo-button-disabled{
+	height: 73px;
+	margin-top: 2;
+	-webkit-border-image: url(../images/disconnect-button.png) 76 26 76 26 repeat repeat;
+}
+.multicall-merge-button-full.enyo-button-down{
+	-webkit-border-image: url(../images/disconnect-button.png) 0 26 154 26 repeat repeat;
+}
+
+.single-call-simple .glass-footer{
+	display: none;
+}
+.multicall-merge-button-full{
+	height: 90px;
+	-webkit-border-image: url(../images/multi-line-merge-button.png) 2 0 repeat;
+	border-width: 2px 0;
+	background: url(../images/call-merge-sprite.png) center 0px no-repeat;
+
+}
+.multicall-merge-button-full.enyo-button-down{
+	-webkit-border-image: url(../images/multi-line-merge-button.png) 2 0 repeat;
+	border-width: 2px 0;
+	-webkit-border-image: none;
+}
+.multi-line-call .single-call-header{
+	-webkit-box-flex: 1;
+}
+
+
+.multi-line-call .disconnect-all-button{
+	height: 90px;
+	-webkit-border-image: url(../images/disconnect-button-multiline.png) 0 26 210 26 repeat repeat;
+}
+.multi-line-call .disconnect-all-button.enyo-button-down{
+	-webkit-border-image: url(../images/disconnect-button-multiline.png) 200 26 10 26 repeat repeat;
+}
+.single-call-simple .disconnect-all-button.enyo-button-disabled{
+	height: 90px;
+	-webkit-border-image: url(../images/disconnect-button-multiline.png) 100 26 110 26 repeat repeat;
+}
+.single-call-simple .disconnect-all-button.enyo-button-disabled div{
+	display: none;
+}
+.multi-line-call .single-call-timer{
+	height: auto;
+	margin: 0;
+	position: absolute;
+	top: -30px;
+	width: 100%;
+	color: #aaa;
+}
+.multi-line-call .single-call-label,
+.single-call-info .single-call-label{
+	text-transform:uppercase;
+	font-size: 16px;
+	line-height: 16px;
+	font-color: #ccc;
+}
+.multi-line-call .single-call-address,
+.single-call-info .single-call-address{
+	font-size: 16px;
+	line-height: 16px;
+	font-color: #919191;
+}
+.multi-line-call .disconnect-all-button{
+	padding-top: 30p;
+}
+.multi-line-call .disconnect-all-button div{
+	margin-bottom: -5px;
+}
+.single-call-info{
+	margin: 0;
+}
+.active-call-button{   
+	-webkit-border-image: url(../images/call-action-buttons.png) 0 10 210 10 repeat repeat;
+	border-width: 0px 10px;
+	font-size: 11px;
+	font-weight: normal;
+	height: 70px;
+	line-height: 12px;
+	margin-left: 0;
+	overflow: hidden;
+	padding: 0px;
+	width: auto;
+}
+
+.active-call-button-row{
+	margin-left: 7px;
+	width: 95%;
+}
+.active-call-button-row .enyo-button .enyo-button-icon{
+	width: 28px;
+	margin-bottom: 3px;
+	display: inline-block;
+	height: 32px;
+	vertical-align: baseline;
+}
+
+.active-call-button.enyo-button-down {
+	border-width: 0px 10px;
+	-webkit-border-image: url(../images/call-action-buttons.png) 70 10 140 10 repeat repeat;
+}
+
+.active-call-button.enyo-button-depressed {
+	border-width: 0px 10px;
+	-webkit-border-image: url(../images/call-action-buttons.png) 140 10 70 10 repeat repeat;
+}
+
+.active-call-button.enyo-button-depressed.enyo-button-down{
+	border-width: 0px 10px;
+	-webkit-border-image: url(../images/call-action-buttons.png) 210 10 0 10 repeat repeat;
+}
+/********
+ FAVORITES 
+*********/
+.FavDrawerItem-fit { /*Needed to adjust for the borders defined in .FavoritesDrawerItem*/
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+}
+.drawerItem-favorites-displayLbl{
+	text-transform: uppercase;
+	color: #c5c5c6;
+	font-size: 16px;	          
+}
+
+.avatar-frame{ 
+	margin-top: 5px;
+	width: 36px;
+	height: 36px;
+}
+.drawerItem-favorites-displayArea{
+	margin:0;
+	position: relative;
+}
+.favorites-hiddenDrawerItem{
+	margin: 0 -20px -10px -20px;
+}
+.fav-drawer-subItem-itemTextLbl{
+	margin-left: 70px;
+}
+.fav-drawer-subitem{
+	position: relative;
+	line-height: 42px;
+	height: 48px;
+}
+.drawerItem-displayNm{
+	width: 100%;
+}
+.avatar-container{
+	margin-left: -35px;
+}
+.avatar-frame.Opened{
+	background: url(../images/favorites-icon-drawer-open.png) bottom left no-repeat;
+}
+.avatar-frame.unOpened{
+	background: url(../images/favorites-icon-drawer-open.png) top left no-repeat;
+}
+.favorites .avatar-frame{
+	top: 5px;
+}
+.favorites .draweritem-displayContent{
+	width: 570px;
+}                  
+.favorites .drawer-subitem{   
+	background-color: #3B3D3F;
+}
+.favorite-draweritem-avatar {
+	position: absolute;
+	top: 10px;
+	right: 12px;
+}
+.favorites .drawerItem-favorites-displayArea{
+	margin-left: 60px;
+	margin-bottom: 20px;
+}
+.favorites div[rowindex="0"] .call-log-separator{
+	height: 0;
+}
+.add-favorite-item {                                                 
+	margin-left: -10px; 
+	margin-right: -10px;                                              
+    height: 60px;
+	line-height: 60px;
+	font-style: italic;
+}
+/***********
+Addressing List
+***********/
+.enyo-addressing-item-addresses .enyo-item{
+	padding-left: 15px;
+}
+/*********** 
+ Contact List 
+************/
+.contact-list .enyo-addressing-item-selected{
+	background: #3d3f41;
+}
+.contact-list input{
+	min-height: 24px;
+}
+.contact-list .enyo-item{
+	text-align: left;                  
+	-webkit-border-image: url(../images/call-log-list-separator.png) 0 0 2 0 repeat;
+	border-width: 0px 0px 2px;
+	border-left: 0;
+	border-right: 0;
+	border-bottom: 2px;
+}
+.first-launch-scene .enyo-header{
+}
+.first-launch-scene .enyo-header-inner{
+}
+.single-call-fullscreen .single-call-glass{
+	background:  url(../images/active-call-sprite) top right no-repeat; 
+}
+.current-call-nav-button{
+	position: absolute;
+	top: 64px;
+	width: 100%;	
+	-webkit-border-image: url(../images/call-in-prog.png) 4;
+	line-height: 30px;
+	border-width: 4px;
+	font-size: 16px;
+	text-align: center;
+	color: #fff; 
+	z-index: 999;
+}
+.call-active .call-log,
+.call-active .favorites,
+.call-active .contact-list{
+	top: 78px;
+}
+.missed-call-frame{
+	display: none;
+}
+.help-menu .enyo-item{
+	border-top: 0;
+	font-size: 18px;
+}
+/*********
+ Framework
+***********/
+.call-log .enyo-item, .favorites .enyo-item, .phone-contacts .enyo-item{
+	border-top: 1px solid #606468;
+	border-bottom: 1px solid #1d2023;
+}
+.call-log .enyo-held, .favorites .enyo-held, .contact-list .enyo-held, .phone-contacts .enyo-held {
+	background: #323232;
+}
+.favorites .enyo-first, .call-log .enyo-first{
+	border-bottom: 1px solid #1d2023;
+}
+.enyo-divider-caption {
+    color: #8b8c8e;
+	text-transform: uppercase;
+}
+.phone-contacts .enyo-divider-caption {
+    color: #fff;
+}
+.dialplad-scrim .enyo-scrim{
+	background: #fff;
+	top: 64px;
+}
+.enyo-divider-right-cap, .enyo-divider-left-cap {
+	background: url(../images/divider.png) left top repeat-x;
+	height: 3px;
+}
+/**********
+ Avatar
+************/
+.icon {
+	position:absolute;
+	top: 3px;
+	left: 4px;
+	width: 50px;
+	height: 50px;
+	border-radius: 5px;
+	margin-top: 8px;
+	margin-left: 8px;
+}
+.mask {
+	position:absolute;
+	top:0;
+	left:0;
+	height:50px;
+	width :50px;
+}
+.icon .mask {
+	background:url(../images/bg_icon_mask.png) no-repeat 0 0;
+}
+.icon .img {
+	-webkit-border-radius: 5px;
+	width: 50px;
+	height: 50px;
+}
+/***********
+ Video Contacts
+***********/
+
+.video-tab-caption{
+	margin-top: 50px;
+	margin-bottom: 30px;
+}

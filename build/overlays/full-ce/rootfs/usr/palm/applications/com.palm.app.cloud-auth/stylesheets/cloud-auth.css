@@ -1,0 +1,17 @@
+/* Minimal styling for the Dropbox auth validator. The WebView fills the space
+   between the header and the Cancel toolbar; header/toolbar reuse the shared
+   accounts-* classes from $enyo-lib/accounts. */
+.accounts-header {
+	height: 48px;
+}
+/* Provider icon in the header (matches the IM add-account look). The 48x48 account
+   icon is drawn at 32px so it sits cleanly in the 48px-tall toolbar. */
+.accounts-header-icon {
+	width: 32px;
+	height: 32px;
+	margin-right: 8px;
+}
+.enyo-webview,
+.webView {
+	background-color: #ffffff;
+}

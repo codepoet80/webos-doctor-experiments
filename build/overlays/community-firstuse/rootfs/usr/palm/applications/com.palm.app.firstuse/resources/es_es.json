@@ -1,0 +1,19 @@
+{
+	"An error occurred while restoring your data. Please try again in a few minutes.": "Se ha producido un error al restaurar tus datos. Inténtalo de nuevo dentro de unos minutos.",
+	"Choose a network": "Elegir una red",
+	"Create a unique name for your device. This will help you if you ever need to identify it in a list.": "Crea un nombre único para tu dispositivo. Esto te ayudará en caso de que tengas que identificarlo en una lista.",
+	"Done": "Aceptar",
+	"Error Restoring Data": "Error al restaurar los datos",
+	"Forgot Email or Password?": "¿Has olvidado la dirección de correo electrónico o la contraseña?",
+	"Name your device": "Asigna un nombre al dispositivo",
+	"The current SIM cannot be used in this device. To continue setup, insert a valid SIM with active data service from your carrier or use Wi-Fi instead.": "La tarjeta SIM actual no se puede utilizar en este dispositivo. Para continuar con la configuración, inserta una tarjeta SIM válida con un servicio de datos activo de tu operadora de telefonía móvil o utiliza una red Wi-Fi.",
+	"The password you entered is incorrect. Try again.": "La contraseña que has introducido es incorrecta. Inténtalo de nuevo",
+	"Try Again": "Intentarlo de nuevo",
+	"Turn Off": "Apagar",
+	"We are unable to create a new account right now. Please try again in a few minutes or contact HP for help resolving this problem. Visit http://hpwebos.com/support for more information.": "No es posible crear una nueva cuenta en este momento. Inténtalo de nuevo dentro de unos minutos o ponte en contacto con HP para resolver este problema. Visita http://hpwebos.com/support para obtener más información.",
+	"We are unable to create an account for you. Please try again in a few minutes or contact HP for help resolving this problem. Visit http://hpwebos.com/support for more information.": "No es posible crear tu cuenta. Inténtalo de nuevo en unos minutos o ponte en contacto con HP para resolver este problema. Visita http://hpwebos.com/support para obtener más información.",
+	"We tried to send an email to #{email} but it failed. Please contact HP support.": "Hemos intentado enviarte un mensaje a la dirección #{email}, pero se ha producido un error. Ponte en contacto con el servicio de asistencia de HP.",
+	"We were unable to sign you in. Please try again in a few minutes or contact HP for help resolving this problem. Visit http://hpwebos.com/support for more information.": "No fue posible iniciar la sesión. Inténtalo de nuevo más tarde o ponte en contacto con HP para resolver este problema. Visita http://hpwebos.com/support para obtener más información.",
+	"Your SIM is PUK locked. Please contact #{carrier} to unlock it. To set up your device, insert a valid SIM with active data service or use Wi-Fi instead.": "Tu tarjeta SIM está protegida por PUK. Ponte en contacto con #{carrier} para desbloquearla. Para configurar tu dispositivo, inserta una tarjeta SIM válida con un servicio de datos activo o utiliza una red Wi-Fi.",
+	"Your SIM is PUK locked. Please contact your carrier to unlock it. To set up your device, insert a valid SIM with active data service or use Wi-Fi instead.": "Tu tarjeta SIM está protegida por PUK. Ponte en contacto con tu operadora de telefonía móvil para desbloquearla. Para configurar tu dispositivo, inserta una tarjeta SIM válida con un servicio de datos activo o utiliza una red Wi-Fi."
+}

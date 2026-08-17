@@ -1,0 +1,28 @@
+<html>
+<head>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Messaging</title>
+    <!--<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" launch="debug" type="text/javascript"></script> -->
+    <script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" launch="debug&nobridge" type="text/javascript"></script>
+</head>
+<body>
+		<script type="text/javascript">
+			if (!window.PalmSystem && !enyo.application.appInit) {
+				enyo.log("**************** initializating application modules")
+				enyo.application.appInit = new AppInit();
+				enyo.application.appInit.init();
+			}
+			
+			new enyo.MessagingApp().renderInto(document.body);
+			enyo.relaunch = function(inParams){
+				if (inParams.launchedAtBoot) {
+					return;
+				}
+				enyo.log("Messaging enyo.relaunch inParams: ", inParams);
+				enyo.windows.activate( "index.html", "messaging", inParams);
+			};
+			enyo.applicationRelaunchHandler = enyo.relaunch;
+		</script>
+	</body>
+</html>

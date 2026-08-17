@@ -91,12 +91,10 @@ enyo.kind({
 
 		{kind: "MyApps.FirstUse.SpinnerOverlayPopup", name: "spinnerOverlay"},
 
-		// webOS Archive: skipping setup closes this app same as a completed sign-in
-		// does, which under OOBE means the device reboots to finish. The sign-in
-		// path already has a "Thanks!" card the user sees before tapping Done, so
-		// the freeze isn't a surprise there; Skip is a single tap with no such
-		// warning otherwise. No buttons — it's just shown for a moment before
-		// wosaSkipSetup closes the app out from under it.
+		// webOS Archive: closing this app under OOBE (via Skip or the Done button)
+		// is what triggers the device reboot that finishes setup. No buttons — it's
+		// just shown for a moment before wosaSafeClose closes the app out from
+		// under it.
 		{name: "wosaSkipRestartPopup", kind: "ModalDialog", lazy: false, scrim: true, className: "popup",
 		 caption: rb.$L("Just a Moment"),
 		 components: [
@@ -132,7 +130,7 @@ enyo.kind({
 		]
 		},
 
-		{name: "wifiPopup", kind: "WiFiPopup", lazy: false, onCancel: "wifiCancel", className: "popup", onLabel: rb.$L("On"), offLabel: rb.$L("Off")},
+		{name: "wifiPopup", kind: "MyApps.FirstUse.WiFiPopup", lazy: false, onCancel: "wifiCancel", className: "popup", onLabel: rb.$L("On"), offLabel: rb.$L("Off")},
     	{name: "captivePortalPopup", kind: "ModalDialog", lazy: true, onBeforeOpen: "initCaptivePortalPopup", onCancel: "captivePortalCancel", className: "popup", width: "100%", height:"100%",
 			components: [
 				{
@@ -957,8 +955,13 @@ enyo.kind({
 		}
 	},
 
+	// webOS Archive: under OOBE, closing this app is what triggers the device
+	// reboot that finishes setup — an 8-10s freeze with no window chrome to hint
+	// anything is happening. Without a warning shown BEFORE that freeze starts, a
+	// tap here reads as "did nothing", which is exactly what Done looked like:
+	// completeDoneTap used to call closeApp() straight from the click handler.
 	completeDoneTap: function(){
-		this.closeApp();
+		this.wosaSafeClose();
 	},
 
 	// webOS CE OOBE: the single, correct end of first use — every exit converges
@@ -972,12 +975,16 @@ enyo.kind({
 		this.$.powerDown.call({reason: "firstuse complete"}, {method: "machineReboot"});
 	},
 
-	// webOS Archive: called by both cards' "Skip Account Setup" link. Shows the
-	// restart warning for a moment so the UI doesn't just freeze with no
-	// explanation, then closes exactly like a completed sign-in would.
-	wosaSkipSetup: function(){
+	// webOS Archive: shared by the Done button and both cards' "Skip Account
+	// Setup" link. Shows the restart warning for a moment so the UI doesn't just
+	// freeze with no explanation, then closes.
+	wosaSafeClose: function(){
 		this.$.wosaSkipRestartPopup.openAtCenter();
 		setTimeout(enyo.bind(this, "closeApp"), 900);
+	},
+
+	wosaSkipSetup: function(){
+		this.wosaSafeClose();
 	},
 	
 	postTimeZoneResponse: function(inSender, inResponse){

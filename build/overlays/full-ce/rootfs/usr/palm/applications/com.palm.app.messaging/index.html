@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Messaging</title>
+		<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" launch="nobridge" type="text/javascript"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			if (!window.PalmSystem && !enyo.application.appInit) {
+				enyo.log("**************** initializating application modules")
+				enyo.application.appInit = new AppInit();
+				enyo.application.appInit.init();
+			}
+			
+			new enyo.MessagingApp().renderInto(document.body);
+			enyo.relaunch = function(inParams){
+				if (inParams.launchedAtBoot) {
+					return;
+				}
+				enyo.log("Messaging enyo.relaunch inParams: ", inParams);
+				enyo.windows.activate( "index.html", "messaging", inParams);
+			};
+			enyo.applicationRelaunchHandler = enyo.relaunch;
+		</script>
+	</body>
+</html>

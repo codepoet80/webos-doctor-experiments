@@ -2,30 +2,36 @@
 
 Replaces stock first-use **in place** (`com.palm.app.firstuse`, id unchanged) so
 a freshly CE-Doctored TouchPad activates against the **webOS Archive account
-backend** (`device.php`) instead of HP's dead servers. Built on the
-[`webos-community-account`](../../../webos-community-account) project — same
-patches, same backend — which is verified working on hardware as a standalone
-re-sign-in app. This component adapts it to run as the *real* first-boot OOBE.
+backend** (`device.php`) instead of HP's dead servers. The app + service source
+comes from the community **webosaccount ipk** in `AddToImage/OOBE/` (the built
+`webos-community-account` app, verified working on hardware as a standalone
+re-sign-in app); this component adapts it to run as the *real* first-boot OOBE.
 
 ```
 community-firstuse/
-├── make-overlay.sh        # generator: OEM rootfs + community patches + oobe/ deltas
+├── make-overlay.sh        # generator: AddToImage/OOBE ipk + oobe/ deltas
 │                          #   -> ../overlays/community-firstuse/  (build input)
 ├── oobe/
-│   ├── FirstUse-oobe.patch   # OOBE delta, applied AFTER the community FirstUse.js.patch
+│   ├── FirstUse-oobe.patch   # OOBE delta, applied to the ipk's FirstUse.js
 │   ├── Palm-oobe.patch       # OOBE copy fixes for the terms card
 │   └── config.js             # OOBE card list: language, palm, signin, namedevice
 └── README.md
 ```
 
 Build: `./make-overlay.sh` then `../build-ce-doctor.sh overlays/community-firstuse`.
-The overlay is generated (never edit it by hand); we ship diffs, not HP source.
+The overlay is generated (never edit it by hand). The ipk's app tree lands over
+`com.palm.app.firstuse` minus **every** `appinfo.json` (top-level and per-locale
+`resources/` — they carry `id: com.palm.app.webosaccount` / `visible: true`;
+the stock firstuse identity must stay authoritative or LunaSysMgr's
+firstuse-mode launch breaks). Its flat `service/` files map onto the stock
+`com.palm.service.palmprofile` layout: `services.json`/`sources.json` at the
+service root, `palm_profile_util.js` → `utils/`, the assistants → `handlers/`.
 
-## Why an OOBE delta on top of the community patches
+## Why an OOBE delta on top of the community app
 
-The community patches were written for a **standalone app on an already-set-up
-device**: they assume Wi-Fi is connected, deliberately never call
-`PalmSystem.markFirstUseDone()`, and finish by closing the app. Run unmodified
+The community app is built as a **standalone app for an already-set-up
+device**: it assumes Wi-Fi is connected, deliberately never calls
+`PalmSystem.markFirstUseDone()`, and finishes by closing the app. Run unmodified
 as the real OOBE, the device would boot into first-use forever. The deltas:
 
 | Change | Why |
@@ -34,7 +40,7 @@ as the real OOBE, the device would boot into first-use forever. The deltas:
 | Completion = `markFirstUseDone()` + `machineReboot` | `ran-first-use` is what keeps LunaSysMgr out of minimal mode, and only a restart leaves it. The confirm card's button becomes **Restart** (the stock wipe/shutdown paths stay neutered — the community patch's whole point). |
 | `firstUseComplete()` routes to the same completion | Belt-and-suspenders if any stock path reaches it. |
 | `setCustomization` (`populateDefaults`) restored in `done()` | Applies the language-card choice; it's a local service, unlike the dead `postLoginSettings`/`setTimeZoneFromIP`, which stay skipped. |
-| Museum self-updater stripped | This copy lives in ROM and is updated by the CE OTA; the updater installs via Preware, which doesn't exist during OOBE. (So `Updater-Helper.js`/`depends.js` are *not* shipped.) |
+| Museum self-updater stripped | This copy lives in ROM and is updated by the CE OTA; the updater installs via Preware, which doesn't exist during OOBE. (The `Helpers.Updater` component and the update check are patched out; the vendored `Updater-Helper.js` file still ships — loaded but inert.) |
 | Terms-card copy | "Update required" → "Connection Problem" (the CE image bakes modern TLS, so failure = connectivity), and the decline popup no longer suggests closing the app (there's no set-up device to fall back to). |
 | Card list (`oobe/config.js`) | Drops `restoreComponent` (dead HP backup; its cleanup path wiped devices), `google` (defunct location-service consent), `updates` (stock OTA check hangs; CE OTA runs post-setup). Keeps `namedevice` — `assignDeviceName` is served by `device.php`. |
 

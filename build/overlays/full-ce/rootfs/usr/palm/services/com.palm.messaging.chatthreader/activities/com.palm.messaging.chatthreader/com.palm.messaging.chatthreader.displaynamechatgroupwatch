@@ -1,0 +1,28 @@
+{
+	"start": true,
+	"activity": {
+		"name": "chatThreader.changeImGroupChatDisplayName",
+		"description": "watch for changes to the ImChatGroup displayName",
+		"type": {
+			"persist":true,
+			"immediate": true,
+			"priority": "low"
+		},
+		"trigger": {
+			"method": "palm://com.palm.db/watch",
+			"key": "fired",
+			"params": {
+				"query": {
+					"from": "com.palm.imgroupchat:1",
+					"where": [
+						{"prop": "displayNameRevSet", "op": ">", "val": 0}
+					]
+				}
+			}
+		},
+		"callback": {
+			"method": "palm://com.palm.messaging.chatthreader/changeImGroupChatDisplayName",
+			"params": { "displayNameRev":0 }
+		}
+	}
+}

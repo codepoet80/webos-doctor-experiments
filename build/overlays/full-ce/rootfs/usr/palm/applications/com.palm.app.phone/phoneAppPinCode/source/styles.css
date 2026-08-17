@@ -1,0 +1,75 @@
+﻿.enyo-button{
+	background-color: transparent;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.firstuse-top-corners {
+	position: fixed;
+	top: 0px;
+	height: 23px;
+	width: 320px;
+	background: url(../images/palm-top-corners.png) no-repeat;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.firstuse-bottom-corners {
+	position: fixed;
+	bottom: 24px;
+	height: 23px;
+	width: 320px;
+	background: url(../images/palm-bottom-corners.png) no-repeat;
+    pointer-events: none;
+	z-index: 1;
+}
+
+.firstuse-banner-icon {
+    margin: 0px 2px 0px 7px;
+    width: 24px;
+    height: 24px;
+    background: url(../images/notification-small-ignored.png) center center no-repeat;
+    z-index: 101;  
+}
+
+.firstuse-banner-container {
+	height: 24px;    
+	width: 320px;
+	background: #000;
+	bottom: 0; 
+	left: 0;           
+	color: #FFFFFF;
+    z-index: 99;	    
+}
+
+.firstuse-password-container {
+	position: fixed;
+	height: 24px;    
+	width: 320px;
+	background: #000;
+	bottom: 0; 
+	left: 0;           
+	color: #FFFFFF;
+    z-index: 100;	    
+}
+
+.notification-text {
+    color: #FFFFFF;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: bold;
+}
+.pin-background{
+	-webkit-border-image: url(../images/pin-menu-button-tall.png) 24 stretch;
+	border-width: 24px;
+	height: 300px;
+	-webkit-box-align: stretch;
+}
+.pin-background .password-input {
+	margin: 5px -10px;
+}
+.pin-background .enyo-group.labeled{
+	-webkit-border-image: url(../images/group-labeled.png) 36 14 14 14 stretch stretch;
+}

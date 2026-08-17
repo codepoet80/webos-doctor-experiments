@@ -27,6 +27,45 @@ pre-start script
       echo "src/gz woce http://ipkg.preware.net/feeds/woce" > $APPS/etc/ipkg/woce.conf
       echo "src/gz modernize http://stacks.webosarchive.org/feeds/modernize/ipkgs" > $APPS/etc/ipkg/modernize.conf
    fi
+   if [ -d /media/cryptofs/apps ] && ! grep -q "^Package: org.webosinternals.preware$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+      mkdir -p $APPS/usr/lib/ipkg
+      {
+         echo ""
+         echo "Package: org.webosinternals.preware"
+         echo "Version: 1.9.19"
+         echo "Depends: "
+         echo "Status: install ok installed"
+         echo "Architecture: arm"
+         echo "Installed-Time: 1786973295"
+         echo ""
+      } >> $APPS/usr/lib/ipkg/status
+   fi
+   if [ -d /media/cryptofs/apps ] && ! grep -q "^Package: org.webosinternals.govnah$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+      mkdir -p $APPS/usr/lib/ipkg
+      {
+         echo ""
+         echo "Package: org.webosinternals.govnah"
+         echo "Version: 1.3.9"
+         echo "Depends: "
+         echo "Status: install ok installed"
+         echo "Architecture: arm"
+         echo "Installed-Time: 1786897039"
+         echo ""
+      } >> $APPS/usr/lib/ipkg/status
+   fi
+   if [ -d /media/cryptofs/apps ] && ! grep -q "^Package: com.palm.synergy.generic$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+      mkdir -p $APPS/usr/lib/ipkg
+      {
+         echo ""
+         echo "Package: com.palm.synergy.generic"
+         echo "Version: 0.9.3"
+         echo "Depends: "
+         echo "Status: install ok installed"
+         echo "Architecture: all"
+         echo "Installed-Time: 1786985660"
+         echo ""
+      } >> $APPS/usr/lib/ipkg/status
+   fi
 
    # Remove erroneously large list database cache files
    [ ! -d $APPS/usr/lib/ipkg/lists ] || find $APPS/usr/lib/ipkg/lists -size +10240k -delete

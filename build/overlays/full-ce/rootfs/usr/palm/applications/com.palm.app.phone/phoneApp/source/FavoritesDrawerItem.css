@@ -1,0 +1,48 @@
+
+.draweritem-displayArea {
+	padding: 5px 0px 10px 4px;
+	white-space:nowrap;
+}
+
+.drawerItem-displayDetails {
+	font-size: 18px;
+	width:100%;
+}
+
+.drawerItem-displayDetails-bold {
+    font-weight: bold;
+	font-size: 18px;
+	width:100%;
+}
+.drawerItem-displayLine1-heard {
+ 	font-size: 18px;
+	width:100%;
+}
+.drawerItem-displayLbl {
+	font-size: 14px;
+	padding-top: 5px;
+	white-space:nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+/*
+.drawerItem-displayLbl.displayLbl-limited {
+	width:85%;
+	margin-right:3px;
+}*/
+/*
+.drawerItem-displayLbl.displayLbl-full {
+	width:100%;
+}*/
+/*
+.drawerItem-displayVideoIcon {
+	margin: 8px 0px 0px 4px;
+}*/
+/*
+.draweritem-displayLblRight {
+    font-size: 15px;
+	text-align: right;
+	position:absolute;
+	right: 0px;
+	margin-top: 4px;
+}*/

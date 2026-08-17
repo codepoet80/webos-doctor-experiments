@@ -1,0 +1,23 @@
+{
+	"id": "com.palm.app.messaging",
+	"version": "3.0.6607",
+	"uiRevision": 2,
+	"vendor": "HP",
+	"type": "web",
+	"main": "nowindow.html",
+	"noWindow": true,
+	"removable": false,
+	"title": "Messaging",
+	"icon": "icon.png",
+	"splashicon": "icon-256x256.png",
+	"keywords": ["Text","SMS","MMS","IM","Instant","Chat"],
+	"universalSearch":{
+		"action":{ 
+			"displayName": "New Message",
+			"url":"com.palm.app.messaging",
+			"launchParam":{"compose":{"messageText":"#{searchTerms}"}}
+		}
+	},
+	"trustLevel": "trusted",
+	"requiredPermissions": ["accountsservice.management", "accountsservice.operation", "activity.operation", "application.launcher", "application.operation", "contactsservice.operation", "database.operation", "filecache.operation", "filecache.management", "luna-sysmgr.operation", "networkconnection.query", "settings.read", "systemsettings.query", "telephony.management", "tempdatabase.operation"]
+}

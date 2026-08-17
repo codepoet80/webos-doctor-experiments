@@ -1,0 +1,7 @@
+{
+	"SIM has bad file.": "R-UIM has bad file.",
+	"SIM phonebook not ready.": "R-UIM phonebook not ready.",
+	"Unable to change PIN status: SIM locked.": "Unable to change PIN status: R-UIM locked.",
+	"Unable to change PIN: SIM locked.": "Unable to change PIN: R-UIM locked.",
+	"Unable to unlock PUK: SIM locked.": "Unable to unlock PUK: R-UIM locked."
+}

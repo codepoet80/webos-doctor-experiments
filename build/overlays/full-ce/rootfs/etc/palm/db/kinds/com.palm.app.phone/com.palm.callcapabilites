@@ -1,0 +1,99 @@
+{
+    "id": "com.palm.callcapabilities:1",
+	"sync": false,
+    "schema": {
+        "type": "object",
+		"properties": {
+		    "transport": {
+		        "type": "string",
+		        "description": "Name of the transport this capability is associated with (e.g. com.palm.telephony)"
+		    },
+		    "emergencyNumbers": {
+		        "type": ["array","string"],
+		        "description": "Array of numbers for dialing emergency services"
+		    },
+		    "networkStatus": {
+		        "type": "string",
+		        "enum": ["nopower", "searching", "denied", "offline", "service", "roaming", "limited", "none"],
+		        "description": "'nopower' and 'offline' are similar but different user warnings"
+		    },
+		    "maxConfCalls": {
+		        "type": "integer",
+		        "description": "Maximum number of conference calls that can be maintained at once"
+		    },
+		    "maxConfParticipants": {
+		        "type": "integer",
+		        "description": "Maximum number of participants for a given conference call"
+		    },
+		    "maxLines": {
+		        "type": "integer",
+		        "description": "Maximum number of lines that can be open at once (including held)"
+		    },
+		    "maxActiveCalls": {
+		        "type": "integer",
+		        "description": "Maximum number of lines that can be active at once"
+		    },
+		    "videoFormat": {
+		        "type": "string",
+		        "enum": ["none", "landscape", "portrait", "both"],
+		        "optional": true,
+		        "description": "Whether the call can include video. Unspecified means false"
+		    },
+		    "dataWhileOnCall": {
+		        "type": "boolean",
+		        "optional": true,
+		        "description": "Whether data will be allowed while on a call. Unspecified means false"
+		    },
+		    "legacySwap": {
+		        "type": "boolean",
+		        "optional": true,
+		        "description": "For CDMA call swapping behavior. Unspecified means false"
+		    },
+		    "hangupAffectsAll": {
+		        "type": "boolean",
+		        "optional": true,
+		        "description": "If you hang up on one call, it hangs up all. Unspecified means false"
+		    },
+		    "conferenceCanExtract": {
+		        "type": "boolean",
+		        "optional": true,
+		        "description": "A line can be extracted from a conference. Unspecified means false"
+		    },
+		    "conferenceHangupIndividual": {
+		        "type": "boolean",
+		        "optional": true,
+		        "description": "An individual conference participant can be disconnected. Unspecified means false"
+		    },
+		    "muteCallWaiting": {
+		        "type": "boolean",
+		        "optional": true,
+		        "description": "Network/transport plays a tone when a call rings during an existing call.
+								Unspecified means false, and webOS will generate the tone"
+		    },
+		    "callIdBlockPerCall": {
+		        "type": "boolean",
+		        "optional": true,
+		        "description": "Network/transport allows user to block caller ID on a per-call basis.  Unspecified means false."
+		    },
+		    "dtmf": {
+		        "type": ["array","string"],
+		        "optional": true,
+		        "description": "Transport allows user to send DTMFs (touch tones).  
+								oneshot = tones that play for a predetermined duration as soon as the button is pressed; 
+								held = tones that play while the user is holding down the button and stop playing when the button is released. 
+								Unspecified means no support."
+		    }
+		}
+    },
+    "indexes": [
+    {
+        "name": "query_transport",
+        "props": [
+        {
+            "name": "transport"
+        }
+        ],
+        "description": "Can be used by transports to query and update their capabilities based on transport."
+    },
+    ]
+}

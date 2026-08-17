@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+    <title>Jasmine Test Runner</title>
+
+    <!-- MODIFY ACCORDINGLY TO *LOCAL* ENYO SOURCE FILE --> 
+    <script type="text/javascript" src="../enyo/framework/enyo.js" launch = "debug"></script>
+    
+    <!-- MODIFY ACCORDINGLY TO *LOCAL* JASMINE SOURCE FILES -->
+    <link rel="stylesheet" type="text/css" href="../jasmine/jasmine.css">
+    <script type="text/javascript" src="../jasmine/jasmine.js"></script>
+    <script type="text/javascript" src="../jasmine/jasmine-html.js"></script>
+    
+    <!-- INCLUDE ALL SPEC FILES HERE --> 
+	<script type="text/javascript" src="spec/unit/specHelper.js"></script> 
+	<script type="text/javascript" src="spec/unit/source/AppInit_spec.js"></script>
+    <script type="text/javascript" src="spec/unit/source/dashboard/dashboard_util_spec.js"></script>
+    <script type="text/javascript" src="spec/unit/source/dashboard/message_dashboard_spec.js"></script>
+    <script type="text/javascript" src="spec/unit/source/data/accountService_spec.js"></script>
+    <script type="text/javascript" src="spec/unit/source/buddies/buddies_spec.js"></script>
+    <script type="text/javascript" src="spec/unit/source/compose/compose_spec.js"></script>
+	<script type="text/javascript" src="spec/unit/source/favorites/favorites_spec.js"></script>
+    <script type="text/javascript" src="spec/unit/source/utilities/utils_spec.js"></script>
+    <script type="text/javascript" src="spec/unit/source/utilities/BucketDateFormatter_spec.js"></script>
+    <script type="text/javascript" src="spec/unit/source/threads/threads_spec.js"></script>
+    <script type="text/javascript" src="spec/unit/source/ImStatus_spec.js"></script> 
+    <script type="text/javascript" src="spec/unit/source/conversations/conversationList_spec.js"></script>
+</head>
+
+<body>
+    <script type="text/javascript">
+        jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+        jasmine.getEnv().execute();
+    </script>
+</body>
+</html>
+

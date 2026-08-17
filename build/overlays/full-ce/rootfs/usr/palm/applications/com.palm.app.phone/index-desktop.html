@@ -1,0 +1,366 @@
+<!doctype html>
+<html>
+	<head>
+		<!--
+			WARNING: before bumping enyo submission:
+			1) edit the bitbake file at http://subversion.palm.com/main/nova/oe/branches/nova-phone/palm/packages/enyo/enyo.bb
+			   and add --exclude=<previous enyo version>. phone only needs one version of enyo at a time.
+			2) make sure com.palm.app.phonediag's enyo version is in sync so we don't break it with the above change
+		-->
+		<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" type="text/javascript" launch="debug&nobridge"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			
+			var deviceDetails = window.PalmSystem && JSON.parse(PalmSystem.deviceInfo);
+			
+			// main app object that's responsible for window management and keeping references to app globals
+			enyo.application = {
+				
+				// true for tablet with 1024. This works regardless of device orientation
+				isTablet: ((deviceDetails && deviceDetails.screenWidth == 1024) || (!window.PalmSystem && (window.innerWidth == 1024 || window.innerWidth == 768)) ),
+				
+				// global flag that prevents main card activation
+				// used for firstuse programming mode (otasp)
+				hidden: false,
+				
+				// global flag that keep track of whether the "PhoneApp" is activated/deactived
+				isCarded: false,
+				
+				// global UI state machine
+				UI: new UI(),
+				
+				// call synergy layer interacts with call transport services
+				CallSynergizer: new CallSynergizer(),
+				
+				// generic cache for globals eg: enyo.application.Cache.PoundDataVerifed = true
+				Cache: {
+					authorizedForVideo: [],
+					phoneAppLoaded: false
+				},
+				
+				// utilities shared throughout the app
+				Utils: Utils, // in sources/Utils.js
+				
+				// generic system status
+				SystemStatus: new SystemStatus(),
+				
+				// call log threading "service" watches the database
+				CallLogLinker: new CallLogLinker(),
+				
+				// voicemail "services" watches the database and decorates voicemails
+				VoicemailService: new VoicemailService(),
+				
+				// audio interface
+				audioInterface: new audioInterface(),
+
+				// puck interface
+				puckInterface: new puckInterface(),
+
+				// proximity sensor interface
+				proxInterface: new proxInterface(),
+
+				// OTASP interface
+				OTASPInterface: new OTASPInterface(),
+
+				// Telephony Multimode interface
+				MultimodeInterface: new MultimodeInterface(),
+				
+				// Wired headset interface
+				wiredHeadsetInterface: new wiredHeadsetInterface(),
+				
+				// some telephony service subscription
+				TelephonyStatusInterface: new TelephonyStatusInterface(),
+
+				// bluetooth subscriptions for paired phone
+				BluetoothService: new BluetoothService(),
+				
+				// wifi service
+				WifiService: new WifiService(),
+				
+				Messages: Messages,
+				
+				localeOverride: undefined,
+								
+				// automagically called when we're launched through applicationManager (by another app, command line, or by tapping the icon on device)
+				// simulate by: luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"event":"activecall"}}'
+				applicationRelaunchHandler: function(params) {					
+					enyo.log("applicationRelaunchHandler " + enyo.json.stringify(params));
+					enyo.application.Cache.dialParams = undefined;
+					
+					// handle local (can be combined with other params)
+					if ( params.locale ){
+						enyo.application.localeOverride = params.locale;
+						$L._resources = new enyo.g11n.Resources({locale: params.locale});
+					}
+
+	                // CASE of tablet's first launch: if we are invoked from anywhere and for anything,
+	                // we need to check if the user has to go via first launch. (might need to allow 
+	                // dialing certain ## apps later)
+	                
+	                if (enyo.application.isTablet) {
+						if ( 'action' in params || 'transportReady' in params) {
+							enyo.log("skip hanlding here.");						
+						}
+						else {
+							if (!params.bluetoothstarted) { // override check for these cases
+								var card = enyo.windows.fetchWindow("PhoneApp");
+								enyo.log("launched before? "+enyo.application.Cache.isFirstTimeLaunched);
+								if (enyo.application.Cache.isFirstTimeLaunched !== true) {
+									if (card && !card.hidden && !enyo.application.isCarded) {
+									} else {
+										enyo.application.UI.event('launch');//may launch in "start" state
+									}
+									enyo.log("Invoke first launch first time");
+									enyo.application.UI.enter('firstlaunch_card');
+									return true;
+								}
+								
+								if ((!enyo.application.Cache.hasVoipAcct) && (!enyo.application.Cache.hasPairedPhone)) {
+									if (card && !card.hidden && !enyo.application.isCarded) {
+										enyo.log("Already in first launch, operation not allowed");
+										// stay in first launch
+										return true;
+									}
+									else {
+										enyo.log("Launch/Focus phone app. Invoke first launch and block operation");
+										enyo.application.UI.event('launch');//may launch in "start" state
+										enyo.application.UI.enter('firstlaunch_card');
+										return true;
+									}
+								}
+							}
+						}
+	                }
+											
+					// CASE: first use programming
+ 					if ( params.otasp && params.firstuse ) {
+						//todo: what about the locale of firstuse?
+						enyo.application.hidden = true;
+						enyo.application.CallSynergizer.dialThrough(params.number);
+						
+					// CASE: test runner
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"testRunner":true}}'
+					} else if (params.testRunner) {
+						if ( ! enyo.windows.fetchWindow("phoneTestRunner") ) {
+							enyo.windows.openWindow("tests/index.html", "phoneTestRunner");
+						}
+						
+					// This is a hack so Bluetooth can get the initial call state when it starts.
+					// Prior to this phone app release, bluetooth talked directly with TIL.
+					// With the introduction of other call synergy services (such as skype),
+					// the phone app is the only thing in the system that knows about the full call
+					// state from all the transports.
+					// In the future, this CallSynergizer code should be split out to a separate static
+					// service that bluetooth can subscribe to.
+					// See documentation for CallSynergizer.dispatchToBluetooth().
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"bluetoothstarted":true,"nocache":true}}'
+					} else if ( params.bluetoothstarted ) {
+						enyo.application.CallSynergizer.dispatchToBluetooth();
+						
+					// Call action handler used primarily by Bluetooth.
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"action":"voicemail"}}'
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"action":"reject"}}'
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"action":"answer"}}'
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"action":"extract", "id":"1"}}'
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"action":"merge"}}'
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"action":"dtmf", "tone":"1"}}'
+					} else if ( params.action ) {
+						LaunchActionHandler.handle(params);
+						
+					// auto-dialing a number from contacts
+					// TODO prevent 3rd parties from running this?
+					// allow params.number for backward compatibility with old api
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"address":"johndoe","transport":"com.palm.skype"}}'
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"address":"johndoe","transport":"com.palm.skype","video":true}}'
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"address":"7033031234","transport":"com.palm.telephony"}}'
+					// luna-send -n 1 palm://com.palm.applicationManager/launch '{"id":"com.palm.app.phone","params":{"address":"7033031234","transport":"com.palm.telephony","personId":"1x1234"}}'
+					// personId is optional but it helps us make the call 200ms faster because we don't need to reverse lookup.
+					} else if (params.address || params.number) {
+						enyo.application.hidden = false;
+						// backwards compatible to old "service" api
+						params.service = params.service || params.transport;
+						params.address = params.address || params.number;
+						
+						if (enyo.application.CallSynergizer.isSkypeCallBarredFromBt(params)) {
+							enyo.error("Bluetooth dial request cannot be made as preferred call service is invalid");
+							return;
+						}
+						
+						// Only cellular (TIL) is a fixed transport. Any other service value - a legacy
+						// "type_skype"/"com.palm.skype.call", or "phone" from justtype, or a specific VoIP
+						// account - is left unset so CallSynergizer picks the right VoIP transport.
+                        if (params.service && params.service !== enyo.application.CallSynergizer.TRANSPORTS.TIL) {
+                            params.service = undefined;
+                        }
+						
+						if(enyo.application.Cache.phoneAppLoaded == true) {
+							enyo.application.CallSynergizer.dial(params.address, params.video, undefined, params.service, params.personId);
+						} else {
+							//phone app not running...
+							enyo.application.Cache.dialParams = params;
+							
+							//Launch phone app and dial when loaded
+							enyo.application.UI.event('launch', params);
+						}
+						
+					} else if ( params.puk1Lock ) {
+						enyo.application.UI.event('preferences', {puk1Lock:true});
+						
+					} else if (params.prefill) { // insert number into dialpad but don't dial
+						enyo.application.hidden = false;							
+						enyo.application.UI.event('dial', {"fill": params.prefill});
+					
+					} else if (params.target) {
+						enyo.application.Utils.launchURI(params.target);
+					
+					} else if (params.preferences) {
+						enyo.application.UI.event('preferences', params);
+						
+					// default: maybe current state can handle this launch
+					} else {
+						enyo.application.UI.event('launch', params);
+					}
+					
+					// tell sysmgr we're handling the launch
+					return true;
+				},
+				// main
+				openMainCard: function(params, splashImage, dontFocus) {
+					openCard("phoneApp/index.html", "PhoneApp", 'card', params, splashImage, dontFocus);
+				},
+				tellMainCard: function(params) {
+					tellCard("PhoneApp", params);
+				},
+				activateMainCard: function() {
+					return activateCard("PhoneApp"); // returns true on success
+				},
+				closeMainCard: function() {
+					closeCard("PhoneApp");
+				},
+				getMainCard: function(params) {
+					return enyo.windows.fetchWindow("PhoneApp");
+				},
+				// pin
+				openPinCard: function(params) {
+					openCard("phoneAppPinCode/index.html", "PhoneAppPincode", 'pin', params);
+				},
+				tellPinCard: function(params) {
+					tellCard("PhoneAppPincode", params);
+				},
+				// emergency
+				openEmergencyCard: function(params) {
+					// in PalmSystem.isMinimal (ie first use) sysmgr fails on an emergency stage, use card instead
+					var winType = ! window.PalmSystem || PalmSystem.isMinimal ? 'card' : 'emergency';
+					openCard("phoneEmergency/index.html", "emergency", winType, params);
+					activateCard("emergency");
+				},
+				closeEmergencyCard: function() {
+					closeCard("emergency");
+				},
+				updatePhoneAppPopup: function(name, params) {
+					tellCard(name, params);
+				},
+				closePhoneAppPopup: function(name) {
+					closeCard(name);
+				},
+				openPhoneAppPopup: function(type, name, params, height, throb) {
+					params = params || {};
+					params.popupType = type;
+					throb = throb || true;
+					enyo.windows.openPopup("phonePopups/index.html", name, params, "", height, throb);
+				}
+			};
+			
+			// ------------ HELPERS ------------
+			
+			// Helper opens a card and optionally activates it if not enyo.application.hidden
+			function openCard(url, name, windowType, params, splashImage, dontFocus) {				
+				// we can't use enyo.windows.activate since we don't always want to focus the card
+				var winParams = {
+					window: windowType					
+				};
+				
+				if(splashImage && !enyo.application.isTablet) {
+					winParams.splashbackgroundname = splashImage;
+				}
+				// workaround DFISH-4692
+				url += '?' + enyo.objectToQuery(winParams);
+				
+				if ( ! tellCard(name, params) ) {
+					enyo.windows.openWindow(url, name, params, winParams);
+					
+				} else if ( ! enyo.application.hidden && ! dontFocus ) {
+					activateCard(name);
+				}
+			};
+			
+			// Unlike framework's activateWindow, this does NOT automatically 
+			// focus card. Returns true if successful
+			function tellCard(name, params) {
+				var card = enyo.windows.fetchWindow(name);
+				if ( card ) {
+					// enyo.window.setWindowParams chokes if params is undefined (TODO: remove this in the fture if it is later handled by the fmwk)
+					if (!params) {
+						params = {};
+					}
+					enyo.windows.setWindowParams(card, params);
+					return true;
+				}
+			};
+			
+			// Helper actives card by name. Returns true if successful
+			function activateCard(name) {
+				var card = enyo.windows.fetchWindow(name);
+				if ( card && card.PalmSystem && !enyo.application.hidden) {
+					card.PalmSystem.activate();
+					card.PalmSystem.show();
+					
+					// workaround sysmgr issue. Calling PalmSystem.show() doesn't guarantee Mojo.show() will get
+					// called in the window. Set the window has hidden manually.
+					card.hidden = false;
+					
+					return true;
+				}
+			};
+			
+			// Helper closes a card by name
+			function closeCard(name) {
+				enyo.log("*************************closing card : " + name);
+				var card = enyo.windows.fetchWindow(name);
+				if ( card ) {
+					card.close();
+				}
+			};
+			
+			
+			// ------------ START HERE ------------
+			
+			// CASE: device
+			if ( window.PalmSystem ) {
+				// note: pin window is required for sysmgr to boot
+				enyo.application.openPinCard();
+				
+				// HACK: pre-launch phoneapp stage. It *should* dismiss itself
+				// before the phone finishes booting for keep alive scenarios
+
+                                enyo.log("Starting phone app from SCRATCH");
+ 
+                                // fix for low memory issue when we are not kept alive
+                                if (!enyo.application.isTablet) {
+                                    enyo.log("Rendering our main card");
+				    enyo.application.openMainCard({autoDismiss:true});
+                                }
+				
+			// CASE: desktop - just open main card and skip pin stage
+			} else {
+				enyo.application.openMainCard();
+				
+				// need to synthesize this event in browser
+				enyo.application.UI.event('launch');
+			}
+			
+			
+		</script>
+	</body>
+</html>

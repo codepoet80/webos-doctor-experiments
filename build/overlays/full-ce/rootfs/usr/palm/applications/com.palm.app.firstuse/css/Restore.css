@@ -1,0 +1,43 @@
+/* CSS for ChooseBackupPage and RestoringPage */
+/*
+.restore-page {
+	margin: 18px 18px 18px 18px;
+    width: 500px;	
+}
+
+.restore-pageTitle {
+	font-size: 24px;
+	margin-bottom: 18px;
+	text-align: center;
+}
+
+.restore-pageText {
+	margin-bottom: 18px;
+}
+*/
+.restore-deviceList {
+	margin-bottom: 18px;
+	border: 1px solid silver;
+}
+
+.restore-deviceItem {
+	padding: 6px 12px 6px 12px;
+}
+
+.restore-deviceName {
+	font-size: larger;
+	font-weight: bold;
+}
+
+.restore-backupDate {
+	color: gray;
+	font-size: smaller;
+}
+
+.restore-deviceImage {
+	width: 104px;
+}
+.box-center {
+	width:480px;
+	margin:23px 0px 0px 0px auto 0;
+ }

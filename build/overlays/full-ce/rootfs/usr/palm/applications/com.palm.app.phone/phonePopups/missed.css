@@ -1,0 +1,71 @@
+
+.missed-call {
+	background: transparent;
+	font-size: 18px;
+}
+
+
+.missed-call-frame {
+	height: 58px;
+	width: 58px;
+	background: url(../images/popup-icon-missed.png) left top no-repeat;
+}
+
+.missed-call-frame-without-bg {
+	height: 58px;
+	width: 58px;
+	background: none;
+}
+
+.missed-call-frame.enyo-button-down {
+	background: url(../images/popup-icon-missed.png) left bottom no-repeat;
+}
+
+.missed-display-number {
+	margin-right: 6px;
+	font-size: 14px;
+	color: #b4b4b4;
+}
+
+.missed-number-type {
+	font-weight: bold;
+	font-size: 14px;
+	color: #c0c0c0;
+}
+
+.missed-call-avatar {
+	float: right;
+	height: 58px;
+	width: 60px;
+	margin-right: -7px;
+	margin-top: 6px;
+}
+
+.missed-call-pic {
+	position: absolute;
+	right: 0px;
+	margin-right: -1px;
+	margin-top: 9px;
+	clip: rect(0,50px,50px,0);
+	border-radius: 7px;
+}
+
+.missed-call-pic.square {
+	width: 50px;
+	height: 50px;
+}
+
+.missed-call-pic.portrait {
+	width: 50px;
+}
+
+.missed-call-pic.landscape {
+	height: 50px;
+	right: 0px;
+	margin-right: -17px;
+}
+
+.dropped-call-label {
+	font-size: 14px;
+	color: #c0c0c0;
+}

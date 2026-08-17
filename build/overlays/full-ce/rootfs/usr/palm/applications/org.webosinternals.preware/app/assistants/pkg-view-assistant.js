@@ -413,40 +413,12 @@ PkgViewAssistant.prototype.handleCommand = function(event)
 			
 			// install
 			case 'do-install':
-				if (prefs.get().ignoreDevices && this.item.devices && this.item.devices.length > 0 &&
-					!this.item.devices.include(Mojo.Environment.DeviceInfo.modelNameAscii)) {
-					this.controller.showAlertDialog(
-					{
-					    title:				$L("Incompatible Device"),
-						allowHTMLMessage:	true,
-						message:			$L("This app is marked as incompatible with this device. You are installing it at your own risk and give up all moral and legal rights to developer support for this installation. Community support may be available at <a href=http://forums.precentral.net>forums.precentral.net</a>."),
-					    choices:			[{label:$L('Ok'), value:'install'}, {label:$L('Cancel'), value:'cancel'}],
-						onChoose:			this.doGetAppCatInstallStatus.bindAsEventListener(this, 'install')
-				    });
-				}
-				else
-				{
-					this.doGetAppCatInstallStatus('install');
-				}
+				this.doActionWithCompatibilityCheck('install');
 				break;
-			
+
 			// update
 			case 'do-update':
-				if (prefs.get().ignoreDevices && this.item.devices && this.item.devices.length > 0 &&
-					!this.item.devices.include(Mojo.Environment.DeviceInfo.modelNameAscii)) {
-					this.controller.showAlertDialog(
-					{
-					    title:				$L("Incompatible Device"),
-						allowHTMLMessage:	true,
-						message:			$L("This app is marked as incompatible with this device. You are updating it at your own risk and give up all moral and legal rights to developer support for this installation. Community support may be available at <a href=http://forums.precentral.net>forums.precentral.net</a>."),
-					    choices:			[{label:$L('Ok'), value:'install'}, {label:$L('Cancel'), value:'cancel'}],
-						onChoose:			this.doGetAppCatInstallStatus.bindAsEventListener(this, 'update')
-				    });
-				}
-				else
-				{
-					this.doGetAppCatInstallStatus('update');
-				}
+				this.doActionWithCompatibilityCheck('update');
 				break;
 			
 			// remove
@@ -472,6 +444,48 @@ PkgViewAssistant.prototype.handleCommand = function(event)
 				break;
 		}
 	}
+};
+
+// Packages that Preware would normally filter out are only ever visible when the
+// user has opted in with the "Ignore Compatibility" preference, so that is the
+// only case where we need the at-your-own-risk disclaimer.  Covers both an
+// incompatible device and a MaxWebOSVersion older than the running OS.
+PkgViewAssistant.prototype.doActionWithCompatibilityCheck = function(operation)
+{
+	var title = false, message = false;
+
+	if (prefs.get().ignoreDevices && this.item.deviceIncompatible())
+	{
+		title = $L("Incompatible Device");
+		message = (operation == 'update') ?
+			$L("This app is marked as incompatible with this device. You are updating it at your own risk and give up all moral and legal rights to developer support for this installation. Community support may be available at <a href=https://docs.webosarchive.org>docs.webosarchive.org</a>.") :
+			$L("This app is marked as incompatible with this device. You are installing it at your own risk and give up all moral and legal rights to developer support for this installation. Community support may be available at <a href=https://docs.webosarchive.org>docs.webosarchive.org</a>.");
+	}
+	else if (prefs.get().ignoreDevices && this.item.versionIncompatible())
+	{
+		title = $L("Incompatible OS Version");
+		message = (operation == 'update') ?
+			$L("This package is marked as incompatible with this version of webOS. You are updating it at your own risk and give up all moral and legal rights to developer support for this installation. Community support may be available at <a href=https://docs.webosarchive.org>docs.webosarchive.org</a>.") :
+			$L("This package is marked as incompatible with this version of webOS. You are installing it at your own risk and give up all moral and legal rights to developer support for this installation. Community support may be available at <a href=https://docs.webosarchive.org>docs.webosarchive.org</a>.");
+	}
+
+	if (message === false)
+	{
+		this.doGetAppCatInstallStatus(operation);
+		return;
+	}
+
+	this.controller.showAlertDialog(
+	{
+		title:				title,
+		allowHTMLMessage:	true,
+		message:			message,
+		// the chosen value is what drives the action, so it has to be the real
+		// operation -- 'install' here would skip the replace path that Patch,
+		// Kernel and Kernel Module updates depend on
+		choices:			[{label:$L('Ok'), value:operation}, {label:$L('Cancel'), value:'cancel'}],
+		onChoose:			this.doGetAppCatInstallStatus.bindAsEventListener(this)
+	});
 };
 
 PkgViewAssistant.prototype.doGetAppCatInstallStatus = function(operation)

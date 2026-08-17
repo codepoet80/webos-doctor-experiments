@@ -1,0 +1,14 @@
+{
+	"submission": "1.3",
+	"files": {
+		"javascript": [
+			"prologue.js",
+			"chatthread.js",
+			"message.js",
+			"utils.js"
+		],
+		"images": "*",
+		"views": "*",
+		"stylesheets": "*"
+	}
+}

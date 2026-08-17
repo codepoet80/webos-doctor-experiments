@@ -2,6 +2,7 @@
 	"icon": "../../icon.png",
 	"id": "com.palm.app.accounts",
 	"main": "../../index.html",
+	"splashicon": "../../icon-256x256.png",
 	"title": "Comptes",
 	"type": "web",
 	"uiRevision": 2,

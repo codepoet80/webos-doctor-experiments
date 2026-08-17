@@ -1,0 +1,27 @@
+{
+    "id": "com.palm.carrierbook:1",
+	"sync": true,
+    "schema": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "description": "Name of carrier book entry (e.g. 'Emergency Number')"
+            },
+            "number": {
+                "type": "string",
+                "description": "Number of carrier book entry (e.g. '911')"
+            }
+        }
+    },
+    "indexes": [
+	{
+        "name": "query_by_number",
+        "props": [
+        {
+            "name": "number"
+        }
+        ]
+    }
+    ]
+}

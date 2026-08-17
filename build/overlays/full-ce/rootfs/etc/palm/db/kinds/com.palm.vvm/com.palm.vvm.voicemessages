@@ -1,0 +1,158 @@
+{
+    "id": "com.palm.vvm.voicemessages:1",
+    "schema": {
+        "type": "object",
+        "properties": {
+			"id": {
+				"type": "string",
+				"description": "Message uid. Needs to be a string for SFR"
+			},
+			"service": {
+				"type": "string",
+				"description": "Carrier name of service provider. Keys to the mailbox with the same 'service'"
+			},
+            "from": {
+            	"type": "object",
+				"description": "An object with key 'addr' that is the caller id. May also contain a 'name' key if contact resolved. Will contain cached values 'personId' and 'personAddressType' if the entry is associated with a person."
+            },
+            "to": {
+            	"type": "array",
+                "description": "Not currently used. Always 'this device'."
+            },
+            "timestamp": {
+                "type": "number",
+                "description": "Timestamp in utc ms of when this VVM was left.",
+            },
+            "duration": {
+                "type": "number",
+                "description": "Message duration in ms."
+            },
+            "size": {
+                "type": "number",
+				"optional": true,
+                "description": "Size in bytes."
+            },
+            "read": {
+                "type": "boolean",
+                "description": "True if message has been played in the phone app. Managed by service."
+            },
+            "readMessage": {
+                "type": "boolean",
+                "description": "Phone app will set this to mark as 'read'",
+				"optional": true
+            },
+            "audioPath": {
+                "type": "string",
+				"optional": true,
+                "description": "Path to audio file on disk."
+            },
+            "error": {
+                "type": "number",
+				"optional": true,
+                "description": "Error message."
+            },
+            "noticed": {
+                "type": "boolean",
+                "description": "True if noticed and processed by the Voicemail app. Used to check for new messages.",
+				"optional": true
+            },
+            "urgent": {
+                "type": "boolean",
+                "description": "true for urgent",
+				"optional": true
+            },
+            "private": {
+                "type": "boolean",
+                "description": "true for private",
+				"optional": true
+            },
+            "expired": {
+                "type": "boolean",
+                "description": "true for expired",
+				"optional": true
+            },
+            "saveMessage": {
+                "type": "boolean",
+                "description": "App sets this to true if it requests this vvm to be saved. Service is responsible for resetting to false.",
+				"optional": true
+            },
+
+        }
+    },
+    "indexes": [
+    {
+        "name": "phoneapp_list_query",
+        "props": [
+        {
+            "name": "timestamp"
+        }
+        ],
+        "description": "Used by the phone app's list widget to query all voicemails ordered by timestamp desc."
+    },
+    {
+        "name": "phoneapp_voicemail_service",
+        "props": [
+        {
+            "name": "noticed",
+            "default": null
+        }
+        ],
+        "description": "Used by the Voicemail Service's watch to look for new voicemails."
+    },
+    {
+        "name": "Service",
+        "description": "Used by the service to reference all messages for a specific carrier",
+        "props": [
+        {
+            "name": "service",
+            "default": ""
+        },
+        {
+            "name": "id",
+            "default": ""
+        }
+        ]
+    },
+    {
+        "name": "ServiceDelete",
+        "description": "Used by the service to watch for messages to be deleted",
+        "incDel":true,
+        "props": [
+        {
+            "name": "service",
+            "default": ""
+        },
+        {
+            "name":"_rev",
+            "default":0
+        }
+        ]
+    },
+    {
+        "name": "ServiceSave",
+        "description": "Used by the service to watch for messages to be saved",
+        "props": [
+        {
+            "name": "service",
+            "default": ""
+        },
+        {
+            "name": "readMessage",
+            "default": false
+        }
+        ]
+    },
+    {
+        "name": "PhoneappUnreadCount",
+        "description": "Used by the phoneapp to query number of unread messages",
+        "props": [
+        {
+            "name": "read"
+        },
+        {
+            "name": "size"
+        }
+        ]
+    }
+    ]
+}

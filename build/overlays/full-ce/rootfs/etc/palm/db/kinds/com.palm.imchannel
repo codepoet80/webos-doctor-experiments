@@ -1,0 +1,45 @@
+{
+    "id": "com.palm.imchannel:1",
+    "owner": "com.palm.app.messaging",
+    "indexes": [
+        {
+            "name": "byserver",
+            "props": [{"name": "serverId"}, {"name": "position"}]
+        },
+        {
+            "name": "byparent",
+            "props": [{"name": "parentId"}, {"name": "position"}]
+        },
+        {
+            "name": "bychatthread",
+            "props": [{"name": "chatThreadId"}]
+        },
+        {
+            "name": "byRemoteId",
+            "props": [{"name": "serviceName"}, {"name": "remoteId"}]
+        },
+        {
+            "name": "chatThreadRevision",
+            "props": [{"name": "chatthreadRevSet"}]
+        },
+        {
+            "name": "displayNameRevision",
+            "props": [{"name": "displayNameRevSet"}]
+        },
+        {
+            "name": "deleted",
+            "incDel": true,
+            "props": [{"name": "_del"}, {"name": "_rev"}]
+        }
+    ],
+    "revSets": [
+        {
+            "name": "chatthreadRevSet",
+            "props": [{"name": "chatThreadId"}]
+        },
+        {
+            "name": "displayNameRevSet",
+            "props": [{"name": "displayName"}]
+        }
+    ]
+}

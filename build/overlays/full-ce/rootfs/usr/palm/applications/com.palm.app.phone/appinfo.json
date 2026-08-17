@@ -1,0 +1,15 @@
+{
+	"title": "Phone & Video Calls",
+	"id": "com.palm.app.phone",
+	"version": "2.0.1",
+	"type": "web",
+	"main": "index.html",
+	"uiRevision": 2,
+	"splashicon": "icon-256x256.png",
+	"icon": "icon.png",
+	"noWindow": "true",
+	"keywords": ["Dial"],
+	"vendor": "Palm, Inc.",
+	"trustLevel": "trusted",
+	"requiredPermissions": ["applications.internal", "applications", "activities.manage", "devices", "settings", "settings.read", "services", "database", "database.internal", "filecache", "system", "networking", "networking.internal"]
+}

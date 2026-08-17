@@ -13,7 +13,20 @@ APPS=/media/cryptofs/apps
 
 [ -d $APPS ] || { echo "Requires webOS 1.3.5 or later" ; exit 1 ; }
 
-VERSION=`grep PRODUCT_VERSION_STRING /etc/palm-build-info | sed -e 's/.* webOS \([0-9.]*\).*/\1/'`
+# Extract the OS version for the version-specific patch and kernel feeds.
+# Do not assume where the version sits in the string: it trails the vendor on
+# stock builds ("HP webOS 3.0.5") but trails the edition on Community Edition
+# builds ("webOS CE 3.1.0").  So take the last dotted-numeric token on the
+# line, which also survives a digit in the device name ("Palm Pre2 webOS
+# 2.2.4") and a suffixed or parenthesised build tag.
+VERSION=`grep PRODUCT_VERSION_STRING /etc/palm-build-info 2>/dev/null | head -n 1 | sed -e 's/.*[^0-9.]\([0-9][0-9]*\.[0-9][0-9.]*\).*/\1/' -e 's/[^0-9.].*//' -e 's/\.*$//'`
+
+# Never let an unparsed string reach a feed URL.  The feed config is
+# whitespace-delimited, so a VERSION containing a space silently truncates the
+# URL at the first space instead of failing visibly.
+case "$VERSION" in
+  ''|*[!0-9.]*) VERSION=unknown ;;
+esac
 
 # Remove the obsolete Package Manager Service
 if [ -f $APPS/usr/lib/ipkg/info/org.webosinternals.ipkgservice.prerm ] ; then
@@ -102,11 +115,51 @@ echo "src/gz webosinternals-`/bin/uname -m` http://ipkg.preware.net/feeds/webos-
 sed -i -e 's|armv7l|armv7|g' $APPS/etc/ipkg/webos-internals.conf
 sed -i -e 's|armv6l|armv6|g' $APPS/etc/ipkg/webos-internals.conf
 
-# Install webos-patches feed
-echo "src/gz webos-patches http://ipkg.preware.net/feeds/webos-patches/${VERSION:-unknown}" > $APPS/etc/ipkg/webos-patches.conf
+# The patch and kernel feeds are published per OS version.  Nothing has been
+# published for 3.1 yet, so an enabled feed there just fails to download every
+# time the feeds are updated.  Ship them disabled on 3.1 and later, and also
+# when we could not determine the version -- a ".../unknown" feed cannot exist
+# either.  3.0.5 and earlier are unaffected.
+VERSIONED_FEEDS_DISABLED=0
+if [ "$VERSION" = "unknown" ] ; then
+  VERSIONED_FEEDS_DISABLED=1
+else
+  V_MAJ=`echo "$VERSION" | cut -d. -f1`
+  V_MIN=`echo "$VERSION" | cut -d. -f2`
+  [ -z "$V_MAJ" ] && V_MAJ=0
+  [ -z "$V_MIN" ] && V_MIN=0
+  if [ "$V_MAJ" -gt 3 ] ; then
+    VERSIONED_FEEDS_DISABLED=1
+  elif [ "$V_MAJ" -eq 3 ] && [ "$V_MIN" -ge 1 ] ; then
+    VERSIONED_FEEDS_DISABLED=1
+  fi
+fi
 
-# Install webos-kernels feed
-echo "src/gz webos-kernels http://ipkg.preware.net/feeds/webos-kernels/${VERSION:-unknown}" > $APPS/etc/ipkg/webos-kernels.conf
+if [ "$VERSIONED_FEEDS_DISABLED" -eq 1 ] ; then
+
+  # Write the disabled name directly and drop any enabled one, rather than using
+  # the .conf.new mechanism.  These feeds were enabled by default in earlier
+  # releases, so on an upgrade a .new would find the existing enabled .conf and
+  # keep it enabled -- which is exactly the state we are trying to clear.
+  # They can still be switched on from Manage Feeds.
+
+  # Install webos-patches feed (disabled, no content for this OS version)
+  rm -f $APPS/etc/ipkg/webos-patches.conf
+  echo "src/gz webos-patches http://ipkg.preware.net/feeds/webos-patches/${VERSION:-unknown}" > $APPS/etc/ipkg/webos-patches.conf.disabled
+
+  # Install webos-kernels feed (disabled, no content for this OS version)
+  rm -f $APPS/etc/ipkg/webos-kernels.conf
+  echo "src/gz webos-kernels http://ipkg.preware.net/feeds/webos-kernels/${VERSION:-unknown}" > $APPS/etc/ipkg/webos-kernels.conf.disabled
+
+else
+
+  # Install webos-patches feed
+  echo "src/gz webos-patches http://ipkg.preware.net/feeds/webos-patches/${VERSION:-unknown}" > $APPS/etc/ipkg/webos-patches.conf
+
+  # Install webos-kernels feed
+  echo "src/gz webos-kernels http://ipkg.preware.net/feeds/webos-kernels/${VERSION:-unknown}" > $APPS/etc/ipkg/webos-kernels.conf
+
+fi
 
 # Install woce feed
 echo "src/gz woce http://ipkg.preware.net/feeds/woce" > $APPS/etc/ipkg/woce.conf

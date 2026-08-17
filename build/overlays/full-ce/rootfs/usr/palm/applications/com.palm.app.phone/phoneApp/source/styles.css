@@ -1,0 +1,504 @@
+.drawerItem {
+	color: #fff;
+	padding: 0px;
+}
+.enyo-confirmprompt-scrim{
+	background-color: rgba(228, 228, 226, 1);
+}
+.rightAligned {
+	position:absolute;
+	right:0px;
+}
+.drawer-subitem {
+	font-size: 18px;
+}
+.drawer-subItem-itemTextLbl {
+	padding: 3px 3px 3px 5px;
+	width: 70%;
+/*	white-space: nowrap;*/
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: left;
+}
+.drawer-subItem-itemFullAddrLbl {
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align:left;
+}
+.drawer-subItem-itemPartialAddrLbl {
+	color: #6f7070;
+	width: 80%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align:left;
+	margin-left: 50px;
+}
+.drawer-subitem-itemTypeLblAndIcon {
+	position: absolute;
+	right: 5px;
+	top: 3px;
+}
+.subitem-phType-label {
+	color: #a2a1a1;
+	text-transform: uppercase;
+	font-size: 14px;
+	line-height: 42px;
+	margin-right: 36px;
+}
+
+.subitem-sms-icon {
+	float: right;
+	border: solid transparent;
+    border-width: 0 0 0 0;
+    width: 41px;
+    height: 41px;
+    background: url(../images/button-sprite.png) -82px 0px no-repeat;
+}
+.subitem-sms-icon.selected { background-position: -82px -41px; }
+
+
+.empty-calllog-phone {
+	text-align: center;
+	color: #FFFFFF;
+}
+
+.empty-calllog-phone-icon {
+	margin-top: 20px;
+	margin-bottom: 5px;
+}
+/*
+.add-favorite-item {
+	color: white;
+	font-style: italic;
+	border-width: 20px 17px;
+	background: none;
+	-webkit-border-image: url(../images/row-glass-up.png) 20 17 20 17 repeat repeat;
+	margin: 0px 9px 0px 9px;
+	padding: 20px 0px -50px 10px;
+	text-align:left;
+	min-height: 0px; /* overriding min-height in enyo-swipeableitem  
+}
+/*
+.add-favorite-item.enyo-held
+{
+	border-width: 20px 17px; /* Keep the border around for the add-item row 
+	-webkit-border-image: url(../images/row-glass-down.png) 20 17 20 17 repeat repeat;
+}*/
+/*
+	Voicemail styles
+*/
+.voicemail-drawer-button {
+    width: 41px;
+    height: 41px;
+    border: solid transparent;
+    border-width: 0 0 0 0;
+    background: url(../images/button-sprite.png) left top no-repeat;
+    -webkit-background-clip: padding;
+
+    position: relative;
+	margin-bottom: 7px;
+
+    /* Stack on top of slider button *
+    z-index: 1001;*/
+}
+.voicemail-drawer-button.selected { background-position-y: -41px; }
+
+.voicemail-greeting .voicemail-drawer-button {
+  background-image: url(../images/button-sprite-light.png);
+}
+
+.voicemail-drawer-button.playpause {
+    float: left;
+    background-position-x: -41px;
+    border-right-width: 0px;
+}
+.voicemail-drawer-button.paused { 
+	background-position-x: -41px;
+	background-position-y: -82px; 
+}
+.paused.selected { background-position-y: -123px; }
+
+.voicemail-drawer-button.source {
+    float: right;
+    border-left-width: 0px;
+}
+
+.voicemail-sms {
+	float: right;
+	border: solid transparent;
+    border-width: 0 0 0 0;
+    width: 41px;
+    height: 41px;
+    background: url(../images/button-sprite.png) -82px 0px no-repeat;
+}
+
+.voicemail-sms.selected { background-position: -82px -41px; }
+
+.voicemail-drawer-button.speakerphone { background-position-y: top; }
+.speakerphone.selected { background-position-y: -123px; }
+
+.voicemail-icon {
+	position: relative;
+}
+
+.voicemail-count-wrapper {
+	position: absolute;
+	line-height: 24px;
+	height: 24px;
+	text-align: center;
+	left: 54%;
+	top: 6px;
+	-webkit-border-image: url(../images/voicemail-unread.png) 0 12 0 12 repeat stretch;
+	border-width: 0px 12px;
+	z-index: 110;
+}
+                                                                                        
+.voicemail-count {
+	font-size: 16px;
+	font-weight: bold;
+	margin: 0 -4px;
+}
+
+.voicemail-drawer-button.speakerphoneselected { background-position-y: -41px; }
+.speakerphone.selected { background-position-y: -41px; }
+
+.voicemail-heard-icon {
+	position: relative;
+	top: -7px;
+    height: 14px;
+    width: 24px;
+	float: right;
+    margin-top: 16px;
+    background: url(../images/vm-heard-sprite.png) left top no-repeat;
+}
+
+.voicemail-heard-icon-DL {
+	right: 75px;
+}
+
+.voicemail-heard-icon.heard {
+    background-position: left -14px;
+}
+
+/* TODO: new icon designs; Expired, Urgent, Private*/
+.voicemail-heard-icon.expired {
+	top: -13px;
+    width: 24px;
+    height: 20px;
+    background: url(../images/vm-expired.png) left top no-repeat;
+}
+
+.voicemail-heard-icon.expired_N_heard {
+	top: -13px;
+    width: 24px;
+    height: 20px;
+    background: url(../images/vm-expired.png) 0px -20px no-repeat;
+}
+
+.voicemail-heard-icon.urgent {
+	top: -18px;
+    width: 12px;
+    height: 25px;
+    background: url(../images/vm-urgent.png);
+}
+
+.voicemail-heard-icon.private {
+	top: -14px;
+    width: 21px;
+    height: 21px;
+    background: url(../images/vm-private.png);
+}
+
+.voicemail-popup-DL {
+	min-width: 300px;
+	z-index: 120;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	-webkit-box-sizing: border-box;
+	border-width: 24px;
+	-webkit-border-image: url(palm/themes/Onyx/images/popup.png) 24 24 24 24 stretch stretch;
+	min-width: inherit;
+	background: #071116;
+}
+
+.vm-enyo-popup-menu-item {
+	font-size: 18px;
+	color: white;
+	background: #132232;
+}
+
+.vm-enyo-popup-menu {
+	font-size: 18px;
+	color: white;
+	background: #071116;
+}
+
+.voicemail-spinner {
+	position: absolute;
+	margin-left: 100px;
+	margin-top: 150px;
+	z-index: 101;
+}
+
+.voicemail-static-item {
+	color: #FFFFFF;
+	background: none;
+	-webkit-border-image: url(../images/call-log-count-pill.png) 0 12 0 12;
+	border-width: 0 22px 0 22px;
+	border-top: 5px;
+	text-align:left;
+	font-size: 16px;
+	height: 60px;
+	padding: 10px 0px;
+}
+
+.folder-number {
+	position: absolute;
+	right: 15px;
+	padding: 4px 0px;
+	border-width: 0px 11px 0px 11px;
+	-webkit-border-image: url(../images/email-badge.png) 0 11 0 11;
+	color: white;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.drawerItem-voicemail-displayNameArea {
+	width:110%;
+}
+
+/*
+ * Empty Calllog Styles
+ */
+
+.empty-main {
+	padding-top: 80px;
+}
+
+.large-empty-icon {
+    width: 120px;
+	height: 120px;
+	margin: 10px auto;
+    background-repeat: no-repeat;
+}
+
+.large-empty-icon.voicemail { background-image: url(../images/empty-voicemail.png); }
+
+.empty-text {
+	text-align: center;
+	margin-top: 10px;
+	font-size: 16px;
+	color: #FFFFFF;
+}
+
+/* Voicemail Greeting Styles */
+.cancel-button {
+	position: relative;
+    float: left;
+    /*margin: 25px 10px 25px 0px;*/
+	margin: 25px 40px 25px 10px;
+    width: 50px;
+    height: 50px;
+    pointer-events: auto;
+    background: url(../images/VoicemailGreeting/greeting-buttons.png) 0px 0px no-repeat;
+}
+.cancel-button.selected { background-position: 0px -50px; }
+
+.complete-button {
+	position: relative;
+    float: right;
+    /*margin: 25px 10px 25px 0px;*/
+    margin: 25px 0px 25px 160px;
+    width: 50px;
+    height: 50px;
+    pointer-events: auto;
+    background: url(../images/VoicemailGreeting/greeting-buttons.png) 0px -100px no-repeat;
+}
+.complete-button.selected { background-position: 0px -150px; }
+
+.center-controls {
+    /*background: url(../images/VoicemailGreeting/menu-bezel-single.png) 50% 50% no-repeat;*/
+    background: url(../images/VoicemailGreeting/menu-bezel-double.png) 50% 50% no-repeat;
+    pointer-events: none;
+    position: relative;
+    height: 100%;
+}
+
+.capture-button {
+    top: 50%;
+    left: 50%;
+    /*margin-top: -34px;
+    margin-left: -67px;*/
+	margin-top: -33px;
+	margin-left: -68px;
+    width: 74px;
+    height: 74px;
+    position: absolute;
+    pointer-events: auto;
+    background: url(../images/VoicemailGreeting/play-pause-record.png) 0px 0px no-repeat;
+}
+.capture-button.selected { background-position: 0px -74px; }
+.capture-button.pause { background-position: 0px -148px; }
+.capture-button.pause.selected { background-position: 0px -222px; }
+
+.speaker-button {
+    width: 50px;
+    height: 50px;
+    left: 50%;
+    top: 50%;
+    /*margin-top: -24px;
+    margin-left: 14px;*/
+	margin-top: -24px;
+	margin-left: 11px;
+    position: absolute;
+    pointer-events: auto;
+    background: url(../images/VoicemailGreeting/greeting-buttons.png) 0px -200px no-repeat;
+}
+.speaker-button.selected { background-position: 0px -250px; }
+.speaker-button.toggle-on { background-position: 0px -300px; }
+.speaker-button.toggle-on.selected { background-position: 0px -350px; }
+
+.bottom-slider {
+  position: absolute;
+  bottom: 100px;
+  width: 100%;
+  height: 60px;
+  background-image: url(../images/list-separator-dark.png);
+  background-repeat: repeat-x;
+  background-position: top left, bottom left;  
+}
+
+.vmg-backdrop {
+/*    background: url(../images/VoicemailGreeting/backdrop.png) top center no-repeat;*/
+    display: block;
+    width: 320px;
+    height: 452px;
+    background: url(../images/VoicemailGreeting/backdrop.png) left top no-repeat;
+    z-index: 1;
+}
+
+.vmg-text {
+	margin: 10px 20px 10px 20px;
+	font-size: 16px;
+	color: gray;
+}
+
+.vmg-record-timer-text {
+	top: 10px;
+	right: 15px;
+	font-size: 18px;
+	color: white;
+	position: absolute;
+	z-index: 101;
+}
+
+.vmg-record-header {
+	text-align: left;
+	width: 100%;
+	z-index: 100;
+}
+
+.vmg-canvas-position {
+	margin-top: 20px;
+	top: 0px;
+	left: 0px;
+	position: absolute;
+}
+
+.audio-controls {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: 99px;
+}
+
+.countdown-time-container,
+.capture-time-container {
+  width: 40%;
+  text-align: center;
+  float: left;
+}
+
+.record-button {
+    left: 123px;
+    bottom: 0px;
+	margin-bottom: 30px;
+    width: 74px;
+    height: 74px;
+    pointer-events: auto;
+	position: absolute;
+    background: url(../images/VoicemailGreeting/play-pause-record.png) 0px -296px no-repeat;
+}
+.record-button.stop { background-position: 0px -444px; }
+
+.footer-div {
+	position: relative;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	width: 100%;
+	height: 50px;
+	background: url(../images/VoicemailGreeting/voicemail-footer-shadow.png) top left repeat-x;
+}
+
+.footer-button-container {
+	margin: 10px;
+}
+
+.bottom-slider {
+  position: absolute;
+  bottom: 100px;
+  width: 100%;
+  height: 60px;
+  background-image: url(../images/VoicemailGreeting/list-separator-dark.png);
+  background-repeat: repeat-x;
+  background-position: top left, bottom left;  
+}
+               
+.contactsButtonDisplayed{
+	display: none;
+}
+.clv-draweritem-displayArea {
+	padding: 5px 8px 10px 12px;
+	white-space:nowrap;
+	position: relative;
+}
+
+.contact-list .enyo-flat-shadow{
+	-webkit-border-image: none;
+}
+.contact-list .enyo-divider-caption{
+	color: #fff;
+}            
+.contact-list .enyo-item{
+	text-align: left;
+	color: #ccc;              
+	-webkit-border-image: url(../images/call-log-list-separator.png) 0 0 2 0;
+	border-width: 0 0 2px 0;
+}
+.enyo-addressing-type{
+	color: #ccc;                       
+	top: 5px;
+}
+.enyo-addressing-item-selected{
+	background-color: #4a7298;
+}
+/* End of TODO */
+
+.contact-list input{
+	min-height: 32px;
+}
+
+.enyo-appmenu-inner .item-label div {
+  font-size: 18px;
+}
+.voicemail-popup .enyo-popup-inner{
+	margin: -7px -12px;
+}
+.voicemail-popup .enyo-menuitem-arrow{
+	width: 18px;
+}

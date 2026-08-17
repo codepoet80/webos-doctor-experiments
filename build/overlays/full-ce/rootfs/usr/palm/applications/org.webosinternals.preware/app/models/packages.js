@@ -462,21 +462,23 @@ packagesModel.prototype.loadPackage = function(infoObj, url)
 	
 	if (Mojo.Environment.DeviceInfo.platformVersion.match(/^[0-9:.-]+$/)) {
 		// Filter out apps with a minimum webos version that is greater then current
+		// (these need APIs the device doesn't have, so there is no opting in)
 		if (this.versionNewer(Mojo.Environment.DeviceInfo.platformVersion, newPkg.minWebOSVersion)) {
 			//alert('+ 2');
 			return;
 		}
-		
-		// Filter out apps with a maximum webos version that is less then current
-		if (this.versionNewer(newPkg.maxWebOSVersion, Mojo.Environment.DeviceInfo.platformVersion)) {
-			//alert('+ 3');
-			return;
-		}
 	}
-	
+
+	// Filter out apps with a maximum webos version that is less then current,
+	// unless the user has opted in to seeing incompatible packages -- then they
+	// are shown, and warned at install time instead
+	if (!prefs.get().ignoreDevices && newPkg.versionIncompatible()) {
+		//alert('+ 3');
+		return;
+	}
+
 	// Filter out apps with a specified devices that dont match the current
-	if (!prefs.get().ignoreDevices && newPkg.devices && newPkg.devices.length > 0 &&
-		!newPkg.devices.include(Mojo.Environment.DeviceInfo.modelNameAscii)) {
+	if (!prefs.get().ignoreDevices && newPkg.deviceIncompatible()) {
 		//alert('+ 4');
 		return;
 	}

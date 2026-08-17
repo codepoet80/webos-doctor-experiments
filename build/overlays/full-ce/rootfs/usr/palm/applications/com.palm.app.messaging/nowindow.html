@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<title>Messaging (Headless)</title>
+	<script src="/usr/palm/frameworks/enyo/0.10/framework/enyo.js" type="text/javascript"></script>
+</head>
+<body>
+<script type="text/javascript">
+	(function () {
+		if (!enyo.application.appInit) {
+			enyo.log("**************** initializating application modules")
+			enyo.application.appInit = new AppInit();
+			enyo.application.appInit.init();
+		}
+		
+		enyo.relaunch = function (inParams) {
+			if(inParams.launchedAtBoot) {
+				return;
+			} else if (inParams.notificationType === "class0") {
+				enyo.log("-------- got class0 notification");
+				enyo.application.class0AlertManager.handleNotification(inParams);
+				return;
+			}
+			enyo.log("Messaging enyo.relaunch inParams: ", inParams);
+			enyo.windows.activate("index.html", "messaging", inParams);
+		};
+		
+		enyo.applicationRelaunchHandler = enyo.relaunch;
+		
+		var params = (window.PalmSystem && PalmSystem.launchParams) || "{}";
+		enyo.relaunch(JSON.parse(params));
+	})();
+	
+</script>
+</body>
+</html>

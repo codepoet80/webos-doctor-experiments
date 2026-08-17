@@ -1,0 +1,28 @@
+{
+	"start": true,
+	"activity": {
+		"name": "chatThreader.readFlagChanged",
+		"description": "watch for changes to the 'read' flag in message records",
+		"type": {
+			"persist":true,
+			"immediate": false,
+			"priority": "low"
+		},
+		"trigger": {
+			"method": "palm://com.palm.db/watch",
+			"key": "fired",
+			"params": {
+				"query": {
+					"from": "com.palm.message:1",
+					"where": [
+						{"prop": "readRevSet", "op": ">", "val": 0}
+					]
+				}
+			}
+		},
+		"callback": {
+			"method": "palm://com.palm.messaging.chatthreader/readFlagChanged",
+			"params": { "readRev":0 }
+		}
+	}
+}

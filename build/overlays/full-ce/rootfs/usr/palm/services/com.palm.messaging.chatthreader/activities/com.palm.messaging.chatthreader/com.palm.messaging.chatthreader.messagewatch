@@ -1,0 +1,33 @@
+{
+	"start": true,
+	"activity": {
+		"name": "chatThreader.nullConversation",
+		"description": "watch for messages that don't have any associated chat threads",
+		"type": {
+			"persist":true,
+			"power":true,
+			"immediate": true,
+			"priority": "normal",
+			"powerDebounce": true,
+			"explicit":true
+		},
+		"trigger": {
+			"method": "palm://com.palm.db/watch",
+			"key": "fired",
+			"params": {
+				"query": {
+					"from": "com.palm.message:1",
+					"where": [
+						{"prop": "conversations", "op": "=", "val": null},
+						{"prop": "flags.visible", "op": "=", "val": true},
+						{"prop": "_rev", "op": ">", "val": 0}
+					]
+				}
+			}
+		},
+		"callback": {
+			"method": "palm://com.palm.messaging.chatthreader/newMessages",
+			"params": { "revision": 0 }
+		}
+	}
+}

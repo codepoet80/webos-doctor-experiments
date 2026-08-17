@@ -54,9 +54,9 @@ enyo.kind({
 							{name:"palmProfileName", className:"enyo-text-ellipsis", flex:1}
 						]}
 					]},                                        
-					{kind: "RowGroup", className:"accounts-group", name: "synergyAccounts", caption:$L("SYNERGY ACCOUNTS"), components: [
-						// This is the one-line kind to get the list of accounts.  It is initialized in your create method below
-						{kind: "Accounts.accountsList", name: "accountsList", onAccountsList_AccountSelected: "editAccount", onAccountsList_Ready: "listReady"}
+					{kind: "Control", name: "synergyAccounts", components: [
+						// This is the one-line kind to get the list of accounts.  It is initialized in your create method below                                 
+						{kind: "Accounts.accountsList", name: "accountsList", grouped: true, groupTitle: $L("SYNERGY ACCOUNTS"), onAccountsList_AccountSelected: "editAccount", onAccountsList_Ready: "listReady"}
 					]},
 					{kind: "RowGroup", className:"accounts-group", name: "simAccountGroup", components: [
 						{kind: "Accounts.accountsList", name: "SIMAccountsList", onAccountsList_AccountSelected: "editAccount", onAccountsList_Ready: "listReady"}
@@ -347,6 +347,40 @@ enyo.kind({
 		// case the row has to stop being tappable or the next tap walks into a
 		// profile fetch with no token behind it.
 		this.$.probeProfileToken.call({});
+	},
+
+	// App menu -> "Delete Account Data": open the retained-data page (swipe-to-delete list of accounts
+	// that were removed with their data kept on the device).
+	showRetainedData: function() {
+		this.$.appMenu.close();
+		this.selectViewByName("retainedDataView");
+		// Pass the active accounts too so a re-added account is filtered out of the delete list.
+		this.$.retainedDataView.load(this.templates, this.accounts);
+	},
+
+	// Query the retained-data markers and show the "Delete Account Data" menu item only if any belong to
+	// an account that is NOT currently active (a re-added account's marker doesn't count).
+	checkRetainedData: function() {
+		this.$.retainedQuery.call({query: {from: "com.palm.imretaineddata:1"}});
+	},
+	gotRetainedData: function(inSender, resp) {
+		var results = (resp && resp.results) || [];
+		var active = {}, i;
+		for (i = 0; i < this.accounts.length; i++) {
+			var a = this.accounts[i];
+			if (a && a.templateId)
+				active[this.retainedKey(a.templateId, a.username)] = true;
+		}
+		var count = 0;
+		for (i = 0; i < results.length; i++) {
+			if (!active[this.retainedKey(results[i].templateId, results[i].username)])
+				count++;
+		}
+		var _mi = this.$.deleteDataMenuItem || (this.$.appMenu && this.$.appMenu.$ && this.$.appMenu.$.deleteDataMenuItem);
+		if (_mi) { _mi.setShowing(count > 0); }
+	},
+	retainedKey: function(templateId, username) {
+		return (templateId || "") + "|" + String(username || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 	},
 
 	// App menu -> "Delete Account Data": open the retained-data page (swipe-to-delete list of accounts

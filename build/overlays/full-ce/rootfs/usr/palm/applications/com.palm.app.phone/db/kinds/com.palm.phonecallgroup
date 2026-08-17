@@ -1,0 +1,70 @@
+/* note: 'from', 'to', and 'timestamp' will eventually be inherited from supertype Communication. See https://wiki.palm.com/display/Bedlam/Communication */
+{
+	"id": "com.palm.phonecallgroup:1",
+	"sync": true,
+	"schema": {
+		"type": "object",
+		"properties": {
+			"type": {
+				"type": "string",
+				"enum": ["all","missed"],
+				"description": "Type of grouping. 'all' contains every phonecall and 'missed' is only where phonecall.type = 'missed'"
+			},
+			"timestamp": {
+				"type": "integer",
+				"description": "Start time of the most recent phone call in ms timestamp."
+			},
+			"callcount": {
+				"type": "integer",
+				"description": "Cached value for performance. Number of calls associated with this group.",
+			},
+			"recentcall_address": {
+	        	"type": "object",
+	        	"description": "Cached value for performance. Object with 'service' and 'addr' keys. It's the 'remote' address (phone number or IM) of the recipient most recent call associated with this group."
+			},
+			"recentcall_type": {
+	        	"type": "string",
+	        	"description": "Cached value for performance. Type of phone call of most recent call associated with this group."
+			}
+		}
+	},
+	"indexes": [
+		{
+			"name" : "_temp",
+			"props": [
+				{
+					"name":"type"
+				}
+			],
+			"description": "Just for testing"
+		},
+		{
+			"name" : "list_widget_populate",
+			"props": [
+				{
+					"name":"type"
+				},
+				{
+					"name":"timestamp"
+				}
+			],
+			"description": "Used by mojo2 list widget to query where type = 'all' and order by timestamp desc"
+		},
+		{
+			"name" : "contacts_plugin_find",
+			"props": [
+				{
+					"name":"recentcall_address.personId",
+					"default":null
+				},
+				{
+					"name":"recentcall_address.service"
+				},
+				{
+					"name":"recentcall_address.normalizedAddr"
+				}
+			],
+			"description": "Used by contacts.plugin.phone to delete groups associated with a person (and optional )"
+		}
+	]
+}

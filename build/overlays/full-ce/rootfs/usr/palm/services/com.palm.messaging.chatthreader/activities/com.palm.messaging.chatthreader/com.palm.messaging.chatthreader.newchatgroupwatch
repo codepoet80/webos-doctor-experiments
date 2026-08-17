@@ -1,0 +1,28 @@
+{
+	"start": true,
+	"activity": {
+		"name": "chatThreader.newImChatGroup",
+		"description": "watch for new ImChatGroup records",
+		"type": {
+			"persist":true,
+			"immediate": true,
+			"priority": "normal"
+		},
+		"trigger": {
+			"method": "palm://com.palm.db/watch",
+			"key": "fired",
+			"params": {
+				"query": {
+					"from": "com.palm.imgroupchat:1",
+					"where": [
+						{"prop": "chatthreadRevSet", "op": ">", "val": 0}
+					]
+				}
+			}
+		},
+		"callback": {
+			"method": "palm://com.palm.messaging.chatthreader/newImGroupChat",
+			"params": { "chatThreadIdRev":0 }
+		}
+	}
+}

@@ -860,6 +860,26 @@ packageModel.prototype.inLanguage = function(language)
 	return false;
 };
 
+// checks if this package declares a device list that excludes the current device
+// these are computed on demand rather than stored as flags, so that they survive
+// infoUpdate() merging a package that appears in more than one feed
+packageModel.prototype.deviceIncompatible = function()
+{
+	if (!this.devices || this.devices.length == 0) return false;
+	return !this.devices.include(Mojo.Environment.DeviceInfo.modelNameAscii);
+};
+
+// checks if this package declares a MaxWebOSVersion older than the running OS.
+// this went from theoretical to common with webOS CE 3.1, because every package
+// capped at 3.0.5 is "too old" for a CE device
+packageModel.prototype.versionIncompatible = function()
+{
+	// the platform normally hands us a bare dotted version ("3.1.0"), but don't
+	// guess if it ever reports something we can't compare
+	if (!Mojo.Environment.DeviceInfo.platformVersion.match(/^[0-9:.-]+$/)) return false;
+	return packages.versionNewer(this.maxWebOSVersion, Mojo.Environment.DeviceInfo.platformVersion);
+};
+
 // this function will return an object ready for inclusion in the list widget
 packageModel.prototype.getForList = function(item)
 {

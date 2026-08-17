@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript">
+		// console.profile && console.profile ("calendar"); 
+		var timing = {start: -Date.now()};
+	</script>
+	
+	<title>Reminder</title>
+	<script type="text/javascript" launch="debug" src="../../../../../enyo/0.10/framework/enyo.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		new Class0Dialog().renderInto(document.body);
+		
+		(function() {	
+			enyo.relaunch = function(inParams){
+				if (inParams.launchedAtBoot) {
+					return;
+				}
+				enyo.log("Class0 enyo.relaunch inParams: ", inParams);
+				enyo.windows.activate("class0.html", "class0", inParams);
+			};	
+			enyo.applicationRelaunchHandler = enyo.relaunch;
+		})();
+	</script>
+</body>
+</html>

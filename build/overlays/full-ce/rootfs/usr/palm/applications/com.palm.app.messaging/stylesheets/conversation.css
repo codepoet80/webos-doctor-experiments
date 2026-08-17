@@ -1,0 +1,766 @@
+/*----------------------
+Header
+----------------------*/
+.conversationList {
+	background-color:#fff;
+}
+.conversation-header-content {
+	margin-left:3px;
+	margin-right:3px;
+	color:#222222;
+	font-size: 20px;
+	text-align:left;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.conversation-header .status {
+	margin-left:8px;
+}
+.conversation-header-type.enyo-button {
+	padding:0 5px;
+	margin:0 7px 0;
+}
+/* webOS: bare transparent header call buttons (video + phone) — no square button background,
+   matching the paperclip/send icons. Sized to the 32x32 glyphs and nudged to the row centre. */
+.conversation-call-btn {
+	-webkit-box-flex: 0;
+	-webkit-border-image: none;
+	border: 0;
+	border-radius: 0;
+	background-color: transparent;
+	box-shadow: none;
+	min-width: 32px;
+	width: 32px;
+	height: 32px;
+	position: relative;
+	top: 6px;
+	margin: 0 4px;
+}
+.conversation-call-btn.enyo-button-down {
+	-webkit-border-image: none;
+	border: 0;
+	background-color: transparent;
+	box-shadow: none;
+}
+.conversation-header .enyo-listselector-item{
+	display:none;
+}
+.conversation-header .enyo-listselector-arrow {
+	min-height: 24px;
+}
+.conversation-header .enyo-listselector-label {
+	color: #222;
+	line-height: 24px;
+}
+.block-delete-box {
+	padding: 0 12px 0 68px;
+}
+.button-left {
+	margin-right:10px;
+}
+.blocksender-bt,
+.deleteconversation-bt {
+	opacity:0.5;
+	color:#333;
+}
+.blocksender-bt {
+	margin-right:8px;
+}
+.accept-decline-box {
+	margin-top:3px;
+}
+.accept-decline-box .enyo-button {
+	min-width:120px;
+}
+.accept-decline-box div:first-child {
+	margin-right:6px;
+} 
+/*----------------------
+RichText Bottom
+----------------------*/
+.conversation-bottom.enyo-toolbar {
+	height: auto;
+	max-height: 192px;
+}
+.conversation-bottom .enyo-input {
+	margin-left:6px;
+	/* Center the send arrow in the trailing gutter: the arrow sits 6px from the screen edge
+	 * (send-btn margin-right 2px + the toolbar's 4px right border), so match the input->arrow gap
+	 * to that (input margin-right 4px + send-btn margin-left 2px = 6px). */
+	margin-right:4px;
+}
+
+.conversation-bottom .enyo-scroller-scrollee {
+	padding-top:0px;
+	padding-bottom:0px;
+}
+
+.header-shadow,
+.footer-shadow {
+	position: relative; 
+	z-index: 100;
+	height: 3px;
+	width: 100%;
+	pointer-events: none;
+}
+.header-shadow {
+	top: 0;
+	background:transparent url('../images/light_chrome_drop_shadow_header.png') bottom repeat-x;
+}
+.footer-shadow {
+	bottom: 0;
+	background:transparent url('../images/light_chrome_drop_shadow_footer.png') top repeat-x;
+}
+/*----------------------
+  Staged attachment chip (shown above the input once a file is picked)
+----------------------*/
+.attachment-chip {
+	display: -webkit-box;
+	-webkit-box-align: center;
+	padding: 2px 10px;
+	background-color: #d3e2f0;
+	border-top: 1px solid rgba(0,0,0,0.12);
+	border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+.attachment-chip-thumb {
+	width: 40px;
+	height: 40px;
+	margin-right: 8px;
+	border-radius: 4px;
+	background-size: cover;
+	background-position: center;
+	/* the thumb is an <img> (inline, sits on the text baseline) so its descender gap makes the icon
+	   read a few px too high in the box-aligned row; nudge it down to visually center it. */
+	position: relative;
+	top: 3px;
+}
+.attachment-chip-player {
+	-webkit-box-flex: 1;
+	box-flex: 1;
+	margin-right: 6px;
+}
+.attachment-chip-label {
+	-webkit-box-flex: 1;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: 15px;
+	color: #333;
+}
+/* Attachment (paperclip, left of input) + Send (arrow, right of input) buttons. Rendered as bare,
+   transparent icons like the slide handle - strip the default .enyo-button box (border-image chrome,
+   4px border, rounded corners, translucent-white fill) in both rest and pressed states, keeping only
+   the icon (the press state still flips to the sprite's bottom half via .enyo-button-down). */
+.conversation-attach-btn,
+.conversation-mic-btn,
+.conversation-send-btn {
+	-webkit-box-flex: 0;
+	-webkit-align-self: flex-end;
+	align-self: flex-end;
+	-webkit-border-image: none;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	background-color: transparent;
+	box-shadow: none;
+	min-width: 0;
+	margin: 0 2px 4px 2px;
+}
+.conversation-attach-btn.enyo-button-down,
+.conversation-mic-btn.enyo-button-down,
+.conversation-send-btn.enyo-button-down {
+	-webkit-border-image: none;
+	border: 0;
+	background: transparent;
+	background-color: transparent;
+}
+/* Voice message: while recording the mic icon is swapped to the RED variant (see setIcon in the JS).
+   No pulsing (too busy) - just a steady, muted red at half intensity. */
+.conversation-mic-btn.recording {
+	opacity: 0.5;
+}
+/* Voice message: the elapsed-time readout shown while recording (right of the mic). Understated - the
+   normal text colour/weight, just enough to read the duration. */
+.conversation-vn-timer {
+	-webkit-align-self: center;
+	align-self: center;
+	color: #555;
+	font-size: 16px;
+	min-width: 40px;
+	text-align: center;
+	margin: 0 2px 4px 2px;
+}
+/* Paperclip sits just to the right of the absolutely-positioned 46px slide handle so it doesn't
+   overlap it (the input's small left margin then follows the paperclip). */
+.conversation-attach-btn {
+	margin-left: 50px;
+}
+.header-app-shadow,
+.footer-app-shadow,
+.header-favorite-shadow {
+	position: absolute;
+}
+.header-app-shadow {
+	top: 48px;
+}
+.footer-app-shadow {
+	height: 57px;
+}
+/*----------------------
+Conversation List
+----------------------*/
+.conversationList .enyo-scroller-scrollee {
+	padding-top:10px;
+	padding-bottom:5px;
+}
+
+.conversation-bottom .enyo-scroller-scrollee {
+	padding-top:0px;
+	padding-bottom:0px;
+}
+
+
+/*----------------------
+Custom Balloon
+----------------------*/
+.chat-balloon {
+	padding:5px 8px 5px 13px;
+}
+.chat-balloon-received,
+.chat-balloon-sent,
+.chat-balloon-error,
+.chat-balloon-system {
+	margin: 0 7px 0 58px;
+	padding: 5px 10px 6px;
+	min-height: 36px;
+	font-size: 16px;
+	-webkit-border-radius: 9px;
+	word-wrap: break-word;
+	border:none;
+	position:relative;
+}
+.chat-balloon-received {
+	border: solid 1px #b3d9f2;
+	background-color:#d6edff;
+}
+.chat-balloon-sent {
+	border: solid 1px #d0e1cb;
+	background-color: #dcffd1;
+}
+.chat-balloon-error,
+.chat-balloon-received-error,
+.chat-balloon-system {
+	border: solid 1px #d4d4d4;
+	background-color: #f4f4f4;
+	color: #888888;
+}
+
+.chat-balloon-system {
+	font-style:italic;
+}
+
+.chat-balloon-received:after,
+.chat-balloon-sent:after,
+.chat-balloon-error:after,
+.chat-balloon-received-error  {
+	content:"";
+	position:absolute;
+	display:block;
+	top:18px;
+	width:8px;
+	height:14px;
+}
+.chat-balloon-received:after {
+	left:-8px;
+	background:transparent url(../images/chat-balloon-received-shape.png) no-repeat 0 0;
+}
+.chat-balloon-received-error:after {
+	left:-8px;
+	background:transparent url(../images/chat-balloon-received-error-shape.png) no-repeat 0 0;
+}
+.chat-balloon-sent:after {
+	right:-8px;
+	background:transparent url(../images/chat-balloon-sent-shape.png) no-repeat 0 0;
+}
+.chat-balloon-error:after {
+	right:-8px;
+	background:transparent url(../images/chat-balloon-error-shape.png) no-repeat 0 0;
+}
+.conversationContactImage {
+	position:absolute;
+}
+.erroricon {
+	position:absolute;
+	bottom:5px;
+	right:4px;
+}
+.message-time {
+	color: #888888;
+	font-size:12px;
+	padding-top:4px;
+}
+/* Delivery/read receipt tick for an outgoing message. Single check = delivered, double = read (see
+   ConversationItem.updateDeliveryStatus). Pinned to the bottom-right corner of the bubble (outgoing
+   bubbles are right-aligned); mutually exclusive with the error icon, so sharing that corner is fine.
+   Scaled by height; width follows the aspect ratio (single 31x23, double 45x23). */
+.message-receipt {
+	position:absolute;
+	bottom:5px;
+	right:6px;
+	height:13px;
+}
+/* Sender name atop an incoming group/channel message bubble (Telegram groups, Discord channels) */
+.chat-sender-name {
+	color: #2f6fb3;
+	font-size:12px;
+	font-weight:bold;
+	padding-bottom:2px;
+}
+.conversationDivider .enyo-divider-icon {
+	margin-left:15px;
+}
+.conversationDivider .enyo-divider-caption {
+	margin-left:16px;
+	font-size:12px;
+	font-weight:normal;
+	color: #888888;
+}
+.conversationDivider .enyo-divider-right-cap,
+.conversationDivider .enyo-divider-left-cap {
+	-webkit-border-image: none;
+}
+
+.transport-picker .enyo-menuitem {
+	border: none;
+}
+
+/*
+.transport-picker-dial-icon,
+.transport-picker-video-icon {
+	display: block;
+	width: 60px;
+	height: 60px;
+	margin-right: -10px;
+}
+
+.transport-picker-dial-icon {
+	background: url(../images/phone-icon.png) top center no-repeat;
+}
+.transport-picker-video-icon {
+	background: url(../images/video-icon2.png) top center no-repeat;
+}
+*/
+
+.transport-picker-phoneLabel {
+	font-size:12px;
+	display: block;
+	color: #888888;	
+}
+.high-priority {
+	color:red;
+}
+/*----------------------
+  Inline message images (Discord/Telegram photo links rendered as images)
+----------------------*/
+.message-image {
+	display: block;
+	max-width: 100%;
+	max-height: 320px;
+	margin-top: 6px;
+	border-radius: 8px;
+	border: 1px solid rgba(0,0,0,0.15);
+}
+/* webOS/old-WebKit: a touch-drag that starts on an <img> triggers the browser's native
+   image-drag gesture, which swallows the move events the List's drag-scroller needs - so the
+   thread won't scroll while your finger is on an image (or emoji/avatar). Disable native drag
+   (and text selection) on all conversation imagery so the drag always reaches the scroller.
+   Taps are unaffected, so tapping a remote image to open it still works. */
+.message-image,
+img.emoji,
+.contact-image {
+	-webkit-user-drag: none;
+	-webkit-user-select: none;
+}
+
+/*----------------------
+  Message reactions (webOS cross-prpl): small emoji badges on the bubble, one per distinct
+  reaction with a count. Rendered by ConversationItem.buildReactions from the message's
+  `reactions` array - instead of a separate "reacted with X" message.
+----------------------*/
+/* Float the reaction badges over the bottom-right of the bubble (offset parent is .message,
+ * which carries position:relative via .chat-balloon-sent/received) instead of taking their own
+ * line below the text. Out of flow => they no longer add row height. The timestamp is bottom-LEFT,
+ * so they don't collide. */
+.message-reactions {
+	position: absolute;
+	right: 5px;
+	bottom: 3px;
+	margin: 0;
+	line-height: normal;
+	white-space: nowrap;
+	z-index: 1;
+}
+/* On OUTGOING bubbles the delivery/read tick sits at the bottom-right corner (.message-receipt,
+ * right:6px, up to ~26px wide for the double check). Shift the reaction badges left of it so they
+ * don't overlap. Incoming bubbles have no tick, so they keep the edge (rule above). */
+.chat-balloon-sent .message-reactions {
+	right: 34px;
+}
+.reaction-badge {
+	display: inline-block;
+	margin: 0 0 0 3px;
+	padding: 0 6px;
+	background-color: #e4e4e4;
+	border: 1px solid rgba(0,0,0,0.16);
+	border-radius: 10px;
+	font-size: 14px;
+	line-height: 18px;
+	vertical-align: middle;
+	white-space: nowrap;
+	-webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.12);
+}
+.reaction-badge img {
+	height: 16px;
+	width: 16px;
+	vertical-align: middle;
+}
+.reaction-count {
+	margin-left: 3px;
+	font-size: 13px;
+	color: #555;
+	vertical-align: middle;
+}
+/* A reaction I placed - tinted so it's clear it's mine and a tap removes it. */
+.reaction-badge.reaction-mine {
+	background-color: rgba(45,111,179,0.22);
+	border-color: rgba(45,111,179,0.55);
+}
+/* Quick reaction picker row (short tap / short right-swipe on a message). Compact - about half the
+ * height of a stock list row. */
+/* The stock .enyo-popup is a 300px-min-width bubble with a 24px border-image frame - far too big
+ * for an emoji strip. Strip that chrome (min-width, border-image, the -inner negative margin) and
+ * draw our own small pill so the popup sizes tightly to the emoji. */
+.reaction-picker-popup {
+	min-width: 0;
+	border-width: 0;
+	-webkit-border-image: none;
+	border-image: none;
+	padding: 2px 6px;
+	background: #e4e4e4;
+	border: 1px solid rgba(0,0,0,0.22);
+	-webkit-border-radius: 9px;
+	border-radius: 9px;
+	-webkit-box-shadow: 0 1px 5px rgba(0,0,0,0.35);
+}
+.reaction-picker-popup .enyo-popup-inner {
+	margin: 0;
+}
+.reaction-row-box {
+	white-space: nowrap;
+}
+.reaction-pick {
+	display: inline-block;
+	padding: 2px 5px;
+	font-size: 20px;
+	line-height: 22px;
+	cursor: pointer;
+	vertical-align: middle;
+}
+.reaction-pick img {
+	height: 20px;
+	width: 20px;
+	vertical-align: middle;
+}
+.reaction-pick.reaction-more {
+	color: #666;
+	font-weight: bold;
+	font-size: 15px;
+	letter-spacing: 1px;
+}
+.reaction-pick.active,
+.reaction-pick:active {
+	background-color: rgba(0,0,0,0.10);
+	-webkit-border-radius: 16px;
+	border-radius: 16px;
+}
+
+/*----------------------
+  Inline media attachment chip (audio/video/other file in a message - tap to open in the
+  associated app, e.g. Atlas plays ogg/opus/mp4). Distinct from .attachment-chip (compose).
+----------------------*/
+.msg-attachment {
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+	-webkit-box-align: center;
+	max-width: 100%;
+	margin-top: 6px;
+	padding: 7px 12px 7px 7px;
+	-webkit-box-sizing: border-box;
+	background-color: rgba(255,255,255,0.7);
+	border: 1px solid rgba(0,0,0,0.15);
+	border-radius: 8px;
+}
+.msg-attachment-icon {
+	-webkit-box-flex: 0;
+	width: 34px;
+	height: 34px;
+	margin-right: 10px;
+	border-radius: 6px;
+	background-color: #4a90d9;
+	position: relative;
+}
+/* audio & video: a white play triangle centered in the tile */
+.msg-attachment-audio:after,
+.msg-attachment-video:after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -7px 0 0 -5px;
+	border-style: solid;
+	border-width: 7px 0 7px 12px;
+	border-color: transparent transparent transparent #fff;
+}
+/* other files: the paperclip glyph on a neutral tile */
+.msg-attachment-file {
+	background-color: #8f9aa6;
+	background-image: url(../images/menu-icon-attach.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 20px 20px;
+}
+/* documents (PDF / Word / Excel / PowerPoint): the app's own file-type icon on a transparent tile.
+   Tapping the chip opens the file in its viewer (see ConversationList.openAttachment). */
+.msg-attachment-pdf,
+.msg-attachment-doc,
+.msg-attachment-xls,
+.msg-attachment-ppt {
+	background-color: transparent;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+}
+.msg-attachment-pdf { background-image: url(../images/attach-pdf.png); }
+.msg-attachment-doc { background-image: url(../images/attach-doc.png); }
+.msg-attachment-xls { background-image: url(../images/attach-xls.png); }
+.msg-attachment-ppt { background-image: url(../images/attach-ppt.png); }
+.msg-attachment-name {
+	-webkit-box-flex: 1;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: 15px;
+	color: #234766;
+}
+/* Inline video player (WebKit media path; the webOS video player can't do WebM). Big centered play
+   button overlays the <video>; tap the video to toggle, button hides while playing. */
+.msg-video-player {
+	position: relative;
+	display: inline-block;
+	margin-top: 6px;
+	max-width: 100%;
+	/* Round the poster/video corners. border-radius on the <video> itself does NOT clip the poster
+	   image on this old WebKit, so clip at the container with overflow:hidden. 8px matches the audio
+	   player chip (the sibling media widget) and the message bubbles. */
+	border-radius: 8px;
+	overflow: hidden;
+}
+.msg-video {
+	display: block;
+	width: 260px;
+	max-width: 100%;
+	/* FIXED height (not max-height): the message list is a virtual list, so a row whose height
+	   changes late - when the <video>'s metadata loads and it gets its intrinsic size - makes the
+	   list re-lay-out and snap back to the video, blocking scroll to newer messages below it. A
+	   fixed box keeps the row height deterministic; the video letterboxes inside it on the black bg. */
+	height: 180px;
+	border-radius: 8px;
+	background: #000;
+}
+.msg-video-btn {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 56px;
+	height: 56px;
+	margin: -28px 0 0 -28px;
+	/* Same webOS mini-player play icon as the audio player, on a rounded-square disc (8px radius,
+	   matching the poster/bubble corners) so it reads clearly against any thumbnail. */
+	border-radius: 8px;
+	background: rgba(0,0,0,0.45) url(../images/mini-player-icon-play.png) center center no-repeat;
+	-webkit-background-size: 40px 40px;
+	background-size: 40px 40px;
+	pointer-events: none;
+}
+.msg-video-player.playing .msg-video-btn { display: none; }
+/* Tapped-open full-viewport overlay (native WebKit video fullscreen isn't usable here). */
+.msg-video-player.fullscreen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	background: #000;
+	border-radius: 0;
+	z-index: 9999;
+	display: -webkit-box;
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+}
+.msg-video-player.fullscreen .msg-video {
+	width: 100%;
+	height: 100%;
+	border-radius: 0;
+}
+/* X close button, only in fullscreen */
+.msg-video-close { display: none; }
+.msg-video-player.fullscreen .msg-video-close {
+	display: block;
+	position: absolute;
+	top: 12px;
+	right: 12px;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background: rgba(0,0,0,0.5);
+	z-index: 10000;
+}
+.msg-video-close:before,
+.msg-video-close:after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 22px;
+	height: 3px;
+	margin: -1px 0 0 -11px;
+	background: #fff;
+}
+.msg-video-close:before { -webkit-transform: rotate(45deg); }
+.msg-video-close:after { -webkit-transform: rotate(-45deg); }
+
+/* Inline voice-note player: custom play/pause button + label; the <audio> is hidden and driven by
+   messageTapped (old WebKit doesn't render native <audio controls>). Plays via the system Opus
+   pipeline right in the bubble. */
+audio.msg-audio { display: none; }
+.msg-audio-player {
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+	-webkit-box-align: center;
+	max-width: 100%;
+	margin-top: 6px;
+	padding: 6px 12px 6px 6px;
+	-webkit-box-sizing: border-box;
+	background-color: rgba(255,255,255,0.7);
+	border: 1px solid rgba(0,0,0,0.15);
+	border-radius: 8px;
+}
+/* webOS mini-player play/pause icons (mojo2 mini-player-icon-play/pause.png). */
+.msg-audio-btn {
+	-webkit-box-flex: 0;
+	width: 32px;
+	height: 32px;
+	margin-right: 10px;
+	background: url(../images/mini-player-icon-play.png) center center no-repeat;
+	-webkit-background-size: 30px 30px;
+	background-size: 30px 30px;
+}
+.msg-audio-btn.playing {
+	background-image: url(../images/mini-player-icon-pause.png);
+}
+.msg-audio-body {
+	-webkit-box-flex: 1;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-box-pack: center;
+	min-width: 120px;
+}
+.msg-audio-track {
+	position: relative;
+	height: 5px;
+	border-radius: 3px;
+	background-color: rgba(0,0,0,0.15);
+	overflow: hidden;
+}
+.msg-audio-fill {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 0%;
+	background-color: #4a90d9;
+}
+.msg-audio-time {
+	margin-top: 3px;
+	font-size: 12px;
+	color: #888888;
+}
+
+/* Inline Unicode-emoji images (EmojiOne set). Sized to sit on the text baseline like a
+   glyph, never picking up the block/border styling of message-image above. */
+img.emoji {
+	display: inline-block;
+	width: 1.2em;
+	height: 1.2em;
+	vertical-align: -0.2em;
+	margin: 0 0.02em;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	max-height: none;
+}
+
+/* Reply/quote bar shown above the composer while replying to a message. */
+.reply-bar {
+	padding: 4px 8px 4px 6px;
+	background-color: #e8e8e8;
+	border-top: 1px solid #cfcfcf;
+}
+.reply-bar-accent {
+	width: 3px;
+	min-width: 3px;
+	height: 28px;
+	background-color: #2f6fb3;
+	margin-right: 7px;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+}
+.reply-bar-text {
+	font-size: 13px;
+	color: #444444;
+	line-height: 16px;
+	max-height: 32px;
+	overflow: hidden;
+}
+.reply-bar-close {
+	margin-left: 4px;
+}
+/* webOS replies: inline quoted-original card at the top of a reply bubble (ConversationItem.buildQuote).
+   Mirrors the composer .reply-bar accent look — an accent bar, a bold sender line, and dimmed text. */
+.reply-quote {
+	display: block;
+	margin: 0 0 4px 0;
+	padding: 2px 6px;
+	border-left: 3px solid #2f6fb3;
+	background-color: rgba(0, 0, 0, 0.06);
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+	max-height: 48px;
+	overflow: hidden;
+}
+.reply-quote-from {
+	display: block;
+	font-size: 12px;
+	font-weight: bold;
+	color: #2f6fb3;
+	line-height: 15px;
+}
+.reply-quote-text {
+	display: block;
+	font-size: 13px;
+	color: #444444;
+	line-height: 16px;
+	white-space: normal;
+}

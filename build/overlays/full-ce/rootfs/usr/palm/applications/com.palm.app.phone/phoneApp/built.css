@@ -1,0 +1,1076 @@
+/* source/FavoritesDrawerItem.css */
+.FavoritesDrawerItem {
+	color: #FFFFFF;
+	border-width: 20px 17px;
+	background: none;
+	-webkit-border-image: url(images/row-glass-up.png) 20 17 20 17 repeat repeat;
+	margin: 0px 9px 0px 9px;
+	text-align:left;
+	min-height: 24px; /* overriding min-height in enyo-swipeableitem */
+	padding-bottom: 2px; /* overriding padding-bottom in eyo-item */
+}
+
+.FavDrawerItem-fit { /*Needed to adjust for the borders defined in .FavoritesDrawerItem*/
+	position: absolute;
+	top: -15px;
+	left: -15px;
+	right: -15px;
+	bottom: -15px;
+}
+
+.avatar-container{
+	position: relative;
+}
+.avatar-frame{
+	position: relative;
+}
+.FavoritesDrawerItem.enyo-held{
+	border-width: 20px 17px; /* Keep the border around for the add-item row */
+	-webkit-border-image: url(images/row-glass-down.png) 20 17 20 17 repeat repeat;
+}
+
+.drawerItem-favorites-displayArea {
+	margin: -20px -12px -17px -17px;
+	white-space:nowrap;
+	position: relative;
+}
+
+.drawerItem-displayNameArea {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width:130%;
+}
+
+.drawerItem-displayNm {
+	width:92%; /*Using 92% instead of 100% (in case the logic to adjust the className fails, otherwise the content would overlap the calltype icon)*/
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: left;
+}
+
+.drawerItem-displayNm-full {
+	width:100%;
+	overflow: hidden;
+	text-align: left;
+}
+
+.drawerItem-truncated-displayNm {
+	width:90%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: left;
+}
+
+.drawerItem-favorites-displayNm {
+	width:100%;
+	font-size: 18px;
+}
+
+.drawerItem-favorites-displayLbl {
+	width:100%;
+	font-size: 14px;
+	margin-top: 7px;
+}
+
+.favorites-hiddenDrawerItem {
+	margin: 10px -23px -10px -23px;
+}
+
+.drawerItem-favorites-options {
+	padding-top:5px;
+}
+
+/* Overriding enyo-held sytle, for CFISH-1017 */ 
+.drawerItem.enyo-held {
+	background: #132232;
+}
+
+.draweritem-displayArea {
+	padding: 5px 0px 10px 4px;
+	white-space:nowrap;
+}
+
+.draweritem-displayContent {
+	width:72%;
+	margin-right: 8px;
+	position:relative;
+}
+
+.drawerItem-displayDetails {
+	font-size: 18px;
+	width:100%;
+}
+
+.drawerItem-displayDetails-bold {
+    font-weight: bold;
+	font-size: 18px;
+	width:100%;
+}
+.drawerItem-displayLine1-heard {
+ 	font-size: 18px;
+	width:100%;
+}
+
+.draweritem-displayicon {
+	position: absolute;
+	right: 80px;
+	top: 4px;
+}
+
+.drawerItem-displayLbl {
+	font-size: 14px;
+	padding-top: 5px;
+	white-space:nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align:left;
+}
+
+.drawerItem-displayLbl.displayLbl-limited {
+	width:85%;
+	margin-right:3px;
+}
+
+.drawerItem-displayLbl.displayLbl-full {
+	width:100%;
+}
+
+.drawerItem-displayVideoIcon {
+	margin: 8px 0px 0px 4px;
+}
+
+.draweritem-displayLblMiddle {
+    font-size: 15px;
+	text-align: right;
+	position:absolute;
+	right: 0px;
+	margin-top: 4px;
+}
+.draweritem-displayLblRight {
+    font-size: 15px;
+	text-align: right;
+	position:absolute;
+	right: 0px;
+	margin-top: 4px;
+}
+
+.fav-drawer-subItem-itemTextLbl {
+	padding: 8px 3px 3px 5px;
+	width: 58%; /* width:58% so that there is space for long text in phTypeLbl like "ASSISTANT" */
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: left;
+	height:100%;
+	display:inline-block;
+}
+
+.fav-drawer-subitem {
+	font-size: 18px;
+	background-color: #25394a;
+	padding-left: 0px;
+	min-height:48px;
+	position:relative;
+}
+
+/* source/FavoritesAdd.css */
+/* Details */
+
+.details-header {
+	border-top: 1px solid white;
+	border-bottom: 1px solid silver;
+	min-height: 52px;
+	padding: 12px;
+	background-color: lightgrey;
+}
+
+.add-favorites-header-icon {
+	width: 32px;
+	height: 32px;
+	vertical-align: middle;
+}
+
+.subtitle {
+	font-size: 16px;
+	color: #666;	
+	margin-top:0px;
+}
+
+.phoneNumberLabel {
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 18px;
+}
+
+.phoneNumberType {
+	color: #37668B;
+	text-transform: uppercase;
+	font-size: 14px;
+	margin-right:10px;
+}
+
+/* source/styles.css */
+ÿ.drawerItem {
+	color: #FFFFFF;
+	padding: 0px;
+}
+
+.enyo-button{
+	background-color: transparent;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.drawerItem .enyo-button {
+		height: 455px;
+		width: 120px;
+		text-align:center;                                                                   
+		line-height:45px;
+        -webkit-border-image: url(images/swipe-undo-button-up-dark.png) 0 17 0 17;
+}
+
+.drawerItem .enyo-button.enyo-button-down {
+		height: 455px;
+		width: 120px;
+		text-align:center;                                                                   
+		line-height:45px;
+        -webkit-border-image: url(images/swipe-undo-button-down-dark.png) 0 17 0 17;
+}
+
+.drawerItem .enyo-button-negative {
+		height: 455px;
+		width: 120px;
+		text-align:center;                                                                   
+		line-height:45px;
+        -webkit-border-image: url(images/swipe-delete-button-up-dark.png) 0 17 0 17;
+}
+
+.drawerItem .enyo-button-negative.enyo-button-down {
+		height: 455px;
+		width: 120px;
+		text-align:center;                                                                   
+		line-height:45px;
+        -webkit-border-image: url(images/swipe-delete-button-down-dark.png) 0 17 0 17;
+}
+
+.rightAligned {
+	position:absolute;
+	right:0px;
+}
+
+.call-log-icon {
+	border: solid transparent;
+    border-width: 0 0 0 0;
+    width: 24px;
+    height: 24px;
+}
+
+.call-log-icon.missed {
+	background: url(images/call-log-list-sprite.png) -150px 0px no-repeat;  	
+}
+
+.call-log-icon.incoming {
+	background: url(images/call-log-list-sprite.png) -150px -25px no-repeat;  	
+}
+
+.call-log-icon.outgoing {
+	background: url(images/call-log-list-sprite.png) -150px -49px no-repeat;  	
+}
+
+.call-log-icon.ignored {
+	background: url(images/call-log-list-sprite.png) -150px -74px no-repeat;  	
+}
+
+.image-toggle-button-avatar-image {
+	position:absolute;
+	top:3px;
+	left:4px;
+	width:50px;
+	border-radius: 5px;
+}
+
+.avatar-frame {
+  width: 73px;
+  height: 56px;
+}
+
+.image-toggle-button-pillCountLbl {
+    pointer-events: none;
+    height: 30px;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-size: 15px;
+		line-height: 24px;
+    position: absolute;
+    left: -11px;
+    top: -3px;
+    -webkit-border-image: url(images/call-log-count-pill.png) 0 12 0 12;
+    border-width: 0 12px 0 12px;
+}
+
+.avatar-frame.unOpened {
+	background: url(images/avatar-disclosure.png) left 0px no-repeat;  	
+}
+
+.avatar-frame.Opened {
+	background: url(images/avatar-disclosure.png) left -120px no-repeat;  	
+}
+
+.drawer-subItem-callTimeLbl {
+    color: #AAAAAA;
+    font-size: 14px;
+    margin-right: 6px;    
+}
+
+.drawer-subitem {
+	font-size: 18px;
+	background-color: #25394a;
+	padding-left: 7px;
+}
+
+.drawer-subitem.wide {
+	width: 130%;
+}
+
+.drawer-subitem.minHeight {
+	min-height:48px;
+	position:relative;
+}
+
+.favorites-item-details{
+	float:left;
+	padding-top:5px;
+	width: 75%;
+}
+/* Overriding enyo-held sytle, for CFISH-1017 */ 
+.drawer-subitem.enyo-held {
+	background: #132232;
+}
+
+.drawer-subitem.call-history-subitem {
+	color: #AAAAAA;
+	font-size: 14px;
+	padding: 3px 0px 3px 7px;
+}
+
+.drawer-subItem-itemTextLbl {
+	padding: 3px 3px 3px 5px;
+	width: 70%;
+/*	white-space: nowrap;*/
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: left;
+}
+
+.drawer-subItem-itemPrefixTextLbl {
+    color: white;
+    text-transform: uppercase;
+	padding-right: 4px;
+}
+
+.drawer-subItem-itemFullAddrLbl {
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align:left;
+}
+
+.drawer-subItem-itemPartialAddrLbl {
+	width: 80%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align:left;
+}
+
+.drawer-subitem-itemTypeLblAndIcon {
+	position:absolute;
+	right:5px;
+	top: 3px;
+	padding-top:6px;
+}
+
+.drawer-subitem-callLogIconAndCallTimeLbl {
+	margin-left: 5px;
+}
+
+.subitem-phType-label {
+	color: #AAAAAA;
+	text-transform: uppercase;
+	font-size: 14px;
+	padding-right: 6px;
+	display:inline;
+}
+
+.subitem-sms-icon {
+	float: right;
+	border: solid transparent;
+    border-width: 0 0 0 0;
+    width: 41px;
+    height: 41px;
+    background: url(images/button-sprite.png) -82px 0px no-repeat;
+	padding-right: 3px;
+	margin-top:-6px; /* negative value of drawer-subitem-itemTypeLblAndIcon's padding-top*/
+}
+
+.subitem-sms-icon.selected { background-position: -82px -41px; }
+
+.custom-divider-caption {
+    color: #FFFFFF;
+	text-transform: uppercase;
+}
+
+.custom-divider-right-cap,
+.custom-divider-left-cap {
+	-webkit-border-image: url(images/custom-divider-border.png) 0 6 0 6 repeat repeat;
+}
+
+.call-log-separator {
+	height: 2px;
+	background: url(images/call-log-list-separator.png) bottom left repeat-x;
+}
+
+/*TODO: resolve the usage of call-log-separator & call-log-separator2 once VVM, Favorites, & CallLog have all been moved to either a DbList or VirtualList*/
+.call-log-separator2 {
+	height: 1px;
+	background: url(images/call-log-list-separator.png) top left repeat-x;
+}
+
+.empty-calllog-phone {
+	text-align: center;
+	color: #FFFFFF;
+}
+
+.empty-calllog-phone-icon {
+	margin-top: 20px;
+	margin-bottom: 5px;
+}
+
+.add-favorite-item {
+	color: white;
+	font-style: italic;
+	border-width: 20px 17px;
+	background: none;
+	-webkit-border-image: url(images/row-glass-up.png) 20 17 20 17 repeat repeat;
+	margin: 0px 9px 0px 9px;
+	padding: 20px 0px -50px 10px;
+	text-align:left;
+	min-height: 0px; /* overriding min-height in enyo-swipeableitem */
+}
+
+.add-favorite-item.enyo-held
+{
+	border-width: 20px 17px; /* Keep the border around for the add-item row */
+	-webkit-border-image: url(images/row-glass-down.png) 20 17 20 17 repeat repeat;
+}
+
+/*
+ * CommandMenu
+ */
+
+.phone-command-menu {
+	background: none;        
+	position: relative;
+	-webkit-border-image: none;
+}
+
+.phone-command-menu{
+	font-size: 15px;
+	font-weight: bold;
+}
+.phone-command-menu .enyo-grouped-toolbutton{
+	border-width: 1;
+	color: #fff;
+	font-size: 15px;
+}
+.phone-command-menu .enyo-grouped-toolbutton.enyo-first {
+	border-width: 0 0 0 23px;
+	-webkit-border-image: url(images/menu-segment-first.png) 0 1 200 23 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-first.enyo-button-down {
+	-webkit-border-image: url(images/menu-segment-first.png) 50 1 150 23 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-first.enyo-button-depressed {
+	-webkit-border-image: url(images/menu-segment-first.png) 100 1 100 23 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-first.enyo-button-depressed.enyo-button-down {
+	-webkit-border-image: url(images/menu-segment-first.png) 150 1 50 23 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-middle {
+	border-width: 0 0 0 1px;
+	-webkit-border-image: url(images/menu-segment-middle.png) 0 1 200 1 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-middle.enyo-button-down {
+	-webkit-border-image: url(images/menu-segment-middle.png) 50 1 150 1 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-middle.enyo-button-depressed {
+	-webkit-border-image: url(images/menu-segment-middle.png) 100 1 100 1 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-middle.enyo-button-depressed.enyo-button-down {
+	-webkit-border-image: url(images/menu-segment-middle.png) 150 1 50 1 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-last {
+	border-width: 0 23px 0 0;
+	-webkit-border-image: url(images/menu-segment-last.png) 0 23 200 1 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-last.enyo-button-down {
+	-webkit-border-image: url(images/menu-segment-last.png) 50 23 150 1 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-last.enyo-button-depressed {
+	-webkit-border-image: url(images/menu-segment-last.png) 100 23 100 1 stretch stretch;
+}
+
+.phone-command-menu .enyo-grouped-toolbutton.enyo-last.enyo-button-depressed.enyo-button-down {
+	-webkit-border-image: url(images/menu-segment-last.png) 150 23 50 1 stretch stretch;
+}
+
+
+/*
+ * /CommandMenu
+ */
+
+/*
+	Voicemail styles
+*/
+.voicemail-drawer-button {
+    width: 41px;
+    height: 41px;
+    border: solid transparent;
+    border-width: 0 0 0 0;
+    background: url(images/button-sprite.png) left top no-repeat;
+    -webkit-background-clip: padding;
+
+    position: relative;
+	margin-bottom: 7px;
+
+    /* Stack on top of slider button *
+    z-index: 1001;*/
+}
+.voicemail-drawer-button.selected { background-position-y: -41px; }
+
+.voicemail-greeting .voicemail-drawer-button {
+  background-image: url(images/button-sprite-light.png);
+}
+
+.voicemail-drawer-button.playpause {
+    float: left;
+    background-position-x: -41px;
+    border-right-width: 0px;
+}
+.voicemail-drawer-button.paused { 
+	background-position-x: -41px;
+	background-position-y: -82px; 
+}
+.paused.selected { background-position-y: -123px; }
+
+.voicemail-drawer-button.source {
+    float: right;
+    border-left-width: 0px;
+}
+
+.voicemail-sms {
+	float: right;
+	border: solid transparent;
+    border-width: 0 0 0 0;
+    width: 41px;
+    height: 41px;
+    background: url(images/button-sprite.png) -82px 0px no-repeat;
+}
+
+.voicemail-sms.selected { background-position: -82px -41px; }
+
+.voicemail-drawer-button.speakerphone { background-position-y: top; }
+.speakerphone.selected { background-position-y: -123px; }
+
+.voicemail-count-wrapper {
+	position: absolute;
+	line-height: 28px;
+	height: 28px;
+	top: -4px;
+	right: -4px;
+	text-align: center;
+	-webkit-border-image: url(images/voicemail-badge.png) 0 15 28 15 repeat stretch;
+	border-width: 0px 15px;
+	z-index: 110;
+}
+
+.voicemail-count {
+	font-size: 16px;
+	margin: 0 -4px;
+}
+
+.voicemail-drawer-button.speakerphoneselected { background-position-y: -41px; }
+.speakerphone.selected { background-position-y: -41px; }
+
+.voicemail-heard-icon {
+	position: relative;
+	top: -7px;
+    height: 14px;
+    width: 24px;
+	float: right;
+    margin-top: 16px;
+    background: url(images/vm-heard-sprite.png) left top no-repeat;
+}
+
+.voicemail-heard-icon-DL {
+	right: 75px;
+}
+
+.voicemail-heard-icon.heard {
+    background-position: left -14px;
+}
+
+/* TODO: new icon designs; Expired, Urgent, Private*/
+.voicemail-heard-icon.expired {
+	top: -13px;
+    width: 24px;
+    height: 20px;
+    background: url(images/vm-expired.png);
+}
+
+.voicemail-heard-icon.expired_N_heard {
+	top: -13px;
+    width: 24px;
+    height: 20px;
+    background: url(images/vm-expired-heard.png);
+}
+
+.voicemail-heard-icon.urgent {
+	top: -18px;
+    width: 12px;
+    height: 25px;
+    background: url(images/vm-urgent.png);
+}
+
+.voicemail-heard-icon.private {
+	top: -14px;
+    width: 21px;
+    height: 21px;
+    background: url(images/vm-private.png);
+}
+
+.voicemail-popup-DL {
+	min-width: 300px;
+	z-index: 120;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	-webkit-box-sizing: border-box;
+	border-width: 24px;
+	-webkit-border-image: url(source/palm/themes/Onyx/images/popup.png) 24 24 24 24 stretch stretch;
+	min-width: inherit;
+	background: #071116;
+}
+
+.vm-enyo-popup-menu-item {
+	font-size: 18px;
+	color: white;
+	background: #132232;
+}
+
+.vm-enyo-popup-menu {
+	font-size: 18px;
+	color: white;
+	background: #071116;
+}
+
+.voicemail-spinner {
+	position: absolute;
+	margin-left: 100px;
+	margin-top: 150px;
+	z-index: 101;
+}
+
+.voicemail-static-item {
+	color: #FFFFFF;
+	background: none;
+	-webkit-border-image: url(images/call-log-count-pill.png) 0 12 0 12;
+	border-width: 0 22px 0 22px;
+	border-top: 5px;
+	text-align:left;
+	font-size: 16px;
+	height: 60px;
+	padding: 10px 0px;
+}
+
+.folder-number {
+	position: absolute;
+	right: 15px;
+	padding: 4px 0px;
+	border-width: 0px 11px 0px 11px;
+	-webkit-border-image: url(images/email-badge.png) 0 11 0 11;
+	color: white;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.drawerItem-voicemail-displayNameArea {
+	width:110%;
+}
+
+/*
+ * Empty Calllog Styles
+ */
+
+.empty-main {
+	padding-top: 80px;
+}
+
+.large-empty-icon {
+    width: 120px;
+	height: 120px;
+	margin: 10px auto;
+    background-repeat: no-repeat;
+}
+
+.large-empty-icon.voicemail { background-image: url(images/empty-voicemail.png); }
+
+.empty-text {
+	text-align: center;
+	margin-top: 10px;
+	font-size: 16px;
+	color: #FFFFFF;
+}
+
+/* Voicemail Greeting Styles */
+.cancel-button {
+	position: relative;
+    float: left;
+    /*margin: 25px 10px 25px 0px;*/
+	margin: 25px 40px 25px 10px;
+    width: 50px;
+    height: 50px;
+    pointer-events: auto;
+    background: url(images/VoicemailGreeting/greeting-buttons.png) 0px 0px no-repeat;
+}
+.cancel-button.selected { background-position: 0px -50px; }
+
+.complete-button {
+	position: relative;
+    float: right;
+    /*margin: 25px 10px 25px 0px;*/
+    margin: 25px 0px 25px 160px;
+    width: 50px;
+    height: 50px;
+    pointer-events: auto;
+    background: url(images/VoicemailGreeting/greeting-buttons.png) 0px -100px no-repeat;
+}
+.complete-button.selected { background-position: 0px -150px; }
+
+.center-controls {
+    /*background: url(images/VoicemailGreeting/menu-bezel-single.png) 50% 50% no-repeat;*/
+    background: url(images/VoicemailGreeting/menu-bezel-double.png) 50% 50% no-repeat;
+    pointer-events: none;
+    position: relative;
+    height: 100%;
+}
+
+.capture-button {
+    top: 50%;
+    left: 50%;
+    /*margin-top: -34px;
+    margin-left: -67px;*/
+	margin-top: -33px;
+	margin-left: -68px;
+    width: 74px;
+    height: 74px;
+    position: absolute;
+    pointer-events: auto;
+    background: url(images/VoicemailGreeting/play-pause-record.png) 0px 0px no-repeat;
+}
+.capture-button.selected { background-position: 0px -74px; }
+.capture-button.pause { background-position: 0px -148px; }
+.capture-button.pause.selected { background-position: 0px -222px; }
+
+.speaker-button {
+    width: 50px;
+    height: 50px;
+    left: 50%;
+    top: 50%;
+    /*margin-top: -24px;
+    margin-left: 14px;*/
+	margin-top: -24px;
+	margin-left: 11px;
+    position: absolute;
+    pointer-events: auto;
+    background: url(images/VoicemailGreeting/greeting-buttons.png) 0px -200px no-repeat;
+}
+.speaker-button.selected { background-position: 0px -250px; }
+.speaker-button.toggle-on { background-position: 0px -300px; }
+.speaker-button.toggle-on.selected { background-position: 0px -350px; }
+
+.bottom-slider {
+  position: absolute;
+  bottom: 100px;
+  width: 100%;
+  height: 60px;
+  background-image: url(images/list-separator-dark.png);
+  background-repeat: repeat-x;
+  background-position: top left, bottom left;  
+}
+
+.vmg-backdrop {
+/*    background: url(images/VoicemailGreeting/backdrop.png) top center no-repeat;*/
+    display: block;
+    width: 320px;
+    height: 452px;
+    background: url(images/VoicemailGreeting/backdrop.png) left top no-repeat;
+    z-index: 1;
+}
+
+.vmg-text {
+	margin: 10px 20px 10px 20px;
+	font-size: 16px;
+	color: gray;
+}
+
+.vmg-record-timer-text {
+	top: 10px;
+	right: 15px;
+	font-size: 18px;
+	color: white;
+	position: absolute;
+	z-index: 101;
+}
+
+.vmg-record-header {
+	text-align: left;
+	width: 100%;
+	z-index: 100;
+}
+
+.vmg-canvas-position {
+	margin-top: 20px;
+	top: 0px;
+	left: 0px;
+	position: absolute;
+}
+
+.audio-controls {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: 99px;
+}
+
+.countdown-time-container,
+.capture-time-container {
+  width: 40%;
+  text-align: center;
+  float: left;
+}
+
+.record-button {
+    left: 123px;
+    bottom: 0px;
+	margin-bottom: 30px;
+    width: 74px;
+    height: 74px;
+    pointer-events: auto;
+	position: absolute;
+    background: url(images/VoicemailGreeting/play-pause-record.png) 0px -296px no-repeat;
+}
+.record-button.stop { background-position: 0px -444px; }
+
+.footer-div {
+	position: relative;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	width: 100%;
+	height: 50px;
+	background: url(images/VoicemailGreeting/voicemail-footer-shadow.png) top left repeat-x;
+}
+
+.footer-button-container {
+	margin: 10px;
+}
+
+.bottom-slider {
+  position: absolute;
+  bottom: 100px;
+  width: 100%;
+  height: 60px;
+  background-image: url(images/VoicemailGreeting/list-separator-dark.png);
+  background-repeat: repeat-x;
+  background-position: top left, bottom left;  
+}
+               
+.contactsButtonDisplayed{
+	display: none;
+}
+.add-to-contacts-button {
+    height: 50px;
+    background: none;
+    -webkit-border-image: url(images/add-to-contacts-btn-sprite.png) 0 25 150 25 repeat repeat;
+    -webkit-user-select: none;
+    border-width: 0 25px 0 25px;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 50px;
+    margin: 2px 0;
+    color: white;
+    text-align: center;
+    -webkit-box-sizing: border-box;
+}
+.enyo-divider-right-cap, .enyo-divider-left-cap{
+	
+}
+.add-to-contacts-button.enyo-button-down {
+    -webkit-border-image: url(images/add-to-contacts-btn-sprite.png) 50 25
+100 25 repeat repeat;
+}
+
+.add-to-contacts-button.enyo-button-depressed {
+    -webkit-border-image: url(images/add-to-contacts-btn-sprite.png) 100 25
+50 25 repeat repeat;
+}
+
+.add-to-contacts-button.enyo-button-depressed.enyo-button-down {
+    -webkit-border-image: url(images/add-to-contacts-btn-sprite.png) 150 25
+0 25 repeat repeat;
+}
+
+/* TODO: New CSS styles for VirtualList implementation in callLog.  Once VVM & Favorite screen has also been converted and DrawerItem.js has been removed clean up the CSS*/
+.clv-draweritem-displayArea {
+	padding: 5px 8px 10px 12px;
+	white-space:nowrap;
+	position: relative;
+}
+
+.clv-drawerItem-displayDetails {
+	font-size: 18px;
+	margin-right: 2px;
+	position: relative;
+	/*min-height:22px;*/
+}
+
+.clv-drawerItem-displayDetails.bold {
+    font-weight: bold;
+}
+
+.clv-drawerItem-displayNm {
+	width:67%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.clv-drawerItem-truncated-displayNm {
+	width:58%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.clv-drawerItem-favoritesIcon {
+    width: 20px;
+    height: 20px;
+    background: url(images/addressing-favorite.png) 0px 0px no-repeat;
+}
+
+.clv-drawerItem-displayLbl {
+	font-size: 14px;
+	padding-top: 5px;
+	/*white-space:nowrap;*/
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.clv-drawerItem-displayLbl.clv-displayLbl-limited {
+	width:45%;
+	margin-right:3px;
+}
+
+.clv-drawerItem-displayLbl.clv-displayLbl-full {
+	width:55%;
+}
+
+.clv-drawerItem-displayVideoIcon-relative {
+	margin: 0px 0px -2px 4px;
+    width: 19px;
+    height: 12px;
+	background: url(images/icon-videocall-list.png) 0px 0px no-repeat;
+}
+
+.clv-drawerItem-displayVideoIcon-absolute {
+	position:absolute;
+	top: 33px;
+	right: 142px;
+    width: 19px;
+    height: 12px;
+	background: url(images/icon-videocall-list.png) 0px 0px no-repeat;
+}
+
+.clv-draweritem-displayLblRight {
+    font-size: 15px;
+	text-align: right;
+	position:absolute;
+	top: 23px;
+	right: 80px;
+	margin-top: 4px;
+}
+
+.clv-draweritem-avatar {
+	position:absolute;
+	top:0px;
+	right:5px;
+}
+
+.contact-list .enyo-flat-shadow{
+	-webkit-border-image: none;
+}
+.contact-list .enyo-divider-caption{
+	color: #fff;
+}            
+.contact-list .enyo-item{
+	text-align: left;
+	color: #ccc;              
+	-webkit-border-image: url(images/call-log-list-separator.png) 0 0 2 0;
+	border-width: 0 0 2px 0;
+}
+.contact-list .enyo-held{
+	
+}
+.contact-list .enyo-rounded-input{
+	margin-top: 0;
+}
+.contact-list .enyo-rounded-box{
+	-webkit-border-image: url(images/searchbox-roundtop-box.png) 6 20 6 20 stretch stretch;
+}
+.contact-list .enyo-divider-right-cap, 
+.contact-list .enyo-divider-left-cap{
+	-webkit-border-image: url(images/enyo-divider-border-dark.png) 0 6 0 6 repeat repeat;
+}
+.contact-list .enyo-rounded-box input{
+	color: #fff;
+	height: 40px;
+}
+.enyo-addressing-type{
+	color: #ccc;                       
+	top: 5px;
+}
+.enyo-addressing-item-selected{
+	background-color: #4a7298;
+}
+/* End of TODO */
+
+.contact-list input{
+	min-height: 32px;
+}
+
+/* source/styles-overrides.css */
+

@@ -1,0 +1,18 @@
+/* Match the ListSelector displayed value ("System Sound", "Last 15 minutes") to the plain row
+   labels ("Show Notifications", "Past messages notification period"). Measured on-device, the plain
+   labels render at ~18px (the webOS default list-row text size, cf. .contact-name in app.css) while
+   a ListSelector value defaults a couple px smaller — so pin the value to 18px. The 14px field
+   labels (.enyo-listselector-label, e.g. "ALERT") keep their own explicit size. Scoped to the New
+   Message group so the Accounts list and other views are untouched. */
+.new-message-group .enyo-listselector-item,
+.new-message-group .enyo-listselector-item * {
+	font-size: 18px;
+}
+
+/* "Past messages notification period" selector: show the chosen value in the webOS system blue
+   (matches the "ringtone" affordance in the same group). Scoped to this selector's wrapper class
+   so the ALERT selector keeps its default color. */
+.notify-age-selector .enyo-listselector-item,
+.notify-age-selector .enyo-listselector-item * {
+	color: rgb(31, 117, 191);
+}

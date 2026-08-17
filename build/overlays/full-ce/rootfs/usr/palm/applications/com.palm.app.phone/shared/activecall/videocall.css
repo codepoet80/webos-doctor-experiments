@@ -1,0 +1,263 @@
+/*
+note: you must comment one of the media selector statements out to view this is safari
+*/
+
+ .videoCallScene {
+	height: 93%;
+	width: 100%;
+	position: relative;
+}
+.vidContactHeaderFade {
+	opacity: 0;
+}
+.videoControls{
+	position: absolute;
+}
+.videoFade {
+	-webkit-transform: translateY(0px);
+}
+.videoFadeOut .videoFade {
+	-webkit-transform: translateY(65px);
+}
+.videoFadeContact {
+	-webkit-transform: translateY(0px);
+}
+.videoFadeOut .videoFadeContact {
+	-webkit-transform: translateY(-65px);
+}
+.shim {
+	background-color: #000000; 
+	width: 100%; 
+	height:100%; 
+	visibility:hidden;
+}
+
+/* Demo PIP 
+.videoPip {
+	background: url(./images/manta/dropshadowboarder_PIP_DEMO.png) no-repeat;
+	position: absolute;
+	padding: 10px;
+	height: 221px;
+	width: 167px;
+	bottom: 23px;
+	left: 17px;
+}
+*/
+
+/* presize for app scaling, these values will be scale by 1.5 times */
+.videoCallScene {
+	background: #1a1a1a url(./images/manta/PreSize/scene.jpg) repeat-x;
+}
+.vidContactHeader {
+	-webkit-border-image: none;
+	background: url(./images/manta/header_catfish.png) repeat-x;
+	height: 59px;
+	border-style: solid;
+	border-color: transparent;
+	border-width: 0;
+	color: white;
+	-webkit-transition: all .25s;
+	text-align: center;
+	position: absolute;
+	width: 100%;
+	top:0;
+	left:0;
+	padding: 5px 0 0 0;
+}
+.vidContactPicContainer {
+	-webkit-border-image:url('./images/manta/PreSize/contact_container.png') 10 repeat;
+	border-width: 5px;
+	height: 38px;
+	margin-right: 5px;
+}
+.vidContactPicture {
+	margin:-4px -4px -0px;
+	height: 45px;
+	width: 45px;
+	border-radius: 5px;
+}
+.vidContactHeader .title{
+	margin-top: 3px;
+	font-size: 18px;
+	font-weight: bold;
+}
+.vidContactHeader .subtitle{
+	margin-top: 2px;
+	font-size: 12px;
+}
+.videoTag {
+	width: 720px;
+	height: 480px;
+}
+
+.videoTagImg {
+	position: absolute;
+	padding: 3px;
+	width: 170px;
+	height: 140px;
+	left: 40%;
+	top: 40%;
+	opacity: 0.5;
+}
+
+.video {
+	width: 100%;
+	height: 100%;
+	position:absolute;
+	left: 0;
+	top: 0;
+}
+.videoPip {
+	background: url(./images/manta/PreSize/dropshadowboarder_PIP.png) no-repeat;
+	position: absolute;
+	padding: 3px;
+	width: 143px;
+	height: 103px;
+	bottom: 10px;
+	left: 6px;
+}
+.videoPipLocation {
+	/* background-color: red; */
+	position: absolute;
+	height: 89px;
+	width: 120px;
+	top: 213px;
+	left: 12px;
+	opacity: 0.5;
+}
+.videoScreenshot {
+	position: absolute;
+	width: 533px;
+	height: 320px;
+	opacity: 1.0;
+}
+.videoDisconnectButton{
+	background: url(./images/manta/PreSize/hangup.png) no-repeat;
+	background-position: 0 -2px ;
+	width: 172px;
+	height: 52px;
+	-webkit-border-image: none;
+	position: fixed;
+	left: 50%;
+	bottom: 10px;
+	margin-left: -86px;
+	-webkit-transition: all 0.25s;
+}
+.videoDisconnectButton.enyo-button-disabled{
+	background: url(./images/manta/PreSize/hangup.png) 0 -111px no-repeat;
+	-webkit-border-image: none;
+}
+.videoDisconnectButton.enyo-button-down {
+	background: url(./images/manta/PreSize/hangup.png) 0 -55px no-repeat;
+	-webkit-border-image: none;
+}
+.muteButton{
+	width: 100px;
+	height: 59px;
+	-webkit-border-image: url(./images/manta/button_divider.png) 0 0 0 2 repeat;
+	-webkit-transition: opacity .5s;
+	border-width:0 0 0 2px;
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+.muteButton span{
+	display: none;
+	height:0;
+	width:0;
+}
+.muteButton div{
+	position:absolute;
+	top: 22px;
+	color: #666666;
+	font-size: 16px;
+	width: 100px;
+	text-align:center;
+}
+.muteButton .enyo-button-icon{
+	width: 100px;
+	height: 59px;
+	margin:0;
+	border:0;
+	background-image: url(./images/manta/PreSize/mute_on_off.png);
+	background-position: 36px 10px;
+	background-repeat: no-repeat;
+	top: auto;
+	left: auto;
+}
+
+.muteButton.enyo-button-down{
+	background: url(./images/manta/PreSize/selected_button_bg.png) top left repeat-x;
+	-webkit-border-image: url(./images/manta/button_divider.png) 0 0 0 2 repeat;
+	border-width:0 0 0 2px;
+}
+.muteButton.enyo-button-down .enyo-button-icon{
+	background-position: 36px -60px;
+}
+
+.muteButton.enyo-button-on {
+	-webkit-border-image: url(./images/manta/button_divider.png) 0 0 0 2 repeat;
+	border-width:0 0 0 2px;
+}
+.muteButton.enyo-button-on .enyo-button-icon{
+	background-position:  36px -130px no-repeat;
+}
+.muteButton.videocall-button-on .enyo-button-icon{
+	background-position: 36px -130px;
+}
+.muteButton.videocall-button-on {
+	background: url(./images/manta/PreSize/selected_button_bg.png) top left repeat-x;
+}
+
+.videoButton{
+	width: 100px;
+	height: 59px;
+	-webkit-border-image: url(./images/manta/button_divider.png) 0 2 0 0 repeat;
+	-webkit-transition: opacity .5s;
+	border-width:0 2px 0 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.videoButton div{
+	position:absolute;
+	top: 22px;
+	color: #666666;
+	font-size: 16px;
+	width: 100px;
+	text-align:center;
+}
+.videoButton .enyo-button-icon{
+	background-image: url(./images/manta/PreSize/video_on_off.png);
+	width: 100px;
+	height: 59px;
+	margin:0;
+	border:0;
+	background-position: 38px 13px;
+	background-repeat: no-repeat;
+	top:auto;
+	left:auto;
+}
+.videoButton.enyo-button-down{
+	background: url(./images/manta/PreSize/selected_button_bg.png) top left repeat-x;
+	-webkit-border-image: url(./images/manta/button_divider.png) 0 0 0 2 repeat;
+	border-width:0 0 0 2px;
+}
+.videoButton.enyo-button-down .enyo-button-icon{
+	background-position: 38px -57px;
+}
+
+.videoButton.enyo-button-on{
+	background: url(./images/manta/PreSize/selected_button_bg.png) top left repeat-x;
+	-webkit-border-image: url(./images/manta/button_divider.png) 0 2 0 0 repeat;
+	border-width:0 2px 0 0;
+}
+.videoButton.enyo-button-on .enyo-button-icon{
+	background-position: 38px -57px;
+}
+.videoButton.videocall-button-on .enyo-button-icon{
+	background-position: 38px -127px;
+}
+.videoButton.videocall-button-on {
+	background: url(./images/manta/PreSize/selected_button_bg.png) top left repeat-x;
+}

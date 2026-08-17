@@ -1,0 +1,11 @@
+{
+	"id": "com.palm.library.messaging",
+	"version": "1.3.1",
+	"type": "web",
+	"main": "index.html",
+	"noWindow": true,
+	"removable": true,
+	"title": "Messaging IM Plugin Library",
+	"vendor": "Palm, Inc.",
+	"uiRevision": 2
+}

@@ -1,0 +1,15 @@
+{
+	"icon": "../../icon.png",
+	"id": "com.palm.app.phone",
+	"keywords": [
+		"Marcar"
+	],
+	"main": "../../index.html",
+	"noWindow": "true",
+	"splashicon": "../../icon-256x256.png",
+	"title": "Llamadas y videollamadas",
+	"type": "web",
+	"uiRevision": 2,
+	"vendor": "Palm, Inc.",
+	"version": "2.0.0"
+}
