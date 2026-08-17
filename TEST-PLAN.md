@@ -4,6 +4,37 @@ For the BUILDMARK 600000 image (`out/webosdoctorp305hstnh-3.1CE.jar`).
 Items marked **(regression)** were verified on earlier flashes; everything else
 is new in this build. Shell checks assume a novacom/novaterm root shell.
 
+## 10-minute smoke test
+
+Fast, high-signal checks that our bits landed — no accounts, no sync setup.
+
+1. [ ] **OOBE ran and finished on its own** — community account flow appeared,
+   Done rebooted the device, launcher comes up (no minimal-mode loop).
+2. [ ] **No hotspot login prompt** on your normal Wi-Fi during/after OOBE
+   (the connectivity-probe patch).
+3. [ ] **Build identity** — Device Info says *webOS CE 3.1.0*; shell:
+   `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600000`.
+4. [ ] **Keyboard is small by default** — tap any text field; the keyboard
+   should come up noticeably shorter than stock.
+5. [ ] **Preware knows what's baked** — open Preware → Installed Packages
+   lists Preware 1.9.19, Govnah 1.3.9, Synergy generic 0.9.3; USB Settings
+   and BT Gamepad are nowhere in its listings.
+6. [ ] **.ipk association is pre-wired** — browser-download any small .ipk
+   from the feed → Preware opens it immediately, **no** "associate .ipk?"
+   prompt.
+7. [ ] **Core apps launch** — open Messaging, Contacts, and Accounts
+   (Settings → Accounts shows the SYNERGY ACCOUNTS box). Just launching all
+   three without errors is the signal.
+8. [ ] **Synergy runtime alive** — shell:
+   `ls /media/cryptofs/synergy-glibc/lib/ld-linux.so.3 && ps | grep -c imlibpurple`
+   (file present, transport process running; give it ~2 min after boot).
+9. [ ] **Legacy junk gone** — no Skype app in the launcher; shell:
+   `ls /usr/palm/applications/com.palm.app.skype 2>&1` → No such file.
+10. [ ] **Dev mode sticks** — `novacom -l` sees the device now; reboot once,
+    it still does (turnOnNovacomAtStart).
+
+If all ten pass, the deep sections below can wait for a slower pass.
+
 ## OOBE (first boot)
 
 - [ ] First use boots into the community webOS Account flow (not stock HP)
