@@ -10,7 +10,6 @@ Fast, high-signal checks that our bits landed — no accounts, no sync setup.
 
 1. [Good] **OOBE ran and finished on its own** — community account flow appeared,
    Done rebooted the device, launcher comes up (no minimal-mode loop).
-    - Icon not in Launcher, so if I sign-out, I can't sign back in. Should be visible in Settings tab.
 2. [Good] **No hotspot login prompt** on your normal Wi-Fi during/after OOBE
    (the connectivity-probe patch).
 3. [Good] **Open HTTPS Webpage** browse to github.com in the old browser,
@@ -20,15 +19,13 @@ Fast, high-signal checks that our bits landed — no accounts, no sync setup.
 5. [Good] **Keyboard is small by default** — tap any text field; the keyboard
    should come up noticeably shorter than stock.
 6. [Good] **App Catalog can install apps** — launch App Catalog and install Keen
-7. [Skipped] **Controller Works** test a Bluetooth or USB controller with Keen. Open
+7. [Good] **Controller Works** test a Bluetooth or USB controller with Keen. Open
    the USB Settings app and check for errors.
-    - No changes here, so I expect it still works
-8. [Skipped] **LunaCE installed and working** group icons, or create a tab. Install
+8. [Good] **LunaCE installed and working** group icons, or create a tab. Install
    Tweaks, and try tweaking something.s
-9. [Skipped] **Preware knows what's baked** — open Preware → Installed Packages
+9. [Good] **Preware knows what's baked** — open Preware → Installed Packages
    lists Preware 1.9.19, Govnah 1.3.9, Synergy generic 0.9.3; USB Settings
    and BT Gamepad are nowhere in its listings.
-    - Didn't trust Preware
 10. [Good] **Advanced Reset Options** — hold the power button and see if there
    are options.
 11. [Good] **Core apps launch** — open Messaging, Contacts, and Accounts
@@ -42,7 +39,7 @@ Fast, high-signal checks that our bits landed — no accounts, no sync setup.
 14. [Good] **Dev mode sticks** — `novacom -l` sees the device now; reboot once,
     it still does (turnOnNovacomAtStart).
 
-If all ten pass, the deep sections below can wait for a slower pass.
+If all 14 pass, the deep sections below can wait for a slower pass.
 
 ## OOBE (first boot)
 

@@ -2000,6 +2000,30 @@ def main():
     w("etc/palm/defaultPreferences.txt", dp, 0o644)
     log("  default keyboard size -> small (-1); carrier string -> webOS CE")
 
+    # 19d) reboot tripwire (diagnostic, log-only). Post-flash devices reboot
+    # "spontaneously" (once at the end of the OOBE boot — right after the A6
+    # battery-firmware flashing sequence — and once ~9 min into the next
+    # boot); the initiator writes NOTHING to any log before calling
+    # /sbin/reboot (powerd's machineReboot path is provably not involved — its
+    # "Powerd rebooting system because of" line is absent). Wrap reboot and
+    # telinit with logging shims that record the caller's pid + parent cmdline
+    # to /var/log/reboot-tripwire.log and syslog, then exec the real binary
+    # (preserved as *.real). Behavior is unchanged; this exists purely to name
+    # the rebooter on the next occurrence.
+    log("tier: reboot tripwire (log-only shims for /sbin/reboot + /sbin/telinit)")
+    trip_stock = read_rootfs(ROOTFS_TGZ, exact=["./sbin/reboot", "./sbin/telinit"])
+    for tool in ("reboot", "telinit"):
+        w(f"sbin/{tool}.real", trip_stock[f"./sbin/{tool}"]["data"], 0o755)
+        w(f"sbin/{tool}",
+          "#!/bin/sh\n"
+          "# webOS CE tripwire: record who requests reboots (see bake.py 19d),\n"
+          "# then do exactly what the real binary would have done.\n"
+          "PC=$(cat /proc/$PPID/cmdline 2>/dev/null | tr '\\0' ' ')\n"
+          f"echo \"$(date) {tool} pid=$$ ppid=$PPID parent=[$PC] args=[$*]\" >> /var/log/reboot-tripwire.log 2>/dev/null\n"
+          f"logger -t reboot-tripwire \"{tool} ppid=$PPID parent=[$PC] args=[$*]\" 2>/dev/null\n"
+          "sync\n"
+          f"exec /sbin/{tool}.real \"$@\"\n", 0o755)
+
     # 20) merge changes.json (carry over community-firstuse removals, add ours)
     cf_cfg = {}
     cf_json = os.path.join(CF_OVERLAY, "changes.json")
