@@ -202,9 +202,10 @@ enyo.kind({
 			service: "palm://com.palm.power/com/palm/power/",
 			onResponse: "pluggedInStatusInit"
 		},
-		{kind: "PowerService", onResponse: "handlePowerServiceResponse", 
+		{kind: "PowerService", onResponse: "handlePowerServiceResponse",
 			components: [
-				{name: "powerDown", method: "machineOff", onResponse: "powerDownResponse"}
+				{name: "powerDown", method: "machineOff", onResponse: "powerDownResponse"},
+				{name: "wosaReboot", method: "machineReboot", onResponse: "wosaRebootResponse"}
 			]
 		},
 		{kind: "CollectLogService", onResponse: "handleCollectLogsServiceResponse", 
@@ -964,23 +965,59 @@ enyo.kind({
 		this.wosaSafeClose();
 	},
 
-	// webOS CE OOBE: the single, correct end of first use — every exit converges
-	// here: Done (completeDoneTap), the community Skip links (wosaSkipSetup) and
-	// firstUseComplete. markFirstUseDone() writes ran-first-use and emits the
-	// "first-use-finished" upstart event (activity registration); NOTHING in the
-	// OS reboots on that event — powerd only reboots when explicitly asked. So ask
-	// it, exactly as stock firstuse did (the reason shows up in the powerd log).
 	closeApp: function(){
-		try { PalmSystem.markFirstUseDone(); } catch (e) { console.info("WOSA markFirstUseDone err: " + e); }
-		this.$.powerDown.call({reason: "firstuse complete"}, {method: "machineReboot"});
+		// webOS Archive: only finish OOBE (mark done + reboot) when LunaSysMgr
+		// actually launched us as the OOBE bootstrap app — it is the only
+		// launcher that passes locale/country on the URL (see gup() calls at
+		// the top of this file; inLocale is also what gates step 0 below). A
+		// normal relaunch afterward (Settings > Accounts, the app's own
+		// launcher icon) carries no such params and should just close like any
+		// other app — rebooting the device every time someone re-signs-in
+		// would be wrong.
+		if (typeof(inLocale) === "string") {
+			// window.close() alone just tears down this card — during OOBE
+			// there is no launcher/home screen to fall back to until OOBE is
+			// explicitly marked complete, so closing without this first leaves
+			// LunaSysMgr with nothing to show (a stuck black screen, confirmed
+			// on device). markFirstUseDone() only flips that completion flag —
+			// unlike the shutdown/erase calls this app deliberately never
+			// calls, it does not power off or wipe anything.
+			console.info("WOSA: closeApp (OOBE) calling markFirstUseDone()");
+			try {
+				if (window.PalmSystem && PalmSystem.markFirstUseDone) {
+					PalmSystem.markFirstUseDone();
+				}
+			} catch (e) { console.info("WOSA markFirstUseDone err: " + e); }
+			// Marking first-use done isn't enough by itself (confirmed on
+			// device — leaves a stuck black screen with no launcher to fall
+			// back to). Stock finished OOBE the same way the physical power
+			// key does, just rebooting instead of powering off — do that
+			// explicitly rather than hoping LunaSysMgr notices the closed
+			// window on its own.
+			console.info("WOSA: closeApp (OOBE) calling machineReboot()");
+			try { this.$.wosaReboot.call({"reason": "OOBE complete"}); } catch (e) { console.info("WOSA reboot err: " + e); }
+		} else {
+			console.info("WOSA: closeApp (standalone) — plain close, no reboot");
+		}
+		console.info("WOSA: closeApp calling window.close()");
+		try { window.close(); } catch (e) { console.info("WOSA close err: " + e); }
+		console.info("WOSA: closeApp window.close() call returned");
+	},
+
+	wosaRebootResponse: function(inSender, inResponse) {
+		console.info("WOSA: wosaRebootResponse: " + JSON.stringify(inResponse));
 	},
 
 	// webOS Archive: shared by the Done button and both cards' "Skip Account
 	// Setup" link. Shows the restart warning for a moment so the UI doesn't just
 	// freeze with no explanation, then closes.
 	wosaSafeClose: function(){
+		console.info("WOSA: wosaSafeClose opening restart popup");
 		this.$.wosaSkipRestartPopup.openAtCenter();
-		setTimeout(enyo.bind(this, "closeApp"), 900);
+		setTimeout(enyo.bind(this, function(){
+			console.info("WOSA: wosaSafeClose timer fired");
+			this.closeApp();
+		}), 900);
 	},
 
 	wosaSkipSetup: function(){

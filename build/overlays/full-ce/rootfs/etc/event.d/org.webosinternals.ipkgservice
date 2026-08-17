@@ -37,7 +37,7 @@ pre-start script
          echo "Status: install ok installed"
          echo "Architecture: arm"
          echo "Description: Preware"
-         echo "Installed-Time: 1786973295"
+         echo "Installed-Time: 1786992923"
          echo ""
       } >> $APPS/usr/lib/ipkg/status
    fi

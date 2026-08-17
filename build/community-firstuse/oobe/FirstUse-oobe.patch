@@ -30,7 +30,7 @@
  					]}
  				]}
  			]}
-@@ -99,10 +103,8 @@
+@@ -97,10 +101,8 @@
  			{content: rb.$L("Your device may need to restart to complete setup."), className: "enyo-text-body"},
  		]},
  
@@ -43,7 +43,7 @@
  		
  		{name: "SimStatusQuery", kind: "TelephonyService", method: "simStatusQuery",subscribe: true, onSuccess: "handleSimStatusQuery"},
  		{name: "PlatformQuery", kind: "TelephonyService", method: "platformQuery",subscribe: false, onSuccess: "handlePlatformQuery", onFailure: "handlePlatformQueryFail"},
-@@ -421,16 +423,8 @@
+@@ -420,16 +422,8 @@
  	},
  
  	// webOS Archive: check the App Museum for a newer build of this app.
@@ -61,7 +61,7 @@
  	},
  	
  	start: function() {
-@@ -946,7 +940,9 @@
+@@ -945,7 +939,9 @@
  		// written by accountservices (createNovaAccount/authenticateAccount). Do NOT
  		// call the dead HP postLogin services, do NOT reset, do NOT shut down —
  		// leave the confirmation page up; the user dismisses it with Done.
@@ -72,20 +72,3 @@
  		this.updateCompletePage();
  	},
  
-@@ -965,8 +961,15 @@
- 		this.closeApp();
- 	},
- 
-+	// webOS CE OOBE: the single, correct end of first use — every exit converges
-+	// here: Done (completeDoneTap), the community Skip links (wosaSkipSetup) and
-+	// firstUseComplete. markFirstUseDone() writes ran-first-use and emits the
-+	// "first-use-finished" upstart event (activity registration); NOTHING in the
-+	// OS reboots on that event — powerd only reboots when explicitly asked. So ask
-+	// it, exactly as stock firstuse did (the reason shows up in the powerd log).
- 	closeApp: function(){
--		try { window.close(); } catch (e) { console.info("WOSA close err: " + e); }
-+		try { PalmSystem.markFirstUseDone(); } catch (e) { console.info("WOSA markFirstUseDone err: " + e); }
-+		this.$.powerDown.call({reason: "firstuse complete"}, {method: "machineReboot"});
- 	},
- 
- 	// webOS Archive: called by both cards' "Skip Account Setup" link. Shows the

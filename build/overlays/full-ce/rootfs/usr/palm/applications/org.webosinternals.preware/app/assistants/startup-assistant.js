@@ -10,10 +10,7 @@ function StartupAssistant(changelog)
     // on new version start
     this.newMessages =
 	[
-	 {	 version: '1.9.19', log: [ 'Fixed the webOS patch and kernel feed addresses on webOS Community Edition 3.1',
-								   'The webOS patch and kernel feeds now start out disabled on webOS versions that have no packages published for them yet',
-								   'Packages marked incompatible with your version of webOS are now hidden, unless "Ignore Compatibility" is turned on',
-								   'Feed configuration files are now read the same way ipkg reads them, tolerating tabs and extra spaces' ] },
+	 {	 version: '1.9.19', log: [ 'Support for webOS Community Edition 3.1' ] },
 	 {	 version: '1.9.18', log: [ 'Accelerate feed loading with parallel fetches, thanks to Herrie' ] },
 	 {	 version: '1.9.17', log: [ 'Added and enabled the webOS Archive Modernize feed (TLS 1.2/1.3, root certificates, QupZilla, webOS CE)' ] },
 	 {	 version: '1.9.16', log: [ 'Restore support for Intel targets (emulator)',
