@@ -884,6 +884,10 @@ def main():
             rel = os.path.relpath(full, RO)
             if rel == ".symlinks":
                 continue
+            # com.palm.app.docviewer is permanently excluded (user decision
+            # 2026-08-17): it was never meant to ship in the generic ipk.
+            if rel.startswith(CRYPT_APP_PFX + "com.palm.app.docviewer/"):
+                continue
             if rel.startswith(CRYPT_APP_PFX):
                 tgt = "usr/palm/applications/" + rel[len(CRYPT_APP_PFX):]
                 appid = rel[len(CRYPT_APP_PFX):].split("/", 1)[0]
@@ -918,6 +922,20 @@ def main():
     p2 = os.path.join(RO, "usr/lib/purple-2")
     for fn in sorted(os.listdir(p2)):
         wcopy(f"{SEED}/synergy-purple-plugins/{fn}", os.path.join(p2, fn), 0o755)
+    # modern glib for the transport (AddToImage/Synergy-Runtime): libpurple
+    # 2.14 + imlibpurpletransport are built against the wpe glib staging
+    # (needs e.g. g_malloc0_n, glib >= 2.24 — stock 3.0.5 glib lacks it). On
+    # Herrie's devices the Atlas app's deviceroot supplies it via imwrap's
+    # LD_LIBRARY_PATH; a CE device without Atlas gets it from the
+    # synergy-runtime seed instead (readelf-verified closure: the five
+    # g*-2.0 libs + libffi + libz; everything else resolves from
+    # synergy-glibc or stock). Sourced from the Atlas reference deviceroot
+    # wpe-252/lib with Herrie's permission.
+    GLIBDIR = os.path.join(ATI, "Synergy-Runtime")
+    if not os.path.isdir(GLIBDIR):
+        sys.exit(f"ERROR: missing {GLIBDIR}")
+    for fn in sorted(os.listdir(GLIBDIR)):
+        wcopy(f"{SEED}/synergy-runtime/{fn}", os.path.join(GLIBDIR, fn), 0o755)
 
     # imtransport starts on ls-hubd_private-ready, but cryptofs (where its
     # seeded glibc lives) mounts late in boot (finish post-start) — without a
@@ -952,9 +970,17 @@ def main():
       "# (which survives flashes but is NOT in the image): the Synergy transport's\n"
       "# glibc/runtime/plugins (hardcoded ELF interpreter path + imwrap.sh's bind\n"
       "# mounts — a contract Preware-installed connectors rely on) and additions to\n"
-      "# the cryptofs app store (LunaCE tweak definitions). Seed once per flash from\n"
-      "# the rootfs copy (/var is wiped by the Doctor, so a /var flag = once), then\n"
-      "# kick imtransport in case it exhausted its respawn limit waiting.\n"
+      "# the cryptofs app store (LunaCE tweak definitions).\n"
+      "#\n"
+      "# Hardened after a real failure: (a) a bare [ -d /media/cryptofs ] passes on\n"
+      "# the UNMOUNTED mountpoint, so gate on /proc/mounts and poll — cryptofs\n"
+      "# mounts late in boot; (b) the once-per-flash /var flag is NOT proof the\n"
+      "# content exists — cryptofs can be re-initialized underneath it (a dirty\n"
+      "# hard reboot makes setup_cryptofs rebuild the store), so ALSO self-heal\n"
+      "# every boot by copying any seed file missing from the target (cheap: just\n"
+      "# stats when nothing is missing). The flag alone still forces one full\n"
+      "# overwrite per flash so a re-flash refreshes changed files. Finally, kick\n"
+      "# imtransport in case it exhausted its respawn limit waiting on the seed.\n"
       "\n"
       "start on stopped finish\n"
       "\n"
@@ -963,13 +989,31 @@ def main():
       "script\n"
       "    SEED=/usr/palm/ce-seed/cryptofs\n"
       "    FLAG=/var/luna/preferences/ce-cryptofs-seeded\n"
-      "    if [ -d /media/cryptofs ] && [ -d \"$SEED\" ] && [ ! -f \"$FLAG\" ]; then\n"
+      "    if [ ! -d \"$SEED\" ]; then exit 0; fi\n"
+      "    i=0\n"
+      "    while ! grep -q \" /media/cryptofs \" /proc/mounts && [ $i -lt 60 ]; do\n"
+      "        sleep 5\n"
+      "        i=$((i+1))\n"
+      "    done\n"
+      "    if ! grep -q \" /media/cryptofs \" /proc/mounts; then exit 0; fi\n"
+      "    if [ ! -f \"$FLAG\" ]; then\n"
+      "        # fresh flash (or /var wiped): full overwrite with image content\n"
       "        for d in \"$SEED\"/*; do\n"
       "            [ -d \"$d\" ] || continue\n"
       "            mkdir -p \"/media/cryptofs/$(basename \"$d\")\"\n"
       "            cp -rf \"$d/.\" \"/media/cryptofs/$(basename \"$d\")/\"\n"
       "        done\n"
       "        mkdir -p /var/luna/preferences && touch \"$FLAG\"\n"
+      "    else\n"
+      "        # self-heal: restore any seed file the store no longer has\n"
+      "        cd \"$SEED\"\n"
+      "        find . -type f | while IFS= read -r f; do\n"
+      "            rel=${f#./}\n"
+      "            if [ ! -f \"/media/cryptofs/$rel\" ]; then\n"
+      "                mkdir -p \"/media/cryptofs/$(dirname \"$rel\")\"\n"
+      "                cp -f \"$f\" \"/media/cryptofs/$rel\"\n"
+      "            fi\n"
+      "        done\n"
       "    fi\n"
       "    /sbin/initctl start imtransport > /dev/null 2>&1 || true\n"
       "end script\n", 0o644)
@@ -1321,6 +1365,15 @@ def main():
     # place. USB Settings and BT Gamepad deliberately stay unlisted (they
     # should stay invisible in Preware). See
     # preware-modernize-feed/WEBOS-CE-STATUS-SEEDING.md.
+    # Description doubles as Preware's display TITLE when the package is in no
+    # feed (package.js infoLoad maps status Description -> title; without it a
+    # feed-absent package renders literally as "false" — seen live with the
+    # synergy generic).
+    STATUS_SEED_DESC = {
+        "preware": "Preware",
+        "govnah": "Govnah",
+        "synergy": "Synergy Revival shared runtime",
+    }
     for skey in ("preware", "govnah", "synergy"):
         sipk = IPK[skey]
         pkg = os.path.basename(sipk).split("_")[0]
@@ -1335,6 +1388,7 @@ def main():
             "         echo \"Depends: \"\n"
             "         echo \"Status: install ok installed\"\n"
             f"         echo \"Architecture: {arch}\"\n"
+            f"         echo \"Description: {STATUS_SEED_DESC[skey]}\"\n"
             f"         echo \"Installed-Time: {int(os.path.getmtime(sipk))}\"\n"
             "         echo \"\"\n"
             "      } >> $APPS/usr/lib/ipkg/status\n"
@@ -1418,10 +1472,14 @@ def main():
     # keyword into the baked USB appinfo.json.
     w("etc/palm/launcher3/launcher_operational_settings.conf",
       "[Main]\nPreferAppKeywordsForAppPlacement=true\n", 0o644)
+    # 2\name renames the Downloads page: AppMonitor::pageNameFromDesignator
+    # prefers the map's name over the designator and displays it .toUpper()
+    # ("games" -> "GAMES"); the page-restore path renames saved pages too.
     w("etc/palm/launcher3/app-keywords-to-designator-map.txt",
       "[designators]\n"
       "1\\designator=apps\n"
       "2\\designator=downloads\n"
+      "2\\name=games\n"
       "3\\designator=prefs\n"
       "3\\name=settings\n"
       "size=3\n"
@@ -1622,13 +1680,17 @@ def main():
     wp_dir = os.path.join(MEDIA, "wallpapers")
     wps = sorted(fn for fn in os.listdir(wp_dir)
                  if fn.lower().endswith((".jpg", ".jpeg", ".png"))) if os.path.isdir(wp_dir) else []
-    default_wp = next((f for f in wps if f.lower().startswith("default-wallpaper")),
-                      wps[0] if wps else None)
+    # user-designated default (2026-08-17); falls back to the older
+    # default-wallpaper.* convention, then the alphabetically-first image
+    DEFAULT_WP_NAME = "22.png"
+    default_wp = (DEFAULT_WP_NAME if DEFAULT_WP_NAME in wps else
+                  next((f for f in wps if f.lower().startswith("default-wallpaper")),
+                       wps[0] if wps else None))
     BAKED_APP_IDS = ("com.palm.app.maps com.palm.app.enyo-findapps "
                      "org.webosinternals.preware org.webosinternals.govnah "
                      "com.webosarchive.usbsettings org.webosarchive.btgamepad "
                      "com.palm.app.contacts com.palm.app.messaging "
-                     "com.palm.app.cloud-auth com.palm.app.docviewer")
+                     "com.palm.app.cloud-auth")
     wp_block = ""
     if default_wp:
         log(f"tier: first-boot tweaks (default wallpaper {default_wp} + cryptofs de-shadow)")

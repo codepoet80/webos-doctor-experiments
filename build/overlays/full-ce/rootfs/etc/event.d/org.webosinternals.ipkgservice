@@ -36,6 +36,7 @@ pre-start script
          echo "Depends: "
          echo "Status: install ok installed"
          echo "Architecture: arm"
+         echo "Description: Preware"
          echo "Installed-Time: 1786973295"
          echo ""
       } >> $APPS/usr/lib/ipkg/status
@@ -49,6 +50,7 @@ pre-start script
          echo "Depends: "
          echo "Status: install ok installed"
          echo "Architecture: arm"
+         echo "Description: Govnah"
          echo "Installed-Time: 1786897039"
          echo ""
       } >> $APPS/usr/lib/ipkg/status
@@ -62,6 +64,7 @@ pre-start script
          echo "Depends: "
          echo "Status: install ok installed"
          echo "Architecture: all"
+         echo "Description: Synergy Revival shared runtime"
          echo "Installed-Time: 1786985660"
          echo ""
       } >> $APPS/usr/lib/ipkg/status

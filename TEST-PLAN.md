@@ -8,35 +8,41 @@ is new in this build. Shell checks assume a novacom/novaterm root shell.
 
 Fast, high-signal checks that our bits landed — no accounts, no sync setup.
 
-1. [ ] **OOBE ran and finished on its own** — community account flow appeared,
+1. [Partial] **OOBE ran and finished on its own** — community account flow appeared,
    Done rebooted the device, launcher comes up (no minimal-mode loop).
-2. [ ] **No hotspot login prompt** on your normal Wi-Fi during/after OOBE
+    - Signed-in to existing account, showed "Just a moment" but did not reboot.
+2. [Good] **No hotspot login prompt** on your normal Wi-Fi during/after OOBE
    (the connectivity-probe patch).
-3. [ ] **Open HTTPS Webpage** browse to github.com in the old browser,
+3. [Good] **Open HTTPS Webpage** browse to github.com in the old browser,
    it won't render, but if it connects, you're good.
-4. [ ] **LunaCE installed and working** group icons, or create a tab. Install
-   Tweaks, and try tweaking something.
-5. [ ] **Build identity** — Device Info says *webOS CE 3.1.0*; shell:
+4. [Good] **Build identity** — Device Info says *webOS CE 3.1.0*; shell:
    `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600000`.
-6. [ ] **Keyboard is small by default** — tap any text field; the keyboard
+5. [Good] **Keyboard is small by default** — tap any text field; the keyboard
    should come up noticeably shorter than stock.
-7. [ ] **App Catalog can install apps** — launch App Catalog and install Keen
-8. [ ] **Controller Works** test a Bluetooth or USB controller with Keen. Open
+6. [Good] **App Catalog can install apps** — launch App Catalog and install Keen
+7. [Good] **Controller Works** test a Bluetooth or USB controller with Keen. Open
    the USB Settings app and check for errors.
-9. [ ] **Preware knows what's baked** — open Preware → Installed Packages
+8. [Partial] **LunaCE installed and working** group icons, or create a tab. Install
+   Tweaks, and try tweaking something.
+   - LunaCE installed and working, Tweaks not listed
+9. [Partial] **Preware knows what's baked** — open Preware → Installed Packages
    lists Preware 1.9.19, Govnah 1.3.9, Synergy generic 0.9.3; USB Settings
    and BT Gamepad are nowhere in its listings.
-10. [ ] **Advanced Reset Options** — hold the power button and see if there
+    - com.palm.synergy.generic showed as "false"
+    - Tweaks and Govnah worked, USB settings are nowhere
+10. [Good] **Advanced Reset Options** — hold the power button and see if there
    are options.
-11. [ ] **Core apps launch** — open Messaging, Contacts, and Accounts
+11. [Good with Question] **Core apps launch** — open Messaging, Contacts, and Accounts
    (Settings → Accounts shows the SYNERGY ACCOUNTS box). Just launching all
    three without errors is the signal.
-12. [ ] **Synergy runtime alive** — shell:
+    - New Document Viewer app? Where did it come from. Its icon is bad.
+12. [Fail] **Synergy runtime alive** — shell:
    `ls /media/cryptofs/synergy-glibc/lib/ld-linux.so.3 && ps | grep -c imlibpurple`
    (file present, transport process running; give it ~2 min after boot).
-13. [ ] **Legacy junk gone** — no Skype app in the launcher; shell:
+13. [Partial] **Legacy junk gone** — no Skype app in the launcher; shell:
    `ls /usr/palm/applications/com.palm.app.skype 2>&1` → No such file.
-14. [ ] **Dev mode sticks** — `novacom -l` sees the device now; reboot once,
+    - Not in launcher, but directory still exists and has files 
+14. [Good] **Dev mode sticks** — `novacom -l` sees the device now; reboot once,
     it still does (turnOnNovacomAtStart).
 
 If all ten pass, the deep sections below can wait for a slower pass.

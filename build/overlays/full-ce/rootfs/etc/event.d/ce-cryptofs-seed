@@ -2,9 +2,17 @@
 # (which survives flashes but is NOT in the image): the Synergy transport's
 # glibc/runtime/plugins (hardcoded ELF interpreter path + imwrap.sh's bind
 # mounts — a contract Preware-installed connectors rely on) and additions to
-# the cryptofs app store (LunaCE tweak definitions). Seed once per flash from
-# the rootfs copy (/var is wiped by the Doctor, so a /var flag = once), then
-# kick imtransport in case it exhausted its respawn limit waiting.
+# the cryptofs app store (LunaCE tweak definitions).
+#
+# Hardened after a real failure: (a) a bare [ -d /media/cryptofs ] passes on
+# the UNMOUNTED mountpoint, so gate on /proc/mounts and poll — cryptofs
+# mounts late in boot; (b) the once-per-flash /var flag is NOT proof the
+# content exists — cryptofs can be re-initialized underneath it (a dirty
+# hard reboot makes setup_cryptofs rebuild the store), so ALSO self-heal
+# every boot by copying any seed file missing from the target (cheap: just
+# stats when nothing is missing). The flag alone still forces one full
+# overwrite per flash so a re-flash refreshes changed files. Finally, kick
+# imtransport in case it exhausted its respawn limit waiting on the seed.
 
 start on stopped finish
 
@@ -13,13 +21,31 @@ console none
 script
     SEED=/usr/palm/ce-seed/cryptofs
     FLAG=/var/luna/preferences/ce-cryptofs-seeded
-    if [ -d /media/cryptofs ] && [ -d "$SEED" ] && [ ! -f "$FLAG" ]; then
+    if [ ! -d "$SEED" ]; then exit 0; fi
+    i=0
+    while ! grep -q " /media/cryptofs " /proc/mounts && [ $i -lt 60 ]; do
+        sleep 5
+        i=$((i+1))
+    done
+    if ! grep -q " /media/cryptofs " /proc/mounts; then exit 0; fi
+    if [ ! -f "$FLAG" ]; then
+        # fresh flash (or /var wiped): full overwrite with image content
         for d in "$SEED"/*; do
             [ -d "$d" ] || continue
             mkdir -p "/media/cryptofs/$(basename "$d")"
             cp -rf "$d/." "/media/cryptofs/$(basename "$d")/"
         done
         mkdir -p /var/luna/preferences && touch "$FLAG"
+    else
+        # self-heal: restore any seed file the store no longer has
+        cd "$SEED"
+        find . -type f | while IFS= read -r f; do
+            rel=${f#./}
+            if [ ! -f "/media/cryptofs/$rel" ]; then
+                mkdir -p "/media/cryptofs/$(dirname "$rel")"
+                cp -f "$f" "/media/cryptofs/$rel"
+            fi
+        done
     fi
     /sbin/initctl start imtransport > /dev/null 2>&1 || true
 end script

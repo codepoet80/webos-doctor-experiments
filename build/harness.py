@@ -172,17 +172,21 @@ def read_base_metadata(rootfs_tar):
     info dir, and each member's TarInfo (for edit-in-place of tracked files).
     """
     present = set()
+    present_dirs = set()   # python tarfile strips the trailing "/" from dir
+                           # names, so dir-ness must be recorded explicitly
     md5sums_files = {}   # './usr/lib/ipkg/info/<pkg>.md5sums' -> text
     log(f"pass A (metadata): scanning {rootfs_tar}")
     tf = tarfile.open(rootfs_tar, mode="r|gz")
     for m in tf:
         name = norm(m.name)
         present.add(name)
+        if m.isdir():
+            present_dirs.add(name)
         if name.startswith(IPKG_INFO_DIR + "/") and name.endswith(".md5sums"):
             md5sums_files[name] = tf.extractfile(m).read().decode("utf-8", "replace")
     tf.close()
     log(f"  {len(present)} members, {len(md5sums_files)} .md5sums files")
-    return present, md5sums_files
+    return present, md5sums_files, present_dirs
 
 
 def find_owner(path, md5sums_files):
@@ -285,7 +289,36 @@ def plan_md5_updates(adds, removes, present, md5sums_files, ce_pkg):
 
 # ---- rootfs rewrite (streaming) ---------------------------------------------
 
-def rewrite_rootfs(base_tar, out_tar, adds, removes, md5sums_rewrites, new_members, symlinks=None):
+def compute_emptied_dirs(present, present_dirs, removes, adds, symlinks):
+    """Directory members whose entire (non-dir) subtree is being removed and
+    which get nothing added back — dropped by rewrite_rootfs so a fully
+    retired app doesn't leave an empty directory skeleton on the device (seen
+    live: /usr/palm/applications/com.palm.app.skype, 57 empty dirs, 0 files).
+    present_dirs comes from read_base_metadata (python tarfile strips the
+    trailing "/" from dir names, so names alone can't tell dirs apart)."""
+    remove_set = {norm(p) for p in removes} | {norm(p) for p in (symlinks or {})}
+    files = present - present_dirs
+    dirs = set(present_dirs)
+
+    def ancestors(path):
+        d = path.rsplit("/", 1)[0]
+        while len(d) > 1:
+            yield d
+            d = d.rsplit("/", 1)[0]
+
+    protected = set()   # dirs with surviving base content or overlay additions
+    for f in files - remove_set:
+        protected.update(ancestors(f))
+    for p in list(adds) + list(symlinks or {}):
+        protected.update(ancestors(norm(p)))
+    candidates = set()  # dirs that actually lose content
+    for p in remove_set:
+        candidates.update(ancestors(p))
+    return (candidates & dirs) - protected
+
+
+def rewrite_rootfs(base_tar, out_tar, adds, removes, md5sums_rewrites, new_members,
+                   symlinks=None, drop_dirs=None):
     """Pass B: stream base rootfs -> out, substituting/removing/appending.
 
     Untouched members are copied verbatim (TarInfo preserved: mode, uid/gid,
@@ -322,6 +355,9 @@ def rewrite_rootfs(base_tar, out_tar, adds, removes, md5sums_rewrites, new_membe
             name = norm(m.name)
             if name in remove_set:
                 log(f"  remove  {name}")
+                continue
+            if m.isdir() and drop_dirs and name.rstrip("/") in drop_dirs:
+                log(f"  remove  {name} (emptied dir)")
                 continue
             if name in substitutions and m.isfile():
                 kind, val = substitutions[name]
@@ -682,12 +718,16 @@ def cmd_build(args):
 
     new_rootfs = os.path.join(webos_dir, "rootfs.ce.tar.gz")
     if adds or removes or symlinks:
-        present, md5sums_files = read_base_metadata(base_rootfs)
+        present, md5sums_files, present_dirs = read_base_metadata(base_rootfs)
         rewrites, new_members, ce_entries = plan_md5_updates(
             adds, removes, present, md5sums_files, ce_pkg)
         log(f"md5 regen: {len(rewrites)} .md5sums files updated, "
             f"{len(ce_entries)} new files attributed to {ce_pkg}")
-        rewrite_rootfs(base_rootfs, new_rootfs, adds, removes, rewrites, new_members, symlinks)
+        drop_dirs = compute_emptied_dirs(present, present_dirs, removes, adds, symlinks)
+        if drop_dirs:
+            log(f"emptied-dir cleanup: dropping {len(drop_dirs)} directory members")
+        rewrite_rootfs(base_rootfs, new_rootfs, adds, removes, rewrites, new_members,
+                       symlinks, drop_dirs)
     else:
         log("no overlay changes: rootfs passes through unchanged")
         # still round-trip so the output is produced by the same path

@@ -12,13 +12,13 @@ script
     CUSTO=/usr/lib/luna/customization/customization.json
     if [ -f "$CUSTO" ] && grep -q 'wallpapers/01.jpg' "$CUSTO"; then
         mount -o remount,rw / 2>/dev/null || true
-        sed -i 's|/01\.jpg|/12.jpg|g; s|"01\.jpg"|"12.jpg"|g' "$CUSTO"
+        sed -i 's|/01\.jpg|/22.png|g; s|"01\.jpg"|"22.png"|g' "$CUSTO"
         mount -o remount,ro / 2>/dev/null || true
     fi
     FLAG=/var/luna/preferences/ce-cryptofs-deshadowed
     if [ ! -f "$FLAG" ]; then
         APPS=/media/cryptofs/apps
-        for app in com.palm.app.maps com.palm.app.enyo-findapps org.webosinternals.preware org.webosinternals.govnah com.webosarchive.usbsettings org.webosarchive.btgamepad com.palm.app.contacts com.palm.app.messaging com.palm.app.cloud-auth com.palm.app.docviewer; do
+        for app in com.palm.app.maps com.palm.app.enyo-findapps org.webosinternals.preware org.webosinternals.govnah com.webosarchive.usbsettings org.webosarchive.btgamepad com.palm.app.contacts com.palm.app.messaging com.palm.app.cloud-auth; do
             [ -d "$APPS/usr/palm/applications/$app" ] || continue
             rm -rf "$APPS/usr/palm/applications/$app"
             rm -f "$APPS/usr/lib/ipkg/info/$app".*

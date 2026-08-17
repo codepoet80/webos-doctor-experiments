@@ -26,8 +26,8 @@ script
     rm -f /tmp/ce-wp.out
     echo "$R" | grep -q wallpaperName || exit 0
     if echo "$R" | grep -q '"01.jpg"'; then
-        lsq palm://com.palm.systemservice/wallpaper/importWallpaper '{"target":"/media/internal/wallpapers/12.jpg","scale":1.0}' >/dev/null
-        lsq palm://com.palm.systemservice/setPreferences '{"wallpaper":{"wallpaperName":"12.jpg","wallpaperFile":"/media/internal/.wallpapers/12.jpg","wallpaperThumbFile":"/media/internal/.wallpapers/thumbs/12.jpg"}}' >/dev/null
+        lsq palm://com.palm.systemservice/wallpaper/importWallpaper '{"target":"/media/internal/wallpapers/22.png","scale":1.0}' >/dev/null
+        lsq palm://com.palm.systemservice/setPreferences '{"wallpaper":{"wallpaperName":"22.png","wallpaperFile":"/media/internal/.wallpapers/22.png","wallpaperThumbFile":"/media/internal/.wallpapers/thumbs/22.png"}}' >/dev/null
     fi
     mkdir -p /var/luna/preferences && touch "$FLAG"
 end script

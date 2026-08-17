@@ -1,1 +1,0 @@
-Place mammoth.browser.min.js here (mammoth, BSD-2-Clause). See ../README.md.

@@ -1,1 +1,0 @@
-Place xlsx.full.min.js here (SheetJS CE, Apache-2.0). See ../README.md.

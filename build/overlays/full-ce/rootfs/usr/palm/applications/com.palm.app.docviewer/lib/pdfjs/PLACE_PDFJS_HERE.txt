@@ -1,1 +1,0 @@
-Place pdf.js and pdf.worker.js here (PDF.js legacy build, Apache-2.0). See ../README.md.
