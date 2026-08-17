@@ -264,6 +264,20 @@ def plan_md5_updates(adds, removes, present, md5sums_files, ce_pkg):
         list_text = "\n".join(sorted(p.lstrip(".") for p in ce_entries)) + "\n"
         new_members[norm(ce_list_member)] = list_text.encode()
 
+    # Normalize every rewritten file: entry lines only, and a file whose
+    # entries were ALL removed must be truly EMPTY (0 bytes, like stock's
+    # genuinely empty md5sums). Serializing it as a lone "\n" leaves a blank
+    # line, and the DEVICE integcheck (busybox `md5sum -c` over the
+    # concatenation of every *.md5sums) counts each blank line as a failed
+    # checksum — SILENTLY (the per-line error goes to stderr, which integcheck
+    # discards) — failing the whole flash with "Base ROM Failed Verification,
+    # CODE 1" and no visible detail. Confirmed live 2026-08-17: 14 emptied
+    # packages -> 14 blank lines -> flash fail at the ROM Verifyer stage.
+    for name in changed:
+        if name in rewrites:
+            lines = [ln for ln in rewrites[name].splitlines() if ln.strip()]
+            rewrites[name] = "\n".join(lines) + "\n" if lines else ""
+
     # Only return the .md5sums we actually changed.
     rewrites = {k: v for k, v in rewrites.items() if k in changed}
     return rewrites, new_members, ce_entries
@@ -413,12 +427,19 @@ def cmd_integcheck(rootfs_tar, quiet=False):
                 md5_of[name] = md5_stream(tf.extractfile(m))
     tf.close()
 
-    # expected[path] = md5, from all package md5sums minus IGNORE_IPKG paths
+    # expected[path] = md5, from all package md5sums minus IGNORE_IPKG paths.
+    # Malformed lines — including BLANK ones — are counted as failures: the
+    # device's real integcheck runs busybox `md5sum -c` over the concatenation
+    # of every *.md5sums, and each such line is a (silent, stderr-only) failed
+    # checksum there. Skipping them here let a lone-"\n" md5sums file pass the
+    # build and fail the flash at the ROM Verifyer (confirmed live 2026-08-17).
     expected = {}
-    for text in md5sums_texts.values():
+    malformed = []
+    for member, text in md5sums_texts.items():
         for line in text.splitlines():
             parts = line.split(" *", 1)
             if len(parts) != 2:
+                malformed.append((member, line))
                 continue
             digest = parts[0].strip()
             path = norm(parts[1].strip())
@@ -456,7 +477,7 @@ def cmd_integcheck(rootfs_tar, quiet=False):
         added.append(f)
 
     status = 0
-    if failed or missing:
+    if failed or missing or malformed:
         status += 1
     if added:
         status += 16
@@ -468,12 +489,15 @@ def cmd_integcheck(rootfs_tar, quiet=False):
             print(f"{p}: FAILED")
         for p in added:
             print(f"{p}: ADDED")
+        for member, line in malformed:
+            print(f"{member}: MALFORMED LINE {line!r} (would fail device md5sum -c)")
         if status == 0:
             print("integcheck IPKG VERIFICATION SUCCEEDED")
         else:
             print(f"integcheck IPKG VERIFICATION FAILED, CODE {status}")
         print(f"  checked={len(expected)} fsfiles={len(fsfiles)} "
-              f"missing={len(missing)} failed={len(failed)} added={len(added)}")
+              f"missing={len(missing)} failed={len(failed)} added={len(added)} "
+              f"malformed={len(malformed)}")
     return status
 
 
