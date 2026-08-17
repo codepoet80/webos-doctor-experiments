@@ -84,6 +84,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))          # build/full-ce
 BUILD = os.path.dirname(HERE)                               # build
@@ -526,6 +527,11 @@ def main():
         "./usr/palm/ipkgs/com.quickoffice.webos_2.1.2113_ARM_release-arm.ipk",
         "./usr/palm/ipkgs/com.quickoffice.ar_10.3.484_ARM_release-arm.ipk",
         "./usr/palm/ipkgs/com.palm.app.photos/com.palm.app.photos_3.0.8001_all.ipk",
+        # CE platform tweaks (connectivity check, app installer, keyboard size)
+        "./usr/bin/PmNetConfigManager",
+        "./usr/palm/frameworks/enyo/0.10/framework/lib/captiveportal/CaptivePortalControl.js",
+        "./usr/palm/command-resource-handlers.json",
+        "./etc/palm/defaultPreferences.txt",
     ], prefixes=[TRUSTED_PFX])
 
     def sdata(name):
@@ -865,7 +871,10 @@ def main():
     DSDIR = os.path.join(SREV, "device-setup")
     if not os.path.isdir(RO) or not os.path.isdir(DSDIR):
         sys.exit("ERROR: synergy ipk missing rootfs-overwrite/device-setup staging")
-    SEED = "usr/palm/ce-seed/synergy"
+    # everything under this rootfs dir is copied into /media/cryptofs/<top>/
+    # once per flash by /etc/event.d/ce-cryptofs-seed (cryptofs survives
+    # flashes but is not in the image; it mounts late — finish post-start)
+    SEED = "usr/palm/ce-seed/cryptofs"
     CRYPT_APP_PFX = "media/cryptofs/apps/usr/palm/applications/"
     syn_apps = []
     n_root = n_seed = 0
@@ -918,7 +927,7 @@ def main():
     imt = sure_replace(
         imt, "exec /var/imdaemon.sh",
         "# webOS CE: cryptofs mounts late in boot (finish post-start) and the\n"
-        "# transport's ELF interpreter lives there (seeded by ce-synergy-seed) —\n"
+        "# transport's ELF interpreter lives there (seeded by ce-cryptofs-seed) —\n"
         "# wait for it so respawn isn't burned on launches that cannot succeed.\n"
         "pre-start script\n"
         "    i=0\n"
@@ -932,28 +941,33 @@ def main():
         "imtransport pre-start gate", count=1)
     w("etc/event.d/imtransport", imt, 0o644)
 
-    # once-per-flash cryptofs seeding + an unconditional kick for imtransport
-    w("etc/event.d/ce-synergy-seed",
-      "# ce-synergy-seed — webOS CE: the Synergy transport's glibc, runtime libs and\n"
-      "# purple plugins live on /media/cryptofs (hardcoded ELF interpreter path +\n"
-      "# imwrap.sh's bind mounts — a contract Preware-installed connectors rely on).\n"
-      "# cryptofs survives flashes but is not in the image: seed it once per flash\n"
-      "# from the rootfs copy (/var is wiped by the Doctor, so a /var flag = once),\n"
-      "# then kick imtransport in case it exhausted its respawn limit waiting.\n"
+    # once-per-flash cryptofs seeding + an unconditional kick for imtransport.
+    # Generic: every dir under /usr/palm/ce-seed/cryptofs/ is merged into
+    # /media/cryptofs/<same name> (synergy-glibc/-runtime/-purple-plugins for
+    # the transport's hardcoded interpreter + imwrap.sh bind-mount contract,
+    # and apps/ for content merged into the cryptofs app store, e.g. the
+    # LunaCE tweak definitions).
+    w("etc/event.d/ce-cryptofs-seed",
+      "# ce-cryptofs-seed — webOS CE: content that must live on /media/cryptofs\n"
+      "# (which survives flashes but is NOT in the image): the Synergy transport's\n"
+      "# glibc/runtime/plugins (hardcoded ELF interpreter path + imwrap.sh's bind\n"
+      "# mounts — a contract Preware-installed connectors rely on) and additions to\n"
+      "# the cryptofs app store (LunaCE tweak definitions). Seed once per flash from\n"
+      "# the rootfs copy (/var is wiped by the Doctor, so a /var flag = once), then\n"
+      "# kick imtransport in case it exhausted its respawn limit waiting.\n"
       "\n"
       "start on stopped finish\n"
       "\n"
       "console none\n"
       "\n"
       "script\n"
-      "    SEED=/usr/palm/ce-seed/synergy\n"
-      "    FLAG=/var/luna/preferences/ce-synergy-seeded\n"
-      "    if [ -d /media/cryptofs ] && [ ! -f \"$FLAG\" ]; then\n"
-      "        for d in synergy-glibc synergy-runtime synergy-purple-plugins; do\n"
-      "            if [ -d \"$SEED/$d\" ]; then\n"
-      "                mkdir -p \"/media/cryptofs/$d\"\n"
-      "                cp -rf \"$SEED/$d/.\" \"/media/cryptofs/$d/\"\n"
-      "            fi\n"
+      "    SEED=/usr/palm/ce-seed/cryptofs\n"
+      "    FLAG=/var/luna/preferences/ce-cryptofs-seeded\n"
+      "    if [ -d /media/cryptofs ] && [ -d \"$SEED\" ] && [ ! -f \"$FLAG\" ]; then\n"
+      "        for d in \"$SEED\"/*; do\n"
+      "            [ -d \"$d\" ] || continue\n"
+      "            mkdir -p \"/media/cryptofs/$(basename \"$d\")\"\n"
+      "            cp -rf \"$d/.\" \"/media/cryptofs/$(basename \"$d\")/\"\n"
       "        done\n"
       "        mkdir -p /var/luna/preferences && touch \"$FLAG\"\n"
       "    fi\n"
@@ -1746,6 +1760,21 @@ def main():
                  'PRODUCT_VERSION_STRING=webOS CE 3.1.0', bi, count=1, flags=re.M)
     if bi2 == bi:
         sys.exit("ERROR: PRODUCT_VERSION_STRING not found in /etc/palm-build-info")
+    # BUILDTIME = when this image was baked (stock still said 20111221110520).
+    # BUILDMARK = monotonically increasing per-build counter, persisted in
+    # build/full-ce/BUILDMARK (tracked in git). CE marks start at 600000 for a
+    # clear separation from the legacy HP marks (stock: 528667).
+    mark_file = os.path.join(HERE, "BUILDMARK")
+    prev = int(open(mark_file).read().strip()) if os.path.exists(mark_file) else 599999
+    mark = prev + 1
+    with open(mark_file, "w") as f:
+        f.write(f"{mark}\n")
+    buildtime = time.strftime("%Y%m%d%H%M%S")
+    bi2 = re.sub(r'^BUILDTIME=.*$', f'BUILDTIME={buildtime}', bi2, count=1, flags=re.M)
+    bi2 = re.sub(r'^BUILDMARK=.*$', f'BUILDMARK={mark}', bi2, count=1, flags=re.M)
+    if f"BUILDMARK={mark}" not in bi2 or f"BUILDTIME={buildtime}" not in bi2:
+        sys.exit("ERROR: BUILDTIME/BUILDMARK not found in /etc/palm-build-info")
+    log(f"  BUILDTIME={buildtime} BUILDMARK={mark}")
     w("etc/palm-build-info", bi2, 0o644)
 
     # 19b) Version-prefix binary patch. Four native binaries derive the bare
@@ -1779,6 +1808,101 @@ def main():
         sys.exit("ERROR: expected exactly one 'video/x-ms-wmv' in libWebKitLuna.so")
     wk = wk.replace(b"video/x-ms-wmv", b"video/webm\x00\x00\x00\x00", 1)
     patch_version_prefix("usr/lib/libWebKitLuna.so", wk, 0o555)
+
+    # 19c) CE platform tweaks (the 2026-08-17 hitlist)
+    log("tier: CE platform tweaks")
+
+    # (a) Connectivity check: PmNetConfigManager's NwHealthCheckSession probes
+    # a compiled-in rotating URL list (google/developer.palm/yahoo/hp/bing/
+    # hpwebos/compaq) and inspects the fetched page (HTML <title>, WISPr tags)
+    # to set wifi.onInternet — "captivePortal" is what makes the UI demand a
+    # hotspot login. The HP-era entries are dead or parked, producing spurious
+    # captive verdicts. Byte-patch them to live community hosts; each
+    # replacement must fit the original string slot (string + its trailing
+    # NULs), shorter is fine (NUL-terminated).
+    def patch_cstring(data, old, new, what):
+        ob = old.encode()
+        if data.count(ob) != 1:
+            sys.exit(f"ERROR: {what}: expected exactly one {old!r}")
+        idx = data.index(ob)
+        slot = len(ob)
+        while data[idx + slot] == 0:
+            slot += 1
+        if len(new) + 1 > slot:
+            sys.exit(f"ERROR: {what}: {new!r} ({len(new)}) does not fit slot ({slot - 1})")
+        return data[:idx] + new.encode() + b"\x00" * (slot - len(new)) + data[idx + slot:]
+
+    ncm = sdata("./usr/bin/PmNetConfigManager")
+    for old, new in (("http://developer.palm.com", "http://www.webosarchive.org"),
+                     ("http://www.hpwebos.com",    "http://webosarchive.org"),
+                     ("http://www.compaq.com",     "http://ipkg.preware.net")):
+        ncm = patch_cstring(ncm, old, new, "connectivity URL")
+        log(f"  connectivity probe {old} -> {new}")
+    w("usr/bin/PmNetConfigManager", ncm, 0o755)
+    # the captive-portal LOGIN UI's initial page (enyo captiveportal lib) —
+    # it loads this URL in its webview to surface the portal's redirect
+    cpc = sdata("./usr/palm/frameworks/enyo/0.10/framework/lib/captiveportal/"
+                "CaptivePortalControl.js").decode()
+    cpc = sure_replace(cpc, 'urlToGoTo : "http://www.hpwebos.com/",',
+                       'urlToGoTo : "http://www.webosarchive.org/",',
+                       "captiveportal urlToGoTo", count=1)
+    w("usr/palm/frameworks/enyo/0.10/framework/lib/captiveportal/CaptivePortalControl.js",
+      cpc, 0o644)
+
+    # (b) Preware pre-registered as the .ipk handler. LunaSysMgr's MimeSystem
+    # seeds its handler table from /usr/palm/command-resource-handlers.json
+    # (runtime changes go to /var/usr/palm/...-active.json, wiped by a flash);
+    # stock has NO ipk entry at all, which is why Preware has to ask on first
+    # launch. Add one matching Preware's own registration (app-assistant.js:
+    # extension ipk, mime application/vnd.webos.ipk; not streamable —
+    # download first, then hand the file to the handler).
+    crh = json.loads(sdata("./usr/palm/command-resource-handlers.json"))
+    if any(e.get("extn") == "ipk" for e in crh["resources"]):
+        sys.exit("ERROR: base command-resource-handlers.json already has an ipk entry")
+    crh["resources"].append({"extn": "ipk", "mime": "application/vnd.webos.ipk",
+                             "appId": "org.webosinternals.preware", "streamable": False})
+    w("usr/palm/command-resource-handlers.json", json.dumps(crh, indent=1) + "\n", 0o644)
+    log("  Preware registered as the .ipk resource handler")
+
+    # (c) LunaCE tweak definitions: Tweaks-framework preference files that
+    # surface LunaCE's extra features (mini cards, gestures, wave launcher,
+    # ...) in the Tweaks app. They belong in the tweaks.prefs service's
+    # preferences dir on CRYPTOFS — ship via the ce-cryptofs-seed apps/ tree.
+    # Inert until the user installs Tweaks via Preware; defaults are all off.
+    TWEAKS = os.path.join(ATI, "LunaCE-Tweaks")
+    if not os.path.isdir(TWEAKS):
+        sys.exit(f"ERROR: missing {TWEAKS}")
+    tn = 0
+    for fn in sorted(os.listdir(TWEAKS)):
+        if fn.endswith(".json"):
+            wcopy(f"{SEED}/apps/usr/palm/services/org.webosinternals.tweaks.prefs/"
+                  f"preferences/{fn}", os.path.join(TWEAKS, fn), 0o644)
+            tn += 1
+    log(f"  {tn} LunaCE tweak definitions staged for the cryptofs seed")
+
+    # (d) Developer mode stays ON: LunaSysService reads [Debug]
+    # turnOnNovacomAtStart from /etc/palm/sysservice.conf (EMPTY in stock) and
+    # forces novacom on at every boot via setnovacommode — so whatever removed
+    # /var/gadget/novacom_enabled post-flash gets undone at the next boot.
+    # (The file itself is also still baked by the community-firstuse overlay.)
+    # Caveat: a manual dev-mode-off therefore only lasts until reboot.
+    w("etc/palm/sysservice.conf", "[Debug]\nturnOnNovacomAtStart=true\n", 0o644)
+    log("  sysservice.conf: turnOnNovacomAtStart=true")
+
+    # (e) Default keyboard size -> small. LunaCE's VirtualKeyboardPreferences
+    # reads systemservice pref x_palm_virtualkeyboard_settings (a STRING of
+    # JSON, exactly what its saveSettings writes); "keyboard size" -1 = small
+    # (0 default, 1 large, -2 XS). Seeding only the size key is deliberate:
+    # layout/language stay unset so the locale-driven first-use flow still
+    # picks them, and the first saveSettings persists them WITH this size.
+    dp = sdata("./etc/palm/defaultPreferences.txt").decode()
+    dp = sure_replace(dp, '"preferences": {',
+                      '"preferences": {\n'
+                      '\t\t"x_palm_virtualkeyboard_settings": '
+                      '"{\\"keyboard size\\": -1}",',
+                      "defaultPreferences preferences anchor", count=1)
+    w("etc/palm/defaultPreferences.txt", dp, 0o644)
+    log("  default keyboard size -> small (-1)")
 
     # 20) merge changes.json (carry over community-firstuse removals, add ours)
     cf_cfg = {}

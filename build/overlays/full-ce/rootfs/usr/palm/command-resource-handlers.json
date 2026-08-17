@@ -1,0 +1,531 @@
+{
+ "schemaVersion": 1,
+ "redirects": [
+  {
+   "url": "^https?://developer.palm.com/appredirect/?",
+   "appId": "com.palm.app.enyo-findapps"
+  }
+ ],
+ "resources": [
+  {
+   "extn": "htm",
+   "mime": "text/html",
+   "appId": "com.palm.app.browser",
+   "streamable": true
+  },
+  {
+   "extn": "html",
+   "mime": "text/html",
+   "appId": "com.palm.app.browser",
+   "streamable": true
+  },
+  {
+   "extn": "vcf",
+   "mime": "text/x-vcard",
+   "appId": "com.palm.app.contacts",
+   "streamable": false
+  },
+  {
+   "extn": "pem",
+   "mime": "application/pem",
+   "appId": "com.palm.app.certificate",
+   "streamable": false
+  },
+  {
+   "extn": "p12",
+   "mime": "application/p12",
+   "appId": "com.palm.app.certificate",
+   "streamable": false
+  },
+  {
+   "extn": "pfx",
+   "mime": "application/pfx",
+   "appId": "com.palm.app.certificate",
+   "streamable": false
+  },
+  {
+   "extn": "der",
+   "mime": "application/der",
+   "appId": "com.palm.app.certificate",
+   "streamable": false
+  },
+  {
+   "extn": "crt",
+   "mime": "application/crt",
+   "appId": "com.palm.app.certificate",
+   "streamable": false
+  },
+  {
+   "extn": "cer",
+   "mime": "application/cer",
+   "appId": "com.palm.app.certificate",
+   "streamable": false
+  },
+  {
+   "extn": "crl",
+   "mime": "application/crl",
+   "appId": "com.palm.app.certificate",
+   "streamable": false
+  },
+  {
+   "extn": "mov",
+   "mime": "video/quicktime",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp4",
+   "mime": "video/mp4-generic",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp4",
+   "mime": "video/quicktime",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp4",
+   "mime": "video/mp4",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp4",
+   "mime": "video/mpeg4",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "m4v",
+   "mime": "video/mp4-generic",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "m4v",
+   "mime": "video/quicktime",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "m4v",
+   "mime": "video/mp4",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "m4v",
+   "mime": "video/mpeg4",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3gp",
+   "mime": "video/3gp",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3gp",
+   "mime": "video/3gpp",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3gpp",
+   "mime": "video/3gp",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3g2",
+   "mime": "video/3gpp2",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3gp2",
+   "mime": "video/3gpp2",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "sdp",
+   "mime": "application/sdp",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "m3u8",
+   "mime": "application/vnd.apple.mpegurl",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "m3u8",
+   "mime": "application/x-mpegurl",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "asf",
+   "mime": "video/x-ms-asf",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "wmv",
+   "mime": "audio/x-ms-wmv",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "wmv",
+   "mime": "video/x-ms-wmv",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "avi",
+   "mime": "video/avi",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "avi",
+   "mime": "video/msvideo",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "avi",
+   "mime": "video/x-msvideo",
+   "appId": "com.palm.app.videoplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3gp",
+   "mime": "audio/3gpp",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3gpp",
+   "mime": "audio/3gpp",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3ga",
+   "mime": "audio/3gpp",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3gp",
+   "mime": "audio/3ga",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3gpp",
+   "mime": "audio/3ga",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3ga",
+   "mime": "audio/3ga",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3g2",
+   "mime": "audio/3gpp2",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "3gpp2",
+   "mime": "audio/3gpp2",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "amr",
+   "mime": "audio/amr",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "amr",
+   "mime": "audio/x-amr",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp3",
+   "mime": "audio/mpa",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp3",
+   "mime": "audio/mp3",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp3",
+   "mime": "audio/x-mp3",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp3",
+   "mime": "audio/x-mpg",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp3",
+   "mime": "audio/mpeg",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp3",
+   "mime": "audio/mpeg3",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp3",
+   "mime": "audio/mpg3",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp3",
+   "mime": "audio/mpg",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "mp4",
+   "mime": "audio/mp4",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "m4a",
+   "mime": "audio/mp4",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "m4a",
+   "mime": "audio/m4a",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "aac",
+   "mime": "audio/aac",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "aac",
+   "mime": "audio/aacp",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "aac",
+   "mime": "audio/x-aac",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "aac",
+   "mime": "audio/mpeg",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "aac",
+   "mime": "audio/mp4a-latm",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "wav",
+   "mime": "audio/wav",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "wav",
+   "mime": "audio/x-wav",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "oga",
+   "mime": "audio/ogg",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "ogg",
+   "mime": "audio/ogg",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "flac",
+   "mime": "audio/flac",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "wma",
+   "mime": "audio/x-ms-wma",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "pls",
+   "mime": "audio/x-scpls",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "m3u",
+   "mime": "audio/mpegurl",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "m3u",
+   "mime": "audio/x-mpegurl",
+   "appId": "com.palm.app.streamingmusicplayer",
+   "streamable": true
+  },
+  {
+   "extn": "dm",
+   "mime": "application/vnd.oma.drm.message",
+   "appId": "com.palm.app.drm",
+   "streamable": true
+  },
+  {
+   "extn": "dd",
+   "mime": "application/vnd.oma.dd+xml",
+   "appId": "com.palm.app.drm",
+   "streamable": true
+  },
+  {
+   "extn": "dr",
+   "mime": "application/vnd.oma.drm.rights+xml",
+   "appId": "com.palm.app.drm",
+   "streamable": true
+  },
+  {
+   "extn": "drc",
+   "mime": "application/vnd.oma.drm.rights+wbxml",
+   "appId": "com.palm.app.drm",
+   "streamable": true
+  },
+  {
+   "extn": "dcf",
+   "mime": "application/vnd.oma.drm.content",
+   "appId": "com.palm.app.drm",
+   "streamable": true
+  },
+  {
+   "extn": "mcd",
+   "mime": "application/x-pcs-mcd+xml",
+   "appId": "com.palm.mobitv.app.sprinttv",
+   "streamable": true
+  },
+  {
+   "extn": "ipk",
+   "mime": "application/vnd.webos.ipk",
+   "appId": "org.webosinternals.preware",
+   "streamable": false
+  }
+ ],
+ "commands": [
+  {
+   "url": "^mailto:",
+   "appId": "com.palm.app.email"
+  },
+  {
+   "url": "^im:",
+   "appId": "com.palm.app.messaging"
+  },
+  {
+   "url": "^sms:",
+   "appId": "com.palm.app.messaging"
+  },
+  {
+   "url": "^contact:",
+   "appId": "com.palm.app.contacts"
+  },
+  {
+   "url": "^chatWith:",
+   "appId": "com.palm.app.messaging"
+  },
+  {
+   "url": "^opencontact:",
+   "appId": "com.palm.app.contacts"
+  },
+  {
+   "url": "^mojave:",
+   "appId": "com.palm.app.mojave"
+  },
+  {
+   "url": "^https?:",
+   "appId": "com.palm.app.browser"
+  },
+  {
+   "url": "^data:",
+   "appId": "com.palm.app.browser"
+  },
+  {
+   "url": "^tel:",
+   "appId": "com.palm.app.phone"
+  },
+  {
+   "url": "^mobi:",
+   "appId": "com.palm.app.videoplayer"
+  },
+  {
+   "url": "^mapto:",
+   "appId": "com.palm.app.maps"
+  },
+  {
+   "url": "^maploc:",
+   "appId": "com.palm.app.maps"
+  },
+  {
+   "url": "^rtsp[tu]?:",
+   "appId": "com.palm.app.videoplayer"
+  },
+  {
+   "url": "^sprinttv:",
+   "appId": "com.palm.mobitv.app.sprinttv"
+  },
+  {
+   "url": "^sprint-music:",
+   "appId": "com.palm.sprintmusicplus"
+  },
+  {
+   "url": "^ypc:",
+   "appId": "com.palm.app.ypmobile"
+  }
+ ]
+}

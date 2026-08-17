@@ -1,0 +1,15 @@
+[
+  {
+    "category": "luna",
+    "prefs": [ {
+      "group": "gestures",
+      "restart": "none",
+      "prefserv": "sysUiEnableWaveLauncher",
+      "label": "wave launcher",
+      "help": "Enables upwards slide on the side of the screen to activate the wave launcher.",
+      "key": "waveLauncher",
+      "type": "ToggleButton",
+      "value": false
+    } ]
+  }
+]

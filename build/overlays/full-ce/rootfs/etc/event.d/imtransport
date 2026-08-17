@@ -15,7 +15,7 @@ respawn
 respawn limit 30 3600
 console none
 # webOS CE: cryptofs mounts late in boot (finish post-start) and the
-# transport's ELF interpreter lives there (seeded by ce-synergy-seed) —
+# transport's ELF interpreter lives there (seeded by ce-cryptofs-seed) —
 # wait for it so respawn isn't burned on launches that cannot succeed.
 pre-start script
     i=0

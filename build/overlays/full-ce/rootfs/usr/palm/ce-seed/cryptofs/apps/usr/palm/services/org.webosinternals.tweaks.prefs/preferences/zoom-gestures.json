@@ -1,0 +1,15 @@
+[
+  {
+    "category": "luna",
+    "prefs": [ {
+      "group": "cards",
+      "restart": "none",
+      "prefserv": "sysUiEnableZoomGesture",
+      "label": "card zoom gestures",
+      "help": "Enables two finger zoom gesture for cards.",
+      "key": "zoomGestures",
+      "type": "ToggleButton",
+      "value": false
+    } ]
+  }
+]

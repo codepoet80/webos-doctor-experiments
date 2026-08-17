@@ -41,8 +41,8 @@ version string still wins — just drop the new file in):
   apps; the **cryptofs-only** pieces (synergy-glibc — the transport's
   hardcoded ELF interpreter —, synergy-runtime and the purple plugins that
   `imwrap.sh` bind-mounts over `/usr/lib` — a contract Preware-installed
-  connectors rely on) ship under `/usr/palm/ce-seed/synergy/` and
-  `ce-synergy-seed` copies them into `/media/cryptofs` once per flash. Its
+  connectors rely on) ship under `/usr/palm/ce-seed/cryptofs/` and
+  `ce-cryptofs-seed` copies them into `/media/cryptofs` once per flash. Its
   device-setup fixes are replayed at build time (PmBtEngine BT-HFG and
   libWebKitLuna webm-MIME byte patches, mediastream webm reroute, Thai font,
   gst codec plugins, bt-a2dp-fix job, db8-clean tool), the defunct
@@ -56,6 +56,10 @@ version string still wins — just drop the new file in):
   stanza seeded** by the ipkgservice job's pre-start (idempotent, every boot)
   so Preware shows them as installed at the baked version; USB Settings and
   BT gamepad deliberately stay unlisted.
+- **`LunaCE-Tweaks/`** — Tweaks-framework preference definitions for LunaCE's
+  extra features (mini cards, gestures, wave launcher, …). Seeded into the
+  cryptofs `org.webosinternals.tweaks.prefs` preferences dir by
+  `ce-cryptofs-seed`; inert until the user installs Tweaks via Preware.
 - **`OOBE/`** — the firstuse replacement: the community webosaccount ipk (full
   app + service source). `community-firstuse/make-overlay.sh` lays it over
   `com.palm.app.firstuse` / `com.palm.service.palmprofile` (every
@@ -102,6 +106,16 @@ Tier order matters only for the ssl11 stack (browser first). Highlights:
 - **OOBE completion** — `closeApp` calls `markFirstUseDone()` **and**
   `machineReboot` (nothing in the OS reboots on `first-use-finished`; the
   reboot was always firstuse's own call).
+- **CE platform tweaks** — `BUILDTIME`/`BUILDMARK` refreshed per build
+  (`BUILDMARK` counter file here, CE marks start at 600000);
+  PmNetConfigManager's connectivity-probe URL list byte-patched from dead HP
+  hosts to live community ones (the spurious hotspot-login fix) plus the enyo
+  captiveportal login page repointed; Preware pre-registered as the `.ipk`
+  resource handler in `/usr/palm/command-resource-handlers.json`;
+  `sysservice.conf [Debug] turnOnNovacomAtStart=true` re-enables developer
+  mode every boot (a manual off lasts until reboot); default keyboard size
+  seeded to small via `defaultPreferences.txt`
+  (`x_palm_virtualkeyboard_settings`).
 
 ## First-boot jobs (`/etc/event.d/ce-*`)
 
@@ -119,8 +133,8 @@ volumes the Doctor doesn't flash, or depend on the user's OOBE choices):
   ours. User-chosen wallpapers are never touched.
 - `ce-language-patches` — aligns the language-variant patched files with the
   selected locale each boot (no-op when they already match).
-- `ce-synergy-seed` — once per flash, copies `/usr/palm/ce-seed/synergy/*`
-  into `/media/cryptofs` (the Synergy transport's glibc/runtime/plugins);
+- `ce-cryptofs-seed` — once per flash, merges `/usr/palm/ce-seed/cryptofs/*`
+  into `/media/cryptofs` (Synergy glibc/runtime/plugins + cryptofs app-store additions like the LunaCE tweak definitions);
   every boot, kicks `imtransport` in case it exhausted its respawn limit
   before cryptofs mounted.
 

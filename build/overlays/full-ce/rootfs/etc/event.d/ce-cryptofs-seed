@@ -1,0 +1,25 @@
+# ce-cryptofs-seed — webOS CE: content that must live on /media/cryptofs
+# (which survives flashes but is NOT in the image): the Synergy transport's
+# glibc/runtime/plugins (hardcoded ELF interpreter path + imwrap.sh's bind
+# mounts — a contract Preware-installed connectors rely on) and additions to
+# the cryptofs app store (LunaCE tweak definitions). Seed once per flash from
+# the rootfs copy (/var is wiped by the Doctor, so a /var flag = once), then
+# kick imtransport in case it exhausted its respawn limit waiting.
+
+start on stopped finish
+
+console none
+
+script
+    SEED=/usr/palm/ce-seed/cryptofs
+    FLAG=/var/luna/preferences/ce-cryptofs-seeded
+    if [ -d /media/cryptofs ] && [ -d "$SEED" ] && [ ! -f "$FLAG" ]; then
+        for d in "$SEED"/*; do
+            [ -d "$d" ] || continue
+            mkdir -p "/media/cryptofs/$(basename "$d")"
+            cp -rf "$d/." "/media/cryptofs/$(basename "$d")/"
+        done
+        mkdir -p /var/luna/preferences && touch "$FLAG"
+    fi
+    /sbin/initctl start imtransport > /dev/null 2>&1 || true
+end script

@@ -1,0 +1,15 @@
+[
+  {
+    "category": "luna",
+    "prefs": [ {
+      "group": "cards",
+      "restart": "none",
+      "prefserv": "sysUiEnableSpreadGesture",
+      "label": "stack spread gestures",
+      "help": "Enables two finger spread gesture for card stacks.",
+      "key": "spreadGestures",
+      "type": "ToggleButton",
+      "value": false
+    } ]
+  }
+]
