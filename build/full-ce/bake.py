@@ -1472,17 +1472,20 @@ def main():
     # keyword into the baked USB appinfo.json.
     w("etc/palm/launcher3/launcher_operational_settings.conf",
       "[Main]\nPreferAppKeywordsForAppPlacement=true\n", 0o644)
-    # 2\name renames the Downloads page: AppMonitor::pageNameFromDesignator
-    # prefers the map's name over the designator and displays it .toUpper()
-    # ("games" -> "GAMES"); the page-restore path renames saved pages too.
+    # N\name renames a page: AppMonitor::pageNameFromDesignator prefers the
+    # map's name over the designator and displays it .toUpper() ("games" ->
+    # "GAMES"); the page-restore path renames saved pages too. The FAVORITES
+    # page (a launcher built-in, designator "favorites" — not in the layout
+    # json) is the one renamed to Games; Downloads keeps its stock name.
     w("etc/palm/launcher3/app-keywords-to-designator-map.txt",
       "[designators]\n"
       "1\\designator=apps\n"
       "2\\designator=downloads\n"
-      "2\\name=games\n"
       "3\\designator=prefs\n"
       "3\\name=settings\n"
-      "size=3\n"
+      "4\\designator=favorites\n"
+      "4\\name=games\n"
+      "size=4\n"
       "\n"
       "[keywords]\n"
       "1\\keyword=wosa-settings\n"
