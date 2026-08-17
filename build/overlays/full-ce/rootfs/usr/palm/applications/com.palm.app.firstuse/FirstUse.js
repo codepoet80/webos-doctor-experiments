@@ -204,8 +204,7 @@ enyo.kind({
 		},
 		{kind: "PowerService", onResponse: "handlePowerServiceResponse",
 			components: [
-				{name: "powerDown", method: "machineOff", onResponse: "powerDownResponse"},
-				{name: "wosaReboot", method: "machineReboot", onResponse: "wosaRebootResponse"}
+				{name: "powerDown", method: "machineOff", onResponse: "powerDownResponse"}
 			]
 		},
 		{kind: "CollectLogService", onResponse: "handleCollectLogsServiceResponse", 
@@ -975,37 +974,29 @@ enyo.kind({
 		// other app — rebooting the device every time someone re-signs-in
 		// would be wrong.
 		if (typeof(inLocale) === "string") {
-			// window.close() alone just tears down this card — during OOBE
-			// there is no launcher/home screen to fall back to until OOBE is
-			// explicitly marked complete, so closing without this first leaves
-			// LunaSysMgr with nothing to show (a stuck black screen, confirmed
-			// on device). markFirstUseDone() only flips that completion flag —
-			// unlike the shutdown/erase calls this app deliberately never
-			// calls, it does not power off or wipe anything.
-			console.info("WOSA: closeApp (OOBE) calling markFirstUseDone()");
+			// webOS Archive: this is exactly what real stock HP firstuse called
+			// to finish OOBE in the common (no pending OTA) case — proven on
+			// real hardware, unlike our own markFirstUseDone()+machineReboot()
+			// attempt, which hung indefinitely (5+ minutes, no response) on a
+			// genuinely fresh device's first real OOBE completion. Stock's
+			// shutdown branch called ONLY PalmSystem.shutdown() and nothing
+			// else — no window.close() — trusting the OS to tear the window
+			// down itself as part of powering off. Calling window.close() here
+			// too raced ahead of that (shutdown() is async) and killed the card
+			// before the OS did anything, leaving LunaSysMgr with nothing to
+			// show (the stuck black screen). Match stock exactly: shutdown()
+			// alone, full stop.
+			console.info("WOSA: closeApp (OOBE) calling PalmSystem.shutdown()");
 			try {
-				if (window.PalmSystem && PalmSystem.markFirstUseDone) {
-					PalmSystem.markFirstUseDone();
+				if (window.PalmSystem && PalmSystem.shutdown) {
+					PalmSystem.shutdown();
 				}
-			} catch (e) { console.info("WOSA markFirstUseDone err: " + e); }
-			// Marking first-use done isn't enough by itself (confirmed on
-			// device — leaves a stuck black screen with no launcher to fall
-			// back to). Stock finished OOBE the same way the physical power
-			// key does, just rebooting instead of powering off — do that
-			// explicitly rather than hoping LunaSysMgr notices the closed
-			// window on its own.
-			console.info("WOSA: closeApp (OOBE) calling machineReboot()");
-			try { this.$.wosaReboot.call({"reason": "OOBE complete"}); } catch (e) { console.info("WOSA reboot err: " + e); }
-		} else {
-			console.info("WOSA: closeApp (standalone) — plain close, no reboot");
+			} catch (e) { console.info("WOSA shutdown err: " + e); }
+			return;
 		}
-		console.info("WOSA: closeApp calling window.close()");
+		console.info("WOSA: closeApp (standalone) calling window.close()");
 		try { window.close(); } catch (e) { console.info("WOSA close err: " + e); }
 		console.info("WOSA: closeApp window.close() call returned");
-	},
-
-	wosaRebootResponse: function(inSender, inResponse) {
-		console.info("WOSA: wosaRebootResponse: " + JSON.stringify(inResponse));
 	},
 
 	// webOS Archive: shared by the Done button and both cards' "Skip Account

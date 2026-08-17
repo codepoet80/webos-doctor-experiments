@@ -34,10 +34,9 @@ enyo.kind({
 		languageCode: "",
 		serverURL: "",
 		googleTerms: "",
-		// webOS CE OOBE: stock values — run the real Wi-Fi join popup.
-		dataConnection: false,
-		dataConnectionType: "",
-		dataConnectionInitialized: false,
+		dataConnection: true,
+		dataConnectionType: "wifi",
+		dataConnectionInitialized: true,
 		first: true,
 		createProfile: false,
 		firstName: "",
@@ -77,13 +76,10 @@ enyo.kind({
 						// webOS Archive: this card is reached both at the end of sign-in and on
 						// a relaunch that finds an account already set up, so it points at the
 						// place that can actually do something with the account either way.
-						// webOS CE OOBE: completion marks first-use done and shows a
-						// "finishing" state; the ce-finish-firstuse job reboots once
-						// app-install is done (firstuse must NOT reboot — it kills the
-						// concurrent staged-app install).
-						{name: "wosaManageHint", content: rb.$L("Tap Done to finish setting up your TouchPad."), className: "subtitle", style: "margin-top: 12px;"},
+						{name: "wosaManageHint", content: rb.$L("Use the Accounts app to manage your account."), className: "subtitle", style: "margin-top: 12px;"},
 						{kind: "SpinnerLarge", name: "spinner", showing: false},
 						{name: "completeDone", kind: "Button", caption: rb.$L("Done"), className: "enyo-button", style: "width: 220px; margin-top: 24px;", onclick: "completeDoneTap"},
+						{name: "wosaLaunchAccounts", kind: "Button", caption: rb.$L("Launch Accounts"), className: "enyo-button", style: "width: 220px; margin-top: 12px;", onclick: "wosaLaunchAccountsTap"},
 					]}
 				]}
 			]}
@@ -101,8 +97,10 @@ enyo.kind({
 			{content: rb.$L("Your device may need to restart to complete setup."), className: "enyo-text-body"},
 		]},
 
-		// webOS CE OOBE: no Museum self-updater — this in-ROM copy is updated by
-		// the CE OTA, and Preware does not exist during first use.
+		// webOS Archive: self-update via App Museum II (webos-common Updater-Helper).
+		// Checks the catalog entry titled "webOS Community Account Manager" and
+		// prompts + installs via Preware when a newer version is listed.
+		{kind: "Helpers.Updater", name: "updater", handleUI: true},
 		
 		{name: "SimStatusQuery", kind: "TelephonyService", method: "simStatusQuery",subscribe: true, onSuccess: "handleSimStatusQuery"},
 		{name: "PlatformQuery", kind: "TelephonyService", method: "platformQuery",subscribe: false, onSuccess: "handlePlatformQuery", onFailure: "handlePlatformQueryFail"},
@@ -421,8 +419,16 @@ enyo.kind({
 	},
 
 	// webOS Archive: check the App Museum for a newer build of this app.
-	// webOS CE OOBE: no-op (this ROM copy is updated by the CE OTA).
 	wosaCheckForUpdates: function() {
+		try {
+			// firstuse's stylesheet paints text white (dark theme); the updater's
+			// popup is light-backed — force readable text without editing the
+			// vendored helper.
+			this.$.updater.$.updatePopUp.addStyles("color: black;");
+			this.$.updater.CheckForUpdate("webOS Community Account Manager");
+		} catch (e) {
+			console.info("WOSA: update check failed to start: " + e);
+		}
 	},
 	
 	start: function() {
@@ -938,9 +944,7 @@ enyo.kind({
 		// written by accountservices (createNovaAccount/authenticateAccount). Do NOT
 		// call the dead HP postLogin services, do NOT reset, do NOT shut down —
 		// leave the confirmation page up; the user dismisses it with Done.
-		console.info("WOSA CE OOBE: account setup complete — applying customization.");
-		console.log("Set Customizations: " + this.countryCode + " : " + this.languageCode);
-		this.$.setCustomization.call({"language":this.languageCode,"country":this.countryCode});
+		console.info("WOSA firstrun: account setup complete — showing confirmation (no reset, no erase, no shutdown).");
 		this.updateCompletePage();
 	},
 
