@@ -76,8 +76,9 @@ it has the same filename, so dropping it in replaces the old file outright.
 - **`Media-Internal/`** — static content for `/media/internal` (wallpapers,
   ringtones). Delivered via the stock customization `copy_binaries` mechanism
   (the media partition survives flashes, so first-boot copy is the only
-  route — the same one HP used). The default wallpaper is the
-  alphabetically-first image, or a file named `default-wallpaper.*`.
+  route — the same one HP used). The default wallpaper is `22.png` (falling back
+  to a `default-wallpaper.*` file, then the alphabetically-first image); a
+  boot job sets it via systemservice and verifies it stuck.
 
 ## How it bakes
 
@@ -109,9 +110,11 @@ Tier order matters only for the ssl11 stack (browser first). Highlights:
   boot job aligns the live file to the selected locale.
 - **Launcher placement** — `PreferAppKeywordsForAppPlacement` + the
   `wosa-settings` keyword put USB Settings and Govnah on the Settings tab.
-- **OOBE completion** — `closeApp` calls `markFirstUseDone()` **and**
-  `machineReboot` (nothing in the OS reboots on `first-use-finished`; the
-  reboot was always firstuse's own call).
+- **OOBE completion** — `closeApp` calls `markFirstUseDone()` and LunaSysMgr
+  respawns into the normal UI. There is **no reboot**: the first boot is the
+  only boot, so anything that used to be repaired by a second boot has to work
+  the first time (this is why the CE jobs verify their work before flagging it
+  done). The firstuse app is `visible:false` — OOBE only.
 - **CE platform tweaks** — `BUILDTIME`/`BUILDMARK` refreshed per build
   (`BUILDMARK` counter file here, CE marks start at 600000);
   PmNetConfigManager's connectivity-probe URL list byte-patched from dead HP
