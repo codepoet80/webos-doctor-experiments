@@ -25,9 +25,13 @@ upstart job (dropped in 600019). The power menu calls
 so a service launch that blocks freezes the UI. With `respawn` back the service
 is upstart-resident instead of being launched on demand at that moment.
 
-- [ ] **Full reboot, then tap Luna Restart** from the power menu.
-      Expect: screen blanks ~26s, then the UI returns.
-- [ ] **If it freezes — capture BEFORE rebooting** (novacom stays alive):
+- [Pass] **Full reboot, then tap Luna Restart** — **WORKS.** User confirmed, and
+      the log proves the mechanism: **1 HUP delivered** (600023 had ZERO), then
+      `killed by HUP` -> `respawning` -> `post-stop` -> `starting` -> new main
+      process 3950 in ~31ms, `LunaSysMgr-ready` 23s later. The decisive difference:
+      `ipkgservice` is now `(start) running` (upstart-resident), so the tap needs no
+      on-demand hub launch — that blocking launch is what froze the UI on 600023.
+- [n/a] **If it freezes — capture BEFORE rebooting** (kept for future runs):
 ```
 initctl status LunaSysMgr org.webosinternals.ipkgservice
 pidof LunaSysMgr; ps | grep -E "ipkgservice|node_spawner"
@@ -35,7 +39,7 @@ for p in $(pidof LunaSysMgr); do echo -n "$p "; cat /proc/$p/wchan; echo; done
 grep -c "killed by HUP" /var/log/messages
 tail -60 /var/log/messages
 ```
-- [ ] **Discriminating test:** try **Preware's own Luna manager** — it makes the
+- [n/a] **Discriminating test (not needed — it worked):** Preware's own Luna manager — it makes the
       identical `restartLuna` call from a different UI. Freezes too → the service
       path. Only the power menu freezes → the PowerdAlerts/systemui side.
 
@@ -48,8 +52,8 @@ tail -60 /var/log/messages
 Restoring `respawn` is the one thing that could regress. It did **not** storm on
 the OOBE boot (0 events), but re-check after the reboot:
 
-- [ ] `grep -c "ipkgservice main process ended, respawning" /var/log/messages` → **0**
-- [ ] `grep "respawning too fast" /var/log/messages | grep -c ipkgservice` → **0**
+- [Pass] `ipkgservice main process ended, respawning` → **0**
+- [Pass] `respawning too fast` (ipkgservice) → **0**
 
 If the storm returns, the fix is **not** to drop `respawn` again — it is to find
 whatever is stop/starting the job. Both original drivers were removed in 600021
@@ -79,20 +83,21 @@ not to be re-run without a reflash.
 1. [ ] OOBE ran and finished on its own; launcher came up (no minimal-mode loop)
 2. [ ] No hotspot login prompt on normal Wi-Fi
 3. [ ] HTTPS browsing works (github.com connects)
-4. [ ] Build identity — Device Info shows *webOS CE 3.1.0*; shell:
-   `grep BUILD /etc/palm-build-info` → `BUILDMARK=600024`
+4. [Pass] Build identity — `BUILDMARK=600024`, `BUILDTIME=20260818150806`
 5. [ ] Keyboard small by default
-6. [ ] App Catalog installs an app **and is the baked 6.1.2901** (no cryptofs copy)
+6. [Pass/Human] App Catalog **is the baked 6.1.2901** — no cryptofs copy, staged ipk
+   absent. *Installing an app still needs a human.*
 7. [ ] Controller works (BT or USB) with a game; USB Settings app has no errors
 8. [ ] LunaCE working — group icons / create a tab; Tweaks toggles something
-9. [ ] Preware lists Preware 1.9.19, Govnah 1.3.9, Synergy generic 0.9.3 as
-   installed; USB Settings and BT Gamepad nowhere in its listings
+9. [Pass] All three seeded as installed (1 stanza each); USB Settings and BT Gamepad
+   absent from ipkg status (0/0)
 10. [ ] Advanced Reset Options present in the power menu
 11. [ ] Core apps launch — Messaging, Contacts, Accounts (SYNERGY ACCOUNTS box)
-12. [ ] Synergy runtime alive — `ls /media/cryptofs/synergy-glibc/lib/ld-linux.so.3`
-    and `ps | grep -c imlibpurple`
-13. [ ] Legacy junk gone — no Skype in the launcher
-14. [ ] Dev mode sticks across a reboot (`turnOnNovacomAtStart`)
+12. [Pass] Synergy runtime alive — seed 11/13/11, flag set, imtransport running,
+    1 imlibpurple process, 1 bind mount
+13. [Pass] Legacy junk gone — skype app + /usr/bin/skypem + com.palm.yahoo absent
+14. [Pass] Dev mode sticks across the reboot — `turnOnNovacomAtStart=true`,
+    `/var/gadget/novacom_enabled` present, novacom reachable throughout
 15. [n/a] webOS Account launcher icon — deliberately removed (`visible:false`);
     the app is OOBE-only now, post-OOBE account management moves to a catalog app
 
@@ -110,62 +115,61 @@ not to be re-run without a reflash.
 ## 4. Core-apps suite
 
 - [ ] Messaging launches; new conversations UI
-- [ ] Contacts launches; runs from rootfs (no cryptofs copy)
+- [Pass/Human] Contacts runs from rootfs, unshadowed. *Launching needs eyes.*
 - [ ] Phone launches without errors
 - [ ] Accounts (Settings → Accounts) shows the SYNERGY ACCOUNTS grouping
-- [ ] No stale stock contacts/messaging/maps staged ipks
-- [ ] db8 healthy — `com.palm.person:1` query returns `returnValue: true`
-- [ ] accounts app is 3.1.1
+- [Pass] No stale stock contacts/messaging/maps staged ipks (0/0)
+- [Pass] db8 healthy — `com.palm.person:1` query answers
+- [Pass] accounts app is 3.1.1
 
 ## 5. Synergy generic runtime
 
-- [ ] Cryptofs seed present — glibc/runtime/purple-plugins all full
-- [ ] Seed flag `/var/luna/preferences/ce-cryptofs-seeded` exists
-- [ ] `imtransport` running — `ps | grep imlibpurple`
-- [ ] Bind mounts live — `mount | grep synergy`
-- [ ] cloud-auth app present; docviewer intentionally excluded
-- [ ] Skype/Yahoo/legacy-Google gone
-- [ ] BT hands-free byte patch — `31 00 00 ea` at offset 119792 of PmBtEngine
-- [ ] Thai font swapped — ~37KB (stock was 9.5MB)
-- [ ] gst plugins present — `libgstopus.so`, `libgstvpx.so`
-- [ ] QuickOffice ×2 + Photos installed with their integration files
-- [ ] Photos service patch marker present in rootfs `Utils.js`
+- [Pass] Cryptofs seed present — 11/11, 13/13, 11/11
+- [Pass] Seed flag exists
+- [Pass] `imtransport` running — 1 imlibpurple process
+- [Pass] Bind mount live
+- [Pass] cloud-auth present; docviewer absent (intentionally excluded)
+- [Pass] Skype/Yahoo/legacy-Google gone
+- [Pass] BT hands-free byte patch — `31 00 00 ea` at offset 119792
+- [Pass] Thai font swapped — 37,744 bytes
+- [Pass] gst plugins present (2/2)
+- [Pass] QuickOffice ×2 + Photos installed (3/3); `RemoteFileService.js` present
+- [Pass] Photos service patch marker present
 - [ ] QuickOffice remote-files UI opens; Photos app opens
 
 ## 6. Preware / Govnah / status seeding
 
-- [ ] ipkgservice answers — `luna-send -n 1 -f palm://org.webosinternals.ipkgservice/version '{}' < /dev/null`
-- [ ] Preware 1.9.19 / Govnah 1.3.9 / Synergy generic 0.9.3 all seeded as installed
-- [ ] USB Settings and BT Gamepad absent from ipkg status
-- [ ] Status stanzas well-formed, one each, valid `Installed-Time` epochs
-- [ ] `webos-patches` / `webos-kernels` ship **disabled** (no 3.1 content exists)
+- [Pass] ipkgservice answers in ~1s — version 1.9.18
+- [Pass] Preware 1.9.19 / Govnah 1.3.9 / Synergy generic 0.9.3 all seeded
+- [Pass] USB Settings and BT Gamepad absent from ipkg status
+- [Pass] Status stanzas well-formed, one each, valid epochs (1787081124)
+- [Pass] `webos-patches` / `webos-kernels` ship **disabled** (7 enabled / 6 disabled)
 - [ ] `.ipk` handler — download an .ipk in the browser → installs via Preware with
   no association prompt
 - [ ] Installing a real package via Preware works (e.g. Tweaks)
 
 ## 7. CE platform tweaks
 
-- [ ] Device Info shows webOS CE 3.1.0
-- [ ] Developer mode on; survives a toggle-off + reboot
+- [Pass] Device Info shows webOS CE 3.1.0
+- [Pass/Human] Developer mode on and survived this reboot. *Toggle-off test needs a human.*
 - [ ] Keyboard small by default; size persists across hide/show and reboot
 - [ ] Tweaks installs; LunaCE toggles appear and at least one works
 - [ ] Captive-portal network → portal page loads from the archive-pointed webview
 
 ## 8. Regressions from earlier validated flashes
 
-- [ ] Browser loads modern-HTTPS sites; Maps 4.0.1 opens
-- [ ] Email syncs (mail TLS stack); Help app points at webosarchive.org
+- [Human] Browser loads modern-HTTPS sites; Maps 4.0.1 opens (Maps baked, staged ipk removed)
+- [Pass/Human] Help app repointed at webosarchive.org. *Email sync needs a human.*
 - [ ] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
-- [ ] Wallpapers + Treo ringtones in `/media/internal`; default wallpaper is 22.png
+- [Pass/Human] 34 wallpapers + 40 ringtones in `/media/internal`. *Default 22.png needs eyes.*
 - [ ] Advanced reset options in the chosen OOBE language
-- [ ] Kindle/Facebook/YouTube preloads absent
-- [ ] `ls-hubd` clean — only `com.palm.wifi.carrierhotspot` errors are expected
-  (stock noise; that service file is absent from the stock image too)
-- [ ] Trust store — ~190 certs in `/etc/ssl/certs/trustedcerts`,
-  `/var/ssl/trustedcerts` populated
-- [ ] Version-prefix patch — zero `"HP webOS "` in LunaSysMgr, libWebKitLuna.so,
-  mediaserver, media-pipeline.real
-- [ ] No software reboot (`/var/log/reboot-tripwire.log` absent); 0 crash reports
+- [Pass] Kindle/Facebook/YouTube preloads absent (0 in cryptofs)
+- [Pass] `ls-hubd` clean — **0** unlisted-service errors this boot
+- [Pass] Trust store — 190 pem, `/var/ssl/trustedcerts` populated (190),
+  bundle 289,320 bytes
+- [Pass] Version-prefix patch — zero `"HP webOS "` in all four binaries
+- [Pass] **0 crash reports.** The tripwire logged one reboot at 12:28:39 — the
+  user's own (`parent=[/bin/sh -l]`), not a spontaneous one. No unexplained reboots.
 
 ---
 
