@@ -110,8 +110,14 @@ was missing; no LunaCE rebuild needed. Changes, all in
 card never rendered) → no delete line → account still `webOS User` → zero
 shutdown attempts → device still up.
 
-**Still to do:** upstream these deltas into `~/Projects/webos-community-account`
-so the next app build carries them, rather than living only in the CE patches.
+**Does this need upstreaming? No — checked.** `webos-community-account`'s own
+`app/config.js` is `[palm, signin]`: the standalone build has **no language
+card**, so it never renders the destructive constructor and `inLocale` is never
+set there (so its `closeApp` always took the `window.close()` branch). The bug
+exists only because the CE OOBE config adds the language card, which makes the
+CE patch tree exactly the right home for the fix. Nothing to sync upstream —
+but if the app ever gains a language card of its own, it inherits the bug, so
+`Language.js`'s guard is the one worth contributing back.
 
 ### 2. "Skip Account Setup" creates "Dr. Skipped Firstuse" — FIXED in 600011
 
@@ -142,8 +148,7 @@ Note there is now a **second, parallel** local-account creator in the image:
    this build is the first where that is safe.
 3. Audit `ce-firstboot-tweaks` and `ce-remove-preloads` against a no-reboot OOBE
    (they still trigger only on `stopped configurator`).
-4. Upstream the OOBE app deltas to `~/Projects/webos-community-account`.
-5. Remaining human tests: QuickOffice, email sync, controller pairing.
+4. Remaining human tests: QuickOffice, email sync, controller pairing.
 
 ## Device state as of tonight
 
