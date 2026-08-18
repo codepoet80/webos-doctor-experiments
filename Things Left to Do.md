@@ -31,6 +31,10 @@
   `split-oobe-and-account-app` branch).
 - **OTA path** — teach the update server that CE-uberkernel is the expected
   baseline, then the bootstrap OTA (OEM 3.0.5 → CE 3.1). See OTA-STRATEGY.md.
+- **`.ipk` association prompt from the browser** — the static handler seed works
+  for App Catalog installs but not browser downloads; likely a MIME-type match
+  (servers send `application/octet-stream`). See
+  KNOWN-ISSUE-IPK-BROWSER-PROMPT.md.
 - **Default governor** — CE ships `performance`; consider seeding `ondemandtcl`.
 - **Remaining hands-on tests** for the release candidate — see TEST-PLAN.md
   (controller pairing, email sync, QuickOffice/Photos UIs, `.ipk` tap-to-install,

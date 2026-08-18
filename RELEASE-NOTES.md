@@ -75,6 +75,9 @@ login on ordinary Wi-Fi).
 - **Possible spontaneous reboot shortly after setup (rare, unconfirmed).** Not
   observed on recent builds; instrumentation ships to identify it if it recurs.
   See [KNOWN-ISSUE-RANDOM-REBOOT.md](KNOWN-ISSUE-RANDOM-REBOOT.md).
+- **Browser-downloaded `.ipk` files still ask which app to open them with.**
+  Pick Preware and it installs normally; App Catalog installs are unaffected.
+  See [KNOWN-ISSUE-IPK-BROWSER-PROMPT.md](KNOWN-ISSUE-IPK-BROWSER-PROMPT.md).
 - **No post-setup account manager yet.** The sign-in app is first-use only in
   this build; managing your account afterwards will come as a separate App
   Catalog app.

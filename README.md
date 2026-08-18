@@ -24,6 +24,7 @@ support a one-time **bootstrap OTA** that carries stock OEM 3.0.5 devices up to 
 | **[SCOPE-3.1-CE.md](SCOPE-3.1-CE.md)** | The CE Doctor build: feasibility (repack + integrity gates), the tiered feature set, branding/identity, size budget, integration risks, assembly recipe, the **locked decisions**, and a phased effort estimate. |
 | **[OTA-STRATEGY.md](OTA-STRATEGY.md)** | How devices reach and stay on CE: the **bootstrap OTA** (OEM 3.0.5 → CE 3.1, incl. the TLS chicken-and-egg and the chained two-session upgrade), **ongoing 3.1+ OTAs**, the server-side design, and payload signing. |
 | **[RELEASE-NOTES.md](RELEASE-NOTES.md)** | What ships in the current release candidate, what changed, and the known issues. Start here if you are testing a build. |
+| **KNOWN-ISSUE-*.md** | Per-issue notes written for testers: what you'd see, whether it matters, and exactly which logs to capture. Currently: [empty launcher](KNOWN-ISSUE-EMPTY-LAUNCHER.md), [random reboot](KNOWN-ISSUE-RANDOM-REBOOT.md), [.ipk prompt](KNOWN-ISSUE-IPK-BROWSER-PROMPT.md). |
 | **[TEST-PLAN.md](TEST-PLAN.md)** | The verification run for the current build: what has been checked, what still needs a human, and how to capture evidence when something misbehaves. |
 | **[build/README.md](build/README.md)** | The **Phase 0 repack harness** (built): unpack → overlay → md5-regen → `integcheck` dry-run → repack + gate-patch. Run `build/build-ce-doctor.sh`. |
 

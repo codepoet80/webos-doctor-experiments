@@ -80,44 +80,44 @@ not to be re-run without a reflash.
 
 ## 2. Ten-minute smoke test
 
-1. [ ] OOBE ran and finished on its own; launcher came up (no minimal-mode loop)
-2. [ ] No hotspot login prompt on normal Wi-Fi
-3. [ ] HTTPS browsing works (github.com connects)
+1. [Pass] OOBE ran and finished on its own; launcher came up (no minimal-mode loop)
+2. [Pass] No hotspot login prompt on normal Wi-Fi
+3. [Pass] HTTPS browsing works (github.com connects)
 4. [Pass] Build identity — `BUILDMARK=600024`, `BUILDTIME=20260818150806`
-5. [ ] Keyboard small by default
+5. [Pass] Keyboard small by default
 6. [Pass/Human] App Catalog **is the baked 6.1.2901** — no cryptofs copy, staged ipk
    absent. *Installing an app still needs a human.*
-7. [ ] Controller works (BT or USB) with a game; USB Settings app has no errors
-8. [ ] LunaCE working — group icons / create a tab; Tweaks toggles something
+7. [Pass] Controller works (BT or USB) with a game; USB Settings app has no errors
+8. [Pass] LunaCE working — group icons / create a tab; Tweaks toggles something
 9. [Pass] All three seeded as installed (1 stanza each); USB Settings and BT Gamepad
    absent from ipkg status (0/0)
-10. [ ] Advanced Reset Options present in the power menu
-11. [ ] Core apps launch — Messaging, Contacts, Accounts (SYNERGY ACCOUNTS box)
+10. [Pass] Advanced Reset Options present in the power menu
+11. [Pass] Core apps launch — Messaging, Contacts, Accounts (SYNERGY ACCOUNTS box)
 12. [Pass] Synergy runtime alive — seed 11/13/11, flag set, imtransport running,
     1 imlibpurple process, 1 bind mount
 13. [Pass] Legacy junk gone — skype app + /usr/bin/skypem + com.palm.yahoo absent
 14. [Pass] Dev mode sticks across the reboot — `turnOnNovacomAtStart=true`,
     `/var/gadget/novacom_enabled` present, novacom reachable throughout
-15. [n/a] webOS Account launcher icon — deliberately removed (`visible:false`);
+15. [Pass] webOS Account launcher icon — deliberately removed (`visible:false`);
     the app is OOBE-only now, post-OOBE account management moves to a catalog app
 
 ## 3. OOBE (first boot)
 
-- [ ] Boots into the community webOS Account flow (not stock HP)
-- [ ] Card order: language → terms → sign-in → name device
-- [ ] Wi-Fi join popup appears and connects
-- [ ] No spurious hotspot prompt on a normal home network
-- [ ] Terms card loads community terms over HTTPS
-- [ ] Sign-in (or Skip Account Setup) works; completion card shows "Tap Done…"
-- [ ] Done finishes setup **without a reboot**; launcher comes up
+- [Pass] Boots into the community webOS Account flow (not stock HP)
+- [Pass] Card order: language → terms → sign-in → name device
+- [Pass] Wi-Fi join popup appears and connects
+- [Pass] No spurious hotspot prompt on a normal home network
+- [Pass] Terms card loads community terms over HTTPS
+- [Pass] Sign-in (or Skip Account Setup) works; completion card shows "Tap Done…"
+- [Pass] Done finishes setup **without a reboot**; launcher comes up
 - [ ] Non-English OOBE run (localization)
 
 ## 4. Core-apps suite
 
 - [ ] Messaging launches; new conversations UI
 - [Pass/Human] Contacts runs from rootfs, unshadowed. *Launching needs eyes.*
-- [ ] Phone launches without errors
-- [ ] Accounts (Settings → Accounts) shows the SYNERGY ACCOUNTS grouping
+- [Pass] Phone launches without errors
+- [Pass] Accounts (Settings → Accounts) shows the SYNERGY ACCOUNTS grouping
 - [Pass] No stale stock contacts/messaging/maps staged ipks (0/0)
 - [Pass] db8 healthy — `com.palm.person:1` query answers
 - [Pass] accounts app is 3.1.1
@@ -144,25 +144,25 @@ not to be re-run without a reflash.
 - [Pass] USB Settings and BT Gamepad absent from ipkg status
 - [Pass] Status stanzas well-formed, one each, valid epochs (1787081124)
 - [Pass] `webos-patches` / `webos-kernels` ship **disabled** (7 enabled / 6 disabled)
-- [ ] `.ipk` handler — download an .ipk in the browser → installs via Preware with
+- [Fail] `.ipk` handler — download an .ipk in the browser → installs via Preware with
   no association prompt
-- [ ] Installing a real package via Preware works (e.g. Tweaks)
+- [Pass] Installing a real package via Preware works (e.g. Tweaks)
 
 ## 7. CE platform tweaks
 
 - [Pass] Device Info shows webOS CE 3.1.0
-- [Pass/Human] Developer mode on and survived this reboot. *Toggle-off test needs a human.*
-- [ ] Keyboard small by default; size persists across hide/show and reboot
-- [ ] Tweaks installs; LunaCE toggles appear and at least one works
-- [ ] Captive-portal network → portal page loads from the archive-pointed webview
+- [Pass] Developer mode on and survived this reboot. *Toggle-off test needs a human.*
+- [Pass] Keyboard small by default; size persists across hide/show and reboot
+- [Pass] Tweaks installs; LunaCE toggles appear and at least one works
+- [Pass] Captive-portal network → portal page loads from the archive-pointed webview
 
 ## 8. Regressions from earlier validated flashes
 
 - [Human] Browser loads modern-HTTPS sites; Maps 4.0.1 opens (Maps baked, staged ipk removed)
-- [Pass/Human] Help app repointed at webosarchive.org. *Email sync needs a human.*
-- [ ] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
-- [Pass/Human] 34 wallpapers + 40 ringtones in `/media/internal`. *Default 22.png needs eyes.*
-- [ ] Advanced reset options in the chosen OOBE language
+- [Pass] Help app repointed at webosarchive.org. *Email sync needs a human.*
+- [Pass] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
+- [Pass] 34 wallpapers + 40 ringtones in `/media/internal`. *Default 22.png needs eyes.*
+- [Pass] Advanced reset options in the chosen OOBE language
 - [Pass] Kindle/Facebook/YouTube preloads absent (0 in cryptofs)
 - [Pass] `ls-hubd` clean — **0** unlisted-service errors this boot
 - [Pass] Trust store — 190 pem, `/var/ssl/trustedcerts` populated (190),
