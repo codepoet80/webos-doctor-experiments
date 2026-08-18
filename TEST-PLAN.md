@@ -1,8 +1,38 @@
 # webOS CE 3.1 Flash Test Plan
 
-For the BUILDMARK 600008 image (`out/webosdoctorp305hstnh-3.1CE.jar`).
+For the BUILDMARK 600011 image (`out/webosdoctorp305hstnh-3.1CE.jar`).
 Items marked **(regression)** were verified on earlier flashes; everything else
 is new in this build. Shell checks assume a novacom/novaterm root shell.
+
+## Automated pass — BUILDMARK 600011, 2026-08-17 (no second boot)
+
+**40 checks pass, 0 real failures.** Run with
+`scratchpad/ce-test-600011.sh` over novacom. This was the first flash to reach
+a fully working state on a **single boot** — no reboot repaired anything.
+
+Verified automatically: build identity; cryptofs seed verified in its own log;
+Synergy glibc + runtime + bind mounts + transport running; **zero** crash
+reports (the imtransport SIGBUS is gone); Preware feeds (13) + all three seeded
+stanzas on first boot; skip-setup profile named **webOS User**; no software
+reboot (tripwire log absent); 22.png wallpaper; GAMES designator; no launcher
+race; carrier string, small keyboard, dev mode; webOS Account appinfo + locale
+removal; BT byte patch; slim Thai font; gst plugins; 190-cert trust store;
+connectivity-probe patch; legacy junk and stale staged ipks gone.
+
+Two reported failures, both dismissed with evidence:
+- *db8 profile query* — test-script bug (`where` on an unindexed prop). The
+  direct query returns `"username":"webOS User"`.
+- *ls-hubd: 96 unlisted-service errors* — all one service,
+  `com.palm.wifi.carrierhotspot`, requested by stock `PmWiFiService`. That
+  service file is **absent from the stock image too**, so this is stock noise
+  on a Wi-Fi-only TouchPad, not a CE regression.
+
+Still needs a human: App Catalog install, controller pairing, LunaCE tweak
+toggles, .ipk tap-to-install, email sync, QuickOffice, Maps.
+
+**Do not tap the webOS Account launcher icon on this build** — it replays the
+OOBE language card, which deletes the palm profile, and Done can power the
+device off. See NEXT-SESSION-PLAN.md.
 
 ## 10-minute smoke test
 
@@ -15,7 +45,7 @@ Fast, high-signal checks that our bits landed — no accounts, no sync setup.
 3. [Pass] **Open HTTPS Webpage** browse to github.com in the old browser,
    it won't render, but if it connects, you're good.
 4. [Pass] **Build identity** — Device Info says *webOS CE 3.1.0*; shell:
-   `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600008`.
+   `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600011`.
 5. [Pass] **Keyboard is small by default** — tap any text field; the keyboard
    should come up noticeably shorter than stock.
 6. [Pass] **App Catalog can install apps** — launch App Catalog and install Keen
@@ -90,7 +120,7 @@ If all 15 pass, the deep sections below can wait for a slower pass.
 ## CE platform tweaks
 
 - [ ] Device Info shows **webOS CE 3.1.0**
-- [ ] `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600008`
+- [ ] `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600011`
 - [ ] **Developer mode on** after flash; toggle it off, reboot → it is back **on** (`turnOnNovacomAtStart`); `novacom -l` sees the device throughout
 - [ ] **Keyboard comes up small** by default; resizing via keyboard key persists across hide/show and reboot
 - [ ] Install **Tweaks** via Preware → LunaCE toggles appear (mini cards, wave launcher, gestures, …) and at least one (e.g. mini cards) works when enabled
