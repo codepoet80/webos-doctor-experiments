@@ -1,3 +1,7 @@
+> **SUPERSEDED for the 600014 flash — read `SESSION-NOTES-2026-08-18.md` first.**
+> It records what 600014 actually fixed, three open bugs (two of them mine), and
+> the recommendation to hide the webOS Account icon for the preview release.
+
 # Next session plan — after flash 600011, Doctor 600012 built (2026-08-17)
 
 ## The one-line story of tonight

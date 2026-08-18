@@ -1,0 +1,97 @@
+===== webOS CE 600014 automated checks: Tue Aug 18 04:22:42 PDT 2026 =====
+[PASS] build identity BUILDMARK=600008
+[PASS] version string webOS CE 3.1.0
+[PASS] tripwire shims installed
+[INFO] tripwire log absent (no software reboot logged yet)
+[INFO] ce- upstart jobs:
+(00619/361342550) ce-cryptofs-seed (stop) waiting
+(00619/361359291) ce-default-wallpaper (stop) waiting
+(00619/361374846) ce-firstboot-tweaks (stop) waiting
+(00619/361391735) ce-language-patches (stop) waiting
+(00619/361407142) ce-remove-preloads (stop) waiting
+[INFO] ce flags:
+-rw-r--r--    1 root     root             0 Aug 18 04:15 /var/luna/preferences/ce-cryptofs-deshadowed
+-rw-r--r--    1 root     root             0 Aug 18 04:20 /var/luna/preferences/ce-cryptofs-seeded
+-rw-r--r--    1 root     root             0 Aug 18 04:19 /var/luna/preferences/ce-default-wallpaper
+[PASS] synergy glibc ld-linux present
+[PASS] synergy runtime dirs present
+[PASS] cryptofs seed flag present
+[PASS] imlibpurpletransport running (1 proc)
+[PASS] synergy bind mounts live
+[INFO] imstdout.log tail:
+[2026-08-18 04:22:36:517] [0x2c2895d0] [info] [imlibpurple.serviceApp]: ConnectionStateHandler::connectionManagerResult found=1, wifi ipAddress=192.168.10.64
+[2026-08-18 04:22:36:595] [0x2c2895d0] [info] [imlibpurple.serviceApp]: ConnectionStateHandler::connectionManagerResult: {"$activity":{"activityId":23,"creator":{"serviceId":"com.palm.imlibpurple"},"name":"Libpurple connection watch","requirements":{"internet":{"bridge":{"state":"disconnected"},"isInternetConnectionAvailable":true,"vpn":{"state":"disconnected"},"wan":{"state":"disconnected"},"wifi":{"bssid":"94:2A:6F:7E:4C:64","interfaceName":"eth0","ipAddress":"192.168.10.64","isWakeOnWifiEnabled":true,"networkConfidenceLevel":"excellent","onInternet":"yes","ssid":"Yavin","state":"connected"}}}},"activityId":23,"event":"update","returnValue":true}
+[2026-08-18 04:22:36:596] [0x2c2895d0] [info] [imlibpurple.serviceApp]: ConnectionStateHandler::connectionManagerResult found=1, wifi ipAddress=192.168.10.64
+[2026-08-18 04:22:36:598] [0x2c2895d0] [info] [imlibpurple.serviceApp]: ConnectionStateHandler::connectionManagerResult: {"$activity":{"requirements":{"internet":{"bridge":{"state":"disconnected"},"isInternetConnectionAvailable":true,"vpn":{"state":"disconnected"},"wan":{"state":"disconnected"},"wifi":{"bssid":"94:2A:6F:7E:4C:64","interfaceName":"eth0","ipAddress":"192.168.10.64","isWakeOnWifiEnabled":true,"networkConfidenceLevel":"excellent","onInternet":"yes","ssid":"Yavin","state":"connected"}}}}}
+[2026-08-18 04:22:36:599] [0x2c2895d0] [info] [imlibpurple.serviceApp]: ConnectionStateHandler::connectionManagerResult found=1, wifi ipAddress=192.168.10.64
+[FAIL] rdxd crash reports pending: 1
+drwxr-xr-x    2 root     root          4096 Aug 18 04:19 .
+drwxr-xr-x    4 root     root          4096 Aug 18 04:14 ..
+-rw-r--r--    1 root     root         39915 Aug 18 04:19 rdxd_log_1.tgz
+[INFO] status stanza present: org.webosinternals.preware
+[INFO] status stanza present: org.webosinternals.govnah
+[INFO] status stanza present: com.palm.synergy.generic
+[PASS] ipkg status has 18 stanzas
+[INFO] stanza packages:
+Package: com.cmdrkeen.game
+Package: com.palm.app.calculator
+Package: com.palm.app.calendar
+Package: com.palm.app.camera
+Package: com.palm.app.clock
+Package: com.palm.app.email
+Package: com.palm.app.enyo-findapps
+Package: com.palm.app.flashplugin-001
+Package: com.palm.app.musicplayer
+Package: com.palm.app.notes
+Package: com.palm.app.photos
+Package: com.palm.payment
+Package: com.palm.quickofficeservicegenerator
+Package: com.quickoffice.ar
+Package: com.quickoffice.webos
+Package: org.webosinternals.preware
+Package: org.webosinternals.govnah
+Package: com.palm.synergy.generic
+[PASS] skype gone
+[PASS] yahoo account template gone
+[PASS] kindle/facebook/youtube preload check done
+[PASS] no stale staged core-app ipks
+[PASS] contacts on rootfs (no cryptofs copy)
+[INFO] docviewer not pre-baked (expected: first-boot install may add it)
+[PASS] db8 com.palm.person query ok
+[PASS] ipkgservice answers: {"returnValue": true, "version": "1.9.18", "apiVersion": "18"}
+[PASS] games designator map baked
+[INFO] LAUNCHER-LIFECYCLE lines this log: 3
+2026-08-18T11:19:04.329416Z [400] webos-device user.warning LunaSysMgr: {LunaSysMgr}: QWarning: [LAUNCHER-LIFECYCLE] DimensionsUI ctor: init-only (0,0) flavor; launcher deferred to first resize 
+2026-08-18T11:19:05.721226Z [402] webos-device user.warning LunaSysMgr: {LunaSysMgr}: QWarning: [LAUNCHER-LIFECYCLE] DimensionsUI::resize( 1024 , 740 ) found launcher pointer NULL — creating a replacement LauncherObject 
+2026-08-18T11:19:05.721495Z [402] webos-device user.warning LunaSysMgr: {LunaSysMgr}: [LAUNCHER-LIFECYCLE] LauncherObject 0x35ce72e8 created (primary was (nil))
+[PASS] no launcher race signature
+[PASS] default wallpaper is 22.png
+[PASS] wallpapers in /media/internal (34 files)
+[PASS] Treo ringtones present (2)
+[PASS] default carrier string webOS CE
+[PASS] small keyboard default baked
+[PASS] novacom-at-start baked
+[PASS] webOS Account appinfo visible
+[PASS] stock locale appinfos removed (0 left)
+[PASS] PmBtEngine BT patch present
+[PASS] Thai font slim (37744 bytes)
+[PASS] gst opus+vpx plugins present
+[PASS] trust store: 190 pems
+[PASS] /var/ssl/trustedcerts populated (190)
+[FAIL] ls-hubd unlisted-service errors: 14
+2026-08-18T11:18:07.811454Z [344] webos-device user.crit ls-hubd: {ls-hubd.private}: Service not listed in service files: "com.palm.wifi.carrierhotspot" (requester pid: 2299, requester_exe: "/usr/bin/PmWiFiService", requester_cmdline: "/usr/bin/PmWiFiService", requester app id: "(null)")
+2026-08-18T11:18:07.811896Z [344] webos-device user.crit ls-hubd: {ls-hubd.private}: Service not listed in service files: "com.palm.wifi.carrierhotspot" (requester pid: 2299, requester_exe: "/usr/bin/PmWiFiService", requester_cmdline: "/usr/bin/PmWiFiService", requester app id: "(null)")
+2026-08-18T11:18:19.692241Z [356] webos-device user.crit ls-hubd: {ls-hubd.private}: Service not listed in service files: "com.palm.wifi.carrierhotspot" (requester pid: 2299, requester_exe: "/usr/bin/PmWiFiService", requester_cmdline: "/usr/bin/PmWiFiService", requester app id: "(null)")
+2026-08-18T11:18:19.692669Z [356] webos-device user.crit ls-hubd: {ls-hubd.private}: Service not listed in service files: "com.palm.wifi.carrierhotspot" (requester pid: 2299, requester_exe: "/usr/bin/PmWiFiService", requester_cmdline: "/usr/bin/PmWiFiService", requester app id: "(null)")
+2026-08-18T11:18:29.649939Z [366] webos-device user.crit ls-hubd: {ls-hubd.private}: Service not listed in service files: "com.palm.wifi.carrierhotspot" (requester pid: 2299, requester_exe: "/usr/bin/PmWiFiService", requester_cmdline: "/usr/bin/PmWiFiService", requester app id: "(null)")
+strings: standard output: Broken pipe
+[PASS] connectivity probe patched to webosarchive.org
+===== done =====
+[PASS] cryptofs seed verified (log)
+[PASS] Preware feeds present (13) on first boot
+[PASS] stanza seeded: org.webosinternals.preware
+[PASS] stanza seeded: org.webosinternals.govnah
+[PASS] stanza seeded: com.palm.synergy.generic
+[FAIL] profile: {"errorCode":-3965,"errorText":"db: no index for query","returnValue":false}
+[PASS] old placeholder gone from handler
+[PASS] no software reboot since flash (tripwire empty)
