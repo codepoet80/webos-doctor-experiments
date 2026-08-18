@@ -23,13 +23,16 @@
 #
 # Usage:  ./make-overlay.sh          (from build/community-firstuse/)
 # Env:    TLSIPKS=<path to OpenSSL-legacyWebOS/ipks>
-#         CA_BUNDLE=<current Mozilla bundle>            (default: host's)
+#         CA_BUNDLE=<current Mozilla bundle>            (default: pinned in-repo)
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"                    # build/community-firstuse
 BUILD="$(dirname "$HERE")"                               # build/
 TLSIPKS="${TLSIPKS:-$BUILD/../../OpenSSL-legacyWebOS/ipks}"
-CA_BUNDLE="${CA_BUNDLE:-/etc/ssl/certs/ca-certificates.crt}"
+# Pinned in-repo (see ca-certificates.README.md): defaulting to the build
+# host's bundle made the image's trust store depend on whatever
+# ca-certificates version that machine had installed.
+CA_BUNDLE="${CA_BUNDLE:-$HERE/ca-certificates.crt}"
 ROOTFS_TGZ="$BUILD/work/webos/nova-cust-image-topaz.rootfs.tar.gz"
 OUT="$BUILD/overlays/community-firstuse"
 
@@ -137,6 +140,27 @@ grep -q "wosaIsOobe" "$R/$APP/source/signin/StartOver.js" \
     || { echo "ERROR: Start Over Wi-Fi-wipe guard missing from StartOver.js" >&2; exit 1; }
 grep -q "if (this.wosaIsOobe) {" "$R/$APP/FirstUse.js" \
     || { echo "ERROR: OOBE-only gates missing from FirstUse.js start()" >&2; exit 1; }
+
+# Syntax-check every JS file we patch. These are hand-written diffs against an
+# app we do not own; a bad hunk produces valid-looking JS that only fails when
+# the card is rendered on a flashed device. node --check costs milliseconds.
+JSCHECK="$(command -v node || command -v nodejs || true)"
+if [ -n "$JSCHECK" ]; then
+    for f in "$R/$APP/FirstUse.js" "$R/$APP/config.js" \
+             "$R/$APP/source/tnc/Palm.js" \
+             "$R/$APP/source/language/Language.js" \
+             "$R/$APP/source/signin/StartOver.js"; do
+        "$JSCHECK" --check "$f" \
+            || { echo "ERROR: $f is not valid JavaScript after patching" >&2; exit 1; }
+    done
+    echo "   syntax-checked 5 patched JS files"
+elif [ "${CE_SKIP_JS_CHECK:-0}" = "1" ]; then
+    echo "   WARNING: node not found, JS syntax check SKIPPED (CE_SKIP_JS_CHECK=1)" >&2
+else
+    echo "ERROR: node/nodejs not found — cannot syntax-check the patched app JS." >&2
+    echo "       Install node, or set CE_SKIP_JS_CHECK=1 to build anyway." >&2
+    exit 1
+fi
 
 echo ">> 4) palmprofile service files from the ipk"
 # The ipk ships the service files flat; the stock service layout is

@@ -84,6 +84,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import tempfile
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))          # build/full-ce
@@ -354,6 +355,13 @@ def read_rootfs_names(tgz, prefixes):
     return names
 
 
+# Every file this script authors, so the verify pass at the end can check the
+# ones whose failure mode is silent. Python syntax errors stop the build
+# instantly; a busted line of shell inside one of these string literals ships
+# and only surfaces on a flashed device.
+WROTE = []
+
+
 def w(relpath, data, mode=0o644):
     """Write a regular file into the overlay rootfs tree."""
     p = os.path.join(OUT_ROOT, relpath)
@@ -361,7 +369,88 @@ def w(relpath, data, mode=0o644):
     with open(p, "wb") as f:
         f.write(data if isinstance(data, (bytes, bytearray)) else data.encode())
     os.chmod(p, mode)
+    WROTE.append(relpath)
     log(f"  file    /{relpath} ({len(data)} bytes, {mode:o})")
+
+
+UPSTART_BLOCK_RE = re.compile(
+    r"^(?:pre-start |post-start |pre-stop |post-stop )?script$(.*?)^end script$",
+    re.M | re.S)
+
+
+def verify_generated_sources():
+    """Syntax-check the code we author for the device, and fail the build if it
+    is broken.
+
+    The two languages that reach the device from here — upstart job shell and
+    the account app's JavaScript — are written as string literals and patches,
+    where nothing but this check stands between a typo and a flashed image. A
+    Python error stops the build in the first second; a shell error inside one
+    of those literals used to sail through, get flashed, and be discovered on
+    a device an hour later. Cheap check, expensive failure.
+    """
+    sh_files, sh_blocks, js_files, problems = 0, 0, 0, []
+
+    def sh_n(text, label):
+        nonlocal sh_blocks
+        sh_blocks += 1
+        tmp = os.path.join(tempfile.gettempdir(), "ce-shellcheck.sh")
+        with open(tmp, "w") as f:
+            f.write(text)
+        r = subprocess.run(["sh", "-n", tmp], capture_output=True, text=True)
+        if r.returncode != 0:
+            problems.append(f"{label}: {r.stderr.strip()}")
+
+    evd = os.path.join(OUT_ROOT, "etc/event.d")
+    if os.path.isdir(evd):
+        for name in sorted(os.listdir(evd)):
+            p = os.path.join(evd, name)
+            if not os.path.isfile(p):
+                continue
+            body = open(p, errors="replace").read()
+            blocks = UPSTART_BLOCK_RE.findall(body)
+            if blocks:
+                sh_files += 1
+            for i, b in enumerate(blocks):
+                sh_n(b, f"/etc/event.d/{name} (block {i + 1})")
+
+    # standalone shell we generate (launch wrappers, the reboot tripwire shims)
+    for rel in sorted(set(WROTE)):
+        p = os.path.join(OUT_ROOT, rel)
+        if not os.path.isfile(p):
+            continue
+        head = open(p, "rb").read(64)
+        if head.startswith(b"#!") and (b"/sh" in head.split(b"\n")[0]
+                                       or b"/bash" in head.split(b"\n")[0]):
+            sh_files += 1
+            sh_n(open(p, errors="replace").read(), f"/{rel}")
+
+    # JavaScript we author or rewrite (the account app's patched files come via
+    # the community-firstuse layer and are checked in make-overlay.sh too)
+    node = shutil.which("node") or shutil.which("nodejs")
+    js_targets = [r for r in sorted(set(WROTE)) if r.endswith(".js")]
+    if js_targets and not node:
+        problems.append(
+            "node/nodejs not found — cannot syntax-check generated JavaScript. "
+            "Install node, or set CE_SKIP_JS_CHECK=1 to build anyway (not "
+            "recommended: a JS typo here is only discoverable on a flashed device)")
+    elif node:
+        for rel in js_targets:
+            p = os.path.join(OUT_ROOT, rel)
+            if not os.path.isfile(p):
+                continue
+            js_files += 1
+            r = subprocess.run([node, "--check", p], capture_output=True, text=True)
+            if r.returncode != 0:
+                problems.append(f"/{rel}: {r.stderr.strip().splitlines()[-1] if r.stderr.strip() else 'parse error'}")
+
+    if problems and os.environ.get("CE_SKIP_JS_CHECK") == "1":
+        problems = [p for p in problems if "node/nodejs not found" not in p]
+    if problems:
+        sys.exit("[bake] FATAL: generated sources failed syntax check:\n  - "
+                 + "\n  - ".join(problems))
+    log(f"verified: {sh_blocks} shell block(s) in {sh_files} file(s), "
+        f"{js_files} generated .js file(s) — all parse")
 
 
 def wcopy(relpath, srcfile, mode=0o644):
@@ -2342,6 +2431,7 @@ def main():
         f.write("\n")
 
     shutil.rmtree(tmp)
+    verify_generated_sources()
     log(f"done: {OUT}")
     nf = sum(len(files) for _, _, files in os.walk(OUT_ROOT))
     sz = sum(os.path.getsize(os.path.join(dp, f))
