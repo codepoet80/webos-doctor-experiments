@@ -1,21 +1,24 @@
-# Known issue: browser-downloaded `.ipk` files still ask which app to open them with
+# Known issue: `.ipk` files downloaded in the browser aren't handed to Preware
 
 **Applies to:** webOS CE 3.1.0 Doctor builds up to and including the **600024**
 release candidate.
 
-**Severity:** cosmetic — one extra tap. Installing still works.
+**Severity:** low — everyday installing is unaffected, but this one route
+doesn't work.
 
 ## What you might see
 
-Download a `.ipk` file **in the browser** and tap it, and webOS asks you to pick
-an application to open it with instead of handing it straight to Preware.
+Download a `.ipk` file **in the browser** and nothing installs it. The file
+downloads and that's the end of it — webOS does **not** ask you what to open it
+with, because it has no handler-disambiguation prompt: when it can't find a
+handler for a file, it simply downloads it and stops.
 
-Picking **Preware** in that prompt installs the package normally. Nothing is
-broken; you just get a prompt that this build was supposed to have removed.
+So there is nothing to tap through. The package is on the device but never
+reaches Preware.
 
-Installing from the **App Catalog** is unaffected — that path works with no
-prompt, because the catalog hands the file to the installer itself rather than
-going through the file-association system.
+**Unaffected:** installing from the **App Catalog** works normally, as does
+installing from Preware's own feeds. Those are the routes almost everyone uses;
+this issue only affects grabbing a raw `.ipk` from a web page.
 
 ## What we expected
 
@@ -27,31 +30,31 @@ This build pre-registers Preware as the handler for `.ipk` in
  "appId": "org.webosinternals.preware", "streamable": false}
 ```
 
-Stock webOS has **no** `ipk` entry at all, which is why Preware normally has to
-ask for the association on first use. Seeding it statically was meant to make
-that prompt disappear on a fresh device — and it does for the App Catalog path.
+Stock webOS has **no** `ipk` entry at all. Seeding one statically was meant to
+make browser-downloaded packages open in Preware on a fresh device. It clearly
+takes effect for the App Catalog path, but not for a browser download.
 
 ## Leading theory (unconfirmed)
 
-The registration matches on **both** an extension and a MIME type. A browser
-download is most likely matched on the **MIME type the web server sent**, and
-most servers hand out `.ipk` as `application/octet-stream` (or `text/plain`),
-not `application/vnd.webos.ipk`. If the lookup is MIME-first, our entry never
-matches a browser download and webOS falls back to asking.
+The registration carries both an extension and a MIME type. A browser download is
+most likely matched on the **MIME type the web server sent**, and most servers
+hand out `.ipk` as `application/octet-stream` (or `text/plain`), not
+`application/vnd.webos.ipk`. The lookup finds no handler, and — with no
+disambiguation prompt to fall back on — webOS just keeps the file.
 
-If that is right, the fix is to register the generic download MIME types for the
-`ipk` extension as well, rather than only the webOS-specific one. This has not
-been verified on hardware, so treat it as a starting point, not an answer.
+If that's right, the fix is to register the generic download MIME types against
+the `ipk` extension as well, rather than only the webOS-specific one. This has
+**not** been verified on hardware; treat it as a starting point.
 
-A second possibility worth ruling out: runtime handler changes are written to
+Second possibility worth ruling out: runtime handler state is written to
 `/var/usr/palm/…-active.json`, which a Doctor flash wipes. If some component
-consults only the active file rather than the static one, the static seed would
-be invisible to it until something writes that file.
+reads only that file rather than the static one, our seed would be invisible to
+it until something writes it.
 
 ## If you hit it: what to capture
 
-The most useful single fact is **what MIME type the server sent** for the file
-you downloaded. From a computer:
+The single most useful fact is **what MIME type the server sent**. From a
+computer:
 
 ```
 curl -sI <the .ipk URL> | grep -i content-type
@@ -64,6 +67,6 @@ novacom get file:///usr/palm/command-resource-handlers.json > handlers.json
 novacom get file:///var/log/messages > messages.log
 ```
 
-and note whether the prompt appeared for a file downloaded from the browser, the
-App Catalog, or somewhere else — the difference between those paths is the whole
-question.
+Also note where the file ended up (usually `/media/internal/downloads`) and
+whether the same package installs cleanly from the App Catalog — the difference
+between those two paths is the whole question.
