@@ -1728,21 +1728,29 @@ def main():
     # (see preware-seed.sh above), so it has nothing to retry. The triggers
     # we used to add here fired concurrently with ce-cryptofs-seed's kick and
     # helped drive the 600018 respawn storm.
-    # Drop `respawn`. This service is ALSO hub-launchable (we bake its dbus
-    # .service into both hubs above), and the two launchers fight: once
-    # ls-hubd has an instance holding the bus name, every upstart-started
-    # instance exits immediately, `respawn` restarts it, and the job burns
-    # its 10-respawn limit in ~2 seconds and is stopped for good. Seen live on
-    # 600018: the user opened Preware (hub-launching the service), the seed
-    # job's kick then did stop/start, and upstart logged
-    # "respawn_count: 11 > respawn_limit: 10 ... respawning too fast, stopped"
-    # — with each respawn re-running the whole pre-start, so the feed seeding
-    # ran 11 times too. Nothing is lost by dropping it: the job exists for its
-    # pre-start seeding, and the service itself is started on demand by the
-    # hub. Proven on 600018, where the service answered every call in ~1s for
-    # the entire time its upstart job sat stopped.
-    upst = sure_replace(upst, "\nrespawn\n", "\n# respawn: deliberately NOT set — see bake.py (hub launches this on demand)\n",
-                        "ipkgservice respawn removal", count=1)
+    # `respawn` is KEPT (stock). It was dropped in 600019 to stop a respawn
+    # storm: back then kick_dependents did `initctl stop; initctl start` on this
+    # service, and the job carried three start triggers, so once ls-hubd held the
+    # bus name every upstart-started instance exited at once and upstart burned
+    # its 10-respawn limit in ~2s ("respawn_count: 11 > respawn_limit: 10"),
+    # re-running the whole pre-start 11 times on the way.
+    #
+    # Both drivers of that storm are gone as of 600021: the extra start triggers
+    # were removed, and seeding no longer restarts this service at all (it runs
+    # preware-seed.sh directly). Nothing stops/starts ipkgservice any more, so
+    # the boot-time instance claims the bus name once and keeps it.
+    #
+    # Restored because dropping it is the prime suspect for the Luna Restart
+    # freeze on 600023: the power menu calls ipkgservice/restartLuna, which needs
+    # ls-hubd to launch this service, and that call is made from inside
+    # luna-systemui (i.e. inside LunaSysMgr) — so a launch that blocks freezes the
+    # UI, which matches the symptom exactly (device froze on the tap, and NO HUP
+    # was ever delivered). With respawn back, the service is upstart-resident
+    # rather than launched on demand at that moment.
+    #
+    # WATCH FOR on the next flash: `grep -c "ipkgservice main process ended,
+    # respawning" /var/log/messages` should stay 0. If the storm returns, the fix
+    # is NOT to drop respawn again but to stop whatever is stop/starting the job.
     w(f"etc/event.d/{SID}", upst, 0o644)
 
     # 14c) Govnah : BAKED, same shape as Preware — app dir plus a root service
