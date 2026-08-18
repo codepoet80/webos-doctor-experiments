@@ -1,28 +1,81 @@
 # ce-remove-preloads — webOS CE: HP preloads we don't ship.
 # Staged by sweatshop-hp-topaz into /usr/lib/luna/customization/apps and
 # installed to /media/cryptofs/apps on first boot by com.palm.service.customization.
-# Delete the staged ipks before that install runs; also clear any dir already placed.
+# Delete the staged ipks before that install runs; also clear any cryptofs copy
+# already placed by an earlier flash/boot (cryptofs survives Doctor flashes).
+#
+# Two different timing needs, same shape ce-cryptofs-seed/ce-firstboot-tweaks
+# already had to learn the hard way. The staged-ipk removal must WIN A RACE
+# against the customization service, so it runs immediately, every trigger,
+# unconditionally (rm -f is idempotent -- re-running it once already clean
+# costs nothing). The cryptofs cleanup hits the SAME mounted-but-not-yet-
+# writable window documented on those jobs (cryptofs appears in /proc/mounts
+# ~100s before it accepts writes on a fresh flash), so unlike the staged-ipk
+# half it gets its own wait-for-write / verify / once-per-flash flag, plus a
+# second chance at first-use-finished in case the first attempt lost that race
+# (this job used to fire only on `stopped configurator`, inside that window,
+# with no retry and no verification -- flagged but never fixed after 600011).
 
 start on stopped configurator
+start on first-use-finished
 
 console none
 
 script
-    # ce-firstboot-tweaks fires on this SAME event and also remounts / rw,
-    # then back to ro. Interleaved, one job flips the filesystem read-only
-    # while the other is still deleting -- and a surviving preload ipk gets
-    # installed. mkdir is atomic, so use it as a spinlock.
+    LOG=/var/log/ce-remove-preloads.log
+    log() { echo "$(date 2>/dev/null) $*" >> "$LOG" 2>/dev/null; }
+    PRELOADS="com.palm.app.kindle com.palm.app.enyo-facebook com.palm.app.youtube"
+
+    # (a) staged ipks: must beat com.palm.service.customization, so no waiting.
+    # ce-firstboot-tweaks fires on this SAME event and also remounts / rw, then
+    # back to ro. Interleaved, one job flips the filesystem read-only while the
+    # other is still deleting -- and a surviving preload ipk gets installed.
+    # mkdir is atomic, so use it as a spinlock.
     L=/tmp/.ce-rootfs-rw.lock
     n=0
     while ! mkdir $L 2>/dev/null && [ $n -lt 60 ]; do sleep 1; n=$((n+1)); done
     mount -o remount,rw / 2>/dev/null || true
-    for app in com.palm.app.kindle com.palm.app.enyo-facebook com.palm.app.youtube; do
-        rm -f  /usr/lib/luna/customization/apps/${app}_*.ipk
-        rm -rf /media/cryptofs/apps/usr/palm/applications/${app}
+    for app in $PRELOADS; do
+        rm -f /usr/lib/luna/customization/apps/${app}_*.ipk
         ls /usr/lib/luna/customization/apps/${app}_*.ipk >/dev/null 2>&1 && \
-            echo "$(date 2>/dev/null) FAILED to remove staged $app" \
-                >> /var/log/ce-remove-preloads.log 2>/dev/null
+            log "FAILED to remove staged $app"
     done
     mount -o remount,ro / 2>/dev/null || true
     rmdir $L 2>/dev/null || true
+
+    # (b) cryptofs copy from a prior flash/boot: once per flash, verified.
+    FLAG=/var/luna/preferences/ce-preloads-deshadowed
+    if [ -f "$FLAG" ]; then exit 0; fi
+    i=0
+    while [ $i -lt 60 ]; do
+        grep -q " /media/cryptofs " /proc/mounts && \
+           mkdir -p /media/cryptofs/.ce-preload-probe 2>/dev/null && \
+           touch /media/cryptofs/.ce-preload-probe/w 2>/dev/null && break
+        sleep 5
+        i=$((i+1))
+    done
+    rm -rf /media/cryptofs/.ce-preload-probe 2>/dev/null
+    if [ $i -ge 60 ]; then
+        log "cryptofs not writable -- preload deshadow deferred to the next trigger"
+        exit 0
+    fi
+    left=0
+    found=0
+    for app in $PRELOADS; do
+        [ -d "/media/cryptofs/apps/usr/palm/applications/$app" ] || continue
+        found=$((found+1))
+        rm -rf "/media/cryptofs/apps/usr/palm/applications/$app"
+        if [ -d "/media/cryptofs/apps/usr/palm/applications/$app" ]; then
+            log "FAILED to deshadow cryptofs copy of $app"
+            left=$((left+1))
+        else
+            log "deshadowed stale cryptofs copy of $app"
+        fi
+    done
+    if [ $left -eq 0 ]; then
+        log "preload deshadow verified clean ($found stale copy(ies) removed)"
+        mkdir -p /var/luna/preferences && touch "$FLAG"
+    else
+        log "$left stale preload copy(ies) remain -- NOT flagging, will retry"
+    fi
 end script

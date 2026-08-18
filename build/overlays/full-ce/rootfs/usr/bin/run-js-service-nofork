@@ -1,0 +1,217 @@
+#! /bin/sh
+verbose=off
+debug=off
+fork=off
+debugger_port=5885
+timeouts=on
+heap_size=0	# 0 means use default
+
+# webOS CE: the fork server is deliberately DISABLED in this copy.
+# Only com.palm.accountservices launches through it (see bake.py).
+fork=off
+
+# Jail master switch overrides the other jail switches- if
+# this is off, all js jails are off.  Valid values are "on" and "off".
+jail=on
+# Jail palm services.  Valid values are "off", "collective" and "individual"
+# Collective means that all palm services share the same jail.
+# so one could read data owned by another, but startup of new
+# services can be faster.  
+# Individual means each service gets its own jail.  It is the default.
+# turn palm jails off for now-ericm
+palm_jail=off
+# palm services that don't run in jail:
+palm_jail_pardons="com.palm.service.backup com.palm.service.migration"
+# Jail 3rd party services. Same usage as palm_jail.
+thirdparty_jail=individual
+
+while [ $# -gt 0 ]
+do
+	case "$1" in
+		-v)  verbose=on;;
+		-d)  debug=on;;
+		-f)  fork=on;;
+		-s)  heap_size=$2;shift;;
+		-p)  debugger_port=$2;shift;debug=on;;
+		-k)  timeouts=off;;
+		-j)  jail=on;;
+		-n)  ;;
+		--)	shift; break;;
+		-*)
+		echo >&2 "usage: $0 [-v] [-d] [-f] [-s size] [-p debugger-port] [-j] [-k] [-n] directory"
+		echo >&2 "-v : verbose mode"
+		echo >&2 "-d : enable debugger"
+		echo >&2 "-f : launch using Node.js fork server"
+		echo >&2 "-s : specify max heap size (bytes) -- ignored when using fork server"
+		echo >&2 "-p [port] : set port for debugger"
+		echo >&2 "-k : disable timeouts (keep running)"
+		echo >&2 "-j : enable jailer"
+		echo >&2 "-n : use node.js engine (now the default, this option is still recognized for compatibility)"		
+		exit 1;;
+		*)  break;;	# terminate while loop
+	esac
+	shift
+done
+
+# Disable the fork server if we're debugging
+if [ $debug = on ]; then
+	fork=off
+fi
+
+if [ x$BEDLAM_ROOT != x ]; then
+	FRAMEWORKS_PATH=$BEDLAM_ROOT/palm/frameworks
+	NODE_ADDONS=$BEDLAM_ROOT/palm/nodejs
+	JS=$BEDLAM_ROOT/bin/js
+	NODE=$NODE_ADDONS/node
+	NODE_SPAWNER=$BEDLAM_ROOT/bin/node_spawner
+	SERVICE_LAUNCHER=$BEDLAM_ROOT/palm/services/jsservicelauncher
+else
+	FRAMEWORKS_PATH=/usr/palm/frameworks
+	NODE_ADDONS=/usr/palm/nodejs
+	JS=/usr/bin/js
+	NODE=$NODE_ADDONS/node
+	NODE_SPAWNER=/bin/node_spawner
+	SERVICE_LAUNCHER=/usr/palm/services/jsservicelauncher
+fi
+
+SERVICE_PATH=$1
+case "${SERVICE_PATH}" in
+	/usr/palm/services/*)
+		ROM_SERVICE=on
+		ROLES_PATH=/usr/share/ls2
+		;;
+	/media/cryptofs/apps/*)
+		ROM_SERVICE=off
+		ROLES_PATH=/var/palm/ls2
+		;;
+	*)
+		echo "Invalid service path ${SERVICE_PATH}.  Exiting."
+		exit 1
+		;;
+esac
+
+SERVICE_NAME=$(basename $SERVICE_PATH)
+FULL_SERVICE_NAME=${SERVICE_NAME}
+SERVICE_NAME_LENGTH=${#SERVICE_NAME}
+if [ $SERVICE_NAME_LENGTH -gt 13 ] ; then
+	if [ x`uname` != xDarwin ] ; then
+		SERVICE_NAME_INDEX=$(expr $SERVICE_NAME_LENGTH - 12)
+		SERVICE_NAME=$(expr substr $SERVICE_NAME $SERVICE_NAME_INDEX 13)
+	fi
+fi
+
+# Identify which cpushareholder group the runner is in. 
+CGROUP="/no-group/not-present" # hack: non-existent directory and path, for failure case. Don't allow CGROUP to be empty string
+if [ -f /proc/$$/cgroup -a -f /etc/default/cpushareholder ] ; then
+	. /etc/default/cpushareholder
+	cpushareholder_identify_current_group $$
+	CGROUP=$CSHR_GROUPS/$CSHR_GROUP/tasks
+fi
+
+# figure out how to jail the app
+# is the app a palm app or 3rd party?
+# does each app get its own jail or use a common one?
+if [ $jail == on ]; then
+	case "${FULL_SERVICE_NAME}" in
+	com.palm.*)
+		appid="com.palm.triton"
+		case ${palm_jail} in
+		off) jail=off;;
+		c*) ;;
+		*) appid=${FULL_SERVICE_NAME};;
+		esac
+		# check for exceptions:
+		for i in "${palm_jail_pardons}"
+		do
+			if [ "${i}" = "${appid}" ]
+			then
+				jail=off
+			fi
+		done
+		;;
+	*)
+		# default for collective:
+		appid="com.palm.generic.service.thirdparty"
+		case ${thirdparty_jail} in
+		off) jail=off;;
+		c*) ;;
+		*) appid=${FULL_SERVICE_NAME};;
+		esac
+		;;
+	esac
+	# determine if service is in the rom or was installed, as they
+	# use different configs
+	jailtype="triton"
+	if [ $ROM_SERVICE == off ]; then
+		jailtype="triton-inst"
+	fi
+
+	# palm or 3rdparty jails might be off
+	if [ $jail == on ]; then
+		# always disable the fork server for jailed apps until jailer
+		# library is available
+		fork=off
+
+		JAIL_STRING="/usr/bin/jailer -t ${jailtype} -i "${appid}" -p $SERVICE_PATH"
+	fi
+fi
+
+if [ x$1 != x ]
+then
+	if [ $fork = off ]; then
+		cd $1
+	fi
+fi
+
+export NODE_PATH="$FRAMEWORKS_PATH:$NODE_ADDONS"
+
+if [ $fork = on ]; then
+	# NOTE: heap size specified in node_fork_sever upstart job
+	
+	# specify directory to run in
+	JS_ENGINE=$NODE_SPAWNER
+	COMMON_OPTIONS="--no-stdin --syslog --script=$SERVICE_LAUNCHER/bootstrap-node.js --arg=$1"
+
+	# if we're not running from a tty, then don't pipe the child process'
+	# stdout/stderr to the parent (or spawner) 
+	if [ ! -t 0 ]; then
+		COMMON_OPTIONS="--no-childstdout --no-childstderr $COMMON_OPTIONS"
+	fi
+else
+	JS_ENGINE=$NODE
+
+	# We can only adjust heap size when not using fork server
+	if [ $heap_size -gt 0 ]; then
+		COMMON_OPTIONS="--max_old_space_size=$heap_size"
+	fi
+	COMMON_OPTIONS="$COMMON_OPTIONS $SERVICE_LAUNCHER/bootstrap-node.js"
+fi
+
+if [ $fork = on ]; then
+	COMMON_APPEND=" --arg=-- --arg=$CGROUP --arg=$ROLES_PATH "
+else
+	COMMON_APPEND=" --  $CGROUP $ROLES_PATH"
+fi
+
+
+if [ $debug = on ] ; then
+	timeouts=off
+	COMMAND_STRING="$JS_ENGINE --debug=$debugger_port $COMMON_OPTIONS"
+else
+	COMMAND_STRING="$JS_ENGINE $COMMON_OPTIONS"
+fi
+COMMAND_STRING="$COMMAND_STRING $COMMON_APPEND"
+if [ $timeouts = off ] ; then
+	if [ $fork = on ]; then
+		COMMAND_STRING="$COMMAND_STRING --arg=--disable-timeouts"
+	else
+		COMMAND_STRING="$COMMAND_STRING --disable-timeouts"
+	fi
+fi
+
+if [ $verbose = on ] ; then
+	echo $JAIL_STRING $COMMAND_STRING
+fi
+
+export LD_PRELOAD="/usr/lib/libmemcpy.so:${LD_PRELOAD}"
+exec $JAIL_STRING $COMMAND_STRING
