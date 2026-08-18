@@ -71,6 +71,24 @@ script
     }
     kick_dependents() { kick_ipkg; kick_imtransport; }
     if [ ! -d "$SEED" ]; then kick_dependents; exit 0; fi
+    # Do NOTHING until first use is finished, and get out of the way FAST.
+    # The cryptofs store is re-initialized during first-use, so anything
+    # seeded before that is wiped -- the work is not merely wasted, it is
+    # actively harmful: this job's 5-attempt retry loop takes minutes, and
+    # while it runs upstart considers the job RUNNING and silently DROPS
+    # the `start on first-use-finished` trigger, which is the one run that
+    # would have stuck. Seen live on 600019: job started 14:45:45, still
+    # looping when first-use-finished fired at 14:52:54 (upstart started
+    # ce-language-patches on that event and not this job), so NOTHING was
+    # ever seeded -- no feeds, no stanzas, no synergy runtime. 600018 only
+    # escaped because its early run happened to die after 48s, leaving the
+    # job idle in time to catch the trigger. Exiting immediately makes that
+    # luck into a guarantee. On later (post-OOBE) boots the flag exists, so
+    # the ordinary `stopped finish` self-heal pass still runs.
+    if [ ! -f /var/luna/preferences/ran-first-use ]; then
+        log "first use not finished -- deferring to first-use-finished"
+        exit 0
+    fi
     i=0
     while ! grep -q " /media/cryptofs " /proc/mounts && [ $i -lt 60 ]; do
         sleep 5
