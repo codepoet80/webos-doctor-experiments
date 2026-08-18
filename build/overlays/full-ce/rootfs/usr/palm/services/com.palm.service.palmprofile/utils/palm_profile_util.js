@@ -313,7 +313,7 @@ var Util = Class.create ({
 		
 	createLocalAccount: function (username, onComplete) {
 		// webOS Archive: UPSERT — never create a second parallel palmprofile
-		// account. If one already exists (e.g. the "Dr. Skipped Firstuse"
+		// account. If one already exists (e.g. the "webOS User"
 		// activation-bypass row), rename it in place via modifyAccount; deleting
 		// it would run the accounts-service teardown cascade, and duplicates
 		// confuse deviceinfo. Only create when no palmprofile account exists.
@@ -329,7 +329,7 @@ var Util = Class.create ({
 				}
 			}
 			if (existing) {
-				if (existing.username === username || username === "Dr. Skipped Firstuse") {
+				if (existing.username === username || username === "webOS User") {
 					// The default/bypass create must never rename a real signed-in
 					// account — any existing row already satisfies activation.
 					ServiceLog.log("WOSA: palmprofile account already present (" + existing.username + ") — no rename needed.");

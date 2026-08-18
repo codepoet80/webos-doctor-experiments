@@ -2088,6 +2088,40 @@ def main():
     # to /var/log/reboot-tripwire.log and syslog, then exec the real binary
     # (preserved as *.real). Behavior is unchanged; this exists purely to name
     # the rebooter on the next occurrence.
+    # 19e) skip-setup profile name. Skipping account setup does NOT create the
+    # profile in the OOBE app — it only closes. On the next boot
+    # /etc/event.d/firstuse-createDefaultAccount calls the stock palmprofile
+    # service, whose CreateProfileCommandAssistant hardcodes the placeholder
+    # "Dr. Skipped Firstuse"; on a palmprofile row `username` IS the display
+    # name, so that is what the user sees in Settings. Rewrite the literal in
+    # BOTH files that carry it: the creator, and the community util's sentinel
+    # comparison (which must keep matching or a later real sign-in stops being
+    # able to rename the placeholder row).
+    log('tier: skip-setup profile name ("Dr. Skipped Firstuse" -> "webOS User")')
+    OLD_PN, NEW_PN = b"Dr. Skipped Firstuse", b"webOS User"
+    cpa_rel = ("usr/palm/services/com.palm.service.palmprofile/handlers/"
+               "CreateProfileCommandAssistant.js")
+    cpa = read_rootfs(ROOTFS_TGZ, exact=["./" + cpa_rel])["./" + cpa_rel]
+    if OLD_PN not in cpa["data"]:
+        raise SystemExit(f"[bake] FATAL: {OLD_PN.decode()!r} not in stock {cpa_rel} "
+                         "— the skip-setup profile name moved; re-check the handler")
+    w(cpa_rel, cpa["data"].replace(OLD_PN, NEW_PN), cpa.get("mode", 0o644))
+    # the util is already in the overlay (community-firstuse layer) — patch in place
+    ppu_rel = ("usr/palm/services/com.palm.service.palmprofile/utils/"
+               "palm_profile_util.js")
+    ppu_path = os.path.join(OUT_ROOT, ppu_rel)
+    if not os.path.exists(ppu_path):
+        raise SystemExit(f"[bake] FATAL: {ppu_rel} missing from the overlay — "
+                         "the community-firstuse layer should have baked it")
+    with open(ppu_path, "rb") as f:
+        ppu = f.read()
+    if OLD_PN not in ppu:
+        raise SystemExit(f"[bake] FATAL: {OLD_PN.decode()!r} not in {ppu_rel} — "
+                         "the rename sentinel moved; re-check palm_profile_util.js")
+    n_pn = ppu.count(OLD_PN)
+    w(ppu_rel, ppu.replace(OLD_PN, NEW_PN), os.stat(ppu_path).st_mode & 0o777)
+    log(f"  profile placeholder renamed in 2 files ({n_pn} sentinel occurrence(s))")
+
     log("tier: reboot tripwire (log-only shims for /sbin/reboot + /sbin/telinit)")
     trip_stock = read_rootfs(ROOTFS_TGZ, exact=["./sbin/reboot", "./sbin/telinit"])
     for tool in ("reboot", "telinit"):
