@@ -101,13 +101,22 @@ NEWAPPS = os.path.join(ATI, "NewApps")
 MEDIA = os.path.join(ATI, "Media-Internal")
 
 
+def _natkey(name):
+    """Natural-sort key: digit runs compare numerically ("1.0.10" > "1.0.9")."""
+    return [(0, int(t)) if t.isdigit() else (1, t)
+            for t in re.split(r"(\d+)", name)]
+
+
 def ati_ipk(folder, pkgprefix):
-    """Newest <pkgprefix>_*.ipk in an AddToImage folder (mtime, not version —
-    a corrected rebuild can reuse the same version string)."""
+    """Highest-versioned <pkgprefix>_*.ipk in an AddToImage folder (natural
+    sort of the filename). mtime was used before, but git does not preserve
+    mtimes, so a fresh clone made the pick arbitrary; a corrected rebuild that
+    reuses the same version string overwrites the same filename, so version
+    order loses nothing."""
     cands = glob.glob(os.path.join(folder, pkgprefix + "_*.ipk"))
     if not cands:
         sys.exit(f"ERROR: no {pkgprefix}_*.ipk in {folder}")
-    return max(cands, key=os.path.getmtime)
+    return max(cands, key=lambda p: _natkey(os.path.basename(p)))
 
 
 IPK = {
@@ -617,6 +626,9 @@ def main():
         "./usr/palm/ipkgs/com.quickoffice.ar_10.3.484_ARM_release-arm.ipk",
         "./usr/palm/ipkgs/com.palm.app.photos/com.palm.app.photos_3.0.8001_all.ipk",
         # CE platform tweaks (connectivity check, app installer, keyboard size)
+        # + the JS-service launcher and the account service's dbus launcher
+        "./usr/bin/run-js-service",
+        "./usr/share/dbus-1/system-services/com.palm.accountservices.service",
         "./usr/bin/PmNetConfigManager",
         "./usr/palm/frameworks/enyo/0.10/framework/lib/captiveportal/CaptivePortalControl.js",
         "./usr/palm/command-resource-handlers.json",
@@ -1302,11 +1314,17 @@ def main():
         if not os.path.isdir(approot):
             sys.exit(f"ERROR: {member}: no {appid} app dir in payload")
         edit_fn(approot)
-        subprocess.run(["tar", "--owner=0", "--group=0",
-                        "-czf", os.path.join(ar, "data.tar.gz"), "."],
+        # deterministic repack — fixed member order and mtimes (patch/copy
+        # stamp build-time mtimes on the edited files), no gzip timestamp,
+        # ar D-mode: the same jar + patches must yield byte-identical ipks
+        subprocess.run(["tar", "--sort=name", "--mtime=@1324497600",
+                        "--numeric-owner", "--owner=0", "--group=0",
+                        "-cf", os.path.join(ar, "data.tar"), "."],
                        cwd=datadir, check=True)
+        subprocess.run(["gzip", "-n", "-9", "-f", os.path.join(ar, "data.tar")],
+                       check=True)
         newipk = os.path.join(wd, "new.ipk")
-        subprocess.run(["ar", "rc", newipk, *order], cwd=ar, check=True)
+        subprocess.run(["ar", "rcD", newipk, *order], cwd=ar, check=True)
         w(member[2:], open(newipk, "rb").read(), 0o644)
         log(f"  repacked staged ipk with integration patches: {member[2:]}")
 
@@ -1613,7 +1631,10 @@ def main():
             "         echo \"Status: install ok installed\"\n"
             f"         echo \"Architecture: {arch}\"\n"
             f"         echo \"Description: {STATUS_SEED_DESC[skey]}\"\n"
-            f"         echo \"Installed-Time: {int(os.path.getmtime(sipk))}\"\n"
+            # Installed-Time is stamped on-device when the stanza is seeded
+            # (baking the ipk's host mtime made the image bytes depend on the
+            # clone — git does not preserve mtimes)
+            "         echo \"Installed-Time: $(date +%s)\"\n"
             "         echo \"\"\n"
             "      } >> $APPS/usr/lib/ipkg/status\n"
             "   fi\n"
@@ -1804,7 +1825,8 @@ def main():
             vlang = rest[3:].split("_", 1)[0].lower()
         else:
             continue
-        if vlang not in variants or os.path.getmtime(p) > os.path.getmtime(variants[vlang]):
+        if vlang not in variants or _natkey(os.path.basename(p)) > _natkey(
+                os.path.basename(variants[vlang])):
             variants[vlang] = p
     if "en" not in variants:
         sys.exit(f"ERROR: no english (no-suffix) {PATCH_BASE} ipk in {POR}")
@@ -2145,37 +2167,93 @@ def main():
     # on first boot (postFirstUseInstall). We can't remove them via the overlay;
     # instead ship an early upstart job that deletes the staged ipks before the
     # customization service can install them (runs on `stopped configurator`,
-    # strictly before LunaSysMgr/LunaReady/customization), and clears any dir
-    # already placed. Editing hp.tar is avoided (Doctor approval hashes).
+    # strictly before LunaSysMgr/LunaReady/customization), and self-heals any
+    # cryptofs copy already placed by an earlier flash/boot, with the same
+    # wait-for-write/verify/flag/first-use-finished-retry pattern as
+    # ce-cryptofs-seed and ce-firstboot-tweaks (see the job's own comment).
+    # Editing hp.tar is avoided (Doctor approval hashes).
     log("tier: remove HP preloads (kindle / enyo-facebook / youtube)")
     preload_job = (
         "# ce-remove-preloads — webOS CE: HP preloads we don't ship.\n"
         "# Staged by sweatshop-hp-topaz into /usr/lib/luna/customization/apps and\n"
         "# installed to /media/cryptofs/apps on first boot by com.palm.service.customization.\n"
-        "# Delete the staged ipks before that install runs; also clear any dir already placed.\n"
+        "# Delete the staged ipks before that install runs; also clear any cryptofs copy\n"
+        "# already placed by an earlier flash/boot (cryptofs survives Doctor flashes).\n"
+        "#\n"
+        "# Two different timing needs, same shape ce-cryptofs-seed/ce-firstboot-tweaks\n"
+        "# already had to learn the hard way. The staged-ipk removal must WIN A RACE\n"
+        "# against the customization service, so it runs immediately, every trigger,\n"
+        "# unconditionally (rm -f is idempotent -- re-running it once already clean\n"
+        "# costs nothing). The cryptofs cleanup hits the SAME mounted-but-not-yet-\n"
+        "# writable window documented on those jobs (cryptofs appears in /proc/mounts\n"
+        "# ~100s before it accepts writes on a fresh flash), so unlike the staged-ipk\n"
+        "# half it gets its own wait-for-write / verify / once-per-flash flag, plus a\n"
+        "# second chance at first-use-finished in case the first attempt lost that race\n"
+        "# (this job used to fire only on `stopped configurator`, inside that window,\n"
+        "# with no retry and no verification -- flagged but never fixed after 600011).\n"
         "\n"
         "start on stopped configurator\n"
+        "start on first-use-finished\n"
         "\n"
         "console none\n"
         "\n"
         "script\n"
-        "    # ce-firstboot-tweaks fires on this SAME event and also remounts / rw,\n"
-        "    # then back to ro. Interleaved, one job flips the filesystem read-only\n"
-        "    # while the other is still deleting -- and a surviving preload ipk gets\n"
-        "    # installed. mkdir is atomic, so use it as a spinlock.\n"
+        "    LOG=/var/log/ce-remove-preloads.log\n"
+        "    log() { echo \"$(date 2>/dev/null) $*\" >> \"$LOG\" 2>/dev/null; }\n"
+        "    PRELOADS=\"com.palm.app.kindle com.palm.app.enyo-facebook com.palm.app.youtube\"\n"
+        "\n"
+        "    # (a) staged ipks: must beat com.palm.service.customization, so no waiting.\n"
+        "    # ce-firstboot-tweaks fires on this SAME event and also remounts / rw, then\n"
+        "    # back to ro. Interleaved, one job flips the filesystem read-only while the\n"
+        "    # other is still deleting -- and a surviving preload ipk gets installed.\n"
+        "    # mkdir is atomic, so use it as a spinlock.\n"
         "    L=/tmp/.ce-rootfs-rw.lock\n"
         "    n=0\n"
         "    while ! mkdir $L 2>/dev/null && [ $n -lt 60 ]; do sleep 1; n=$((n+1)); done\n"
         "    mount -o remount,rw / 2>/dev/null || true\n"
-        "    for app in com.palm.app.kindle com.palm.app.enyo-facebook com.palm.app.youtube; do\n"
-        "        rm -f  /usr/lib/luna/customization/apps/${app}_*.ipk\n"
-        "        rm -rf /media/cryptofs/apps/usr/palm/applications/${app}\n"
+        "    for app in $PRELOADS; do\n"
+        "        rm -f /usr/lib/luna/customization/apps/${app}_*.ipk\n"
         "        ls /usr/lib/luna/customization/apps/${app}_*.ipk >/dev/null 2>&1 && \\\n"
-        "            echo \"$(date 2>/dev/null) FAILED to remove staged $app\" \\\n"
-        "                >> /var/log/ce-remove-preloads.log 2>/dev/null\n"
+        "            log \"FAILED to remove staged $app\"\n"
         "    done\n"
         "    mount -o remount,ro / 2>/dev/null || true\n"
         "    rmdir $L 2>/dev/null || true\n"
+        "\n"
+        "    # (b) cryptofs copy from a prior flash/boot: once per flash, verified.\n"
+        "    FLAG=/var/luna/preferences/ce-preloads-deshadowed\n"
+        "    if [ -f \"$FLAG\" ]; then exit 0; fi\n"
+        "    i=0\n"
+        "    while [ $i -lt 60 ]; do\n"
+        "        grep -q \" /media/cryptofs \" /proc/mounts && \\\n"
+        "           mkdir -p /media/cryptofs/.ce-preload-probe 2>/dev/null && \\\n"
+        "           touch /media/cryptofs/.ce-preload-probe/w 2>/dev/null && break\n"
+        "        sleep 5\n"
+        "        i=$((i+1))\n"
+        "    done\n"
+        "    rm -rf /media/cryptofs/.ce-preload-probe 2>/dev/null\n"
+        "    if [ $i -ge 60 ]; then\n"
+        "        log \"cryptofs not writable -- preload deshadow deferred to the next trigger\"\n"
+        "        exit 0\n"
+        "    fi\n"
+        "    left=0\n"
+        "    found=0\n"
+        "    for app in $PRELOADS; do\n"
+        "        [ -d \"/media/cryptofs/apps/usr/palm/applications/$app\" ] || continue\n"
+        "        found=$((found+1))\n"
+        "        rm -rf \"/media/cryptofs/apps/usr/palm/applications/$app\"\n"
+        "        if [ -d \"/media/cryptofs/apps/usr/palm/applications/$app\" ]; then\n"
+        "            log \"FAILED to deshadow cryptofs copy of $app\"\n"
+        "            left=$((left+1))\n"
+        "        else\n"
+        "            log \"deshadowed stale cryptofs copy of $app\"\n"
+        "        fi\n"
+        "    done\n"
+        "    if [ $left -eq 0 ]; then\n"
+        "        log \"preload deshadow verified clean ($found stale copy(ies) removed)\"\n"
+        "        mkdir -p /var/luna/preferences && touch \"$FLAG\"\n"
+        "    else\n"
+        "        log \"$left stale preload copy(ies) remain -- NOT flagging, will retry\"\n"
+        "    fi\n"
         "end script\n"
     )
     w("etc/event.d/ce-remove-preloads", preload_job, 0o644)
@@ -2339,6 +2417,60 @@ def main():
     w("etc/palm/defaultPreferences.txt", dp, 0o644)
     log("  default keyboard size -> small (-1); carrier string -> webOS CE")
 
+    # (f) com.palm.accountservices launches WITHOUT the node fork server.
+    #
+    # The account service (dir com.palm.service.palmprofile, bus name
+    # com.palm.accountservices — the backend for the whole webOS Account /
+    # OOBE flow, see build/community-firstuse) is hub-launched on demand via
+    # /usr/bin/run-js-service. That script picks the node FORK SERVER whenever
+    # /var/palm/node/fork exists (always, on this ROM) for any service the
+    # jailer leaves alone — which is every com.palm.* ROM service.
+    #
+    # Diagnosed live 2026-08-18 on 600014: that fork can WEDGE. node_spawner
+    # sits alive poll-waiting, the fork server never logs "Changing to
+    # directory", and ls-hubd — believing a launch is still in flight — queues
+    # EVERY call to the service forever, answering nothing. The account app
+    # then black-screens / hangs / replays setup (its probe times out), and a
+    # card launched during the wedge stays broken until it is closed. Symptom
+    # to grep for: keymanager logging "com.palm.accountservices is not
+    # running" every 5 minutes for a whole boot. Recovery without a reflash is
+    # `kill <the stuck node_spawner>`.
+    #
+    # Fix: ship a copy of the launcher with fork mode hard-off and point ONLY
+    # this service's dbus launcher at it. fork=off is a well-trodden path (it
+    # is what every jailed third-party service already uses, and what the
+    # community 3.0.5 ipk effectively ran under); startup costs one fresh node
+    # process instead of a fork, and the service idle-quits either way.
+    # Deliberately NOT applied to run-js-service itself: every other JS
+    # service keeps the stock launcher, so the blast radius is one service.
+    # Verified live on 600014 before shipping: launched by hand through this
+    # script the service came up as a plain process with ZERO fork-server log
+    # lines and answered getAccountToken in ~1s.
+    log("tier: accountservices nofork launcher")
+    rjs = sdata("./usr/bin/run-js-service")
+    rjs_nofork = rjs.replace(
+        b"# Set fork default based on result of upstart check\n"
+        b"if [ -f /var/palm/node/fork ]; then\n"
+        b"\tfork=on\n"
+        b"fi\n",
+        b"# webOS CE: the fork server is deliberately DISABLED in this copy.\n"
+        b"# Only com.palm.accountservices launches through it (see bake.py).\n"
+        b"fork=off\n")
+    if rjs_nofork == rjs:
+        sys.exit("ERROR: run-js-service fork-default block not found — "
+                 "the launcher changed; re-check the nofork patch")
+    if b"/var/palm/node/fork" in rjs_nofork:
+        sys.exit("ERROR: run-js-service-nofork still references the fork flag file")
+    w("usr/bin/run-js-service-nofork", rjs_nofork, 0o755)
+    acsvc = sdata("./usr/share/dbus-1/system-services/"
+                  "com.palm.accountservices.service").decode()
+    acsvc = sure_replace(acsvc, "Exec=/usr/bin/run-js-service ",
+                         "Exec=/usr/bin/run-js-service-nofork ",
+                         "accountservices dbus launcher", count=1)
+    w("usr/share/dbus-1/system-services/com.palm.accountservices.service",
+      acsvc, 0o644)
+    log("  com.palm.accountservices -> /usr/bin/run-js-service-nofork")
+
     # 19d) reboot tripwire (diagnostic, log-only). Post-flash devices reboot
     # "spontaneously" (once at the end of the OOBE boot — right after the A6
     # battery-firmware flashing sequence — and once ~9 min into the next
@@ -2432,6 +2564,42 @@ def main():
 
     shutil.rmtree(tmp)
     verify_generated_sources()
+
+    # Build manifest: BUILDMARK -> the exact inputs this overlay was baked
+    # from. git describe covers the tracked tree (--dirty flags uncommitted
+    # edits); the OEM jar and the LunaCE binary live OUTSIDE the repo, and
+    # hashing every consumed ipk makes two builds comparable without a git
+    # checkout. Written only after verify_generated_sources() — a manifest
+    # must never describe a build that failed. build-ce-doctor.sh appends the
+    # output JAR's hash after the repack. Tracked in git (manifests/).
+    def sha256_file(path):
+        h = hashlib.sha256()
+        with open(path, "rb") as f:
+            for blk in iter(lambda: f.read(1 << 20), b""):
+                h.update(blk)
+        return h.hexdigest()
+
+    gitrev = subprocess.run(["git", "describe", "--always", "--dirty", "--tags"],
+                            cwd=PROJ, capture_output=True, text=True)
+    lunace_bin = os.path.join(LUNACE, "bin", "LunaSysMgr-LunaCE-topaz")
+    manifest = {
+        "buildmark": mark,
+        "buildtime": buildtime,
+        "git": gitrev.stdout.strip() if gitrev.returncode == 0 else "unknown",
+        "oem_jar": {"path": os.path.relpath(jar, PROJ),
+                    "sha256": sha256_file(jar)},
+        "lunace_binary": {"path": lunace_bin, "sha256": sha256_file(lunace_bin)},
+        "ipks": {os.path.relpath(p, PROJ): sha256_file(p) for p in sorted(
+            set(IPK.values()) | set(OVERWRITE_IPKS.values()) | set(variants.values()))},
+    }
+    mdir = os.path.join(HERE, "manifests")
+    os.makedirs(mdir, exist_ok=True)
+    mpath = os.path.join(mdir, f"{mark}.json")
+    with open(mpath, "w") as f:
+        json.dump(manifest, f, indent=2)
+        f.write("\n")
+    log(f"manifest: {os.path.relpath(mpath, PROJ)}")
+
     log(f"done: {OUT}")
     nf = sum(len(files) for _, _, files in os.walk(OUT_ROOT))
     sz = sum(os.path.getsize(os.path.join(dp, f))

@@ -35,20 +35,45 @@ TLSIPKS="${TLSIPKS:-$BUILD/../../OpenSSL-legacyWebOS/ipks}"
 CA_BUNDLE="${CA_BUNDLE:-$HERE/ca-certificates.crt}"
 ROOTFS_TGZ="$BUILD/work/webos/nova-cust-image-topaz.rootfs.tar.gz"
 OUT="$BUILD/overlays/community-firstuse"
+# assembled here first, moved to $OUT only when COMPLETE: a mid-run failure
+# used to leave a half-built $OUT (changes.json is written last), which
+# harness.py accepts as a valid overlay and turns into a flashable JAR
+# missing curl/TLS/the CA bundle. Sibling path so the final mv is a rename.
+STAGE="$OUT.new"
 
 # prefer the project's AddToImage/PatchOrReplace copies (the user's statement
 # of intent for image contents); fall back to the OpenSSL-legacyWebOS repo.
 ATI_POR="$BUILD/../AddToImage/PatchOrReplace"
-CURL_IPK="$(ls "$ATI_POR"/org.webosinternals.curl-tls13_*_armv7.ipk 2>/dev/null | sort -V | tail -1)"
-[ -n "$CURL_IPK" ] || CURL_IPK="$(ls "$TLSIPKS"/org.webosinternals.curl-tls13_*_armv7.ipk | sort -V | tail -1)"
-NTP_IPK="$(ls "$ATI_POR"/org.webosinternals.ntpdate-sync_*_armv7.ipk 2>/dev/null | sort -V | tail -1)"
-[ -n "$NTP_IPK" ] || NTP_IPK="$(ls "$TLSIPKS"/org.webosinternals.ntpdate-sync_*_armv7.ipk | sort -V | tail -1)"
 
-# the firstuse replacement app: newest webosaccount ipk in AddToImage/OOBE
-# (mtime, not version — a corrected rebuild can reuse the same version string)
+# highest-versioned <prefix>_*.ipk in a dir; prints nothing if none match.
+# A plain `ls glob | tail` dies under set -euo pipefail when the glob is empty
+# (ls exits 2, pipefail propagates, errexit kills the shell with stderr
+# discarded) — which made the fallbacks below dead code and the missing-input
+# diagnostics unreachable. Version order (sort -V on the filename), not mtime:
+# git does not preserve mtimes, so a fresh clone made an mtime pick arbitrary;
+# a corrected rebuild that reuses the same version string overwrites the same
+# filename, so version order loses nothing.
+newest_ipk() {
+    local matches=()
+    shopt -s nullglob
+    matches=("$1"/"$2"_*.ipk)
+    shopt -u nullglob
+    [ ${#matches[@]} -gt 0 ] || return 0
+    printf '%s\n' "${matches[@]}" | sort -V | tail -n 1
+}
+
+CURL_IPK="$(newest_ipk "$ATI_POR" org.webosinternals.curl-tls13)"
+[ -n "$CURL_IPK" ] || CURL_IPK="$(newest_ipk "$TLSIPKS" org.webosinternals.curl-tls13)"
+NTP_IPK="$(newest_ipk "$ATI_POR" org.webosinternals.ntpdate-sync)"
+[ -n "$NTP_IPK" ] || NTP_IPK="$(newest_ipk "$TLSIPKS" org.webosinternals.ntpdate-sync)"
+
+# the firstuse replacement app: the AddToImage/OOBE webosaccount ipk
 ATI_OOBE="$BUILD/../AddToImage/OOBE"
-WOSA_IPK="$(ls -t "$ATI_OOBE"/org.webosarchive.webosaccount_*.ipk 2>/dev/null | head -1)"
+WOSA_IPK="$(newest_ipk "$ATI_OOBE" org.webosarchive.webosaccount)"
 
+[ -n "$WOSA_IPK" ] || { echo "ERROR: no org.webosarchive.webosaccount_*.ipk in $ATI_OOBE" >&2; exit 1; }
+[ -n "$CURL_IPK" ] || { echo "ERROR: no org.webosinternals.curl-tls13 ipk in $ATI_POR or $TLSIPKS" >&2; exit 1; }
+[ -n "$NTP_IPK" ]  || { echo "ERROR: no org.webosinternals.ntpdate-sync ipk in $ATI_POR or $TLSIPKS" >&2; exit 1; }
 for f in "$ROOTFS_TGZ" "$WOSA_IPK" "$CURL_IPK" "$NTP_IPK" "$CA_BUNDLE"; do
     [ -e "$f" ] || { echo "ERROR: missing input: $f" >&2; exit 1; }
 done
@@ -58,7 +83,7 @@ APP=usr/palm/applications/com.palm.app.firstuse
 SVC=usr/palm/services/com.palm.service.palmprofile
 
 TMP="$(mktemp -d)"
-trap 'rm -rf "$TMP"' EXIT
+trap 'rm -rf "$TMP" "$STAGE"' EXIT
 
 echo ">> 0) extract the webosaccount ipk (full app + service source)"
 mkdir -p "$TMP/wosaipk" && (cd "$TMP/wosaipk" && ar x "$WOSA_IPK" && tar xzf data.tar.gz)
@@ -68,9 +93,9 @@ for f in "$SRC/app/FirstUse.js" "$SRC/app/source/tnc/Palm.js" "$SRC/service/serv
     [ -e "$f" ] || { echo "ERROR: webosaccount ipk payload missing $f" >&2; exit 1; }
 done
 
-echo ">> 1) assemble overlay rootfs"
-rm -rf "$OUT"
-R="$OUT/rootfs"
+echo ">> 1) assemble overlay rootfs (staged in $STAGE)"
+rm -rf "$STAGE"
+R="$STAGE/rootfs"
 mkdir -p "$R/$APP" "$R/$SVC/utils" "$R/$SVC/handlers" \
          "$R/usr/lib/curl11" "$R/usr/bin" "$R/etc/ssl/certs" "$R/etc/event.d" "$R/var/gadget"
 
@@ -84,12 +109,12 @@ echo ">> 2) first-use app: webosaccount app over com.palm.app.firstuse"
         mkdir -p "$R/$APP/$(dirname "$f")"
         cp "$f" "$R/$APP/$f"
       done)
-# ... but unlike stock firstuse (visible:false), the app IS the account
-# manager post-OOBE: sign out and there'd be no way back in without a
-# launcher icon. Ship a CE appinfo: firstuse id kept, visible, titled
-# "webOS Account", on the Settings tab via the wosa-settings keyword.
-# A standalone launch (no locale on the URL) just closes like a normal
-# app — the 1.1.10+ closeApp only finishes OOBE for the firstuse launch.
+# hidden, matching stock firstuse (visible:false) — 2026-08-18 direction: this
+# app is OOBE-only again. Post-OOBE account management is its own catalog app
+# (own id, own service jail story — see accountservices-fork-server-wedge),
+# not a launcher icon on this one. A standalone launch (no locale on the URL)
+# still just closes like a normal app — the 1.1.10+ closeApp only finishes
+# OOBE for the firstuse launch — but nothing routes a user to that launch.
 WOSA_VER="$(basename "$WOSA_IPK" | cut -d_ -f2)"
 cat > "$R/$APP/appinfo.json" <<APPINFO
 {
@@ -100,9 +125,8 @@ cat > "$R/$APP/appinfo.json" <<APPINFO
 	"main": "index.html",
 	"title": "webOS Account",
 	"icon": "images/icon.png",
-	"visible": true,
-	"uiRevision": 2,
-	"keywords": ["wosa-settings"]
+	"visible": false,
+	"uiRevision": 2
 }
 APPINFO
 
@@ -211,7 +235,7 @@ echo ">> 7) dev unlock out of the box"
 # appinfo (confirmed live: getAppInfo returned the stock en locale merge and
 # no launch point existed). Our ipk's locale appinfos are excluded too (they
 # carry the wrong id), so the base appinfo is authoritative everywhere.
-cat > "$OUT/changes.json" <<'JSON'
+cat > "$STAGE/changes.json" <<'JSON'
 {
   "description": "Community first-use swap: com.palm.app.firstuse replaced in place with the AddToImage/OOBE webosaccount app (OOBE deltas applied), palmprofile service -> device.php backend, + its transport prerequisites (modern curl/TLS 1.3, ntpdate-sync, current CA bundle) and novacom enabled. Generated by community-firstuse/make-overlay.sh - do not edit by hand.",
   "ce_package": "org.webosarchive.ce-files",
@@ -227,6 +251,10 @@ cat > "$OUT/changes.json" <<'JSON'
   ]
 }
 JSON
+
+# overlay is complete — only now replace the real output dir
+rm -rf "$OUT"
+mv "$STAGE" "$OUT"
 
 echo ">> done: $OUT"
 find "$OUT/rootfs" -type f | sed "s|$OUT/rootfs|  |" | sort

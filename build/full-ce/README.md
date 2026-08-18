@@ -14,8 +14,10 @@ python3 bake.py
 ## Inputs: `AddToImage/` (project root)
 
 The single statement of intent for image contents. `bake.py` resolves every
-ipk by package-name prefix, newest-by-mtime (so a corrected rebuild reusing a
-version string still wins — just drop the new file in):
+ipk by package-name prefix, highest version (natural sort of the filename —
+mtime was used before, but git doesn't preserve mtimes, so a fresh clone made
+the pick arbitrary). A corrected rebuild reusing a version string still wins:
+it has the same filename, so dropping it in replaces the old file outright.
 
 - **`PatchOrReplace/`** — ipks that fix or replace an existing system
   component: the TLS tiers (browser/downloadmgr/luna/mail), uber-kernel,

@@ -358,7 +358,13 @@ def rewrite_rootfs(base_tar, out_tar, adds, removes, md5sums_rewrites, new_membe
 
     log(f"pass B (rewrite): {base_tar} -> {out_tar}")
     src = tarfile.open(base_tar, mode="r|gz")
-    with tarfile.open(out_tar, mode="w:gz") as dst:
+    # Explicit GzipFile, not mode="w:gz": tarfile's gzopen hands the output
+    # PATH to GzipFile, which embeds it plus the current wall-clock time in the
+    # gzip header — the one part of the output FIXED_MTIME didn't cover.
+    # filename="" + mtime=0 keep rebuilds byte-identical.
+    with open(out_tar, "wb") as rawf, \
+         gzip.GzipFile(filename="", fileobj=rawf, mode="wb", mtime=0) as gzf, \
+         tarfile.open(fileobj=gzf, mode="w") as dst:
         n = 0
         for m in src:
             n += 1
@@ -633,8 +639,15 @@ def cmd_patch_flasher(class_path, write=False):
 
 # ---- repack -----------------------------------------------------------------
 
-def rebuild_webos_tar(webos_dir, out_path):
-    """Rebuild resources/webOS.tar from work/webos/ in the original member order."""
+def rebuild_webos_tar(webos_dir, out_path, overrides=None):
+    """Rebuild resources/webOS.tar from work/webos/ in the original member order.
+
+    overrides: {basename: local_path} — use this file's content for a member
+    instead of the cached copy in webos_dir. Used to substitute the rewritten
+    rootfs without ever writing over the cached pristine extraction, so
+    work/webos/ stays a faithful, re-usable base across builds.
+    """
+    overrides = overrides or {}
     with open(os.path.join(webos_dir, ".tarmeta.json")) as f:
         meta = json.load(f)
     log(f"rebuilding webOS.tar -> {out_path}")
@@ -642,7 +655,7 @@ def rebuild_webos_tar(webos_dir, out_path):
         for name in meta["order"]:
             info = meta["members"][name]
             base = os.path.basename(name)
-            local = os.path.join(webos_dir, base)
+            local = overrides.get(base, os.path.join(webos_dir, base))
             ti = tarfile.TarInfo(name=name)
             ti.mode = info["mode"]
             ti.uid = info["uid"]; ti.gid = info["gid"]
@@ -748,10 +761,17 @@ def cmd_build(args):
         raise SystemExit(f"ERROR: integcheck failed (code {status}); aborting. "
                          "Fix the overlay/md5 attribution or pass --allow-integcheck-fail.")
 
-    # swap the new rootfs into webos_dir, rebuild webOS.tar, then the JAR
-    shutil.copyfile(new_rootfs, base_rootfs)
+    # rebuild webOS.tar substituting the new rootfs for the cached base's copy
+    # (via override, not a copy-over) so work/webos/ -- the cached pristine
+    # extraction -- is never mutated by a build. A prior version of this
+    # function copied new_rootfs over base_rootfs here, which meant a second
+    # build reusing the cache (the documented, intended workflow) silently
+    # applied its overlay on top of the PREVIOUS build's output instead of the
+    # pristine OEM rootfs. bake.py worked around this by force-re-extracting
+    # before every run; --reextract is no longer required for correctness.
     webos_tar = os.path.join(work, "webOS.ce.tar")
-    rebuild_webos_tar(webos_dir, webos_tar)
+    rebuild_webos_tar(webos_dir, webos_tar,
+                      overrides={os.path.basename(ROOTFS_MEMBER): new_rootfs})
     rebuild_jar(args.jar, args.out, webos_tar)
 
     log(f"DONE in {time.time()-t0:.0f}s -> {args.out} "
