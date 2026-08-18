@@ -46,14 +46,30 @@ script
     # kick them on EVERY exit path -- they used to sit after the early
     # `exit 0`s, which silently forfeited Preware's feeds and the Synergy
     # transport whenever the seed bailed.
-    kick_dependents() {
+    #
+    # SPLIT (600018 live finding): these two kicks have completely
+    # different dependencies, and bundling them cost Preware 86 seconds.
+    # kick_ipkg only needs cryptofs to be WRITABLE -- the feed configs are
+    # ~1KB of echo. kick_imtransport needs the 31MB synergy payload to be
+    # fully copied (its ELF interpreter lives there). Bundled at the end of
+    # the job, the feeds were held hostage by a copy they do not depend on:
+    # on 600018 OOBE finished 14:00:09, the user opened Preware 14:00:56 to
+    # an empty feed list, and the configs were not written until 14:01:35.
+    # (Why they need rewriting at all: ipkgservice's own pre-start DID seed
+    # them at 13:55:18, but the cryptofs store is re-initialized during
+    # first-use, which wiped them -- and its job was already running, so no
+    # trigger ever re-ran that pre-start. This kick is the only repair.)
+    kick_ipkg() {
         if [ ! -f /media/cryptofs/apps/etc/ipkg/arch.conf ]; then
             log "ipkg config absent -- restarting ipkgservice to re-seed"
             /sbin/initctl stop org.webosinternals.ipkgservice > /dev/null 2>&1 || true
             /sbin/initctl start org.webosinternals.ipkgservice > /dev/null 2>&1 || true
         fi
+    }
+    kick_imtransport() {
         /sbin/initctl start imtransport > /dev/null 2>&1 || true
     }
+    kick_dependents() { kick_ipkg; kick_imtransport; }
     if [ ! -d "$SEED" ]; then kick_dependents; exit 0; fi
     i=0
     while ! grep -q " /media/cryptofs " /proc/mounts && [ $i -lt 60 ]; do
@@ -82,6 +98,10 @@ script
         exit 0
     fi
     log "cryptofs writable after $((i*5))s of probing"
+    # FIRST, before the big copy: repair the ipkg feed config. This is the
+    # difference between Preware working the moment the user reaches the
+    # launcher and Preware looking broken for a minute and a half.
+    kick_ipkg
     attempt=0
     while [ $attempt -lt 5 ]; do
         attempt=$((attempt+1))

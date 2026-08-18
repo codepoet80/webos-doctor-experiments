@@ -159,4 +159,4 @@ end script
 
 exec /usr/sbin/org.webosinternals.ipkgservice
 
-respawn
+# respawn: deliberately NOT set — see bake.py (hub launches this on demand)

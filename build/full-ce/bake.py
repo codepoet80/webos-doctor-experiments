@@ -1149,14 +1149,30 @@ def main():
       "    # kick them on EVERY exit path -- they used to sit after the early\n"
       "    # `exit 0`s, which silently forfeited Preware's feeds and the Synergy\n"
       "    # transport whenever the seed bailed.\n"
-      "    kick_dependents() {\n"
+      "    #\n"
+      "    # SPLIT (600018 live finding): these two kicks have completely\n"
+      "    # different dependencies, and bundling them cost Preware 86 seconds.\n"
+      "    # kick_ipkg only needs cryptofs to be WRITABLE -- the feed configs are\n"
+      "    # ~1KB of echo. kick_imtransport needs the 31MB synergy payload to be\n"
+      "    # fully copied (its ELF interpreter lives there). Bundled at the end of\n"
+      "    # the job, the feeds were held hostage by a copy they do not depend on:\n"
+      "    # on 600018 OOBE finished 14:00:09, the user opened Preware 14:00:56 to\n"
+      "    # an empty feed list, and the configs were not written until 14:01:35.\n"
+      "    # (Why they need rewriting at all: ipkgservice's own pre-start DID seed\n"
+      "    # them at 13:55:18, but the cryptofs store is re-initialized during\n"
+      "    # first-use, which wiped them -- and its job was already running, so no\n"
+      "    # trigger ever re-ran that pre-start. This kick is the only repair.)\n"
+      "    kick_ipkg() {\n"
       "        if [ ! -f /media/cryptofs/apps/etc/ipkg/arch.conf ]; then\n"
       "            log \"ipkg config absent -- restarting ipkgservice to re-seed\"\n"
       "            /sbin/initctl stop org.webosinternals.ipkgservice > /dev/null 2>&1 || true\n"
       "            /sbin/initctl start org.webosinternals.ipkgservice > /dev/null 2>&1 || true\n"
       "        fi\n"
+      "    }\n"
+      "    kick_imtransport() {\n"
       "        /sbin/initctl start imtransport > /dev/null 2>&1 || true\n"
       "    }\n"
+      "    kick_dependents() { kick_ipkg; kick_imtransport; }\n"
       "    if [ ! -d \"$SEED\" ]; then kick_dependents; exit 0; fi\n"
       "    i=0\n"
       "    while ! grep -q \" /media/cryptofs \" /proc/mounts && [ $i -lt 60 ]; do\n"
@@ -1185,6 +1201,10 @@ def main():
       "        exit 0\n"
       "    fi\n"
       "    log \"cryptofs writable after $((i*5))s of probing\"\n"
+      "    # FIRST, before the big copy: repair the ipkg feed config. This is the\n"
+      "    # difference between Preware working the moment the user reaches the\n"
+      "    # launcher and Preware looking broken for a minute and a half.\n"
+      "    kick_ipkg\n"
       "    attempt=0\n"
       "    while [ $attempt -lt 5 ]; do\n"
       "        attempt=$((attempt+1))\n"
@@ -1657,6 +1677,21 @@ def main():
         "start on first-use-finished\n"
         "start on started LunaSysMgr",
         "ipkgservice retry triggers", count=1)
+    # Drop `respawn`. This service is ALSO hub-launchable (we bake its dbus
+    # .service into both hubs above), and the two launchers fight: once
+    # ls-hubd has an instance holding the bus name, every upstart-started
+    # instance exits immediately, `respawn` restarts it, and the job burns
+    # its 10-respawn limit in ~2 seconds and is stopped for good. Seen live on
+    # 600018: the user opened Preware (hub-launching the service), the seed
+    # job's kick then did stop/start, and upstart logged
+    # "respawn_count: 11 > respawn_limit: 10 ... respawning too fast, stopped"
+    # — with each respawn re-running the whole pre-start, so the feed seeding
+    # ran 11 times too. Nothing is lost by dropping it: the job exists for its
+    # pre-start seeding, and the service itself is started on demand by the
+    # hub. Proven on 600018, where the service answered every call in ~1s for
+    # the entire time its upstart job sat stopped.
+    upst = sure_replace(upst, "\nrespawn\n", "\n# respawn: deliberately NOT set — see bake.py (hub launches this on demand)\n",
+                        "ipkgservice respawn removal", count=1)
     w(f"etc/event.d/{SID}", upst, 0o644)
 
     # 14c) Govnah : BAKED, same shape as Preware — app dir plus a root service
