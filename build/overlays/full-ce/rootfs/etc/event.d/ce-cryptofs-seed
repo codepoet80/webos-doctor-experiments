@@ -61,9 +61,14 @@ script
     # trigger ever re-ran that pre-start. This kick is the only repair.)
     kick_ipkg() {
         if [ ! -f /media/cryptofs/apps/etc/ipkg/arch.conf ]; then
-            log "ipkg config absent -- restarting ipkgservice to re-seed"
-            /sbin/initctl stop org.webosinternals.ipkgservice > /dev/null 2>&1 || true
-            /sbin/initctl start org.webosinternals.ipkgservice > /dev/null 2>&1 || true
+            log "seeding Preware feeds (its own postinst logic)"
+            sh /usr/palm/ce-seed/preware-seed.sh >> "$LOG" 2>&1 \
+                || log "preware-seed.sh FAILED"
+            if [ -f /media/cryptofs/apps/etc/ipkg/arch.conf ]; then
+                log "feeds seeded: $(ls /media/cryptofs/apps/etc/ipkg/ | wc -l) files"
+            else
+                log "feeds STILL absent after seeding"
+            fi
         fi
     }
     kick_imtransport() {

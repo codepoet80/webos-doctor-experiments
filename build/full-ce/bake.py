@@ -1164,9 +1164,14 @@ def main():
       "    # trigger ever re-ran that pre-start. This kick is the only repair.)\n"
       "    kick_ipkg() {\n"
       "        if [ ! -f /media/cryptofs/apps/etc/ipkg/arch.conf ]; then\n"
-      "            log \"ipkg config absent -- restarting ipkgservice to re-seed\"\n"
-      "            /sbin/initctl stop org.webosinternals.ipkgservice > /dev/null 2>&1 || true\n"
-      "            /sbin/initctl start org.webosinternals.ipkgservice > /dev/null 2>&1 || true\n"
+      "            log \"seeding Preware feeds (its own postinst logic)\"\n"
+      "            sh /usr/palm/ce-seed/preware-seed.sh >> \"$LOG\" 2>&1 \\\n"
+      "                || log \"preware-seed.sh FAILED\"\n"
+      "            if [ -f /media/cryptofs/apps/etc/ipkg/arch.conf ]; then\n"
+      "                log \"feeds seeded: $(ls /media/cryptofs/apps/etc/ipkg/ | wc -l) files\"\n"
+      "            else\n"
+      "                log \"feeds STILL absent after seeding\"\n"
+      "            fi\n"
       "        fi\n"
       "    }\n"
       "    kick_imtransport() {\n"
@@ -1581,120 +1586,103 @@ def main():
                   "   VERSION=3.0.5", upst, count=1, flags=re.M)
     if "VERSION=3.0.5" not in upst:
         sys.exit("ERROR: VERSION anchor not found in ipkgservice upstart")
-    seed = (
-        "   # webOS CE: on the FIRST boot after a flash the cryptofs store both\n"
-        "   # mounts late (finish post-start) and starts empty — app-install has\n"
-        "   # not created $APPS yet when this pre-start runs, which silently\n"
-        "   # skipped every seeding block below (seen live: Preware with no feeds\n"
-        "   # until the next reboot). Waiting for the MOUNT was not enough: the\n"
-        "   # store appears in /proc/mounts ~100s before it accepts writes, and\n"
-        "   # every seeding block below is guarded by \"[ -d /media/cryptofs/apps ]\",\n"
-        "   # so they all no-op silently and this service never runs its pre-start\n"
-        "   # again (it had a single early trigger, and there is no second boot\n"
-        "   # any more). Probe for an actual WRITE, and log the outcome so a device\n"
-        "   # with no Preware feeds can be diagnosed from a log instead of guessed at.\n"
-        "   IPKGLOG=/var/log/ce-ipkg-seed.log\n"
-        "   i=0\n"
-        "   while [ $i -lt 60 ]; do\n"
-        "      if grep -q \" /media/cryptofs \" /proc/mounts && \\\n"
-        "         mkdir -p $APPS/etc/ipkg $APPS/usr/lib/ipkg 2>/dev/null && \\\n"
-        "         touch $APPS/etc/ipkg/.ce-probe 2>/dev/null; then\n"
-        "         rm -f $APPS/etc/ipkg/.ce-probe 2>/dev/null\n"
-        "         break\n"
-        "      fi\n"
-        "      sleep 5\n"
-        "      i=$((i+1))\n"
-        "   done\n"
-        "   if [ $i -ge 60 ]; then\n"
-        "      echo \"$(date 2>/dev/null) cryptofs not writable -- ipkg seeding skipped\" \\\n"
-        "         >> $IPKGLOG 2>/dev/null\n"
-        "   else\n"
-        "      echo \"$(date 2>/dev/null) cryptofs writable after $((i*5))s -- seeding\" \\\n"
-        "         >> $IPKGLOG 2>/dev/null\n"
-        "   fi\n"
-        "\n"
-        "   # webOS CE: seed the ipkg config on first boot (the baked install\n"
-        "   # replays what Preware's postinst would have written to cryptofs)\n"
-        "   if [ -d /media/cryptofs/apps ] && [ ! -f $APPS/etc/ipkg/arch.conf ] ; then\n"
-        "      mkdir -p $APPS/etc/ipkg $APPS/usr/lib/ipkg/cache $APPS/usr/lib/ipkg/lists\n"
-        "      cp /etc/ipkg/arch.conf $APPS/etc/ipkg/arch.conf\n"
-        "      echo \"src/gz optware http://ipkg.preware.net/feeds/optware/all\" > $APPS/etc/ipkg/optware.conf\n"
-        "      echo \"src/gz optware-armv7 http://ipkg.preware.net/feeds/optware/armv7\" >> $APPS/etc/ipkg/optware.conf\n"
-        "      echo \"src/gz precentral http://weboslives.eu/feeds/precentral\" > $APPS/etc/ipkg/precentral-weboslives.conf\n"
-        "      echo \"src/gz precentral http://weboslives.eu/feeds/wosa\" > $APPS/etc/ipkg/wosa-appmuseum.conf.disabled\n"
-        "      echo \"src/gz precentral-themes http://ipkg.preware.net/feeds/precentral-themes\" > $APPS/etc/ipkg/precentral-themes.conf.disabled\n"
-        "      echo \"src/gz pivotce http://feed.pivotce.com\" > $APPS/etc/ipkg/pivotce.conf\n"
-        "      echo \"src/gz prethemer http://www.prethemer.com/feeds/preware/themes\" > $APPS/etc/ipkg/prethemer.conf.disabled\n"
-        "      echo \"src/gz clock-themes http://webos-clock-themer.googlecode.com/svn/trunk/WebOS%20Clock%20Theme%20Builder/feed\" > $APPS/etc/ipkg/clock-themes.conf.disabled\n"
-        "      echo \"src/gz webosinternals http://ipkg.preware.net/feeds/webos-internals/all\" > $APPS/etc/ipkg/webos-internals.conf\n"
-        "      echo \"src/gz webosinternals-armv7 http://ipkg.preware.net/feeds/webos-internals/armv7\" >> $APPS/etc/ipkg/webos-internals.conf\n"
-        "      echo \"src/gz webos-patches http://ipkg.preware.net/feeds/webos-patches/3.0.5\" > $APPS/etc/ipkg/webos-patches.conf\n"
-        "      echo \"src/gz webos-kernels http://ipkg.preware.net/feeds/webos-kernels/3.0.5\" > $APPS/etc/ipkg/webos-kernels.conf\n"
-        "      echo \"src/gz woce http://ipkg.preware.net/feeds/woce\" > $APPS/etc/ipkg/woce.conf\n"
-        "      echo \"src/gz modernize http://stacks.webosarchive.org/feeds/modernize/ipkgs\" > $APPS/etc/ipkg/modernize.conf\n"
-        "   fi\n"
-    )
-    # Status seeding: Preware, Govnah and the Synergy generic runtime are
-    # baked into the rootfs, so ipkg has no record of them and Preware (whose
-    # isInstalled check is a pure name-match against ipkg's status file) would
-    # offer them as plain installs. Seed a correctly-formed stanza at the
-    # baked version so they show as installed with no update/downgrade
-    # offered. Idempotent (per-package grep gate, every boot — survives the
-    # ce-firstboot-tweaks de-shadow sed, which runs earlier in the same first
-    # boot); a REAL later ipkg install/upgrade rewrites its own stanza in
-    # place. USB Settings and BT Gamepad deliberately stay unlisted (they
-    # should stay invisible in Preware). See
-    # preware-modernize-feed/WEBOS-CE-STATUS-SEEDING.md.
-    # Description doubles as Preware's display TITLE when the package is in no
-    # feed (package.js infoLoad maps status Description -> title; without it a
-    # feed-absent package renders literally as "false" — seen live with the
-    # synergy generic).
+    # ---- Preware feed seeding: use PREWARE'S OWN postinst, not a copy ------
+    #
+    # This used to be ~20 hand-transcribed `echo "src/gz ..."` lines injected
+    # into ipkgservice's pre-start. That was a copy of the feed list in
+    # Preware's own postinst, and it had already drifted badly: our copy wrote
+    # webos-patches/webos-kernels ENABLED with the version pinned to 3.0.5,
+    # while upstream deliberately ships them DISABLED on 3.1+ because no 3.1
+    # content is published ("an enabled feed there just fails to download every
+    # time the feeds are updated"). Upstream also derives the arch with
+    # `uname -m`, honours the alpha/beta feed preference files, and carries a
+    # version parser written specifically for our "webOS CE 3.1.0" string.
+    #
+    # So: take the postinst that already ships inside the ipk (and is already
+    # baked to /usr/palm/applications/.../control/postinst) and keep only the
+    # half we want. Its first half installs the service into /var and DELETES
+    # /usr/share/dbus-1 + /usr/share/ls2 registrations -- exactly the static
+    # install this image bakes -- so that half must not run. Cutting at
+    # upstream's own section comments means the feed logic stays upstream's to
+    # maintain; if they restructure it, the anchors fail loudly here rather
+    # than silently shipping a stale feed list.
+    post = open(os.path.join(papp, "control", "postinst")).read()
+    A_VER = "# Extract the OS version"
+    A_SVC = "# Remove the obsolete Package Manager Service"
+    A_CFG = "# Create the ipkg config and database areas"
+    for a in (A_VER, A_SVC, A_CFG):
+        if post.count(a) != 1:
+            sys.exit(f"ERROR: Preware postinst anchor {a!r} found {post.count(a)}x "
+                     "— upstream restructured it; re-check the feed-seed extraction")
+    ver_block = post[post.index(A_VER):post.index(A_SVC)]
+    cfg_block = post[post.index(A_CFG):]
+    if "src/gz webosinternals " not in cfg_block or "modernize" not in cfg_block:
+        sys.exit("ERROR: extracted Preware feed block is missing expected feeds")
+    # The postinst ends with `exit 0`; anything appended after it is DEAD CODE.
+    # Caught by running the generated script in a sandbox: the feeds seeded but
+    # the status stanzas below never ran. Strip the trailing exit.
+    cfg_block = re.sub(r"\nexit 0\s*$", "\n", cfg_block)
+    if re.search(r"^exit 0", cfg_block, re.M):
+        sys.exit("ERROR: Preware feed block still contains an early `exit 0` — "
+                 "anything appended after it would be dead code")
+
+    # Our own addition: ipkg status stanzas for the three packages this image
+    # BAKES into the rootfs. ipkg has no record of them, and Preware's
+    # isInstalled check is a pure name match against the status file, so
+    # without these it offers them as fresh installs. Description doubles as
+    # Preware's display title for a package that is in no feed.
     STATUS_SEED_DESC = {
         "preware": "Preware",
         "govnah": "Govnah",
         "synergy": "Synergy Revival shared runtime",
     }
+    stanzas = ""
     for skey in ("preware", "govnah", "synergy"):
         sipk = IPK[skey]
         pkg = os.path.basename(sipk).split("_")[0]
         arch = os.path.basename(sipk).rsplit("_", 1)[-1][:-len(".ipk")]
-        seed += (
-            f"   if [ -d /media/cryptofs/apps ] && ! grep -q \"^Package: {pkg}$\" $APPS/usr/lib/ipkg/status 2>/dev/null ; then\n"
-            "      mkdir -p $APPS/usr/lib/ipkg\n"
-            "      {\n"
-            "         echo \"\"\n"
-            f"         echo \"Package: {pkg}\"\n"
-            f"         echo \"Version: {ipk_version(sipk)}\"\n"
-            "         echo \"Depends: \"\n"
-            "         echo \"Status: install ok installed\"\n"
-            f"         echo \"Architecture: {arch}\"\n"
-            f"         echo \"Description: {STATUS_SEED_DESC[skey]}\"\n"
-            # Installed-Time is stamped on-device when the stanza is seeded
-            # (baking the ipk's host mtime made the image bytes depend on the
-            # clone — git does not preserve mtimes)
-            "         echo \"Installed-Time: $(date +%s)\"\n"
-            "         echo \"\"\n"
-            "      } >> $APPS/usr/lib/ipkg/status\n"
-            "   fi\n"
+        stanzas += (
+            f'if ! grep -q "^Package: {pkg}$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then\n'
+            "   mkdir -p $APPS/usr/lib/ipkg\n"
+            "   {\n"
+            '      echo ""\n'
+            f'      echo "Package: {pkg}"\n'
+            f'      echo "Version: {ipk_version(sipk)}"\n'
+            '      echo "Depends: "\n'
+            '      echo "Status: install ok installed"\n'
+            f'      echo "Architecture: {arch}"\n'
+            f'      echo "Description: {STATUS_SEED_DESC[skey]}"\n'
+            '      echo "Installed-Time: $(date +%s)"\n'
+            '      echo ""\n'
+            "   } >> $APPS/usr/lib/ipkg/status\n"
+            "fi\n"
         )
-    upst = sure_replace(upst, "   APPS=/media/cryptofs/apps\n",
-                        "   APPS=/media/cryptofs/apps\n\n" + seed,
-                        "ipkgservice upstart APPS anchor", count=1)
+
+    w("usr/palm/ce-seed/preware-seed.sh",
+      "#!/bin/sh\n"
+      "# GENERATED by bake.py -- the feed half of Preware's own postinst\n"
+      "# (org.webosinternals.preware/control/postinst), plus CE ipkg status\n"
+      "# stanzas for the packages this image bakes. Run once per flash by\n"
+      "# /etc/event.d/ce-cryptofs-seed, AFTER first use (the cryptofs store is\n"
+      "# re-initialized during first-use, so anything written before is lost).\n"
+      "# Do not edit: change Preware's postinst, or bake.py.\n"
+      "\n"
+      "APPS=/media/cryptofs/apps\n"
+      '[ -d "$APPS" ] || { echo "no $APPS -- cryptofs not ready"; exit 1; }\n'
+      "\n"
+      + ver_block + cfg_block + "\n"
+      + stanzas +
+      "\nexit 0\n", 0o755)
+    log("  preware-seed.sh derived from Preware's own postinst "
+        f"({len(cfg_block.splitlines())} feed lines + {len(STATUS_SEED_DESC)} status stanzas)")
     # guard the stock lists-cleanup: the dir may not exist before first seeding
     # (upstart runs scripts with sh -e, so the guard must not return nonzero)
     upst = upst.replace("find $APPS/usr/lib/ipkg/lists",
                         "[ ! -d $APPS/usr/lib/ipkg/lists ] || find $APPS/usr/lib/ipkg/lists")
-    # Its pre-start is the only thing that seeds Preware's feeds and our status
-    # stanzas, and stock fires it once, early, inside the window where cryptofs
-    # is mounted but not yet writable. Every block in it is "create if absent",
-    # so re-running is free — give it two later chances rather than depending on
-    # ce-cryptofs-seed noticing and restarting it.
-    upst = sure_replace(
-        upst, "start on stopped finish",
-        "start on stopped finish\n"
-        "start on first-use-finished\n"
-        "start on started LunaSysMgr",
-        "ipkgservice retry triggers", count=1)
+    # No extra start triggers: this job's pre-start no longer seeds anything
+    # (see preware-seed.sh above), so it has nothing to retry. The triggers
+    # we used to add here fired concurrently with ce-cryptofs-seed's kick and
+    # helped drive the 600018 respawn storm.
     # Drop `respawn`. This service is ALSO hub-launchable (we bake its dbus
     # .service into both hubs above), and the two launchers fight: once
     # ls-hubd has an instance holding the bus name, every upstart-started
