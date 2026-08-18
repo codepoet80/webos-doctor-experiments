@@ -43,7 +43,38 @@
  		
  		{name: "SimStatusQuery", kind: "TelephonyService", method: "simStatusQuery",subscribe: true, onSuccess: "handleSimStatusQuery"},
  		{name: "PlatformQuery", kind: "TelephonyService", method: "platformQuery",subscribe: false, onSuccess: "handlePlatformQuery", onFailure: "handlePlatformQueryFail"},
-@@ -420,16 +422,8 @@
+@@ -322,9 +324,29 @@
+ 		this.wosaStartTimer = null;
+ 		this.assignDeviceNameRetry = false;
+ 		this.pluggedInStatusChangedInited = false;
++		// webOS CE: which launch is this? PalmSystem.isMinimal is true only while
++		// LunaSysMgr is running this app AS first use (-u minimal -a
++		// com.palm.app.firstuse). It is the only honest signal available: the
++		// locale/country URL params read below are set by the language card's own
++		// redirect (source/language/Language.js), so they show up in BOTH flows and
++		// cannot tell them apart. A LunaSysMgr without the property is treated as
++		// OOBE, because skipping first use is far worse than replaying it.
++		this.wosaIsOobe = true;
++		try {
++			if (window.PalmSystem && typeof(PalmSystem.isMinimal) === "boolean") {
++				this.wosaIsOobe = PalmSystem.isMinimal;
++			}
++		} catch (e) { console.info("WOSA: isMinimal probe failed: " + e); }
++		console.info("WOSA: launch mode = " + (this.wosaIsOobe ? "OOBE" : "standalone"));
+ 		this.log(typeof(inLocale));
+-		if (typeof(inLocale) === "string"){
++		if (typeof(inLocale) === "string" || !this.wosaIsOobe){
++			// Start past the language card. Under OOBE it has already run — it is
++			// what put locale on the URL. On a launcher launch it must never run at
++			// all: its constructor deletes the device's palm profile, and the
++			// language it would ask for was already chosen during setup.
+ 			this.step = 0;
++		}
++		if (typeof(inLocale) === "string"){
+ 			this.languageCode = rb.locale.getLanguage();
+ 			this.locale = rb.locale.getLocale();
+ 		}
+@@ -419,16 +441,8 @@
  	},
  
  	// webOS Archive: check the App Museum for a newer build of this app.
@@ -61,14 +92,62 @@
  	},
  	
  	start: function() {
-@@ -945,7 +939,9 @@
+@@ -944,7 +958,16 @@
  		// written by accountservices (createNovaAccount/authenticateAccount). Do NOT
  		// call the dead HP postLogin services, do NOT reset, do NOT shut down —
  		// leave the confirmation page up; the user dismisses it with Done.
 -		console.info("WOSA firstrun: account setup complete — showing confirmation (no reset, no erase, no shutdown).");
-+		console.info("WOSA CE OOBE: account setup complete — applying customization.");
-+		console.log("Set Customizations: " + this.countryCode + " : " + this.languageCode);
-+		this.$.setCustomization.call({"language":this.languageCode,"country":this.countryCode});
++		if (this.wosaIsOobe && this.languageCode) {
++			console.info("WOSA CE OOBE: account setup complete — applying customization.");
++			console.log("Set Customizations: " + this.countryCode + " : " + this.languageCode);
++			this.$.setCustomization.call({"language":this.languageCode,"country":this.countryCode});
++		} else {
++			// Standalone: the language card never ran, so languageCode/countryCode
++			// are empty — handing those to setCustomization would blank the
++			// device's real customization instead of leaving it alone.
++			console.info("WOSA: standalone completion — leaving customization alone.");
++		}
  		this.updateCompletePage();
  	},
  
+@@ -969,15 +992,18 @@
+ 	},
+ 
+ 	closeApp: function(){
+-		// webOS Archive: only finish OOBE (mark done + reboot) when LunaSysMgr
+-		// actually launched us as the OOBE bootstrap app — it is the only
+-		// launcher that passes locale/country on the URL (see gup() calls at
+-		// the top of this file; inLocale is also what gates step 0 below). A
+-		// normal relaunch afterward (Settings > Accounts, the app's own
+-		// launcher icon) carries no such params and should just close like any
+-		// other app — rebooting the device every time someone re-signs-in
+-		// would be wrong.
+-		if (typeof(inLocale) === "string") {
++		// webOS Archive: only finish OOBE (mark done + hand off) when LunaSysMgr
++		// actually launched us as the OOBE bootstrap app. A normal relaunch
++		// (Settings > Accounts, the app's own launcher icon) should just close
++		// like any other app.
++		//
++		// webOS CE: this used to test inLocale, on the belief that only the OOBE
++		// launcher passes locale/country on the URL. That is not true — the
++		// language card sets those params itself when it redirects, so ANY launch
++		// that reaches the language card ends up looking like OOBE here, and Done
++		// would then POWER THE DEVICE OFF from the launcher icon. Ask LunaSysMgr
++		// what mode it is in instead (see create()).
++		if (this.wosaIsOobe) {
+ 			// webOS Archive: this is exactly what real stock HP firstuse called
+ 			// to finish OOBE in the common (no pending OTA) case — proven on
+ 			// real hardware, unlike our own markFirstUseDone()+machineReboot()
+@@ -1007,6 +1033,12 @@
+ 	// Setup" link. Shows the restart warning for a moment so the UI doesn't just
+ 	// freeze with no explanation, then closes.
+ 	wosaSafeClose: function(){
++		if (!this.wosaIsOobe) {
++			// Standalone: nothing is about to restart, so do not say so — just close.
++			console.info("WOSA: wosaSafeClose (standalone) closing immediately");
++			this.closeApp();
++			return;
++		}
+ 		console.info("WOSA: wosaSafeClose opening restart popup");
+ 		this.$.wosaSkipRestartPopup.openAtCenter();
+ 		setTimeout(enyo.bind(this, function(){

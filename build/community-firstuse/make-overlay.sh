@@ -111,9 +111,21 @@ echo ">> 3) OOBE deltas on the app copy"
 echo "   patched $APP/FirstUse.js"
 (cd "$R/usr/palm/applications" && patch -p1 -s -f) < "$HERE/oobe/Palm-oobe.patch"
 echo "   patched $APP/source/tnc/Palm.js"
+(cd "$R/usr/palm/applications" && patch -p1 -s -f) < "$HERE/oobe/Language-oobe.patch"
+echo "   patched $APP/source/language/Language.js"
 cp "$HERE/oobe/config.js" "$R/$APP/config.js"   # trimmed OOBE card list
 grep -q "markFirstUseDone" "$R/$APP/FirstUse.js" \
     || { echo "ERROR: OOBE completion delta missing from FirstUse.js" >&2; exit 1; }
+# The launcher icon runs this same app, so a launch-mode check must survive every
+# rebase onto a new app build: without it the language card renders on a normal
+# launch, its constructor deletes the device's palm profile, and Done powers the
+# device off (both seen live on 600009).
+grep -q "wosaIsOobe" "$R/$APP/FirstUse.js" \
+    || { echo "ERROR: launch-mode (isMinimal) delta missing from FirstUse.js" >&2; exit 1; }
+grep -q "isMinimal" "$R/$APP/source/language/Language.js" \
+    || { echo "ERROR: account-delete guard missing from Language.js" >&2; exit 1; }
+grep -q 'typeof(inLocale) === "string") {' "$R/$APP/FirstUse.js" \
+    && { echo "ERROR: closeApp still gates shutdown on inLocale" >&2; exit 1; }
 
 echo ">> 4) palmprofile service files from the ipk"
 # The ipk ships the service files flat; the stock service layout is

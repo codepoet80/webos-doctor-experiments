@@ -1,0 +1,29 @@
+--- a/com.palm.app.firstuse/source/language/Language.js
++++ b/com.palm.app.firstuse/source/language/Language.js
+@@ -62,7 +62,25 @@
+     
+     create: function(){
+         this.inherited(arguments);
+-        this.deleteAnyExistingPalmProfileAccounts();
++        // webOS CE: this wipes the device's palm profile, and it runs from a
++        // constructor — so merely RENDERING this card is destructive. Stock could
++        // assume the card only ever appeared on a factory-fresh device; this app is
++        // now also the "webOS Account" launcher icon, where deleting the user's
++        // account is precisely the wrong thing. Only delete while LunaSysMgr is
++        // running us as first use. FirstUse.create() already routes standalone
++        // launches past this card — this is the second lock on the same door,
++        // because the cost of being wrong here is the user's account.
++        var isOobe = true;
++        try {
++            if (window.PalmSystem && typeof(PalmSystem.isMinimal) === "boolean") {
++                isOobe = PalmSystem.isMinimal;
++            }
++        } catch (e) { console.info("WOSA: isMinimal probe failed: " + e); }
++        if (isOobe) {
++            this.deleteAnyExistingPalmProfileAccounts();
++        } else {
++            console.info("WOSA: standalone launch — NOT deleting existing accounts.");
++        }
+ 		this.$.getLanguageList.call();
+     },
+     

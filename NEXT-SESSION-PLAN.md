@@ -1,4 +1,4 @@
-# Next session plan — after flash 600009 (2026-08-17)
+# Next session plan — after flash 600011, Doctor 600012 built (2026-08-17)
 
 ## The one-line story of tonight
 
@@ -54,14 +54,14 @@ Also: any job whose work must survive first-use should trigger on **both**
   where upstart segfaulted at the exact same moment as on 600008 and the
   handoff completed anyway.
 
-## Open — webOS Account app (highest value next)
+## FIXED — webOS Account app (in 600012, live-verified on the 600011 device)
 
 Both bugs are in the OOBE app tree. **Do not edit the overlay copies** under
 `build/overlays/*/rootfs/.../com.palm.app.firstuse/` — they are generated.
 Sources: `build/community-firstuse/oobe/{FirstUse-oobe.patch,Palm-oobe.patch,config.js}`,
 `build/community-firstuse/make-overlay.sh`, and `~/Projects/webos-community-account`.
 
-### 1. Launcher launch re-runs OOBE and deletes the account
+### 1. Launcher launch re-runs OOBE and deletes the account — FIXED
 
 `FirstUse.js` has **no way to tell an OOBE launch from a launcher launch** — no
 `isMinimal`, no `uiType`, no `ran-first-use` check anywhere in the app. It
@@ -86,7 +86,34 @@ two-card list (`palm`, `signin`) — the standalone build never had this bug
 precisely because its config has no `language` entry. Independently, guard
 `Language.js`'s delete: it is the only destructive call in the app.
 
-### 2. "Skip Account Setup" creates "Dr. Skipped Firstuse"
+**How it was fixed (600012).** `PalmSystem.isMinimal` already existed in
+LunaSysMgr (`JsSysObject.cpp:155`, returns `uiType == UI_MINIMAL`) — true only
+while LunaSysMgr runs the app AS first use. That is the honest signal the app
+was missing; no LunaCE rebuild needed. Changes, all in
+`build/community-firstuse/oobe/` (regenerated patches, never the overlay):
+
+- `FirstUse.js create()` sets `this.wosaIsOobe` from `isMinimal` (unknown ⇒
+  OOBE, since skipping first use is worse than replaying it) and starts a
+  standalone launch past the language card.
+- `closeApp()` gates `PalmSystem.shutdown()` on `wosaIsOobe` instead of
+  `inLocale` — this is the power-off landmine.
+- `done()` no longer pushes empty language/country into `setCustomization` on a
+  standalone finish; `wosaSafeClose()` skips the restart popup.
+- `Language.js` guards the account delete on `isMinimal` too — second lock on
+  the same door, because the cost of being wrong is the user's account.
+- `make-overlay.sh` applies the new `Language-oobe.patch` and now **fails the
+  build** if any of these deltas go missing on a future app rebase, or if
+  `closeApp` ever gates on `inLocale` again.
+
+**Live-verified on the 600011 device** (patched files pushed, no flash):
+`WOSA: launch mode = standalone` → `nextStep(): 0` → terms card (the language
+card never rendered) → no delete line → account still `webOS User` → zero
+shutdown attempts → device still up.
+
+**Still to do:** upstream these deltas into `~/Projects/webos-community-account`
+so the next app build carries them, rather than living only in the CE patches.
+
+### 2. "Skip Account Setup" creates "Dr. Skipped Firstuse" — FIXED in 600011
 
 The app never sets that name — it only closes. The profile is created on the
 **next boot** by `/etc/event.d/firstuse-createDefaultAccount`, which calls the
@@ -106,6 +133,17 @@ guard breaks:
 Note there is now a **second, parallel** local-account creator in the image:
 `com.palm.service.accounts/handlers/create-local-account.js:33` uses
 `"Open webOS"`. Decide which one actually runs before changing strings.
+
+## Tomorrow
+
+1. Flash **600012** (built, unflashed): carries the app fix on top of everything
+   600011 proved. First boot should need no intervention at all.
+2. Re-run `scripts/ce-test-600011.sh`, then tap the **webOS Account** icon —
+   this build is the first where that is safe.
+3. Audit `ce-firstboot-tweaks` and `ce-remove-preloads` against a no-reboot OOBE
+   (they still trigger only on `stopped configurator`).
+4. Upstream the OOBE app deltas to `~/Projects/webos-community-account`.
+5. Remaining human tests: QuickOffice, email sync, controller pairing.
 
 ## Device state as of tonight
 
