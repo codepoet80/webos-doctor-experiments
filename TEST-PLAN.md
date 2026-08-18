@@ -11,7 +11,9 @@ novacom, or it exits silently with no output).
 
 ## RESULTS — 600023
 
-**Both 600022 bugs verified FIXED. One open failure: Luna Restart.**
+**Both 600022 bugs verified FIXED. Luna Restart works — the one "freeze" was a
+wedged UI in which the button never fired (0 HUP signals delivered), not a restart
+failure. No open bugs; one unexplained one-off UI wedge.**
 
 ### BUG 1 — App Catalog shadowed by stock 5.0.2900 — **FIXED, verified**
 rootfs catalog is **6.1.2901**, there is **no cryptofs copy at all**, the flat-path
@@ -29,52 +31,49 @@ first use not finished -- deferring to first-use-finished   (x2, pre-OOBE)
 Feeds land ~1s after OOBE; the 31MB synergy copy finishes 81s later; 0 ipkgservice
 respawns; `imtransport` running with a live bind mount.
 
-### BUG 3 — **Luna Restart freezes the device** *(OPEN — root-caused, fix not yet built)*
+### BUG 3 — Luna Restart — **the button is fine; it never fired on the frozen boot**
 
-**The patch variants are NOT the variable.** All five ipks (en 3.0.5-9, es -9,
-de -14, fr -14, it -27) are the *same* 43-line patch to the same file, differing
-only in translated button strings and a variable name (`lunaRestartSvc` vs
-`srvRestartLuna`). Every one calls `palm://org.webosinternals.ipkgservice`
-method `restartLuna`, and **none of them reference SysToolsManager**. The patch we
-ship is the right one; there is no "better variant" to switch to.
+**One mechanism, used by everything, and we already ship it.** All three consumers
+issue the identical call — the advanced-reset-options power-menu patch, **Preware's
+own Luna manager** (`app/models/IPKGService.js:226`), and **SysToolsManager**
+(`LunaRestartAssistant` → `new CommandLine("/usr/bin/killall -HUP LunaSysMgr")`).
+`restartLuna` in `luna_methods.c` is literally `killall -HUP LunaSysMgr`. All five
+patch variants (en -9, es -9, de -14, fr -14, it -27) are the same 43-line patch
+differing only in translated strings and one variable name, and **none reference
+SysToolsManager**. There is nothing to switch to.
 
-**What the button actually does** (`luna_methods.c`):
-```c
-bool restart_luna_method(...) {
-  return simple_command(message, "/usr/bin/killall -HUP LunaSysMgr 2>&1");
-}
+**Evidence from the frozen boot (boot 1 of 600023, 18:05–18:35 UTC):**
+- **Zero HUP signals were ever delivered** — `killed by HUP` appears 0 times in
+  both `messages.0.gz` and the 18:26–18:35 window. The button press never reached
+  the service, so the restart never even started.
+- LunaSysMgr was **alive and launching apps** right up to the reboot: help (18:32:43),
+  screenlock (18:33:04), soundsandalerts (18:33:32), and a `systemui popupalert` at
+  **18:33:56** — very likely the power menu itself opening.
+- The user power-cycled at 18:35:28 to recover.
+
+So the device was already wedged when Luna Restart was reached for; the tap did not
+produce a service call. Luna Restart did not cause the freeze and could not cure it.
+
+**Proven working on the same build, twice:** a real HUP restart on boot 2 at
+18:41:34 respawned in 91ms and reached `LunaSysMgr-ready` 25.9s later, and the user
+re-tested it by hand afterwards — worked.
+
+**Separately explained:** the `LunaSysMgr killed by SEGV` at 18:20:36 is the OOBE
+handoff, not the freeze — it lands in the same second as `feeds seeded` /
+first-use-finished, and LunaSysMgr respawned and was ready 35s later. This is the
+known first-use handoff crash, and it self-recovered.
+
+**Unknown / accepted for now:** what wedged the UI around 18:34. There is no
+evidence in the log — LunaSysMgr never died, never logged an error, and simply
+stopped responding to input. Accepted as a one-off; if it recurs, capture before
+rebooting:
 ```
-The service also offers only `restartJava` (`killall java`) and `restartDevice`
-(`/sbin/reboot`) — there is no gentler Luna restart method to switch to.
-
-**Why that kills the device here** (all verified non-invasively on 600023):
-1. `killall -HUP` is valid busybox syntax and does fire.
-2. LunaSysMgr does **not** catch SIGHUP — `SigCgt: 0000000180010000` is only
-   signals 17/32/33 (SIGCHLD + glibc's threading pair), and `SigIgn: 1004` is
-   SIGQUIT/SIGPIPE. So SIGHUP takes its default action: **terminate**.
-   LunaCE has no `SIGHUP` anywhere in `Src/`.
-3. **WebAppMgr is a child of LunaSysMgr** (ppid 5567) but its comm is `WebAppMgr`,
-   so `killall LunaSysMgr` does **not** signal it. It survives, reparented to init.
-4. The `LunaSysMgr` upstart job has `respawn` but **no `post-stop` cleanup**
-   (verified: 0 occurrences), so nothing reaps the orphan before the respawn.
-
-**Hypothesis for the freeze:** upstart respawns LunaSysMgr while the old WebAppMgr
-still holds the display/IPC, the new instance cannot come up, and repeated failures
-exhaust the 10-respawn limit — at which point upstart sets goal=stop and gives up,
-leaving the device dark for good. This matches the 600014 observation exactly
-("LunaSysMgr left `(stop) waiting`, goal stop; device dead until
-`initctl start LunaSysMgr`").
-
-**Proposed fix (image-side, no recompiling):** add a `post-stop script` to
-`/etc/event.d/LunaSysMgr` that reaps a surviving `WebAppMgr` before the respawn.
-Upstart runs post-stop when the main process dies, so the respawned instance starts
-clean. This would also help ordinary crash recovery, not just this button.
-**Not yet implemented** — confirming it requires deliberately triggering the freeze
-(recoverable over novacom with `initctl start LunaSysMgr`), so it needs a go-ahead.
-
-Alternative, if preferred: give LunaCE a real SIGHUP handler that shuts down its
-child and exits cleanly. That is the "proper" fix but lives in the LunaCE repo and
-needs a rebuild.
+initctl status LunaSysMgr ; pidof LunaSysMgr
+cat /proc/$(pidof LunaSysMgr | cut -d" " -f2)/status | grep -E "State|SigBlk"
+tail -50 /var/log/messages
+```
+A wedged-but-alive LunaSysMgr shows `(start) running` with the process in state `S`
+or `D` — that distinguishes it from the respawn-limit death seen on 600014.
 
 ### Stale expectations corrected in this document
 - Thai font is **37KB**, not "~600KB" — upstream now ships a smaller Noto. The
@@ -219,8 +218,10 @@ evidence: a test-script db8 query bug, and 96 `ls-hubd` errors that were all sto
 - [Pass] USB Settings works (user confirmed); Govnah/USB on the Settings tab
 - [Pass] Wallpapers + ringtones in `/media/internal` — 34 wallpapers, 40 ringtones;
   default wallpaper correct (user confirmed)
-- [Pass] Advanced reset options present (user confirmed); [Fail] Luna Restart button
-    - Luna Restart freezes device!
+- [Pass] Advanced reset options present (user confirmed); [Pass] Luna Restart —
+    works (verified twice on 600023: clean 26s respawn in the log, plus a manual
+    re-test). The earlier "freeze" was a wedged UI in which the button never fired;
+    no HUP was ever delivered. See BUG 3.
 - [Pass] Kindle/Facebook/YouTube preloads absent; 0 staged customization ipks left
 - [Pass] `ls-hubd` — only 2 unlisted-service errors this boot, both
   `com.palm.wifi.carrierhotspot` (stock noise; that service file is absent from the
@@ -234,9 +235,9 @@ evidence: a test-script db8 query bug, and 96 `ls-hubd` errors that were all sto
 
 ## Still needs a human (short list for the next session)
 
-1. **Luna Restart (BUG 3)** — decide the fix (post-stop reaper vs. LunaCE SIGHUP
-   handler), then verify. Verification means deliberately triggering the freeze;
-   recover with `initctl start LunaSysMgr` over novacom.
+1. **If the UI ever wedges again** — capture `initctl status LunaSysMgr`, the
+   process State from /proc, and the tail of /var/log/messages *before* rebooting.
+   That is the only missing evidence; Luna Restart itself is verified working.
 2. Controller pairing (BT/USB) with a game.
 3. Email sync, QuickOffice remote-files UI, Photos app.
 4. Non-English OOBE run (localization).
