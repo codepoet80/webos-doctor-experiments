@@ -686,9 +686,18 @@ def rebuild_jar(src_jar, out_jar, new_webos_tar):
         "Created-By: webOS CE harness (Phase 0)\r\n"
         "\r\n"
     ).encode()
-    log(f"repacking JAR -> {out_jar}")
+    # Build to a temp path and os.replace() it into position. Writing the
+    # output JAR in place TRUNCATES AND REWRITES a file the Doctor may have
+    # open and be actively reading: a rebuild launched while someone is
+    # flashing would corrupt that flash silently, with no error on either
+    # side. Near-miss on 2026-08-18 — a 600021 build landed 63 seconds after a
+    # 600020 flash finished reading the same path. A rename swaps the
+    # directory entry only, so an in-flight flash keeps its original inode and
+    # completes from intact bytes.
+    tmp_jar = out_jar + ".tmp"
+    log(f"repacking JAR -> {out_jar} (via {os.path.basename(tmp_jar)})")
     with zipfile.ZipFile(src_jar) as zin, \
-         zipfile.ZipFile(out_jar, "w", zipfile.ZIP_DEFLATED) as zout:
+         zipfile.ZipFile(tmp_jar, "w", zipfile.ZIP_DEFLATED) as zout:
         for item in zin.infolist():
             n = item.filename
             up = n.upper()
@@ -718,6 +727,8 @@ def rebuild_jar(src_jar, out_jar, new_webos_tar):
         with open(new_webos_tar, "rb") as f:
             zout.writestr(zi, f.read())
         log(f"  added {WEBOS_TAR_ENTRY} ({os.path.getsize(new_webos_tar)} bytes, stored)")
+    os.replace(tmp_jar, out_jar)   # atomic; see the comment above
+    log(f"  moved into place: {out_jar}")
 
 
 # ---- build orchestrator -----------------------------------------------------

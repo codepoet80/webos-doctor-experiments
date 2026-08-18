@@ -22,6 +22,18 @@ OVERLAY="${1:-}"
 
 mkdir -p "$(dirname "$OUT")"
 
+# Refuse to build while a Doctor is open on this JAR. The harness now renames
+# the new JAR into place (so an in-flight flash keeps its own inode and cannot
+# be corrupted), but a Doctor started AFTER the swap would silently flash a
+# different image than the one its window was launched for. Near-miss
+# 2026-08-18: a rebuild landed 63s after a flash finished reading this path.
+if pgrep -f "java .*-jar .*$(basename "$OUT")" > /dev/null 2>&1; then
+    echo "ERROR: a webOS Doctor is running on $(basename "$OUT")." >&2
+    echo "       Close it before rebuilding, or set OUT= to a different path." >&2
+    echo "       (pids: $(pgrep -f "java .*-jar .*$(basename "$OUT")" | tr '\n' ' '))" >&2
+    exit 1
+fi
+
 args=(build --jar "$JAR" --out "$OUT" --work "$WORK")
 [ -n "$OVERLAY" ] && args+=(--overlay "$OVERLAY")
 [ "${REEXTRACT:-0}" = "1" ] && args+=(--reextract)
