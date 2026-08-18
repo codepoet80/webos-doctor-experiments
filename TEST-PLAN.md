@@ -1,6 +1,6 @@
 # webOS CE 3.1 Flash Test Plan
 
-For the BUILDMARK 600011 image (`out/webosdoctorp305hstnh-3.1CE.jar`).
+For the BUILDMARK 600013 image (`out/webosdoctorp305hstnh-3.1CE.jar`).
 Items marked **(regression)** were verified on earlier flashes; everything else
 is new in this build. Shell checks assume a novacom/novaterm root shell.
 
@@ -33,6 +33,29 @@ toggles, .ipk tap-to-install, email sync, QuickOffice, Maps.
 **Do not tap the webOS Account launcher icon on this build** — it replays the
 OOBE language card, which deletes the palm profile, and Done can power the
 device off. See NEXT-SESSION-PLAN.md.
+
+## Pre-flash review additions (BUILDMARK 600013)
+
+A top-to-bottom audit before this flash found issues that no earlier test would
+have caught, because they all live on the **launcher launch** of webOS Account —
+a path that only became reachable once that icon was added.
+
+- [ ] **Start Over must be gone standalone.** Open the webOS Account icon; the
+  bottom-left "Start Over" button must NOT be there. (It deletes the *connected*
+  Wi-Fi network's saved profile, password included. Under OOBE it is still
+  present and still works — that is correct.)
+- [ ] **Power button over the account app** — with webOS Account open from the
+  launcher, press the power key: you should get the normal system power menu,
+  NOT a first-use "Turn Off" dialog.
+- [ ] **Screen still dims** while webOS Account sits open from the launcher
+  (under OOBE it correctly stays awake).
+- [ ] **OOBE regression** — the whole first-use flow must be unchanged:
+  language → terms → sign-in → Done finishes setup. Start Over during OOBE still
+  offers to forget Wi-Fi and restart.
+- [ ] **Deshadow on a dirty device** (only testable by flashing over an install
+  that has Preware/Govnah in cryptofs): after first boot,
+  `/var/log/ce-firstboot-tweaks.log` says "deshadow verified clean", and Preware
+  reports the baked version rather than an older shadowed copy.
 
 ## 10-minute smoke test
 

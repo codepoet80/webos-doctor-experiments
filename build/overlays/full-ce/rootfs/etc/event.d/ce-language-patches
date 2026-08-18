@@ -31,14 +31,31 @@ script
         rel=${f#./}
         if ! cmp -s "$f" "/$rel"; then
             mount -o remount,rw / 2>/dev/null || true
-            cp "$f" "/$rel"
-            changed=1
+            # only claim a change if the copy actually landed: setting
+            # changed=1 unconditionally restarts LunaSysMgr, and if the
+            # copy keeps failing the compare keeps differing -- a Luna
+            # restart loop on every single boot.
+            if cp "$f" "/$rel" && cmp -s "$f" "/$rel"; then
+                changed=1
+            else
+                echo "$(date 2>/dev/null) FAILED to patch /$rel" \
+                    >> /var/log/ce-language-patches.log 2>/dev/null
+            fi
         fi
     done
     if [ $changed -eq 1 ]; then
         mount -o remount,ro / 2>/dev/null || true
-        # the UI loaded the old file this boot — one restart picks it up
-        stop LunaSysMgr 2>/dev/null || true
-        start LunaSysMgr 2>/dev/null || true
+        # the UI loaded the old file this boot — one restart picks it up.
+        # NOT at first-use completion though: LunaSysMgr is already
+        # respawning out of OOBE right then, and bouncing it into that
+        # window is how the launcher comes up empty. The per-boot trigger
+        # picks it up on the next ordinary boot instead.
+        if [ "$UPSTART_EVENT" = "first-use-finished" ]; then
+            echo "$(date 2>/dev/null) patched at first-use; deferring Luna restart" \
+                >> /var/log/ce-language-patches.log 2>/dev/null
+        else
+            stop LunaSysMgr 2>/dev/null || true
+            start LunaSysMgr 2>/dev/null || true
+        fi
     fi
 end script

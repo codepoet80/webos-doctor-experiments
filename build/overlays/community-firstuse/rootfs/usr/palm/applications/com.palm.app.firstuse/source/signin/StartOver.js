@@ -1,6 +1,15 @@
 enyo.kind({
 	name: "StartOver",
 	kind: enyo.Control,
+	// webOS CE: hidden outside OOBE — "Start Over" means "re-run first use",
+	// which is meaningless from the launcher icon. Belt and braces with the
+	// guard in restartFirstUse below.
+	create: function() {
+		this.inherited(arguments);
+		try {
+			this.setShowing(!!enyo.application.FirstUse.wosaIsOobe);
+		} catch (e) { console.info("WOSA StartOver mode probe failed: " + e); }
+	},
 	style: "position:fixed;height:60px;width:150px;bottom:0;left:0;",
 	components: [
 		{kind: enyo.IconButton,
@@ -54,6 +63,17 @@ enyo.kind({
 	
 	restartFirstUse: function() {
 		enyo.application.FirstUse.currentServiceCall = "";
+		// webOS CE: under OOBE "start over" legitimately forgets the Wi-Fi network
+		// joined during setup, so the wizard can be re-run from a clean slate. On a
+		// launcher launch that is destruction with no upside: it deletes the saved
+		// profile of the network the device is CONNECTED to, credentials included,
+		// so the user drops offline and has to re-enter their Wi-Fi key — from a
+		// button that only promises to restart the wizard. Standalone, just reload.
+		if (!enyo.application.FirstUse.wosaIsOobe) {
+			console.info("WOSA: standalone Start Over — reloading WITHOUT touching Wi-Fi.");
+			this.handleWiFiResetDone();
+			return;
+		}
 		console.log("get wifi status...");
 		this.$.getStatus.call({});
 

@@ -8,10 +8,21 @@ start on stopped configurator
 console none
 
 script
+    # ce-firstboot-tweaks fires on this SAME event and also remounts / rw,
+    # then back to ro. Interleaved, one job flips the filesystem read-only
+    # while the other is still deleting -- and a surviving preload ipk gets
+    # installed. mkdir is atomic, so use it as a spinlock.
+    L=/tmp/.ce-rootfs-rw.lock
+    n=0
+    while ! mkdir $L 2>/dev/null && [ $n -lt 60 ]; do sleep 1; n=$((n+1)); done
     mount -o remount,rw / 2>/dev/null || true
     for app in com.palm.app.kindle com.palm.app.enyo-facebook com.palm.app.youtube; do
         rm -f  /usr/lib/luna/customization/apps/${app}_*.ipk
         rm -rf /media/cryptofs/apps/usr/palm/applications/${app}
+        ls /usr/lib/luna/customization/apps/${app}_*.ipk >/dev/null 2>&1 && \
+            echo "$(date 2>/dev/null) FAILED to remove staged $app" \
+                >> /var/log/ce-remove-preloads.log 2>/dev/null
     done
     mount -o remount,ro / 2>/dev/null || true
+    rmdir $L 2>/dev/null || true
 end script

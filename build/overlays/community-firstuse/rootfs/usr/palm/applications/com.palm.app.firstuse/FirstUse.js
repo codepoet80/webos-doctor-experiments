@@ -449,8 +449,16 @@ enyo.kind({
 	    
 		enyo.keyboard.setResizesWindow(false);
 		
-		console.info("Registering to power key press...");
-		this.$.powerKeyPress.call({"category":"/com/palm/display","method":"powerKeyPressed"});
+		// webOS CE: OOBE owns the whole screen, so it hosts its own power-key
+		// dialog (whose "Turn Off" calls machineOff). Standalone this is just a
+		// launcher app: LunaSysMgr already owns the power button, and a second
+		// power-off dialog appearing over an app card is both confusing and a
+		// way to switch the device off from a screen that has no business doing
+		// it. Only arm it under OOBE.
+		if (this.wosaIsOobe) {
+			console.info("Registering to power key press...");
+			this.$.powerKeyPress.call({"category":"/com/palm/display","method":"powerKeyPressed"});
+		}
 		console.info("Registering to plugged in status changes...");
 		this.$.monitorPluggedInStatus.call({"category":"/com/palm/power","method":"USBDockStatus"});
 		console.info("Setting timeout to powerdown, 1 minute...");
@@ -460,8 +468,13 @@ enyo.kind({
 			this.$.PlatformQuery.call({});
 		}
 		
-		console.info("Requesting blocking of display dimming...");
-		this.$.requestBlock.call();
+		// webOS CE: blocking dimming is right for OOBE (the setup screen must not
+		// sleep mid-flow) and wrong for a launcher app — left open in a bag it
+		// holds the screen awake and flattens the battery.
+		if (this.wosaIsOobe) {
+			console.info("Requesting blocking of display dimming...");
+			this.$.requestBlock.call();
+		}
 		
 		this.$.getMachineName.call({"key":"com.palm.properties.deviceName"});
 		

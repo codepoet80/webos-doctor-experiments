@@ -74,7 +74,7 @@
  			this.languageCode = rb.locale.getLanguage();
  			this.locale = rb.locale.getLocale();
  		}
-@@ -419,16 +441,8 @@
+@@ -419,24 +441,24 @@
  	},
  
  	// webOS Archive: check the App Museum for a newer build of this app.
@@ -92,7 +92,41 @@
  	},
  	
  	start: function() {
-@@ -944,7 +958,16 @@
+ 	    
+ 		enyo.keyboard.setResizesWindow(false);
+ 		
+-		console.info("Registering to power key press...");
+-		this.$.powerKeyPress.call({"category":"/com/palm/display","method":"powerKeyPressed"});
++		// webOS CE: OOBE owns the whole screen, so it hosts its own power-key
++		// dialog (whose "Turn Off" calls machineOff). Standalone this is just a
++		// launcher app: LunaSysMgr already owns the power button, and a second
++		// power-off dialog appearing over an app card is both confusing and a
++		// way to switch the device off from a screen that has no business doing
++		// it. Only arm it under OOBE.
++		if (this.wosaIsOobe) {
++			console.info("Registering to power key press...");
++			this.$.powerKeyPress.call({"category":"/com/palm/display","method":"powerKeyPressed"});
++		}
+ 		console.info("Registering to plugged in status changes...");
+ 		this.$.monitorPluggedInStatus.call({"category":"/com/palm/power","method":"USBDockStatus"});
+ 		console.info("Setting timeout to powerdown, 1 minute...");
+@@ -446,8 +468,13 @@
+ 			this.$.PlatformQuery.call({});
+ 		}
+ 		
+-		console.info("Requesting blocking of display dimming...");
+-		this.$.requestBlock.call();
++		// webOS CE: blocking dimming is right for OOBE (the setup screen must not
++		// sleep mid-flow) and wrong for a launcher app — left open in a bag it
++		// holds the screen awake and flattens the battery.
++		if (this.wosaIsOobe) {
++			console.info("Requesting blocking of display dimming...");
++			this.$.requestBlock.call();
++		}
+ 		
+ 		this.$.getMachineName.call({"key":"com.palm.properties.deviceName"});
+ 		
+@@ -944,7 +971,16 @@
  		// written by accountservices (createNovaAccount/authenticateAccount). Do NOT
  		// call the dead HP postLogin services, do NOT reset, do NOT shut down —
  		// leave the confirmation page up; the user dismisses it with Done.
@@ -110,7 +144,7 @@
  		this.updateCompletePage();
  	},
  
-@@ -969,15 +992,18 @@
+@@ -969,15 +1005,18 @@
  	},
  
  	closeApp: function(){
@@ -138,7 +172,7 @@
  			// webOS Archive: this is exactly what real stock HP firstuse called
  			// to finish OOBE in the common (no pending OTA) case — proven on
  			// real hardware, unlike our own markFirstUseDone()+machineReboot()
-@@ -1007,6 +1033,12 @@
+@@ -1007,6 +1046,12 @@
  	// Setup" link. Shows the restart warning for a moment so the UI doesn't just
  	// freeze with no explanation, then closes.
  	wosaSafeClose: function(){

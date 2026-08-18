@@ -1,6 +1,8 @@
 description "Package Manager Service"
 
 start on stopped finish
+start on first-use-finished
+start on started LunaSysMgr
 
 pre-start script
    logger "org.webosinternals.ipkgservice upstart: script called"
@@ -11,15 +13,31 @@ pre-start script
    # mounts late (finish post-start) and starts empty — app-install has
    # not created $APPS yet when this pre-start runs, which silently
    # skipped every seeding block below (seen live: Preware with no feeds
-   # until the next reboot). Wait for the mount, then create the tree
-   # ourselves; app-install and ipkg are fine with it existing.
+   # until the next reboot). Waiting for the MOUNT was not enough: the
+   # store appears in /proc/mounts ~100s before it accepts writes, and
+   # every seeding block below is guarded by "[ -d /media/cryptofs/apps ]",
+   # so they all no-op silently and this service never runs its pre-start
+   # again (it had a single early trigger, and there is no second boot
+   # any more). Probe for an actual WRITE, and log the outcome so a device
+   # with no Preware feeds can be diagnosed from a log instead of guessed at.
+   IPKGLOG=/var/log/ce-ipkg-seed.log
    i=0
-   while ! grep -q " /media/cryptofs " /proc/mounts && [ $i -lt 60 ]; do
+   while [ $i -lt 60 ]; do
+      if grep -q " /media/cryptofs " /proc/mounts && \
+         mkdir -p $APPS/etc/ipkg $APPS/usr/lib/ipkg 2>/dev/null && \
+         touch $APPS/etc/ipkg/.ce-probe 2>/dev/null; then
+         rm -f $APPS/etc/ipkg/.ce-probe 2>/dev/null
+         break
+      fi
       sleep 5
       i=$((i+1))
    done
-   if grep -q " /media/cryptofs " /proc/mounts; then
-      mkdir -p $APPS/etc/ipkg $APPS/usr/lib/ipkg
+   if [ $i -ge 60 ]; then
+      echo "$(date 2>/dev/null) cryptofs not writable -- ipkg seeding skipped" \
+         >> $IPKGLOG 2>/dev/null
+   else
+      echo "$(date 2>/dev/null) cryptofs writable after $((i*5))s -- seeding" \
+         >> $IPKGLOG 2>/dev/null
    fi
 
    # webOS CE: seed the ipkg config on first boot (the baked install
