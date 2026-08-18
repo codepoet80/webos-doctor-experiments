@@ -1,6 +1,9 @@
-> **SUPERSEDED for the 600014 flash — read `SESSION-NOTES-2026-08-18.md` first.**
-> It records what 600014 actually fixed, three open bugs (two of them mine), and
-> the recommendation to hide the webOS Account icon for the preview release.
+> **HISTORICAL — superseded by the 600024 release candidate (2026-08-18).**
+> Everything this document plans for has shipped. For current state read
+> **RELEASE-NOTES.md** (what ships), **TEST-PLAN.md** (verification status) and
+> **Things Left to Do.md** (what is actually open). Kept because the "class of
+> bug" section below — cryptofs is mounted ~100s before it accepts writes — is
+> still the single most useful thing to read before writing any boot job.
 
 # Next session plan — after flash 600011, Doctor 600012 built (2026-08-17)
 

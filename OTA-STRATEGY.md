@@ -1,3 +1,8 @@
+> **DESIGN DOC — the OTA path is not built yet.** The clean-flash Doctor is the
+> shipping artifact (see RELEASE-NOTES.md, currently BUILDMARK 600024). Component
+> versions named below are as-planned and have moved on — the shipped image
+> carries App Catalog 6.1.2901 and reports `webOS CE 3.1.0`.
+
 # webOS CE — OTA Strategy
 
 How devices get to **CE 3.1** and stay current afterward. Two flows:

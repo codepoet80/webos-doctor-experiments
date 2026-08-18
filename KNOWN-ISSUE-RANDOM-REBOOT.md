@@ -1,6 +1,12 @@
 # Known issue: device may spontaneously reboot shortly after setup (rare, unconfirmed)
 
-**Applies to:** webOS CE 3.1.0 Doctor builds from 2026-08-17 onward.
+**Applies to:** webOS CE 3.1.0 Doctor builds from 2026-08-17 onward, including
+the **600024** release candidate.
+
+**Status:** still unreproduced. Recent builds show **zero** crash reports and no
+software-initiated reboots beyond the expected ones — on 600024 the tripwire
+logged only a deliberate, human-initiated restart. The tripwire ships anyway, so
+one report from an affected device would settle it.
 
 ## What you might see
 

@@ -23,6 +23,8 @@ support a one-time **bootstrap OTA** that carries stock OEM 3.0.5 devices up to 
 | **[TEARDOWN.md](TEARDOWN.md)** | Full analysis of the OEM 3.0.5 Doctor JAR: structure, signing, the "TrenchCoat" flash recipe, and the webOS rootfs (security posture, stack, secrets). The starting point. |
 | **[SCOPE-3.1-CE.md](SCOPE-3.1-CE.md)** | The CE Doctor build: feasibility (repack + integrity gates), the tiered feature set, branding/identity, size budget, integration risks, assembly recipe, the **locked decisions**, and a phased effort estimate. |
 | **[OTA-STRATEGY.md](OTA-STRATEGY.md)** | How devices reach and stay on CE: the **bootstrap OTA** (OEM 3.0.5 → CE 3.1, incl. the TLS chicken-and-egg and the chained two-session upgrade), **ongoing 3.1+ OTAs**, the server-side design, and payload signing. |
+| **[RELEASE-NOTES.md](RELEASE-NOTES.md)** | What ships in the current release candidate, what changed, and the known issues. Start here if you are testing a build. |
+| **[TEST-PLAN.md](TEST-PLAN.md)** | The verification run for the current build: what has been checked, what still needs a human, and how to capture evidence when something misbehaves. |
 | **[build/README.md](build/README.md)** | The **Phase 0 repack harness** (built): unpack → overlay → md5-regen → `integcheck` dry-run → repack + gate-patch. Run `build/build-ce-doctor.sh`. |
 
 ## Source projects (siblings)
@@ -35,14 +37,13 @@ The CE image and OTA payload are assembled from work in adjacent repos:
 | `../LunaCE` | LunaSysMgr launcher replacement (app groups, tabs, wave launcher, stability) |
 | `../webos-hardware-tests` | Bluetooth gamepad shim, USB OTG/power/mass-storage (all userspace) |
 | `../webos-update-exploration` | OTA mechanism + server, Updates reroute / OTA Ready, fingerprint/baseline model, rdxd fix |
-| `~/Downloads/…enyo-findapps_6.0.2900` | App Catalog replacement (swaps the staged 5.0.2900 catalog) |
+| `AddToImage/` | Every ipk baked into the image (the statement of intent for image contents) — App Catalog, core apps, Synergy, Preware, Govnah, kernel, TLS tiers |
 
 ## Locked decisions (see SCOPE §9)
 
 `topaz` Wi-Fi only · modern TLS incl. mail · LunaCE launcher · BT gamepad + USB ·
-App Catalog 6.0.2900 · **no** QupZilla · keep the OTA path (bootstrap + ongoing) ·
-version-string rename to "webOS 3.1 Community Edition (3.0.5 base)" with
-`BUILDNAME` unchanged · keep `verifyRom` + regenerate md5sums · no on-device
+App Catalog 6.1.2901 · **no** QupZilla · keep the OTA path (bootstrap + ongoing) ·
+version string **`webOS CE 3.1.0`** with `BUILDNAME` unchanged · keep `verifyRom` + regenerate md5sums · no on-device
 rollback (recover by re-Doctoring) · BT input-jail shipped as-is.
 
 *Mandatory regardless:* patch `checkToFlash=false` (the OEM Doctor's online build
@@ -50,84 +51,49 @@ check targets a dead Palm server).
 
 ## Status
 
-**Phase 0 repack harness is built and self-tested** (`build/`): it produces a
-patched, unsigned CE Doctor from the OEM JAR, keeps the ipkg md5 database
-consistent, and verifies with a faithful `integcheck` dry-run.
+**Release candidate: BUILDMARK 600024** —
+`out/webosdoctorp305hstnh-3.1CE-600024-rc.jar`, sha256 `ec30762f…`.
+See **[RELEASE-NOTES.md](RELEASE-NOTES.md)** for what ships and
+**[TEST-PLAN.md](TEST-PLAN.md)** for the current verification run.
 
-**Phase 1 (in progress): community first-use swap is built and integ-clean.**
-`build/community-firstuse/` replaces stock first-use in place with the
-`webos-community-account` sign-in flow adapted as the real OOBE (Wi-Fi join,
-`markFirstUseDone` + reboot completion, trimmed card list), and bakes in its
-transport prerequisites (modern curl/TLS 1.3, ntpdate-sync, current CA bundle)
-plus `/var/gadget/novacom_enabled`. `make-overlay.sh` generates the overlay from
-the OEM rootfs + community diffs; the full build passes integcheck
-(0 missing/failed/added). **Flash-tested on real `topaz` hardware (2026-08-15):
-the on-device ROM Verifyer reported `integcheck IPKG VERIFICATION SUCCEEDED`,
-all flash stages completed, and the device rebooted into the community OOBE.**
-The OOBE was then verified end-to-end on that device (terms card served the
-community terms → sign-in → Restart, no wipe).
+The full CE Doctor is built, flash-tested and working on real `topaz` hardware.
+Every flash passes the on-device ROM Verifyer
+(`integcheck IPKG VERIFICATION SUCCEEDED`), and the current build boots, runs its
+OOBE without a reboot, and comes up with the CE launcher, modern HTTPS, Preware
+with feeds, and `webOS CE 3.1.0` in Device Info.
 
-**Full CE Doctor built, flash-tested, and largely working on hardware
-(`build/full-ce/`, `bake.py` → `out/webosdoctorp305hstnh-3.1CE-full.jar`).** On
-top of the first-use swap it bakes in every tiered component. Confirmed working
-on a real `topaz`: CE launcher, browser modern-HTTPS, App Catalog, and
-`webOS CE 3.1.0` in Device Info. The full contents (see `build/full-ce/README.md`):
+**Everything is BAKED.** Every app, patch and file is placed at its final rootfs
+path at build time — no staged ipks, no first-boot installs, no postinsts. Each
+package's postinst file-effects are replayed on the build host by
+`build/full-ce/bake.py`, then the harness regenerates the ipkg md5 database and
+integchecks the result. (An earlier design staged the bundled apps as ipks and
+relied on their postinsts running on-device; that broke USB Settings, BT gamepad
+and Preware, and is gone.)
 
-- **Modern TLS** for browser, app WebKit, download manager, mail (the `ssl11`
-  OpenSSL 1.1.1w stacks + RPATH'd BrowserServer/LunaDownloadMgr + mojomail
-  launcher env/patches), replayed from the webOS-internals postinsts.
-- **LunaCE** launcher binary + launcher images.
-- **App Catalog** — auto-discovered: newest `com.palm.app.enyo-findapps_*_all.ipk`
-  in the **project root** (drop a new build there; `bake.py` grabs it by mtime).
-- **UberKernel 3.0.5-93** (`/boot/uImage-*` + modules).
-- **`webOS CE 3.1.0`** version string.
-- **Skippable OOBE** with a pre-reboot notice (from `webos-community-account`).
-- **Bundled apps**: Maps 4.0.1, USB settings, BT gamepad, **Preware** (with an
-  in-sequence `pmPostInstall` bootstrap for its ipkgservice — see below).
-- **HP preloads removed** (Kindle, Facebook, YouTube).
+### What the image contains
 
-The harness gained overlay **symlink** support (ssl11) and **exec-bit** handling;
-every build passes integcheck (0 missing/failed/added) and is statically
-link-verified (RPATH→soname closure, binary md5s).
+Modern TLS for browser/WebKit/download-manager/mail · LunaCE launcher · community
+first-use (skippable) · Preware, Govnah, App Catalog 6.1.2901, Maps 4.0.1, USB
+Settings, BT gamepad, Synergy Revival runtime · community core apps (Accounts
+3.1.1, Contacts, Messaging, Phone) · UberKernel 3.0.5-93 · full Mozilla trust
+store · `webOS CE 3.1.0` identity · HP preloads removed. Full detail in
+`build/full-ce/README.md`.
 
-### Known bug fixed this session
-First bundled-apps flash lost ~12 stock 1P apps: a first-boot job ran Preware's
-ipkgservice bootstrap concurrently with `app-install`, colliding on the ipkg DB
-and aborting the rest. Fixed by moving the bootstrap into the staged ipk as a
-top-level `pmPostInstall.script` (app-install runs it in-sequence). Re-flashed to
-confirm all apps return.
+### Build reproducibility
 
-### Known issue to fix next session — bundled apps must be PRE-INSTALLED, not staged
-The bundled apps (Maps, USB settings, BT gamepad, Preware, Accounts) are currently **staged**
-as ipks in `/usr/palm/ipkgs/` and installed on first boot by `app-install`, relying on their
-**postinsts** running on-device. That was the wrong call for a system image and it broke:
-**USB Settings** ("Helper not running") and **BT gamepad** (won't pair) both need their service
-registered / rootfs changes applied with a reboot to activate, which doesn't happen cleanly
-during first-boot app-install; and **Preware's** in-ipk `pmPostInstall.script` stalled
-`app-install` long enough that a fast OOBE-completion reboot dropped the apps queued after it.
+`build/full-ce/manifests/<BUILDMARK>.json` records, for every build: the git
+revision, the sha256 of the OEM JAR, the LunaCE binary, every consumed ipk, and
+the output JAR. The rootfs is written with fixed mtimes and a normalised gzip
+header, ipks are selected by version (not mtime), and the staged ipks the build
+repacks are produced deterministically — so two builds of the same inputs differ
+only in `BUILDTIME`/`BUILDMARK`.
 
-**The TLS tiers, LunaCE, App Catalog, kernel, and version string were never affected** because
-they are **baked directly into the rootfs** (`bake.py` replays each package's final file
-placement) — which is exactly what all the bundled apps should do too. There is no inherent
-race with OOBE; the only problem is postinst-based install.
+## Working artifacts
 
-**Fix (next session):** rewrite the bundled-app tier in `bake.py` to **bake** each app into the
-rootfs — app → `/usr/palm/applications`, service → `/usr/palm/services` (webOS auto-registers
-from its own `services.json`/`roles.json`), binaries/libs/upstart/udev to their canonical
-`/usr`, `/etc` paths, and replay any stock-file patches (BT's `bluetoothtab`, `jail_pdk.conf`,
-`event.d/bluetooth`) — with **no postinsts, no `/usr/palm/ipkgs` staging, and no bootstrap
-jobs.** Per-app placement details are recorded in project memory (`full-ce-overlay`). Watch the
-568 MB root-volume budget when baking large apps.
+- `webosdoctorp305hstnhwifi.jar` — the OEM 3.0.5 Doctor (the repack base; not in git).
+- `out/webosdoctorp305hstnh-3.1CE-600024-rc.jar` — **the release candidate**.
+- `out/webosdoctorp305hstnh-3.1CE-600023.jar` — the previous candidate, kept as a
+  fallback.
 
-### Then (plan)
-1. **Launcher tab placement** — **USB→Settings** (and Preware→Downloads) via the launcher page
-   layout (`/etc/palm/default-launcher-page-layout.json` is in the rootfs and overlay-able;
-   LunaCE also ships its own `default-launcher-page-layout.json`).
-2. **Default governor** — CE ships `performance`; consider seeding `ondemandtcl` at boot.
-3. **Optionally bundle Govnah** so the uberkernel governors are adjustable OOTB.
-4. **OTA server**: teach the fingerprint that CE-uberkernel is the expected baseline, then the
-   bootstrap OTA (OEM 3.0.5 → CE).
-
-## Working artifact
-
-- `webosdoctorp305hstnhwifi.jar` — the OEM 3.0.5 Doctor (the repack base).
+`out/` is gitignored; rebuild with `build/full-ce/bake.py` then
+`build/build-ce-doctor.sh overlays/full-ce`.

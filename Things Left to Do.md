@@ -1,15 +1,41 @@
 # Things Left to Do
 
-- /etc/palm-build-info has an ancient BUILDTIME=20111221110520 - we should update it
-- /etc/palm-build-info has an ancient BUILDMARK=528667 - we should include in our build process to update it each time, let's start at 600000 so there's a clear separation from legacy
-- Preware is not registered as an app installer, and won't be until the user launches and approves it. We should pre-register it as the app installer (Preware source code available here: https://github.com/webOSArchive/preware)
-- LunaCE Patches missing (see ~/Downloads/LunaCE-All/install_tweaks.sh and ~/Downloads/LunaCE-All/tweaks/)
-- Developer mode was on after flash, but then turned off on its own somehow -- it might have been a different Claude session spelunking around on another topic, but double check: We should ALWAYS be in Developer mode (unless the user manually turns it off) in 3.1
-- Hotspot detection is using a dead URL, and spuriously demanding the user to log-in to the Hotspot. We should update the URL it checks to http://www.webosarchive.org for connectivity
-- LunaCE supports changing the keyboard size. Can we default to a smaller size (the original size looks comically large in 2026)?
+## Done — shipped in the 600024 release candidate
 
-## Open after flash 600009 (see NEXT-SESSION-PLAN.md for full detail)
+- ~~`/etc/palm-build-info` has an ancient BUILDTIME~~ — stamped per build.
+- ~~ancient BUILDMARK=528667~~ — CE marks start at 600000 and increment per bake;
+  every build also writes `build/full-ce/manifests/<BUILDMARK>.json`.
+- ~~Preware is not registered as an app installer~~ — pre-registered as the `.ipk`
+  handler in `/usr/palm/command-resource-handlers.json`.
+- ~~LunaCE Patches missing~~ — LunaCE Tweaks definitions seeded to cryptofs
+  (inert until the user installs Tweaks).
+- ~~Developer mode turned itself off~~ — `turnOnNovacomAtStart=true` forces it on
+  at every boot.
+- ~~Hotspot detection using a dead URL~~ — connectivity probes byte-patched to
+  live community hosts; captive-portal webview repointed too.
+- ~~Default keyboard size~~ — defaults to small.
+- ~~webOS Account app re-runs the OOBE language card from the launcher~~ — the app
+  is OOBE-only again (`visible:false`); post-OOBE account management becomes a
+  separate catalog app (notes on branch `split-oobe-and-account-app` in
+  `webos-community-account`).
+- ~~"Skip Account Setup" leaves the profile named "Dr. Skipped Firstuse"~~ —
+  renamed to "webOS User".
+- ~~Audit ce-firstboot-tweaks / ce-remove-preloads against a no-reboot OOBE~~ —
+  both now wait for a real cryptofs write, verify their work, and only then set
+  their once-per-flash flag; each retries on later triggers.
 
-- webOS Account app launched from the launcher re-runs the OOBE language card, which DELETES the user's account (and Done can power the device off) — it has no way to tell an OOBE launch from a normal one
-- "Skip Account Setup" leaves the profile named "Dr. Skipped Firstuse"; should be "webOS User" (set by the stock palmprofile handler on the next boot, not by the app)
-- Audit ce-firstboot-tweaks and ce-remove-preloads against a no-reboot OOBE — they still trigger only on `stopped configurator` and have never been checked without a second boot
+## Open
+
+- **Post-OOBE account manager** — the sign-in app is first-use only. Build the
+  separate `com.palm.app.webosaccount` catalog app (design notes on the
+  `split-oobe-and-account-app` branch).
+- **OTA path** — teach the update server that CE-uberkernel is the expected
+  baseline, then the bootstrap OTA (OEM 3.0.5 → CE 3.1). See OTA-STRATEGY.md.
+- **Default governor** — CE ships `performance`; consider seeding `ondemandtcl`.
+- **Remaining hands-on tests** for the release candidate — see TEST-PLAN.md
+  (controller pairing, email sync, QuickOffice/Photos UIs, `.ipk` tap-to-install,
+  captive portal, non-English OOBE).
+- **Unexplained one-off:** on 600023 the UI wedged once after tapping Luna
+  Restart. 600024 fixed the mechanism behind it (ipkgservice is resident again)
+  and the restart now works, but if a UI wedge is ever seen again, capture state
+  before rebooting — procedure in TEST-PLAN.md.

@@ -1,3 +1,20 @@
+> **DESIGN DOC — decisions below are as-planned; some changed in the shipped
+> build.** As of the **600024** release candidate (see RELEASE-NOTES.md):
+>
+> - **Version string** is **`webOS CE 3.1.0`**, not "webOS 3.1 Community Edition
+>   (3.0.5 base)". Four binaries that prefix-strip the version get a same-length
+>   `"HP webOS " → "webOS CE "` byte patch so apps still parse a bare `3.1.0`.
+> - **App Catalog** is **6.1.2901**, not 6.0.2900.
+> - **Nothing is staged as an ipk.** §1f below plans to swap the staged catalog
+>   ipk and edit `manifest.json`; the shipped build instead **bakes** every app at
+>   its final rootfs path and **removes** the stock staged ipk. (§1f's own note
+>   that the stock catalog sits at the flat path
+>   `/usr/palm/ipkgs/com.palm.app.enyo-findapps_5.0.2900_all.ipk` is correct and
+>   load-bearing — a later session wrongly concluded that file did not exist and
+>   shipped builds where the stock 5.0.2900 shadowed the baked catalog.)
+> - **First use** is the community webOS Account flow and account setup is
+>   skippable; the sign-in app is OOBE-only.
+
 # webOS 3.1 "Community Edition" Doctor — Scope
 
 **Goal:** produce a new, flashable webOS Doctor JAR that installs a webOS 3.0.5

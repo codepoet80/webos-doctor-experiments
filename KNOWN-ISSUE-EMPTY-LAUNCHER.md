@@ -1,6 +1,11 @@
 # Known issue: launcher may come up empty after first boot (rare)
 
-**Applies to:** webOS CE 3.1.0 Doctor builds from 2026-08-17 onward.
+**Applies to:** webOS CE 3.1.0 Doctor builds from 2026-08-17 onward, including
+the **600024** release candidate.
+
+**Status:** not observed on any build since 600014. The protection described
+below still ships, so if the race does fire it is caught and a restart clears it
+permanently.
 
 ## What you might see
 

@@ -1,3 +1,9 @@
+> **HISTORICAL — notes from the 600014 flash.** All five open items here were
+> resolved or superseded by the 600024 release candidate: the ipkg status
+> stanzas now seed correctly, the StartOver probe and blank-card issues went away
+> with the OOBE-only split, and the launcher icon was removed as recommended.
+> Current state: RELEASE-NOTES.md and TEST-PLAN.md.
+
 # Session notes — 2026-08-18, flash 600014
 
 Written at the point we stopped. Read the "How this went wrong" section before

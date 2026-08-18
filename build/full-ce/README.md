@@ -1,5 +1,9 @@
 # Full CE overlay
 
+> Current release candidate and what ships in it:
+> **[../../RELEASE-NOTES.md](../../RELEASE-NOTES.md)** ·
+> verification status: **[../../TEST-PLAN.md](../../TEST-PLAN.md)**
+
 The complete CE Doctor: the community first-use swap **plus** every CE
 component, all **baked into the rootfs at final paths at build time**. Nothing
 is staged for first-boot installation — the device is fully installed the
