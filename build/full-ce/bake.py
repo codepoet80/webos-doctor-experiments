@@ -781,9 +781,20 @@ def main():
             wcopy(f"usr/palm/sysmgr/images/launcher3/{img}", src, 0o644)
 
     # 8) App Catalog : BAKE the community enyo-findapps over the stock rootfs
-    # app, removing stock files the new build no longer ships. (This Doctor's
-    # stock catalog is a plain rootfs app — there is no staged findapps ipk;
-    # an earlier flat-path remove here matched nothing and is gone.)
+    # app, removing stock files the new build no longer ships — AND removing
+    # the stock staged catalog ipk.
+    #
+    # That staged ipk sits at a FLAT path
+    # (/usr/palm/ipkgs/com.palm.app.enyo-findapps_5.0.2900_all.ipk, 14.9MB,
+    # plus findapps-icon.png), not in a per-app subdir like maps, which is why
+    # remove_staged_ipk() cannot match it. A previous session concluded from
+    # that mismatch that "there is no staged findapps ipk" and deleted the
+    # removal. The ipk is right there in the stock tarball, and app-install
+    # duly installed it to cryptofs on first boot, where it SHADOWED the baked
+    # build: confirmed live on 600020 — rootfs 6.1.2901, cryptofs 5.0.2900,
+    # installed 15:14:47, i.e. after ce-firstboot-tweaks' deshadow pass had
+    # already reported "verified clean". Every App Catalog test on 600014-600020
+    # was therefore exercising the OLD stock catalog.
     log(f"tier: App Catalog BAKED ({os.path.basename(IPK['catalog'])})")
     d = ipk_extract_data(IPK["catalog"], os.path.join(tmp, "catalog"))
     baked_cat = bake_tree(d)
@@ -792,6 +803,19 @@ def main():
                          if n.startswith(CAT_PFX) and n[2:] not in baked_cat)
     removes.extend(cat_removes)
     log(f"  {len(cat_removes)} stale stock catalog files removed")
+    # the flat-path staged ipk + its icon (see the tier comment above)
+    cat_staged = sorted(n for n in stock_names
+                        if n.startswith("./usr/palm/ipkgs/")
+                        and ("enyo-findapps" in n or "findapps-icon" in n))
+    if not cat_staged:
+        sys.exit("ERROR: no staged App Catalog ipk found under /usr/palm/ipkgs. "
+                 "Stock ships com.palm.app.enyo-findapps_*.ipk there; if this "
+                 "Doctor genuinely lacks it, drop this check deliberately — do "
+                 "NOT assume it is absent (that assumption shipped a shadowed "
+                 "catalog in 600014-600020).")
+    for n in cat_staged:
+        removes.append(n[1:])
+        log(f"  remove staged {n[1:]}")
 
     # 9) Maps : BAKE 4.0.1 as a system app; remove the stock staged 3.0.1 ipk
     # (it lives in a per-app SUBDIR of /usr/palm/ipkgs — ipk + icon + manifest).
@@ -1174,8 +1198,29 @@ def main():
       "            fi\n"
       "        fi\n"
       "    }\n"
+      "    # initctl start BLOCKS until the job settles, and `|| true` does not\n"
+      "    # help a hang. Two ways it hangs here: ipkgservice has no `respawn`\n"
+      "    # any more, so its exec'd process exits at once (the hub owns the bus\n"
+      "    # name) and the job never reaches a state initctl returns on; and\n"
+      "    # imtransport's pre-start waits up to ~180s for the cryptofs\n"
+      "    # interpreter. Seen live on 600020: this job sat in do_wait on a\n"
+      "    # blocked `initctl start org.webosinternals.ipkgservice` for 7+\n"
+      "    # minutes having copied NOTHING, so the Synergy runtime never seeded.\n"
+      "    # Fire and forget, with a bounded wait -- same shape as the wallpaper\n"
+      "    # job's lsq().\n"
+      "    kick_bg() {\n"
+      "        /sbin/initctl \"$@\" > /dev/null 2>&1 &\n"
+      "        _kp=$!\n"
+      "        _i=0\n"
+      "        while [ $_i -lt 10 ] && kill -0 $_kp 2>/dev/null; do\n"
+      "            sleep 1\n"
+      "            _i=$((_i+1))\n"
+      "        done\n"
+      "        kill $_kp 2>/dev/null || true\n"
+      "        return 0\n"
+      "    }\n"
       "    kick_imtransport() {\n"
-      "        /sbin/initctl start imtransport > /dev/null 2>&1 || true\n"
+      "        kick_bg start imtransport\n"
       "    }\n"
       "    kick_dependents() { kick_ipkg; kick_imtransport; }\n"
       "    if [ ! -d \"$SEED\" ]; then kick_dependents; exit 0; fi\n"

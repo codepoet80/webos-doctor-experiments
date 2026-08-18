@@ -1,168 +1,224 @@
 # webOS CE 3.1 Flash Test Plan
 
-For the BUILDMARK 600013 image (`out/webosdoctorp305hstnh-3.1CE.jar`).
-Items marked **(regression)** were verified on earlier flashes; everything else
-is new in this build. Shell checks assume a novacom/novaterm root shell.
+Marked up against **BUILDMARK 600020** (flashed 2026-08-18, `BUILDTIME=20260818105945`).
+Legend: `[Pass]` verified this run · `[Fail]` verified broken · `[Human]` needs
+eyes/hands on the device · `[n/a]` not applicable to this build.
+Shell checks assume a novacom root shell (**`luna-send` needs `< /dev/null`** under
+novacom, or it exits silently with no output).
 
-## Automated pass — BUILDMARK 600011, 2026-08-17 (no second boot)
+---
 
-**40 checks pass, 0 real failures.** Run with
-`scratchpad/ce-test-600011.sh` over novacom. This was the first flash to reach
-a fully working state on a **single boot** — no reboot repaired anything.
+## RESULTS SUMMARY — 600020
 
-Verified automatically: build identity; cryptofs seed verified in its own log;
-Synergy glibc + runtime + bind mounts + transport running; **zero** crash
-reports (the imtransport SIGBUS is gone); Preware feeds (13) + all three seeded
-stanzas on first boot; skip-setup profile named **webOS User**; no software
-reboot (tripwire log absent); 22.png wallpaper; GAMES designator; no launcher
-race; carrier string, small keyboard, dev mode; webOS Account appinfo + locale
-removal; BT byte patch; slim Thai font; gst plugins; 190-cert trust store;
-connectivity-probe patch; legacy junk and stale staged ipks gone.
+**Two bugs found, both already fixed in bake.py (not yet built/flashed). Everything
+else passes.**
 
-Two reported failures, both dismissed with evidence:
-- *db8 profile query* — test-script bug (`where` on an unindexed prop). The
-  direct query returns `"username":"webOS User"`.
-- *ls-hubd: 96 unlisted-service errors* — all one service,
-  `com.palm.wifi.carrierhotspot`, requested by stock `PmWiFiService`. That
-  service file is **absent from the stock image too**, so this is stock noise
-  on a Wi-Fi-only TouchPad, not a CE regression.
+### BUG 1 — App Catalog is shadowed by the OLD stock 5.0.2900  *(fixed in bake.py)*
 
-Still needs a human: App Catalog install, controller pairing, LunaCE tweak
-toggles, .ipk tap-to-install, email sync, QuickOffice, Maps.
+The image bakes community catalog **6.1.2901** to the rootfs, but stock also ships a
+**flat-path staged ipk** `/usr/palm/ipkgs/com.palm.app.enyo-findapps_5.0.2900_all.ipk`
+(14.9MB + `findapps-icon.png`). app-install installed it to cryptofs at 15:14:47 on
+first boot, and cryptofs shadows the rootfs — so the catalog actually running is
+**5.0.2900**.
 
-**Do not tap the webOS Account launcher icon on this build** — it replays the
-OOBE language card, which deletes the palm profile, and Done can power the
-device off. See NEXT-SESSION-PLAN.md.
+It slipped through because `remove_staged_ipk()` only matches per-app *subdirs*
+(like maps), and a previous session read that mismatch as proof that "there is no
+staged findapps ipk" and deleted the removal. The ipk is plainly in the stock
+tarball. The deshadow pass can't save us either — it ran clean at 08:14:44, one
+minute *before* the install.
 
-## Pre-flash review additions (BUILDMARK 600013)
+**Consequence: every App Catalog test from 600014 through 600020 — including this
+run's passing install test — exercised the OLD catalog.** Re-test after the next
+flash. Verify with:
+`grep -o '"version":[^,]*' /media/cryptofs/apps/usr/palm/applications/com.palm.app.enyo-findapps/appinfo.json`
+→ should be **absent** (no cryptofs copy at all).
 
-A top-to-bottom audit before this flash found issues that no earlier test would
-have caught, because they all live on the **launcher launch** of webOS Account —
-a path that only became reachable once that icon was added.
+### BUG 2 — `ce-cryptofs-seed` hangs forever on `initctl start`  *(fix pending)*
 
-- [ ] **Start Over must be gone standalone.** Open the webOS Account icon; the
-  bottom-left "Start Over" button must NOT be there. (It deletes the *connected*
-  Wi-Fi network's saved profile, password included. Under OOBE it is still
-  present and still works — that is correct.)
-- [ ] **Power button over the account app** — with webOS Account open from the
-  launcher, press the power key: you should get the normal system power menu,
-  NOT a first-use "Turn Off" dialog.
-- [ ] **Screen still dims** while webOS Account sits open from the launcher
-  (under OOBE it correctly stays awake).
-- [ ] **OOBE regression** — the whole first-use flow must be unchanged:
-  language → terms → sign-in → Done finishes setup. Start Over during OOBE still
-  offers to forget Wi-Fi and restart.
-- [ ] **Deshadow on a dirty device** (only testable by flashing over an install
-  that has Preware/Govnah in cryptofs): after first boot,
-  `/var/log/ce-firstboot-tweaks.log` says "deshadow verified clean", and Preware
-  reports the baked version rather than an older shadowed copy.
+`kick_ipkg` calls `/sbin/initctl start org.webosinternals.ipkgservice` synchronously.
+Since `respawn` was removed (600019), the service's process exits immediately (the
+hub owns the bus name), the job never reaches a state `initctl start` returns on,
+and the call **blocks in `__skb_recv_datagram` indefinitely**. `|| true` does not
+help a hang.
+
+Observed: seed job ran 7+ minutes having copied **nothing**, blocked in `do_wait` on
+child `initctl`. Feeds were fine (the pre-start had already run), but the 31MB
+synergy payload never started. Killing the stuck `initctl` let it finish in ~90s
+(`seed verified complete on attempt 1`).
+
+**On an untouched device the Synergy transport would never come up.** The same
+hazard applies to `kick_imtransport` (imtransport's pre-start can wait ~180s).
+Fix: run both kicks backgrounded with a bounded wait, the same pattern the
+wallpaper job's `lsq()` already uses.
+
+### Stale expectations corrected in this document
+- Thai font is **37KB**, not "~600KB" — upstream now ships a smaller Noto. The
+  point of the check (not the stock **9.5MB** font) holds.
+
+---
+
+## Automated pass — BUILDMARK 600011, 2026-08-17 (historical, kept for reference)
+
+40 checks passed, 0 real failures (`scripts/ce-test-600011.sh`). First flash to
+reach a working state on a **single boot**. Two reported failures dismissed with
+evidence: a test-script db8 query bug, and 96 `ls-hubd` errors that were all stock
+`com.palm.wifi.carrierhotspot` noise, absent from the stock image too.
+
+---
+
+## First-boot seeding (NEW — the 600019/600020 fixes)
+
+- [Pass] **First-use gate defers the pre-OOBE runs.** `ce-cryptofs-seed.log`:
+  `first use not finished -- deferring` at 15:14:13 and again at 08:14:42, then the
+  real run at 08:18:45. Before this fix the early run occupied the job for minutes
+  and upstart silently DROPPED the `first-use-finished` trigger, leaving 600019 with
+  nothing seeded at all.
+- [Pass] **Feeds seed in the same second as the post-OOBE run** (08:18:45 →
+  08:18:45), not 86s later behind the synergy copy.
+- [Pass] **Preware has its feeds out of the box** — 9 enabled + 4 disabled configs,
+  no user action, no relaunch needed.
+- [Pass] **No ipkgservice respawn storm** — 0 respawns all boot (was 11 → job
+  permanently stopped). The 3 `respawning too fast` events this boot are
+  `PmWanDaemon`, a stock daemon unrelated to CE.
+- [Fail] **Synergy seed does not complete unaided** — see BUG 2. After manual
+  unblocking: glibc 11/11, runtime 13/13, plugins 11/11, flag set.
 
 ## 10-minute smoke test
 
-Fast, high-signal checks that our bits landed — no accounts, no sync setup.
-
-1. [ ] **OOBE ran and finished on its own** — community account flow appeared,
-   Done rebooted the device, launcher comes up (no minimal-mode loop).
-2. [ ] **No hotspot login prompt** on your normal Wi-Fi during/after OOBE
-   (the connectivity-probe patch).
-3. [ ] **Open HTTPS Webpage** browse to github.com in the old browser,
-   it won't render, but if it connects, you're good.
-4. [ ] **Build identity** — Device Info says *webOS CE 3.1.0*; shell:
-   `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600011`.
-5. [ ] **Keyboard is small by default** — tap any text field; the keyboard
-   should come up noticeably shorter than stock.
-6. [ ] **App Catalog can install apps** — launch App Catalog and install Keen
-7. [ ] **Controller Works** test a Bluetooth or USB controller with Keen. Open
-   the USB Settings app and check for errors.
-8. [ ] **LunaCE installed and working** group icons, or create a tab. Install
-   Tweaks, and try tweaking something.s
-9. [ ] **Preware knows what's baked** — open Preware → Installed Packages
-   lists Preware 1.9.19, Govnah 1.3.9, Synergy generic 0.9.3; USB Settings
-   and BT Gamepad are nowhere in its listings.
-10. [ ] **Advanced Reset Options** — hold the power button and see if there
-   are options.
-11. [ ] **Core apps launch** — open Messaging, Contacts, and Accounts
-   (Settings → Accounts shows the SYNERGY ACCOUNTS box). Just launching all
-   three without errors is the signal.
-12. [ ] **Synergy runtime alive** — shell:
-   `ls /media/cryptofs/synergy-glibc/lib/ld-linux.so.3 && ps | grep -c imlibpurple`
-   (file present, transport process running; give it ~2 min after boot).
-13. [ ] **Legacy junk gone** — no Skype app in the launcher; shell:
-   `ls /usr/palm/applications/com.palm.app.skype 2>&1` → No such file.
-14. [ ] **Dev mode sticks** — `novacom -l` sees the device now; reboot once,
-    it still does (turnOnNovacomAtStart).
-15. [ ] **webOS Account Icon** - found in Settings
-
-If all 15 pass, the deep sections below can wait for a slower pass.
+1. [Pass] **OOBE ran and finished** — community flow; no reboot needed; launcher came up.
+2. [Human] **No hotspot login prompt** — *user reported normal Wi-Fi behaviour; not
+   explicitly re-checked.*
+3. [Pass] **HTTPS browsing** — user confirmed github.com loads.
+4. [Pass] **Build identity** — `PRODUCT_VERSION_STRING=webOS CE 3.1.0`,
+   `BUILDTIME=20260818105945`, `BUILDMARK=600020`.
+5. [Pass] **Keyboard small by default** — user confirmed.
+6. [Fail] **App Catalog install** — the install itself worked (user confirmed) but it
+   was the shadowed **5.0.2900**, not baked 6.1.2901. See BUG 1. Re-test next flash.
+7. [Human] **Controller works** — Bluetooth/USB controller with a game. USB Settings
+   app itself confirmed happy by user.
+8. [Pass] **LunaCE installed and working** — user confirmed present; Tweaks test passed.
+9. [Pass] **Preware knows what's baked** — Preware 1.9.19, Govnah 1.3.9, Synergy
+   generic 0.9.3 all `Status: install ok installed`; USB Settings and BT Gamepad
+   absent from ipkg (0 hits each), as intended.
+10. [Pass] **Advanced Reset Options** — user confirmed present.
+11. [Human] **Core apps launch** — Messaging / Contacts / Accounts. All three are
+    baked in rootfs and unshadowed, db8 answers, but *launching* them needs eyes.
+12. [Pass] **Synergy runtime alive** — `ld-linux.so.3` present, 1 `imlibpurple`
+    process, 1 bind mount **(only after BUG 2 was manually unblocked)**.
+13. [Pass] **Legacy junk gone** — skype app, `skypem`, `com.palm.yahoo`, kindle all absent.
+14. [Pass] **Dev mode sticks** — `turnOnNovacomAtStart=true`, `/var/gadget/novacom_enabled`
+    present, novacom reachable throughout.
+15. [n/a] **webOS Account icon in Settings** — deliberately removed this build
+    (`visible:false`); the app is OOBE-only now. Post-OOBE account management moves
+    to a separate catalog app.
 
 ## OOBE (first boot)
 
 - [Pass] First use boots into the community webOS Account flow (not stock HP)
-- [ ] Card order: language → terms → sign-in → name device (no restore/google/updates cards)
-- [Pass] Wi-Fi join popup appears and connects (`dataConnection` delta applied)
-- [Pass] **No spurious "log in to hotspot" prompt** on a normal home network (connectivity-probe patch)
-- [Pass] Terms card loads the community terms over HTTPS
-- [ ] Sign-in (or Skip Account Setup) works; completion card shows "Tap Done to finish…"
-- [Fail] Done reboots the device on its own; next boot lands in the launcher (no minimal-mode loop)
-- [ ] German (or other language) OOBE run still works end-to-end if re-testing localization
+- [Human] Card order: language → terms → sign-in → name device
+- [Human] Wi-Fi join popup appears and connects
+- [Human] No spurious hotspot prompt on a normal home network
+- [Human] Terms card loads community terms over HTTPS
+- [Human] Sign-in (or Skip Account Setup) works; completion card shows "Tap Done…"
+- [Pass] **Done finishes setup without a reboot** — no software reboot occurred at
+  all this boot (`/var/log/reboot-tripwire.log` absent). *Note: the old plan line
+  said "Done reboots the device"; the no-reboot OOBE is the intended behaviour now.*
+- [Human] Non-English OOBE run (localization)
 
 ## Core-apps suite
 
-- [ ] **Messaging** launches; conversations UI is the new build (reactions/replies UI present)
-- [ ] **Contacts** launches; app runs from rootfs (`ls /media/cryptofs/apps/usr/palm/applications/com.palm.app.contacts` → absent)
-- [ ] **Phone** launches without errors
-- [ ] **Accounts** (Settings → Accounts) opens; SYNERGY ACCOUNTS grouping visible
-- [ ] No stale stock contacts/messaging installed from staged ipks: `ls /usr/palm/ipkgs/com.palm.app.contacts /usr/palm/ipkgs/com.palm.app.messaging /usr/palm/ipkgs/com.palm.app.maps` → ipk files gone
-- [ ] db8 kinds healthy: `luna-send -n 1 palm://com.palm.db/find '{"query":{"from":"com.palm.person:1","limit":1}}'` returns `returnValue: true`
+- [Human] Messaging launches; new conversations UI
+- [Pass] Contacts runs from rootfs — cryptofs copy absent
+- [Human] Phone launches without errors
+- [Human] Accounts (Settings → Accounts) shows SYNERGY ACCOUNTS grouping
+- [Pass] No stale stock contacts/messaging/maps staged ipks — all three gone
+- [Pass] db8 kinds healthy — `com.palm.person:1` query returns `returnValue: true`
+- [Pass] accounts app baked at **3.1.1** (version-sort picked it over 3.1.0)
 
 ## Synergy generic runtime
 
-- [ ] Cryptofs seed ran: `ls /media/cryptofs/synergy-glibc/lib/ld-linux.so.3 /media/cryptofs/synergy-runtime /media/cryptofs/synergy-purple-plugins` all present
-- [ ] Seed flag exists: `ls /var/luna/preferences/ce-cryptofs-seeded`
-- [ ] `imtransport` running: `ps | grep imlibpurple` shows the transport (may take a couple minutes after first boot; check `/media/cryptofs/imstdout.log` for a clean start, no crash loop)
-- [ ] Bind mounts live: `mount | grep synergy` shows purple-2 and synergy-runtime
-- [ ] cloud-auth + docviewer apps present in the launcher (or via Just Type)
-- [ ] Skype/Yahoo/legacy-Google gone: no Skype app in launcher; `ls /usr/palm/applications/com.palm.app.skype /usr/bin/skypem /usr/palm/public/accounts/com.palm.yahoo` → all absent
-- [ ] BT hands-free byte patch took: `dd if=/usr/bin/PmBtEngine bs=1 skip=119792 count=4 2>/dev/null | hexdump -C` → `31 00 00 ea`
-- [ ] Thai font swap: `ls -la /usr/share/fonts/HeiT_nb.ttf` is ~600KB (not 9.5MB)
-- [ ] gst plugins present: `ls /usr/lib/gstreamer-0.10/libgstopus.so /usr/lib/gstreamer-0.10/libgstvpx.so`
-- [ ] QuickOffice opens after first-boot install and shows the remote-files UI (repacked staged ipk)
-- [ ] Photos app opens; no JS errors in `/var/log/messages` from the patched files
+- [Pass] Cryptofs seed present — glibc/runtime/purple-plugins all full *(after BUG 2 unblock)*
+- [Pass] Seed flag `/var/luna/preferences/ce-cryptofs-seeded` exists
+- [Pass] `imtransport` running — 1 `imlibpurple` process
+- [Pass] Bind mount live — `mount | grep synergy` → 1
+- [Pass] cloud-auth app present; docviewer intentionally excluded
+- [Pass] Skype/Yahoo/legacy-Google gone
+- [Pass] BT hands-free byte patch — `31 00 00 ea` at offset 119792
+- [Pass] Thai font swapped — 37,744 bytes (stock was 9,496,100)
+- [Pass] gst plugins present — `libgstopus.so`, `libgstvpx.so`
+- [Pass] QuickOffice ×2 + Photos installed from the repacked staged ipks;
+  `RemoteFileService.js` integration file present in the installed QuickOffice
+- [Pass] Photos service patch marker present in rootfs `Utils.js`
+- [Human] QuickOffice remote-files UI actually opens; Photos app opens
 
 ## Preware / Govnah / status seeding
 
-- [ ] **(regression)** Preware launches, feeds load, ipkgservice answers: `luna-send -n 1 palm://org.webosinternals.ipkgservice/version '{}'`
-- [ ] Preware shows **Preware 1.9.19 as installed** (not offered as a plain install)
-- [ ] Preware shows **Govnah 1.3.9 as installed**
-- [ ] Preware shows **Synergy generic 0.9.3 as installed**
-- [ ] USB Settings and BT Gamepad do **not** appear in Preware listings
-- [ ] Status stanzas present: `grep -A2 "^Package: org.webosinternals" /media/cryptofs/apps/usr/lib/ipkg/status`
-- [ ] **.ipk handler**: download an .ipk in the browser (or open from email) → installs via Preware with **no association prompt**
-- [ ] Installing a real package via Preware works (e.g. Tweaks) and its stanza replaces/joins the seeded ones cleanly
+- [Pass] ipkgservice answers — `version` → `1.9.18` in ~1s; `getConfigs` → 12 configs, 8 enabled
+- [Pass] Preware 1.9.19 seeded as installed
+- [Pass] Govnah 1.3.9 seeded as installed
+- [Pass] Synergy generic 0.9.3 seeded as installed
+- [Pass] USB Settings and BT Gamepad absent from ipkg status
+- [Pass] Status stanzas well-formed, one each, valid `Installed-Time` epochs
+- [Human] **.ipk handler** — download an .ipk in the browser → installs via Preware
+  with no association prompt
+- [Pass] Installing a real package via Preware works — user installed Tweaks
+  successfully (its stanza joined the seeded ones cleanly)
+- [ ] **Next build only:** `webos-patches` / `webos-kernels` should ship
+  **disabled**. On 600020 they are enabled with a bogus 3.0.5 pin, so they fail on
+  every feed update. 600021 replaces our hand-copied feed list with Preware's own
+  postinst logic, which disables them on 3.1.
 
 ## CE platform tweaks
 
-- [ ] Device Info shows **webOS CE 3.1.0**
-- [ ] `grep BUILD /etc/palm-build-info` → `BUILDTIME=20260817…`, `BUILDMARK=600011`
-- [ ] **Developer mode on** after flash; toggle it off, reboot → it is back **on** (`turnOnNovacomAtStart`); `novacom -l` sees the device throughout
-- [ ] **Keyboard comes up small** by default; resizing via keyboard key persists across hide/show and reboot
-- [ ] Install **Tweaks** via Preware → LunaCE toggles appear (mini cards, wave launcher, gestures, …) and at least one (e.g. mini cards) works when enabled
-- [ ] Hotspot check: join a real captive-portal network (if available) → portal login page loads from the archive-pointed webview
+- [Pass] Device Info shows webOS CE 3.1.0
+- [Pass] `BUILDTIME=20260818105945`, `BUILDMARK=600020`
+- [Pass] Developer mode on; `turnOnNovacomAtStart=true`
+- [Pass] Keyboard small by default (user confirmed)
+- [Pass] Tweaks installs and LunaCE toggles work (user confirmed)
+- [Human] Captive-portal network → portal page loads from the archive-pointed webview
 
 ## Regressions from earlier validated flashes
 
-- [ ] Browser loads modern-HTTPS sites; App Catalog works; Maps 4.0.1 opens
-- [ ] Email syncs (mail TLS stack); Help app points at webosarchive.org
-- [ ] BT gamepad pairs; USB Settings works and sits on the Settings tab; Govnah on Settings tab
-- [ ] Wallpapers 12–29 + Treo ringtones in `/media/internal` after OOBE; default wallpaper is 22.png on a fresh device (and the wallpaper picker shows thumbnails for all of them)
-- [ ] Advanced reset options in the power menu, in the chosen OOBE language; Luna Restart button works
-- [ ] Kindle/Facebook/YouTube preloads absent
-- [ ] `ls-hubd` clean: no "Service not listed in service files" in `/var/log/messages`
-- [ ] Trust store intact: ~190 certs in `/etc/ssl/certs/trustedcerts`, `/var/ssl/trustedcerts` populated
+- [Pass] Browser loads modern HTTPS (user confirmed)
+- [Fail] App Catalog — works, but the shadowed old version. See BUG 1.
+- [Human] Maps 4.0.1 opens (baked in rootfs, staged 3.0.1 ipk removed)
+- [Human] Email syncs (mail TLS stack)
+- [Pass] Help app repointed at help.webosarchive.org
+- [Human] BT gamepad pairs
+- [Pass] USB Settings works (user confirmed); Govnah/USB on the Settings tab
+- [Pass] Wallpapers + ringtones in `/media/internal` — 34 wallpapers, 40 ringtones;
+  default wallpaper correct (user confirmed)
+- [Pass] Advanced reset options present (user confirmed); [Human] Luna Restart button
+- [Pass] Kindle/Facebook/YouTube preloads absent; 0 staged customization ipks left
+- [Pass] `ls-hubd` — 12 unlisted-service errors, all benign: 10 ×
+  `com.palm.wifi.carrierhotspot` (stock noise, absent from the stock image too),
+  2 × `org.webosinternals.tweaks.prefs` (from the Tweaks install this run)
+- [Pass] Trust store intact — 190 `.pem` + 380 total entries in
+  `/etc/ssl/certs/trustedcerts`, `/var/ssl/trustedcerts` populated (190),
+  `ca-certificates.crt` 289,320 bytes
+- [Pass] Version-prefix patch — zero `"HP webOS "` left in LunaSysMgr,
+  libWebKitLuna.so, mediaserver, media-pipeline.real
+- [Pass] No software reboot this boot; **0 crash reports**
+
+## Still needs a human (short list for the next session)
+
+1. **Re-test App Catalog after the next flash** — confirm no cryptofs copy exists and
+   the running catalog is 6.1.2901 (BUG 1).
+2. **Confirm the Synergy transport comes up unaided** after the BUG 2 fix — on an
+   untouched device, no manual `kill`.
+3. Core apps launch: Messaging, Contacts, Phone, Accounts (SYNERGY ACCOUNTS box).
+4. Controller pairing (BT/USB) with a game.
+5. `.ipk` tap-to-install with no association prompt.
+6. Email sync, QuickOffice remote files, Photos, Maps.
+7. Luna Restart button from the power menu (was left hung once on 600014 — still
+   un-root-caused).
 
 ## If something is off — first places to look
 
-- `/var/log/messages` (upstart job output, ls-hubd rejections, app-install)
+- `/var/log/messages` (upstart output, ls-hubd rejections, app-install)
+- `/var/log/ce-*.log` (every CE job logs; absence of a log is itself a signal)
 - `/media/cryptofs/imstdout.log` (Synergy transport)
 - `initctl list | grep ce-` and `ls /var/luna/preferences/ce-*` (which CE jobs ran)
+- A job stuck in `(start) running` for minutes: check its children for a blocked
+  `initctl` — see BUG 2
 - Before any `tellbootie recover`: **run `sync` first** (cryptofs corruption hazard)

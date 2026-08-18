@@ -71,8 +71,29 @@ script
             fi
         fi
     }
+    # initctl start BLOCKS until the job settles, and `|| true` does not
+    # help a hang. Two ways it hangs here: ipkgservice has no `respawn`
+    # any more, so its exec'd process exits at once (the hub owns the bus
+    # name) and the job never reaches a state initctl returns on; and
+    # imtransport's pre-start waits up to ~180s for the cryptofs
+    # interpreter. Seen live on 600020: this job sat in do_wait on a
+    # blocked `initctl start org.webosinternals.ipkgservice` for 7+
+    # minutes having copied NOTHING, so the Synergy runtime never seeded.
+    # Fire and forget, with a bounded wait -- same shape as the wallpaper
+    # job's lsq().
+    kick_bg() {
+        /sbin/initctl "$@" > /dev/null 2>&1 &
+        _kp=$!
+        _i=0
+        while [ $_i -lt 10 ] && kill -0 $_kp 2>/dev/null; do
+            sleep 1
+            _i=$((_i+1))
+        done
+        kill $_kp 2>/dev/null || true
+        return 0
+    }
     kick_imtransport() {
-        /sbin/initctl start imtransport > /dev/null 2>&1 || true
+        kick_bg start imtransport
     }
     kick_dependents() { kick_ipkg; kick_imtransport; }
     if [ ! -d "$SEED" ]; then kick_dependents; exit 0; fi
