@@ -198,6 +198,28 @@ else
   F "10  photos app not installed"
 fi
 
+# ---------------------------------------------------------------- 10b. default search engine
+USL=/usr/palm/universalsearchmgr/resources
+n=0; bad=0
+for f in $USL/*/UniversalSearchList.json; do
+  [ -f "$f" ] || continue
+  n=$((n+1))
+  grep -q '"defaultSearchEngine": "duckduckgo"' "$f" || { bad=$((bad+1)); F "10b $(basename $(dirname $f)) default is not duckduckgo"; }
+  grep -q '"id": "google"' "$f" && { bad=$((bad+1)); F "10b $(basename $(dirname $f)) still lists google"; }
+done
+[ "$n" -gt 0 ] && [ "$bad" = "0" ] && P "10b default search engine is DuckDuckGo in all $n locale list(s)" \
+  || [ "$n" -gt 0 ] || F "10b no UniversalSearchList.json found at all"
+have $USL/en_us/UniversalSearchList.json && grep -q "lite.duckduckgo.com/lite" $USL/en_us/UniversalSearchList.json \
+  && P "10b search URL points at the /lite/ endpoint" || F "10b search URL is not DuckDuckGo Lite"
+have /usr/lib/luna/system/luna-applauncher/images/search-icon-duckduckgo.png \
+  && P "10b universal-search DDG icon present" || F "10b universal-search DDG icon missing"
+B=/usr/palm/applications/com.palm.app.browser
+have $B/images/list-icon-duckduckgo.png && P "10b browser DDG icon present" || F "10b browser DDG icon missing"
+grep -q "lite.duckduckgo.com/lite" $B/source/URLSearch.js 2>/dev/null \
+  && P "10b browser fallback search is DuckDuckGo" || F "10b browser fallback still not DuckDuckGo"
+grep -qi "google" $B/source/URLSearch.js 2>/dev/null \
+  && F "10b browser URLSearch.js still mentions google" || P "10b no google left in browser URLSearch.js"
+
 # ---------------------------------------------------------------- 11. space / media
 STAGE=/usr/lib/luna/customization/copy_binaries/media/internal
 if have /var/luna/preferences/ce-customization-media-reclaimed; then

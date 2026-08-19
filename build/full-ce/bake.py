@@ -595,6 +595,8 @@ def main():
     TRUSTED_PFX = "./etc/ssl/certs/trustedcerts/"
     # LunaSysMgr's own string tables — the launcher page names live here
     SYSMGR_L10N_PFX = "./usr/palm/sysmgr/localization/"
+    # universal-search provider lists, one per locale
+    USEARCH_PFX = "./usr/palm/universalsearchmgr/resources/"
     HELP_SRC = "./usr/palm/applications/com.palm.app.help/help/source/"
     BT_MODEL = "./usr/palm/applications/com.palm.app.bluetoothtab/app/models/Bluetooth.js"
     BT_ASSIST = ("./usr/palm/applications/com.palm.app.bluetoothtab/app/controllers/"
@@ -640,7 +642,9 @@ def main():
         "./etc/palm/defaultPreferences.txt",
         # the preload registry, rewritten by the App Catalog / Maps tiers
         "./usr/palm/ipkgs/manifest.json",
-    ], prefixes=[TRUSTED_PFX, SYSMGR_L10N_PFX])
+        # the browser's own search fallback (see the search-engine tier)
+        "./usr/palm/applications/com.palm.app.browser/source/URLSearch.js",
+    ], prefixes=[TRUSTED_PFX, SYSMGR_L10N_PFX, USEARCH_PFX])
 
     def sdata(name):
         return stock[name]["data"]
@@ -1945,6 +1949,65 @@ def main():
     if not games_done:
         sys.exit("ERROR: no sysmgr strings.json found to localize the GAMES page")
     log("  GAMES page localized: " + ", ".join(games_done))
+
+    # 15b-2) Default search engine -> DuckDuckGo Lite.
+    # Google now refuses this device's user-agent, and its result page does not
+    # render in this browser even when the UA is spoofed, so the stock default is
+    # simply broken. The google entry is REPLACED rather than demoted: leaving a
+    # provider that cannot work is worse than not offering it.
+    #
+    # Two places define search providers and both are handled here:
+    #   * /usr/palm/universalsearchmgr/resources/<locale>/UniversalSearchList.json
+    #     - the "Just type" list, one file per locale, plus defaultSearchEngine
+    #   * com.palm.app.browser's URLSearch.js `defaultSearchPreferences`
+    #     - a hardcoded FALLBACK used before/without the universal list; it merges
+    #       the universal list at runtime (#{searchTerms} -> {$query}), so this is
+    #       only the fallback, but it still named Google.
+    log("tier: default search engine -> DuckDuckGo Lite")
+    DDG_ICON = os.path.join(POR, "search-icons")
+    wcopy("usr/lib/luna/system/luna-applauncher/images/search-icon-duckduckgo.png",
+          os.path.join(DDG_ICON, "search-icon-duckduckgo.png"), 0o644)
+    wcopy("usr/palm/applications/com.palm.app.browser/images/list-icon-duckduckgo.png",
+          os.path.join(DDG_ICON, "list-icon-duckduckgo.png"), 0o644)
+    DDG_ENTRY = {
+        "category": "search",
+        "displayName": "DuckDuckGo",
+        "enabled": True,
+        "iconFilePath": "/usr/lib/luna/system/luna-applauncher/images/search-icon-duckduckgo.png",
+        "id": "duckduckgo",
+        "type": "web",
+        # the /lite/ endpoint: no JS, tiny markup -- it actually renders here
+        "url": "https://lite.duckduckgo.com/lite/?q=#{searchTerms}",
+        "version": 2,
+    }
+    usl = sorted(n for n in stock
+                 if n.startswith(USEARCH_PFX) and n.endswith("/UniversalSearchList.json"))
+    if not usl:
+        sys.exit("ERROR: no UniversalSearchList.json found -- the search-engine tier "
+                 "cannot silently do nothing")
+    for name in usl:
+        d = json.loads(sdata(name).decode("utf-8"))
+        lst = d.get("UniversalSearchList", [])
+        had_google = any(e.get("id") == "google" for e in lst)
+        d["UniversalSearchList"] = [DDG_ENTRY] + [e for e in lst if e.get("id") != "google"]
+        d.setdefault("SearchPreference", {})["defaultSearchEngine"] = DDG_ENTRY["id"]
+        w(name[2:], json.dumps(d, indent=1, ensure_ascii=False).encode("utf-8"), 0o644)
+        if not had_google:
+            log(f"  note: {name[2:]} had no google entry (already patched?)")
+    log(f"  {len(usl)} locale search list(s) -> DuckDuckGo default")
+    # browser fallback list
+    URLS = "usr/palm/applications/com.palm.app.browser/source/URLSearch.js"
+    js = sdata("./" + URLS).decode("utf-8")
+    js = sure_replace(js,
+        '\t\ttitle: "Google",\n'
+        '\t\t//url: "http://www.google.com/m/search?client=ms-palm-webOS&channel=bm&q={$query}",\n'
+        '\t\turl: "http://www.google.com/search?q={$query}",\n'
+        '\t\ticon: "list-icon-google.png"',
+        '\t\ttitle: "DuckDuckGo",\n'
+        '\t\turl: "https://lite.duckduckgo.com/lite/?q={$query}",\n'
+        '\t\ticon: "list-icon-duckduckgo.png"',
+        "browser URLSearch.js google fallback", count=1)
+    w(URLS, js, 0o644)
 
     # 15c) Exhibition (dock mode) Time face: CE adds a plain centred time+date
     # clock as the DEFAULT face. The stock trio (glass analog, digital flipper,

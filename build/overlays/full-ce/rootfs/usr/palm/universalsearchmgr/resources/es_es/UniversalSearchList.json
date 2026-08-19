@@ -1,0 +1,79 @@
+{
+ "SearchPreference": {
+  "AppSearch": true,
+  "ContactSearch": true,
+  "GAL": false,
+  "defaultSearch": true,
+  "defaultSearchEngine": "duckduckgo",
+  "version": 1
+ },
+ "UniversalSearchList": [
+  {
+   "category": "search",
+   "displayName": "DuckDuckGo",
+   "enabled": true,
+   "iconFilePath": "/usr/lib/luna/system/luna-applauncher/images/search-icon-duckduckgo.png",
+   "id": "duckduckgo",
+   "type": "web",
+   "url": "https://lite.duckduckgo.com/lite/?q=#{searchTerms}",
+   "version": 2
+  },
+  {
+   "category": "search",
+   "displayName": "Mapas",
+   "enabled": true,
+   "iconFilePath": "/usr/lib/luna/system/luna-applauncher/images/search-icon-maps.png",
+   "id": "map",
+   "launchParam": "query",
+   "type": "app",
+   "url": "com.palm.app.maps"
+  },
+  {
+   "category": "search",
+   "displayName": "Wikipedia",
+   "enabled": true,
+   "iconFilePath": "/usr/lib/luna/system/luna-applauncher/images/search-icon-wikipedia.png",
+   "id": "wikipedia",
+   "type": "web",
+   "url": "http://es.wikipedia.org/wiki/Especial:Buscar?hl=es&search=#{searchTerms}"
+  },
+  {
+   "category": "search",
+   "displayName": "Twitter",
+   "enabled": true,
+   "iconFilePath": "/usr/lib/luna/system/luna-applauncher/images/search-icon-twitter.png",
+   "id": "twitter",
+   "type": "web",
+   "url": "http://search.twitter.com/search?q=#{searchTerms}"
+  },
+  {
+   "category": "search",
+   "displayName": "CNN",
+   "enabled": false,
+   "iconFilePath": "/usr/lib/luna/system/luna-applauncher/images/search-icon-cnn.png",
+   "id": "cnn",
+   "type": "web",
+   "url": "http://edition.cnn.com/search/?query=#{searchTerms}"
+  },
+  {
+   "category": "search",
+   "displayName": "Amazon",
+   "enabled": false,
+   "iconFilePath": "/usr/lib/luna/system/luna-applauncher/images/search-icon-amazon.png",
+   "id": "amazon",
+   "type": "web",
+   "url": "http://www.amazon.com/s/?k=#{searchTerms}",
+   "version": 2
+  },
+  {
+   "category": "search",
+   "displayName": "IMDb",
+   "enabled": false,
+   "iconFilePath": "/usr/lib/luna/system/luna-applauncher/images/search-icon-imdb.png",
+   "id": "imdb",
+   "type": "web",
+   "url": "http://www.imdb.com/find?q=#{searchTerms}",
+   "version": 2
+  }
+ ]
+}

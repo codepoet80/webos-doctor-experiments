@@ -24,7 +24,7 @@ novacom put file:///tmp/full.sh < scripts/ce-test-full.sh
 sh /tmp/full.sh <BUILDMARK>
 ```
 
-`ce-test-full.sh` decides everything a shell can — ~65 checks across every
+`ce-test-full.sh` decides everything a shell can — ~71 checks across every
 section below. Run it, mark those items from its output, then work the `[Human]`
 list. Do not run it before first use finishes: preloads install during first use
 and will read as failures while merely pending.
@@ -182,6 +182,30 @@ is.
   only copies in, never removes. Upgrading from an older CE build leaves the old
   `NN.png` wallpapers beside the new `.jpg` set. Decision: do not delete from the
   user's media volume. A stock-lineage flash is clean.
+
+## 13. Default search engine — DuckDuckGo Lite  *(new in 600032)*
+
+Google now refuses this device's user-agent and its results page will not render
+here even with the UA spoofed, so the stock default was simply broken.
+
+- [ ] All 10 locale lists default to `duckduckgo`, none still list google — *automated*
+- [ ] Search URL is the `/lite/` endpoint — *automated*
+- [ ] Both DDG icons present (48px universal search, 32px browser) — *automated*
+- [ ] Browser `URLSearch.js` fallback is DuckDuckGo, no google left — *automated*
+- [Pass/Human] **Just Type shows "Search DuckDuckGo"** and searching works —
+  *confirmed by user on 600030's device*
+- [Human] The search actually returns usable results in the browser
+- [Human] A non-English locale shows the localized form (`Rechercher DuckDuckGo`,
+  `Buscar DuckDuckGo` — the string is a template, so this comes for free)
+
+**Testing note:** three layers cache this, so a live push needs all three cleared —
+but NONE of it applies to a flashed device, where `/var` is wiped and every service
+starts clean:
+1. `LunaUniversalSearchMgr` is its OWN upstart service — `killall LunaSysMgr` does
+   not reload it. Use `initctl stop` + `initctl start` (`restart` is unsupported).
+2. The launcher caches the provider list at LunaSysMgr start, so restart Luna
+   *after* the search service, or the "Search X" row keeps the old name.
+3. The Search Preferences app caches too — close the card, do not just relaunch.
 
 ---
 
