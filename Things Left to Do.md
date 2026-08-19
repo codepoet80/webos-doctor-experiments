@@ -26,6 +26,26 @@
 
 ## Open
 
+- **App Catalog ipk packaging — the only thing blocking the next flash.** Two
+  defects, both at source in the App Catalog project, both invisible until the
+  file lands on a device:
+  1. **76 paths exceed the 100-char ustar limit**, stored via PAX extended headers
+     that the device's ipkg/busybox extractor mishandles — ~21 files install with
+     the tar mode bled into the filename
+     (`main/images/category-icons/health-and-fitness/search-bar.png000755`).
+     Affected: 8 category icons, 7 test mocks, 1 source file; 22 expected files
+     never land. Fix: drop `main/mock/` (21 of the 76 are test mocks that should
+     not ship) and/or build with `--format=gnu`. Stock ipks are PAX too but have
+     ZERO over-long paths — length is the trigger, not format.
+  2. **`Package:` must match the app id.** The 6.1.2901 ipk said
+     `org.webosarchive.appcatalog` while appinfo.json, the payload path and the
+     install target all said `com.palm.app.enyo-findapps`. Corrected at bake-prep
+     for 600029/600030 (payload byte-identical, one control line), but uncorrected
+     it installs ALONGSIDE stock's registered 5.0.2900 instead of upgrading it.
+
+  When the rebuilt ipk lands: drop it in `AddToImage/PreInstall/`, delete the old
+  one, bake, build. No code change needed — the version flows from the filename.
+
 - **Un-bake Maps and App Catalog — ship them as preload `.ipk`s again.**
   **DONE as of 600028 (2026-08-19): rootfs 122 MB free / 79% used = stock parity.**
   Catalog ships as a 1.6 MB preload ipk; `ce-reclaim-customization-media` frees the

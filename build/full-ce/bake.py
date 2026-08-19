@@ -1511,6 +1511,12 @@ def main():
         run_patch(approot, os.path.join(PEX, "patches/SlideshowMode.js.patch"))
         # icon for the slide-timing button — the clock glyph it used to carry now belongs to
         # the new show/hide toggle
+        # Show the file's basename in the single-photo toolbar. Photo db records have
+        # no display name (`name` on them is the ALBUM name), so it comes from `path`,
+        # the same way DbViewVideo already derives a video's title. Applied AFTER the
+        # synergy PictureMode patch above -- it is generated against that result.
+        run_patch(approot, os.path.join(PEX, "patches/PictureMode-filename.js.patch"))
+        run_patch(approot, os.path.join(PEX, "patches/PictureMode-filename.css.patch"))
         shutil.copy(os.path.join(PEX, "assets/icn-slidetiming.png"),
                     os.path.join(approot, "images/"))
         for png in sorted(glob.glob(os.path.join(PHI, "assets/syn-*.png"))):
