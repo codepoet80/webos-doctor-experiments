@@ -85,8 +85,59 @@ not to be re-run without a reflash.
 3. [Pass] HTTPS browsing works (github.com connects)
 4. [Pass] Build identity — `BUILDMARK=600024`, `BUILDTIME=20260818150806`
 5. [Pass] Keyboard small by default
-6. [Pass/Human] App Catalog **is the baked 6.1.2901** — no cryptofs copy, staged ipk
-   absent. *Installing an app still needs a human.*
+6. [Pass 600025 / Human] App Catalog 6.1.2901 **installed in cryptofs** (600025 change: PRELOAD, not
+   baked) — present under `/media/cryptofs/apps/usr/palm/applications/`, absent from
+   `/usr/palm/applications/`; staged `com.palm.app.enyo-findapps_6.1.2901_all.ipk` in
+   `/usr/palm/ipkgs/`; stock 5.0.2900 ipk absent. The copy must SURVIVE first boot
+   (ce-firstboot-tweaks no longer lists it — a deleted copy here means the de-shadow
+   list regressed). *Installing an app still needs a human.*
+   **Result 600025 (RC1 -> 600025, 2026-08-19):** PASS. Catalog 6.1.2901 and Maps
+   4.0.1 both installed to `/media/cryptofs/apps/`, registered with the app manager
+   (launchable, `main`/`icon` resolve into cryptofs), ipkg status `install user
+   installed`. Neither baked; both stock ipks (5.0.2900 / 3.0.1) absent. Rootfs 93%,
+   38.3 MB free (RC1 shipped 26.8 MB).
+   *Caveat — the de-shadow race was NOT exercised on this run:* ce-firstboot-tweaks
+   completed 10:49:18, app-install began the catalog at 10:49:48 and installed at
+   10:51:19, so de-shadow saw an empty cryptofs and reported "0 stale copies" 30s
+   before the install started. It found nothing because nothing was there yet, not
+   because the ids are off the list. Both once-per-flash flags are now set, so the job
+   cannot re-run and these copies are safe for this flash. The `BAKED_APP_IDS` removal
+   still matters for the boot where cryptofs is not writable at `stopped configurator`
+   and the job retries on `first-use-finished` — i.e. AFTER the preload install. To
+   exercise that deliberately: clear `/var/luna/preferences/ce-cryptofs-deshadowed`
+   after first use and restart the job; with the ids removed the copies must survive.
+   **Result 600028 (600025 -> 600028, 2026-08-19):** PASS, and the space work landed.
+   Rootfs **122 MB free / 79% used — parity with stock 3.0.5 (115 MB / 79%)**, up from
+   26.8 MB on RC1. App Catalog is now a 1.6 MB ipk (magazine removed; it hydrates from
+   appcatalog.webosarchive.org after install) and registers as
+   `com.palm.app.enyo-findapps 6.1.2901`.
+   `ce-reclaim-customization-media` ran UNATTENDED on its own triggers for the first
+   time and behaved exactly as designed — it fired early on `stopped finish`, found the
+   customization service unfinished, DEFERRED instead of deleting, then ran on
+   `first-use-finished`, verified, and reclaimed:
+       customization service not finished -- deferring to the next trigger
+       verified wallpapers: staged=27 live=40 / ringtones: staged=40 live=40
+       reclaimed staged media: / free 93212K -> 122072K      (+28.2 MB)
+   Note the verify is `live < staged`, not equality: live is the MERGE of hp.tar's
+   wallpapers and CE's, so an equality check would have blocked the reclaim.
+   Human-checked this run: GAMES reads SPIELE in German; Exhibition looks right.
+   *Known, accepted:* `/media/internal` accumulates — 13 orphaned `NN.png` wallpapers
+   from earlier builds remain beside the new `.jpg` set, so 17-27 appear twice in the
+   picker and 28/29 persist after being dropped from the build. Decision was not to
+   delete from the user's media volume.
+   *Packaging defect found in the supplied ipk:* its control said
+   `Package: org.webosarchive.appcatalog` while appinfo.json, the payload path and the
+   install target all said `com.palm.app.enyo-findapps`. Corrected at bake-prep time
+   (payload byte-identical, one control line). MUST be fixed at source: ipkg registers
+   by `Package:`, so uncorrected it would install ALONGSIDE stock's registered
+   `com.palm.app.enyo-findapps` 5.0.2900 rather than upgrading it — i.e. it would break
+   precisely the stock-lineage test below.
+
+   **Upgrade path (needs a stock-flashed device):** flash 600028 over a device coming from
+   stock 3.0.5, where cryptofs already holds catalog 5.0.2900 + maps 3.0.1 with ipkg
+   status stanzas — cryptofs SURVIVES the Doctor. Verify first boot upgrades both to the
+   staged versions (plain `ipkg install` should upgrade; unverified). This is the one
+   path the old baked scheme handled that the preload scheme has not yet proven.
 7. [Pass] Controller works (BT or USB) with a game; USB Settings app has no errors
 8. [Pass] LunaCE working — group icons / create a tab; Tweaks toggles something
 9. [Pass] All three seeded as installed (1 stanza each); USB Settings and BT Gamepad
@@ -158,7 +209,8 @@ not to be re-run without a reflash.
 
 ## 8. Regressions from earlier validated flashes
 
-- [Human] Browser loads modern-HTTPS sites; Maps 4.0.1 opens (Maps baked, staged ipk removed)
+- [Human] Browser loads modern-HTTPS sites; Maps 4.0.1 opens (600025: preload-installed to
+  cryptofs; staged in `/usr/palm/ipkgs/com.palm.app.maps/`, stock 3.0.1 subdir replaced)
 - [Pass] Help app repointed at webosarchive.org. *Email sync needs a human.*
 - [Pass] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
 - [Pass] 34 wallpapers + 40 ringtones in `/media/internal`. *Default 22.png needs eyes.*

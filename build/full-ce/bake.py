@@ -98,6 +98,9 @@ LUNACE = os.path.join(SIBLINGS, "LunaCE")
 ATI = os.path.join(PROJ, "AddToImage")
 POR = os.path.join(ATI, "PatchOrReplace")
 NEWAPPS = os.path.join(ATI, "NewApps")
+# ipks that ship as PRELOADS (staged under /usr/palm/ipkgs, installed to
+# /media/cryptofs/apps at first boot) rather than baked into the rootfs.
+PREINSTALL = os.path.join(ATI, "PreInstall")
 MEDIA = os.path.join(ATI, "Media-Internal")
 
 
@@ -125,8 +128,8 @@ IPK = {
     "luna":        ati_ipk(POR, "org.webosinternals.luna-tls13"),
     "mail":        ati_ipk(POR, "org.webosinternals.mail-tls13"),
     "kernel":      ati_ipk(POR, "org.webosinternals.kernels.uber-kernel-touchpad"),
-    "catalog":     ati_ipk(POR, "com.palm.app.enyo-findapps"),
-    "maps":        ati_ipk(POR, "com.palm.app.maps"),
+    "catalog":     ati_ipk(PREINSTALL, "com.palm.app.enyo-findapps"),
+    "maps":        ati_ipk(PREINSTALL, "com.palm.app.maps"),
     # NOTE the FILENAME has an underscore: com.palm_.rootcertsupdate_*
     "rootcerts":   ati_ipk(POR, "com.palm_.rootcertsupdate"),
     "synergy":     ati_ipk(POR, "com.palm.synergy.generic"),
@@ -590,6 +593,8 @@ def main():
 
     # stock files needed for the replays — ONE streaming pass over the tarball
     TRUSTED_PFX = "./etc/ssl/certs/trustedcerts/"
+    # LunaSysMgr's own string tables — the launcher page names live here
+    SYSMGR_L10N_PFX = "./usr/palm/sysmgr/localization/"
     HELP_SRC = "./usr/palm/applications/com.palm.app.help/help/source/"
     BT_MODEL = "./usr/palm/applications/com.palm.app.bluetoothtab/app/models/Bluetooth.js"
     BT_ASSIST = ("./usr/palm/applications/com.palm.app.bluetoothtab/app/controllers/"
@@ -633,7 +638,9 @@ def main():
         "./usr/palm/frameworks/enyo/0.10/framework/lib/captiveportal/CaptivePortalControl.js",
         "./usr/palm/command-resource-handlers.json",
         "./etc/palm/defaultPreferences.txt",
-    ], prefixes=[TRUSTED_PFX])
+        # the preload registry, rewritten by the App Catalog / Maps tiers
+        "./usr/palm/ipkgs/manifest.json",
+    ], prefixes=[TRUSTED_PFX, SYSMGR_L10N_PFX])
 
     def sdata(name):
         return stock[name]["data"]
@@ -795,18 +802,19 @@ def main():
     # installed 15:14:47, i.e. after ce-firstboot-tweaks' deshadow pass had
     # already reported "verified clean". Every App Catalog test on 600014-600020
     # was therefore exercising the OLD stock catalog.
-    log(f"tier: App Catalog BAKED ({os.path.basename(IPK['catalog'])})")
-    d = ipk_extract_data(IPK["catalog"], os.path.join(tmp, "catalog"))
-    baked_cat = bake_tree(d)
-    CAT_PFX = "./usr/palm/applications/com.palm.app.enyo-findapps/"
-    cat_removes = sorted(n[1:] for n in stock_names
-                         if n.startswith(CAT_PFX) and n[2:] not in baked_cat)
-    removes.extend(cat_removes)
-    log(f"  {len(cat_removes)} stale stock catalog files removed")
-    # the flat-path staged ipk + its icon (see the tier comment above)
+    # AS OF 600025 THIS TIER NO LONGER BAKES. The catalog ships as a PRELOAD ipk
+    # (below); the shadowing hazard the comment above describes is gone with it,
+    # because there is no rootfs copy left for a cryptofs copy to shadow. The
+    # stock 5.0.2900 ipk is still removed so exactly one catalog ipk is staged.
+    log(f"tier: App Catalog PRELOAD ({os.path.basename(IPK['catalog'])})")
+    cat_ipk_name = os.path.basename(IPK["catalog"])
+    w(f"usr/palm/ipkgs/{cat_ipk_name}", open(IPK["catalog"], "rb").read(), 0o644)
+    log(f"  staged usr/palm/ipkgs/{cat_ipk_name}")
+    # Remove stock's staged catalog ipk. Keep findapps-icon.png — the manifest
+    # entry still points at it and the artwork is unchanged.
     cat_staged = sorted(n for n in stock_names
                         if n.startswith("./usr/palm/ipkgs/")
-                        and ("enyo-findapps" in n or "findapps-icon" in n))
+                        and "enyo-findapps" in n)
     if not cat_staged:
         sys.exit("ERROR: no staged App Catalog ipk found under /usr/palm/ipkgs. "
                  "Stock ships com.palm.app.enyo-findapps_*.ipk there; if this "
@@ -814,15 +822,65 @@ def main():
                  "NOT assume it is absent (that assumption shipped a shadowed "
                  "catalog in 600014-600020).")
     for n in cat_staged:
+        if os.path.basename(n) == cat_ipk_name:
+            continue                      # ours — never remove what we just staged
         removes.append(n[1:])
-        log(f"  remove staged {n[1:]}")
+        log(f"  remove stock staged {n[1:]}")
 
-    # 9) Maps : BAKE 4.0.1 as a system app; remove the stock staged 3.0.1 ipk
-    # (it lives in a per-app SUBDIR of /usr/palm/ipkgs — ipk + icon + manifest).
-    log(f"tier: Maps BAKED ({os.path.basename(IPK['maps'])})")
-    d = ipk_extract_data(IPK["maps"], os.path.join(tmp, "maps"))
-    bake_tree(d)
+    # 9) Maps : PRELOAD, same reasoning as the catalog. Stock stages 3.0.1 in a
+    # per-app SUBDIR (ipk + icon + manifest); that subdir is removed wholesale
+    # and replaced with ours so only one Maps ipk is staged. The icon is lifted
+    # out of the ipk payload rather than reusing stock's, since the artwork
+    # belongs to the version being shipped.
+    log(f"tier: Maps PRELOAD ({os.path.basename(IPK['maps'])})")
     remove_staged_ipk("com.palm.app.maps")
+    maps_ipk_name = os.path.basename(IPK["maps"])
+    MAPS_STAGE = "usr/palm/ipkgs/com.palm.app.maps"
+    w(f"{MAPS_STAGE}/{maps_ipk_name}", open(IPK["maps"], "rb").read(), 0o644)
+    d = ipk_extract_data(IPK["maps"], os.path.join(tmp, "maps"))
+    maps_icon_src = os.path.join(d, "usr/palm/applications/com.palm.app.maps/icon.png")
+    if not os.path.isfile(maps_icon_src):
+        sys.exit(f"ERROR: {maps_ipk_name}: no icon.png in payload to stage as the preload icon")
+    w(f"{MAPS_STAGE}/com.palm.app.maps-icon.png", open(maps_icon_src, "rb").read(), 0o644)
+    maps_ver = maps_ipk_name.split("_")[1]
+    w(f"{MAPS_STAGE}/manifest.json", json.dumps({
+        "id": "com.palm.app.maps",
+        "version": maps_ver,
+        "loc_name": "Maps",
+        "vendor": "HP",
+        "ipkgUrl": f"file:///{MAPS_STAGE}/{maps_ipk_name}",
+        "iconUrl": f"file:///{MAPS_STAGE}/com.palm.app.maps-icon.png",
+    }, indent=1).encode("utf-8"), 0o644)
+    log(f"  staged {MAPS_STAGE}/{maps_ipk_name} (+icon, +manifest)")
+
+    # 9b) /usr/palm/ipkgs/manifest.json — point the catalog and Maps entries at
+    # what this image actually stages, and drop the entries for apps CE bakes
+    # instead of preloading, so nothing advertises a preload that is not there.
+    # Stock's OTHER stale entries are deliberately left alone: QuickOffice's
+    # entry names a file that exists in no image, stock or CE, and QuickOffice
+    # installs anyway — app-install scans the directory rather than trusting
+    # these URLs, so they are advisory. Rewriting them would risk changing which
+    # preloads actually install.
+    mani = json.loads(sdata("./usr/palm/ipkgs/manifest.json").decode("utf-8"))
+    cat_ver = cat_ipk_name.split("_")[1]
+    BAKED_NOT_PRELOADED = ("com.palm.app.contacts", "com.palm.app.messaging")
+    out = []
+    for e in mani:
+        if e.get("id") in BAKED_NOT_PRELOADED:
+            log(f"  manifest: drop {e['id']} (baked, not preloaded)")
+            continue
+        if e.get("id") == "com.palm.app.enyo-findapps":
+            e["version"] = cat_ver
+            e["ipkgUrl"] = f"file:///usr/palm/ipkgs/{cat_ipk_name}"
+            log(f"  manifest: catalog -> {cat_ver}")
+        elif e.get("id") == "com.palm.app.maps":
+            e["version"] = maps_ver
+            e["ipkgUrl"] = f"file:///{MAPS_STAGE}/{maps_ipk_name}"
+            e["iconUrl"] = f"file:///{MAPS_STAGE}/com.palm.app.maps-icon.png"
+            log(f"  manifest: maps -> {maps_ver}")
+        out.append(e)
+    w("usr/palm/ipkgs/manifest.json",
+      json.dumps(out, indent=1).encode("utf-8"), 0o644)
 
     # 10) core-apps suite : replay each community *-overwrite ipk. The shared
     # pmPostInstall.script family stages ONE subdir per package under
@@ -1429,6 +1487,9 @@ def main():
                     os.path.join(approot, "images/"))
 
     PHI = os.path.join(DSDIR, "photos-integration")
+    # CE-authored Photos changes (exhibition clock) — kept in this repo rather than
+    # in the Synergy payload, since they are unrelated to Synergy.
+    PEX = os.path.join(HERE, "photos-exhibition")
 
     def edit_photos(approot):
         run_patch(approot, os.path.join(PHI, "patches/LibraryNavigationPanel.css.patch"))
@@ -1440,6 +1501,18 @@ def main():
         run_patch(os.path.join(approot, "source"),
                   os.path.join(PHI, "patches/AlbumModeMultiselectControls.js.patch"),
                   target="AlbumModeMultiselectControls.js")
+        # Exhibition-mode slideshow clock (CE 3.1): time+date drawn in the corner of the
+        # slideshow, a toolbar button to show/hide it, and the slide interval + that choice
+        # persisted between dock sessions (stock reset the interval to 10s every time).
+        # These live in the CE tree, NOT in PHI: PHI is unpacked from the Synergy Revival
+        # ipk payload, and this work has nothing to do with Synergy.
+        # Both carry clean a/ b/ headers, so plain -p1 from approot like the CSS patch above.
+        run_patch(approot, os.path.join(PEX, "patches/SlideshowMode.css.patch"))
+        run_patch(approot, os.path.join(PEX, "patches/SlideshowMode.js.patch"))
+        # icon for the slide-timing button — the clock glyph it used to carry now belongs to
+        # the new show/hide toggle
+        shutil.copy(os.path.join(PEX, "assets/icn-slidetiming.png"),
+                    os.path.join(approot, "images/"))
         for png in sorted(glob.glob(os.path.join(PHI, "assets/syn-*.png"))):
             shutil.copy(png, os.path.join(approot, "images/"))
 
@@ -1841,6 +1914,42 @@ def main():
       "1\\keyword=wosa-settings\n"
       "1\\designator=prefs\n"
       "size=1\n", 0o644)
+    # The page name written above is the literal "games", which AppMonitor
+    # displays .toUpper(). LunaSysMgr localizes page names through its own string
+    # tables (/usr/palm/sysmgr/localization/<locale>/strings.json) — that is how
+    # stock renders FAVORITES as FAVORITEN / FAVORIS / PREFERITI. Stock ships an
+    # upper- AND a lower-case key per page ("FAVORITES" and "favorites"), so add
+    # the matching pair. A locale with no known translation keeps the English
+    # word, which is better than a missing key rendering as a raw designator.
+    GAMES_L10N = {
+        "de": ("SPIELE", "Spiele"),
+        "es": ("JUEGOS", "Juegos"),
+        "fr": ("JEUX", "Jeux"),
+        "it": ("GIOCHI", "Giochi"),
+    }
+    games_done = []
+    for name in sorted(n for n in stock
+                       if n.startswith(SYSMGR_L10N_PFX) and n.endswith("/strings.json")):
+        locale = name[len(SYSMGR_L10N_PFX):].split("/")[0]
+        upper, lower = GAMES_L10N.get(locale.split("_")[0], ("GAMES", "Games"))
+        tbl = json.loads(sdata(name).decode("utf-8"))
+        tbl["GAMES"], tbl["games"] = upper, lower
+        w(name[2:], json.dumps(tbl, ensure_ascii=False, indent=1).encode("utf-8"), 0o644)
+        games_done.append(f"{locale}={upper}")
+    if not games_done:
+        sys.exit("ERROR: no sysmgr strings.json found to localize the GAMES page")
+    log("  GAMES page localized: " + ", ".join(games_done))
+
+    # 15c) Exhibition (dock mode) Time face: CE adds a plain centred time+date
+    # clock as the DEFAULT face. The stock trio (glass analog, digital flipper,
+    # matte analog) is kept and still swipeable behind it. These are QML loaded
+    # at runtime by LunaSysMgr, so this is a file drop — no binary patching.
+    QMLSRC = os.path.join(HERE, "dockmode-clock")
+    QMLDST = "usr/palm/sysmgr/uiComponents/DockModeTime"
+    for fn in ("SimpleClock.qml", "Clocks.qml"):
+        wcopy(f"{QMLDST}/{fn}", os.path.join(QMLSRC, fn), 0o644)
+    log(f"tier: Exhibition clock QML -> {QMLDST} (SimpleClock default face)")
+
     uinfo = json.loads(open(os.path.join(uapp, "appinfo.json")).read())
     uinfo.setdefault("keywords", [])
     if "wosa-settings" not in uinfo["keywords"]:
@@ -2056,12 +2165,16 @@ def main():
                  if fn.lower().endswith((".jpg", ".jpeg", ".png"))) if os.path.isdir(wp_dir) else []
     # user-designated default (2026-08-17); falls back to the older
     # default-wallpaper.* convention, then the alphabetically-first image
-    DEFAULT_WP_NAME = "22.png"
+    DEFAULT_WP_NAME = "22.jpg"   # re-encoded from PNG (2026-08-19); keep in sync with the file
     default_wp = (DEFAULT_WP_NAME if DEFAULT_WP_NAME in wps else
                   next((f for f in wps if f.lower().startswith("default-wallpaper")),
                        wps[0] if wps else None))
-    BAKED_APP_IDS = ("com.palm.app.maps com.palm.app.enyo-findapps "
-                     "org.webosinternals.preware org.webosinternals.govnah "
+    # NOTE: com.palm.app.maps and com.palm.app.enyo-findapps are deliberately NOT
+    # here as of 600025. They ship as preload ipks that INSTALL to cryptofs at first
+    # boot, so listing them would make this job delete the copy the preload just
+    # created — the de-shadow pass exists to remove cryptofs copies that shadow a
+    # BAKED rootfs app, and neither is baked any more.
+    BAKED_APP_IDS = ("org.webosinternals.preware org.webosinternals.govnah "
                      "com.webosarchive.usbsettings org.webosarchive.btgamepad "
                      "com.palm.app.contacts com.palm.app.messaging "
                      "com.palm.app.cloud-auth")
@@ -2160,6 +2273,100 @@ def main():
         "end script\n"
     )
     w("etc/event.d/ce-firstboot-tweaks", tweaks_job, 0o644)
+
+    # 17c) reclaim the staged customization media once it has been copied.
+    # The Doctor writes NO media volume (installer.xml covers boot / rootfs /
+    # ramdisk / modem only), so every wallpaper and ringtone shipped in the image
+    # has to transit the 559MB rootfs via customization/copy_binaries/ — hp.tar's
+    # sweatshop ipk stages ~21MB there and CE adds its own set on top. The
+    # customization service copies them to /media/internal (27GB free) on first
+    # boot and never reads them again, so both copies then exist forever on a
+    # partition that ships at ~93% full. This job deletes the rootfs one.
+    #
+    # Safe because the service gates on its OWN completion markers
+    # (/var/luna/data/Customization/system_complete.txt), not on whether the
+    # destination files are present: once those exist it will not re-copy, so a
+    # user who erases the USB drive has already lost this media whether or not
+    # the staging copy survives. Re-flashing rewrites the rootfs and wipes /var,
+    # restoring the staging copy and clearing the markers together.
+    #
+    # Only copy_binaries/media/internal is removed. The rest of customization/
+    # stays: a locale change can re-read the loc_customization_*.json files.
+    log("tier: reclaim staged customization media after first boot")
+    reclaim_job = (
+        "# ce-reclaim-customization-media — webOS CE: once per flash, after the\n"
+        "# customization service has copied the staged wallpapers/ringtones to\n"
+        "# /media/internal, delete the rootfs STAGING copy (~25MB).\n"
+        "#\n"
+        "# Verify-then-flag, like ce-cryptofs-seed and ce-firstboot-tweaks: the\n"
+        "# staging copy is the ONLY other source, so it is not removed until the\n"
+        "# live copy has been confirmed present. A run that cannot confirm defers\n"
+        "# to the next trigger rather than burning the once-per-flash flag.\n"
+        "\n"
+        "start on stopped finish\n"
+        "start on first-use-finished\n"
+        "\n"
+        "console none\n"
+        "\n"
+        "script\n"
+        "    FLAG=/var/luna/preferences/ce-customization-media-reclaimed\n"
+        "    LOG=/var/log/ce-reclaim-customization-media.log\n"
+        "    log() { echo \"$(date 2>/dev/null) $*\" >> \"$LOG\" 2>/dev/null; }\n"
+        "    STAGE=/usr/lib/luna/customization/copy_binaries/media/internal\n"
+        "    DONE=/var/luna/data/Customization/system_complete.txt\n"
+        "    if [ -f \"$FLAG\" ]; then exit 0; fi\n"
+        "    if [ ! -d \"$STAGE\" ]; then\n"
+        "        log \"nothing staged -- already reclaimed, or this image ships no media\"\n"
+        "        mkdir -p /var/luna/preferences && touch \"$FLAG\"\n"
+        "        exit 0\n"
+        "    fi\n"
+        "    # The customization service is what copies these; it must have finished.\n"
+        "    if [ ! -f \"$DONE\" ]; then\n"
+        "        log \"customization service not finished -- deferring to the next trigger\"\n"
+        "        exit 0\n"
+        "    fi\n"
+        "    # VERIFY the payload actually landed before deleting the only other copy.\n"
+        "    # A short count means the copy did not complete and the staging copy is\n"
+        "    # still the only good source.\n"
+        "    bad=0\n"
+        "    for d in wallpapers ringtones music; do\n"
+        "        [ -d \"$STAGE/$d\" ] || continue\n"
+        "        st=$(ls -1 \"$STAGE/$d\" 2>/dev/null | wc -l)\n"
+        "        lv=$(ls -1 \"/media/internal/$d\" 2>/dev/null | wc -l)\n"
+        "        if [ \"$lv\" -lt \"$st\" ]; then\n"
+        "            log \"VERIFY FAILED $d: staged=$st live=$lv -- keeping the staging copy\"\n"
+        "            bad=$((bad+1))\n"
+        "        else\n"
+        "            log \"verified $d: staged=$st live=$lv\"\n"
+        "        fi\n"
+        "    done\n"
+        "    if [ $bad -ne 0 ]; then\n"
+        "        log \"$bad directory(ies) unverified -- NOT flagging, will retry\"\n"
+        "        exit 0\n"
+        "    fi\n"
+        "    # ce-firstboot-tweaks and ce-remove-preloads also flip / rw->ro; take the\n"
+        "    # shared lock so neither remounts under the other.\n"
+        "    L=/tmp/.ce-rootfs-rw.lock\n"
+        "    n=0\n"
+        "    while ! mkdir $L 2>/dev/null && [ $n -lt 60 ]; do sleep 1; n=$((n+1)); done\n"
+        "    # busybox df WRAPS a long device name onto a second line, so NR==2 is the\n"
+        "    # continuation and $4 is empty. Take the last line and count from the end.\n"
+        "    before=$(df -k / 2>/dev/null | awk \"END{print \\$(NF-2)}\")\n"
+        "    mount -o remount,rw / 2>/dev/null || true\n"
+        "    rm -rf \"$STAGE\"\n"
+        "    sync\n"
+        "    mount -o remount,ro / 2>/dev/null || true\n"
+        "    rmdir $L 2>/dev/null || true\n"
+        "    if [ -d \"$STAGE\" ]; then\n"
+        "        log \"FAILED to remove $STAGE -- NOT flagging, will retry\"\n"
+        "        exit 0\n"
+        "    fi\n"
+        "    after=$(df -k / 2>/dev/null | awk \"END{print \\$(NF-2)}\")\n"
+        "    log \"reclaimed staged media: / free ${before}K -> ${after}K\"\n"
+        "    mkdir -p /var/luna/preferences && touch \"$FLAG\"\n"
+        "end script\n"
+    )
+    w("etc/event.d/ce-reclaim-customization-media", reclaim_job, 0o644)
 
     # 17c) default wallpaper, the DEFINITIVE path. The customization.json sed
     # above races the customization service (both fire on `stopped

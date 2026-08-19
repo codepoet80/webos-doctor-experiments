@@ -1,9 +1,0 @@
-{
-  "app": "com.palm.app.enyo-findapps",
-  "icon": "icon.png",
-  "id": "com.palm.app.enyo-findapps",
-  "loc_name": "App Catalog",
-  "package_format_version": 2,
-  "vendor": "Palm",
-  "version": "6.1.2901"
-}

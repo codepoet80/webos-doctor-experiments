@@ -1,0 +1,114 @@
+[
+ {
+  "id": "com.palm.app.enyo-findapps",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.app.enyo-findapps_6.1.2901_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/findapps-icon.png",
+  "loc_name": "App Catalog-Enyo",
+  "vendor": "HP",
+  "version": "6.1.2901"
+ },
+ {
+  "id": "com.quickoffice.ar",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.quickoffice.ar_10.3.484_ARM_release.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/ar-icon.png",
+  "loc_name": "Adobe Reader",
+  "vendor": "Adobe",
+  "version": "1.3.484"
+ },
+ {
+  "id": "com.quickoffice.webos",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.quickoffice.webos_2.1.2113_ARM_release.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/qo-icon.png",
+  "loc_name": "Quickoffice",
+  "vendor": "Quickoffice",
+  "version": "2.0.2113"
+ },
+ {
+  "id": "com.palm.app.flashplugin-001",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.app.flashplugin-001_1.0.6_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/flash-icon.png",
+  "loc_name": "Flash Player v10.3.185.65",
+  "vendor": "Adobe Systems",
+  "version": "1.0.6"
+ },
+ {
+  "id": "com.palm.payment",
+  "ipkgUrl": "file:///usr/palm/ipkgs/payment/com.palm.payment_2.2.12_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/findapps-icon.png",
+  "loc_name": "App InApp Payment",
+  "vendor": "HP",
+  "version": "2.2.12"
+ },
+ {
+  "id": "com.palm.app.maps",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.app.maps/com.palm.app.maps_4.0.1_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/com.palm.app.maps/com.palm.app.maps-icon.png",
+  "loc_name": "Maps",
+  "vendor": "HP",
+  "version": "4.0.1"
+ },
+ {
+  "id": "com.palm.calculator",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.calculator/com.palm.calculator_1.0.0_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/com.palm.calculator/com.palm.calculator-icon.png",
+  "loc_name": "Calculator",
+  "vendor": "HP",
+  "version": "1.0.0"
+ },
+ {
+  "id": "com.palm.app.clock",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.app.clock/com.palm.app.clock_1.0.0_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/com.palm.app.clock/com.palm.app.clock-icon.png",
+  "loc_name": "Clock",
+  "vendor": "HP",
+  "version": "1.0.0"
+ },
+ {
+  "id": "com.palm.app.calendar",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.app.calendar/com.palm.app.calendar_3.0.11004_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/com.palm.app.calendar/com.palm.app.calendar-icon.png",
+  "loc_name": "Calendar",
+  "vendor": "HP",
+  "version": "3.0.11004"
+ },
+ {
+  "id": "com.palm.app.camera",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.app.camera/com.palm.app.camera_3.0.2500_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/com.palm.app.camera/com.palm.app.camera-icon.png",
+  "loc_name": "Camera",
+  "vendor": "Mojo3",
+  "version": "3.0.2500"
+ },
+ {
+  "id": "com.palm.app.email",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.app.email/com.palm.app.email_3.0.13500_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/com.palm.app.email/com.palm.app.email-icon.png",
+  "loc_name": "Email",
+  "vendor": "HP",
+  "version": "3.0.13500"
+ },
+ {
+  "id": "com.palm.app.musicplayer",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.app.musicplayer/com.palm.app.musicplayer_3.0.8000_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/com.palm.app.musicplayer/com.palm.app.musicplayer-icon.png",
+  "loc_name": "Music",
+  "vendor": "HP",
+  "version": "3.0.8000"
+ },
+ {
+  "id": "com.palm.app.notes",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.app.notes/com.palm.app.notes_3.0.20_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/com.palm.app.notes/com.palm.app.notes-icon.png",
+  "loc_name": "Memos",
+  "vendor": "Palm, Inc.",
+  "version": "3.0.20"
+ },
+ {
+  "id": "com.palm.app.photos",
+  "ipkgUrl": "file:///usr/palm/ipkgs/com.palm.app.photos/com.palm.app.photos_3.0.8001_all.ipk",
+  "iconUrl": "file:///usr/palm/ipkgs/com.palm.app.photos/com.palm.app.photos-icon.png",
+  "loc_name": "Photos & Videos",
+  "vendor": "HP",
+  "version": "3.0.8001"
+ }
+]

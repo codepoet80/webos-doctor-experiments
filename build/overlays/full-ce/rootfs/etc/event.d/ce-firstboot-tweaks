@@ -29,10 +29,10 @@ script
         n=0
         while ! mkdir $L 2>/dev/null && [ $n -lt 60 ]; do sleep 1; n=$((n+1)); done
         mount -o remount,rw / 2>/dev/null || true
-        sed -i 's|/01\.jpg|/22.png|g; s|"01\.jpg"|"22.png"|g' "$CUSTO"
+        sed -i 's|/01\.jpg|/22.jpg|g; s|"01\.jpg"|"22.jpg"|g' "$CUSTO"
         mount -o remount,ro / 2>/dev/null || true
         rmdir $L 2>/dev/null || true
-        grep -q '22.png' "$CUSTO" \
+        grep -q '22.jpg' "$CUSTO" \
             || echo "$(date 2>/dev/null) FAILED to patch customization.json" \
                  >> /var/log/ce-firstboot-tweaks.log 2>/dev/null
     fi
@@ -63,7 +63,7 @@ script
     fi
     left=0
     found=0
-    for app in com.palm.app.maps com.palm.app.enyo-findapps org.webosinternals.preware org.webosinternals.govnah com.webosarchive.usbsettings org.webosarchive.btgamepad com.palm.app.contacts com.palm.app.messaging com.palm.app.cloud-auth; do
+    for app in org.webosinternals.preware org.webosinternals.govnah com.webosarchive.usbsettings org.webosarchive.btgamepad com.palm.app.contacts com.palm.app.messaging com.palm.app.cloud-auth; do
         [ -d "$APPS/usr/palm/applications/$app" ] || continue
         found=$((found+1))
         rm -rf "$APPS/usr/palm/applications/$app"
