@@ -52,11 +52,14 @@ Tiers (hard order — browser lays down /usr/lib/ssl11 that the rest need):
                           ca-certificates.crt bundle, calinks.tgz (host openssl,
                           -subject_hash_old to match the device's OpenSSL 0.9.8)
  12. UberKernel        -> /boot kernel + shipped /lib/modules subset
- 13. Preware           -> BAKED app + ipkgservice in /usr/sbin + static dbus/ls2/
-                          upstart (feed seeding runs from the job's pre-start,
-                          which also seeds ipkg STATUS stanzas for Preware +
-                          Govnah so Preware shows them as installed — USB/BT
-                          deliberately stay unlisted)
+ 13. Preware           -> PRELOAD staged in /usr/palm/ipkgs; its own postinst
+                          installs the ipkgservice binary, dbus/ls2 and upstart
+                          at first boot. Feed seeding is replayed AFTER first
+                          use by ce-cryptofs-seed (first-use re-initializes
+                          cryptofs and wipes what the postinst wrote), which
+                          also seeds ipkg STATUS stanzas for Govnah + Synergy
+                          so Preware shows them as installed — USB/BT
+                          deliberately stay unlisted
  14. USB settings      -> BAKED app + service + /usr/bin daemons + upstart + roles
  15. BT gamepad        -> shim lib + udev rule + jail/bluetoothtab/upstart patches
  16. Media-Internal    -> /usr/lib/luna/customization/copy_binaries/media/internal
@@ -133,7 +136,7 @@ IPK = {
     # NOTE the FILENAME has an underscore: com.palm_.rootcertsupdate_*
     "rootcerts":   ati_ipk(POR, "com.palm_.rootcertsupdate"),
     "synergy":     ati_ipk(POR, "com.palm.synergy.generic"),
-    "preware":     ati_ipk(NEWAPPS, "org.webosinternals.preware"),
+    "preware":     ati_ipk(PREINSTALL, "org.webosinternals.preware"),
     "govnah":      ati_ipk(NEWAPPS, "org.webosinternals.govnah"),
     "usb":         ati_ipk(NEWAPPS, "com.webosarchive.usbsettings"),
     "bt":          ati_ipk(NEWAPPS, "org.webosarchive.btgamepad"),
@@ -1249,12 +1252,26 @@ def main():
       "    # first-use, which wiped them -- and its job was already running, so no\n"
       "    # trigger ever re-ran that pre-start. This kick is the only repair.)\n"
       "    kick_ipkg() {\n"
-      "        if [ ! -f /media/cryptofs/apps/etc/ipkg/arch.conf ]; then\n"
-      "            log \"seeding Preware feeds (its own postinst logic)\"\n"
+      "        # Gate on BOTH halves of what preware-seed.sh provides. It used to\n"
+      "        # test arch.conf alone, which was fine while Preware was BAKED (its\n"
+      "        # postinst never ran, so no feeds ever existed and the seed always\n"
+      "        # fired). As a PRELOAD its postinst writes arch.conf itself, so that\n"
+      "        # gate started short-circuiting and the ipkg STATUS stanzas for the\n"
+      "        # still-baked packages were never seeded -- caught on 600037:\n"
+      "        # arch.conf 13:33 (postinst), govnah/synergy stanzas 0. The script is\n"
+      "        # idempotent, so running it when either half is missing is safe.\n"
+      "        _st=/media/cryptofs/apps/usr/lib/ipkg/status\n"
+      "        _need=0\n"
+      "        [ -f /media/cryptofs/apps/etc/ipkg/arch.conf ] || _need=1\n"
+      "        for _p in org.webosinternals.govnah com.palm.synergy.generic; do\n"
+      "            grep -q \"^Package: $_p$\" \"$_st\" 2>/dev/null || _need=1\n"
+      "        done\n"
+      "        if [ \"$_need\" = 1 ]; then\n"
+      "            log \"seeding Preware feeds + CE status stanzas (its own postinst logic)\"\n"
       "            sh /usr/palm/ce-seed/preware-seed.sh >> \"$LOG\" 2>&1 \\\n"
       "                || log \"preware-seed.sh FAILED\"\n"
       "            if [ -f /media/cryptofs/apps/etc/ipkg/arch.conf ]; then\n"
-      "                log \"feeds seeded: $(ls /media/cryptofs/apps/etc/ipkg/ | wc -l) files\"\n"
+      "                log \"feeds seeded: $(ls /media/cryptofs/apps/etc/ipkg/ | wc -l) files; stanzas: govnah=$(grep -c '^Package: org.webosinternals.govnah$' \"$_st\" 2>/dev/null) synergy=$(grep -c '^Package: com.palm.synergy.generic$' \"$_st\" 2>/dev/null)\"\n"
       "            else\n"
       "                log \"feeds STILL absent after seeding\"\n"
       "            fi\n"
@@ -1677,63 +1694,40 @@ def main():
                 kn += 1
     log(f"  {kn} kernel files (uImage/System.map/config + modules)")
 
-    # 14) Preware : BAKED. App to /usr/palm/applications; its ipkgservice gets
-    # the static-system treatment its postinst does dynamically under /var:
-    # binary -> /usr/sbin, dbus service + ls2 roles -> /usr/share, upstart ->
-    # /etc/event.d, all with /var/usr/sbin rewritten to /usr/sbin. The ipkg
-    # feed/config seeding the postinst did is replayed by the job's pre-start
-    # on first boot (cryptofs paths can't exist in the rootfs image).
-    log(f"tier: Preware BAKED ({os.path.basename(IPK['preware'])})")
+    # 14) Preware : PRELOAD, exactly like the App Catalog and Maps. Staged under
+    # /usr/palm/ipkgs and installed to cryptofs on first boot, so Preware's OWN
+    # postinst runs. That postinst natively does everything the previous BAKED
+    # tier had to replay by hand -- the ipkgservice binary, its dbus service for
+    # both hubs, the ls2 roles, the upstart job, and the ipkg feed/config
+    # seeding -- so none of that is written into the rootfs any more.
+    log(f"tier: Preware PRELOAD ({os.path.basename(IPK['preware'])})")
+    pw_ipk_name = os.path.basename(IPK["preware"])
+    PW_STAGE = "usr/palm/ipkgs/org.webosinternals.preware"
+    w(f"{PW_STAGE}/{pw_ipk_name}", open(IPK["preware"], "rb").read(), 0o644)
     d = ipk_extract_data(IPK["preware"], os.path.join(tmp, "preware"))
-    bake_tree(d)
+    pw_icon_src = os.path.join(d, "usr/palm/applications/org.webosinternals.preware/icon.png")
+    if not os.path.isfile(pw_icon_src):
+        sys.exit(f"ERROR: {pw_ipk_name}: no icon.png in payload to stage as the preload icon")
+    w(f"{PW_STAGE}/org.webosinternals.preware-icon.png",
+      open(pw_icon_src, "rb").read(), 0o644)
+    pw_ver = pw_ipk_name.split("_")[1]
+    w(f"{PW_STAGE}/manifest.json", json.dumps({
+        "id": "org.webosinternals.preware",
+        "version": pw_ver,
+        "loc_name": "Preware",
+        "vendor": "WebOS Internals",
+        "ipkgUrl": f"file:///{PW_STAGE}/{pw_ipk_name}",
+        "iconUrl": f"file:///{PW_STAGE}/org.webosinternals.preware-icon.png",
+    }, indent=1).encode("utf-8"), 0o644)
+    log(f"  staged {PW_STAGE}/{pw_ipk_name} (+icon, +manifest)")
+
+    # Preware's feed seeding still has to be generated here, even though its
+    # postinst now runs for real as a preload: first-use RE-INITIALIZES the
+    # cryptofs store, wiping anything the postinst wrote, and nothing re-runs
+    # it (observed on 600018 -- empty feed list 47s after OOBE). ce-cryptofs-seed
+    # replays this script after first use. Derived from Preware's own postinst
+    # so the feed list is never transcribed by hand.
     papp = os.path.join(d, "usr/palm/applications/org.webosinternals.preware")
-    SID = "org.webosinternals.ipkgservice"
-    wcopy(f"usr/sbin/{SID}", os.path.join(papp, "bin", SID), 0o755)
-    dbus_svc = open(os.path.join(papp, "dbus", f"{SID}.service")).read()
-    dbus_svc = sure_replace(dbus_svc, "Exec=/var/usr/sbin/", "Exec=/usr/sbin/",
-                            "ipkgservice dbus", count=1)
-    # BOTH hubs need the service file, in DIFFERENT static dirs (per
-    # /etc/ls2/ls-{private,public}.conf): private reads dbus-1/system-services,
-    # public reads dbus-1/services. A service missing from the public list is
-    # refused pub-bus registration ("Service not listed in service files") and
-    # apps call services over the PUBLIC bus — runtime installs got both via
-    # /var/palm/system-services, which is on both hubs' lists.
-    w(f"usr/share/dbus-1/system-services/{SID}.service", dbus_svc, 0o644)
-    w(f"usr/share/dbus-1/services/{SID}.service", dbus_svc, 0o644)
-    role = open(os.path.join(papp, "dbus", f"{SID}.json")).read()
-    role = sure_replace(role, '"exeName":"/var/usr/sbin/', '"exeName":"/usr/sbin/',
-                        "ipkgservice role", count=1)
-    for scope in ("prv", "pub"):
-        w(f"usr/share/ls2/roles/{scope}/{SID}.json", role, 0o644)
-    upst = open(os.path.join(papp, "upstart", SID)).read()
-    upst = sure_replace(upst, "exec /var/usr/sbin/", "exec /usr/sbin/", "ipkgservice upstart")
-    # The shipped pre-start re-derives VERSION from palm-build-info with a sed;
-    # on our "webOS CE 3.1.0" string it would yield 3.1.0 and point the
-    # patches/kernels feed confs at nonexistent 3.1.0 feeds every boot — pin it.
-    upst = re.sub(r"^\s*VERSION=`grep PRODUCT_VERSION_STRING[^\n]*$",
-                  "   VERSION=3.0.5", upst, count=1, flags=re.M)
-    if "VERSION=3.0.5" not in upst:
-        sys.exit("ERROR: VERSION anchor not found in ipkgservice upstart")
-    # ---- Preware feed seeding: use PREWARE'S OWN postinst, not a copy ------
-    #
-    # This used to be ~20 hand-transcribed `echo "src/gz ..."` lines injected
-    # into ipkgservice's pre-start. That was a copy of the feed list in
-    # Preware's own postinst, and it had already drifted badly: our copy wrote
-    # webos-patches/webos-kernels ENABLED with the version pinned to 3.0.5,
-    # while upstream deliberately ships them DISABLED on 3.1+ because no 3.1
-    # content is published ("an enabled feed there just fails to download every
-    # time the feeds are updated"). Upstream also derives the arch with
-    # `uname -m`, honours the alpha/beta feed preference files, and carries a
-    # version parser written specifically for our "webOS CE 3.1.0" string.
-    #
-    # So: take the postinst that already ships inside the ipk (and is already
-    # baked to /usr/palm/applications/.../control/postinst) and keep only the
-    # half we want. Its first half installs the service into /var and DELETES
-    # /usr/share/dbus-1 + /usr/share/ls2 registrations -- exactly the static
-    # install this image bakes -- so that half must not run. Cutting at
-    # upstream's own section comments means the feed logic stays upstream's to
-    # maintain; if they restructure it, the anchors fail loudly here rather
-    # than silently shipping a stale feed list.
     post = open(os.path.join(papp, "control", "postinst")).read()
     A_VER = "# Extract the OS version"
     A_SVC = "# Remove the obsolete Package Manager Service"
@@ -1759,13 +1753,15 @@ def main():
     # isInstalled check is a pure name match against the status file, so
     # without these it offers them as fresh installs. Description doubles as
     # Preware's display title for a package that is in no feed.
+    # NB Preware is deliberately NOT in this list any more: as a PRELOAD its
+    # own install writes a real ipkg status stanza, and seeding a second one
+    # here would give it two (TEST-PLAN section 6 asserts exactly one each).
     STATUS_SEED_DESC = {
-        "preware": "Preware",
         "govnah": "Govnah",
         "synergy": "Synergy Revival shared runtime",
     }
     stanzas = ""
-    for skey in ("preware", "govnah", "synergy"):
+    for skey in ("govnah", "synergy"):
         sipk = IPK[skey]
         pkg = os.path.basename(sipk).split("_")[0]
         arch = os.path.basename(sipk).rsplit("_", 1)[-1][:-len(".ipk")]
@@ -1803,38 +1799,6 @@ def main():
       "\nexit 0\n", 0o755)
     log("  preware-seed.sh derived from Preware's own postinst "
         f"({len(cfg_block.splitlines())} feed lines + {len(STATUS_SEED_DESC)} status stanzas)")
-    # guard the stock lists-cleanup: the dir may not exist before first seeding
-    # (upstart runs scripts with sh -e, so the guard must not return nonzero)
-    upst = upst.replace("find $APPS/usr/lib/ipkg/lists",
-                        "[ ! -d $APPS/usr/lib/ipkg/lists ] || find $APPS/usr/lib/ipkg/lists")
-    # No extra start triggers: this job's pre-start no longer seeds anything
-    # (see preware-seed.sh above), so it has nothing to retry. The triggers
-    # we used to add here fired concurrently with ce-cryptofs-seed's kick and
-    # helped drive the 600018 respawn storm.
-    # `respawn` is KEPT (stock). It was dropped in 600019 to stop a respawn
-    # storm: back then kick_dependents did `initctl stop; initctl start` on this
-    # service, and the job carried three start triggers, so once ls-hubd held the
-    # bus name every upstart-started instance exited at once and upstart burned
-    # its 10-respawn limit in ~2s ("respawn_count: 11 > respawn_limit: 10"),
-    # re-running the whole pre-start 11 times on the way.
-    #
-    # Both drivers of that storm are gone as of 600021: the extra start triggers
-    # were removed, and seeding no longer restarts this service at all (it runs
-    # preware-seed.sh directly). Nothing stops/starts ipkgservice any more, so
-    # the boot-time instance claims the bus name once and keeps it.
-    #
-    # Restored because dropping it is the prime suspect for the Luna Restart
-    # freeze on 600023: the power menu calls ipkgservice/restartLuna, which needs
-    # ls-hubd to launch this service, and that call is made from inside
-    # luna-systemui (i.e. inside LunaSysMgr) — so a launch that blocks freezes the
-    # UI, which matches the symptom exactly (device froze on the tap, and NO HUP
-    # was ever delivered). With respawn back, the service is upstart-resident
-    # rather than launched on demand at that moment.
-    #
-    # WATCH FOR on the next flash: `grep -c "ipkgservice main process ended,
-    # respawning" /var/log/messages` should stay 0. If the storm returns, the fix
-    # is NOT to drop respawn again but to stop whatever is stop/starting the job.
-    w(f"etc/event.d/{SID}", upst, 0o644)
 
     # 14c) Govnah : BAKED, same shape as Preware — app dir plus a root service
     # its postinst normally installs under /var (binary, dbus service, ls2
@@ -1890,7 +1854,8 @@ def main():
         w(f"usr/share/ls2/roles/{scope}/{USVC}.json", urole, 0o644)
     usb_svcfile = (f"[D-BUS Service]\nName={USVC}\n"
                    f"Exec=/usr/bin/usbctl-jsservice /usr/palm/services/{USVC}\n")
-    # both hubs, different static dirs — see the ipkgservice comment above
+    # both hubs, different static dirs (per /etc/ls2/ls-{private,public}.conf):
+    # private reads dbus-1/system-services, public reads dbus-1/services
     w(f"usr/share/dbus-1/system-services/{USVC}.service", usb_svcfile, 0o644)
     w(f"usr/share/dbus-1/services/{USVC}.service", usb_svcfile, 0o644)
 
@@ -2726,20 +2691,91 @@ def main():
     w("usr/palm/frameworks/enyo/0.10/framework/lib/captiveportal/CaptivePortalControl.js",
       cpc, 0o644)
 
-    # (b) Preware pre-registered as the .ipk handler. LunaSysMgr's MimeSystem
-    # seeds its handler table from /usr/palm/command-resource-handlers.json
-    # (runtime changes go to /var/usr/palm/...-active.json, wiped by a flash);
-    # stock has NO ipk entry at all, which is why Preware has to ask on first
-    # launch. Add one matching Preware's own registration (app-assistant.js:
-    # extension ipk, mime application/vnd.webos.ipk; not streamable —
-    # download first, then hand the file to the handler).
+    # (b) Preware as the .ipk handler — registered AT RUNTIME, deliberately NOT
+    # seeded into /usr/palm/command-resource-handlers.json.
+    #
+    # A static entry there CANNOT work, and worse, it permanently blocks the fix.
+    # Proven on hardware (600033):
+    #   * MimeSystem::populateFromJson always registers static entries with
+    #     streamable=FALSE — the flag is not honoured from that file. Setting
+    #     "streamable": true there, or omitting it, both still yield
+    #     canStream:false after a Luna restart.
+    #   * The browser only hands an http/https URL to the handler app when
+    #     canStream is TRUE. com.palm.app.browser BrowserApp.js gotResourceInfo:
+    #         appIdByExtension == self      -> download
+    #         else if canStream             -> openResourceWithApp(handler, uri)
+    #         else if scheme not http/s/ftp -> openResource(uri)
+    #         else                          -> download
+    #     So with streamable=false a .ipk link just downloads. That was the bug.
+    #   * Tapping "Open" on the downloaded file cannot rescue it either:
+    #     servicecallback_open refuses .ipk unless the CALLER is in a hardcoded
+    #     whitelist — ApplicationManager::isTrustedInstallerApp accepts only
+    #     com.palm.app.{findapps,firstuse,updates}. The browser is not in it.
+    #   * The static entry also PERSISTS into /var/usr/palm/...-active.json and
+    #     then DEDUPES any later addResourceHandler call, so it silently defeats
+    #     Preware's own prompt-and-register too.
+    #
+    # Preware registers via palm://com.palm.applicationManager/addResourceHandler
+    # with {extension, mimeType, appId} and no streamable key (models/
+    # resourceHandler.js add(); ipkgservice passes the payload straight through).
+    # That service defaults streamable to TRUE, which is what makes the handoff
+    # work. So we do exactly that, once per flash, from a first-boot job.
     crh = json.loads(sdata("./usr/palm/command-resource-handlers.json"))
     if any(e.get("extn") == "ipk" for e in crh["resources"]):
         sys.exit("ERROR: base command-resource-handlers.json already has an ipk entry")
-    crh["resources"].append({"extn": "ipk", "mime": "application/vnd.webos.ipk",
-                             "appId": "org.webosinternals.preware", "streamable": False})
-    w("usr/palm/command-resource-handlers.json", json.dumps(crh, indent=1) + "\n", 0o644)
-    log("  Preware registered as the .ipk resource handler")
+    log("  .ipk handler NOT seeded statically (see ce-register-ipk-handler)")
+
+    # The registration job. Verify-then-flag, per the house rule: only mark it
+    # done once getResourceInfo actually reports Preware AND canStream:true.
+    w("etc/event.d/ce-register-ipk-handler",
+      "# ce-register-ipk-handler — webOS CE: make Preware the .ipk handler the\n"
+      "# way Preware itself would, at RUNTIME. A static entry in\n"
+      "# /usr/palm/command-resource-handlers.json is registered non-streamable,\n"
+      "# and the browser only hands a .ipk URL to the handler when canStream is\n"
+      "# true — so a static seed makes browser .ipk links download instead of\n"
+      "# opening Preware, and permanently dedupes the runtime call that would\n"
+      "# have fixed it. See bake.py (b) for the full trace.\n"
+      "\n"
+      "start on first-use-finished\n"
+      "\n"
+      "console none\n"
+      "\n"
+      "script\n"
+      "    FLAG=/var/luna/preferences/ce-ipk-handler-registered\n"
+      "    LOG=/var/log/ce-register-ipk-handler.log\n"
+      "    [ -f $FLAG ] && exit 0\n"
+      "    AM=palm://com.palm.applicationManager\n"
+      "    # wait for LunaSysMgr to be answering before registering\n"
+      "    n=0\n"
+      "    while [ $n -lt 60 ]; do\n"
+      "        pidof LunaSysMgr >/dev/null 2>&1 && break\n"
+      "        sleep 2; n=$((n+1))\n"
+      "    done\n"
+      "    sleep 10\n"
+      "    # exactly Preware's payload: no streamable key, so it defaults true\n"
+      "    luna-send -n 1 $AM/addResourceHandler \\\n"
+      "        '{\"extension\":\"ipk\",\"mimeType\":\"application/vnd.webos.ipk\",\"appId\":\"org.webosinternals.preware\"}' \\\n"
+      "        </dev/null >/dev/null 2>&1\n"
+      "    sleep 2\n"
+      "    # verify before flagging: handler must be Preware AND streamable.\n"
+      "    # Create the probe file first -- getResourceInfo was only ever tested\n"
+      "    # against a file that exists, so do not depend on it tolerating one\n"
+      "    # that does not.\n"
+      "    mkdir -p /media/internal/downloads 2>/dev/null\n"
+      "    touch /media/internal/downloads/.ce-probe.ipk 2>/dev/null\n"
+      "    R=$(luna-send -n 1 $AM/getResourceInfo \\\n"
+      "        '{\"uri\":\"file:///media/internal/downloads/.ce-probe.ipk\"}' </dev/null 2>&1)\n"
+      "    case \"$R\" in\n"
+      "        *org.webosinternals.preware*canStream*true*|*canStream*true*org.webosinternals.preware*)\n"
+      "            touch $FLAG\n"
+      "            echo \"$(date 2>/dev/null) registered: $R\" >> $LOG 2>/dev/null ;;\n"
+      "        *)\n"
+      "            echo \"$(date 2>/dev/null) NOT registered, will retry next boot: $R\" \\\n"
+      "                 >> $LOG 2>/dev/null ;;\n"
+      "    esac\n"
+      "    rm -f /media/internal/downloads/.ce-probe.ipk 2>/dev/null\n"
+      "end script\n", 0o644)
+    log("  ce-register-ipk-handler job installed (runtime addResourceHandler)")
 
     # (c) LunaCE tweak definitions: Tweaks-framework preference files that
     # surface LunaCE's extra features (mini cards, gestures, wave launcher,

@@ -4,8 +4,9 @@
 automated half first and work the `[Human]` list from what it leaves.
 
 ```
-Build under test:  BUILDMARK 600033  jar webosdoctorp305hstnh-3.1CE-600033.jar
-                   sha256 3ebb0c066a41b24ac6c43584ca1acfccb675087afa16596a0dfd24e83c9e2f02
+Build under test:  BUILDMARK 600037  jar webosdoctorp305hstnh-3.1CE-600037.jar
+                   sha256 b92de9f778f4eac227d59c724d19a0b7f0c913d1b2aee50b34f903a922b02f4f
+                   NOT a release candidate — one more change due before RC.
 Lineage:           [x] CE -> CE      [ ] stock 3.0.5 -> CE
 ```
 
@@ -25,7 +26,7 @@ novacom put file:///tmp/full.sh < scripts/ce-test-full.sh
 sh /tmp/full.sh <BUILDMARK>
 ```
 
-`ce-test-full.sh` decides everything a shell can — ~71 checks across every
+`ce-test-full.sh` decides everything a shell can — ~90 checks across every
 section below. Run it, mark those items from its output, then work the `[Human]`
 list. Do not run it before first use finishes: preloads install during first use
 and will read as failures while merely pending.
@@ -116,13 +117,29 @@ stop/starting the job.
 ## 6. Preware / Govnah / status seeding
 
 - [Pass] ipkgservice answers — *automated*
-- [Pass] One well-formed stanza each: preware, govnah, synergy generic — *automated*
+- [Fail] One well-formed stanza each: preware, govnah, synergy generic — *automated*
+      **600037: preware=1 (correct, from its preload install) but govnah=0 and
+      synergy=0.** Regression from moving Preware to a preload: `kick_ipkg` in
+      ce-cryptofs-seed was gated on `[ ! -f arch.conf ]`, which was always true
+      while Preware was baked (its postinst never ran). As a preload the postinst
+      writes arch.conf itself, so the gate short-circuits and the ipkg STATUS
+      stanzas for the still-baked packages are never seeded. User-visible: Preware
+      offers Govnah and Synergy Revival as fresh installs (confirmed on-device).
+      FIXED in bake.py for the next build — gate now also fires when either stanza
+      is missing; preware-seed.sh is idempotent so re-running is safe.
 - [Pass] USB Settings / BT Gamepad absent from ipkg status — *automated*
 - [Pass] `webos-patches` / `webos-kernels` ship **disabled** — *automated*
-- [Pass] `.ipk` handler registered — *automated*
+- [Pass] **no static ipk entry** in command-resource-handlers.json — *automated*
+      A static entry is always registered `streamable:false`, which BREAKS the
+      browser handoff and dedupes the runtime call that would fix it. Its absence
+      is the correct state.
+- [Pass] **`.ipk` resolves to Preware AND is streamable** — *automated*
+      Asks LunaSysMgr (`getResourceInfo`) rather than grepping a file; the browser
+      only hands a `.ipk` URL to the handler when `canStream` is true.
+- [Pass] `ce-register-ipk-handler` ran and verified — *automated*
 - [Human] Install a real package via Preware (e.g. Tweaks)
-- **Known issue:** `application/octet-stream` is not mapped, so a browser-downloaded
-  `.ipk` stops at the downloaded file. See KNOWN-ISSUE-IPK-BROWSER-PROMPT.md.
+- [Human] Open a `.ipk` link in the **browser** — it should open Preware, not
+  just download. (Fixed in 600037; confirmed working on-device.)
 
 ## 7. CE platform tweaks
 
@@ -194,7 +211,7 @@ is.
 ## 12. Space / media
 
 - [Pass] Staged customization media reclaimed unattended — *automated*
-- [Pass] rootfs free space / % used — *automated* — **121892K free, 79% used** (600033)
+- [Pass] rootfs free space / % used — *automated* — record the number
 - [Pass] Default wallpaper present — *automated*
 - [Human] Default wallpaper looks right on screen
 - *Known/accepted:* `/media/internal` **accumulates** — the customization service

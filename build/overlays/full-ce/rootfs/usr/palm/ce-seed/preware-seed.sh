@@ -207,20 +207,6 @@ if [ "`ls $APPS/etc/ipkg/*.new`" ] ; then
 fi
 
 
-if ! grep -q "^Package: org.webosinternals.preware$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
-   mkdir -p $APPS/usr/lib/ipkg
-   {
-      echo ""
-      echo "Package: org.webosinternals.preware"
-      echo "Version: 1.9.19"
-      echo "Depends: "
-      echo "Status: install ok installed"
-      echo "Architecture: arm"
-      echo "Description: Preware"
-      echo "Installed-Time: $(date +%s)"
-      echo ""
-   } >> $APPS/usr/lib/ipkg/status
-fi
 if ! grep -q "^Package: org.webosinternals.govnah$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
    mkdir -p $APPS/usr/lib/ipkg
    {

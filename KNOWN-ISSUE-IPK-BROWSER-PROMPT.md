@@ -1,3 +1,37 @@
+# ~~Known issue~~ RESOLVED in 600037: `.ipk` files in the browser now open Preware
+
+**Status: FIXED.** Confirmed on hardware — a `.ipk` link in the browser opens
+Preware instead of stopping at a downloaded file.
+
+**Root cause was NOT the MIME type.** The theory below (server sends
+`application/octet-stream`, our registration only lists
+`application/vnd.webos.ipk`) is **wrong** — `getResourceInfo` resolved `.ipk` to
+Preware correctly all along. The actual cause:
+
+* A **static** entry in `/usr/palm/command-resource-handlers.json` is always
+  registered `streamable: false` — `MimeSystem::populateFromJson` does not honour
+  the flag (setting it true, or omitting it, both still give `canStream:false`).
+* The browser only hands an http/https URL to the handler app when `canStream` is
+  **true** (`BrowserApp.js` `gotResourceInfo`), so it downloaded instead.
+* Tapping **Open** could not rescue it either: `servicecallback_open` refuses
+  `.ipk` unless the *caller* is in a hardcoded whitelist
+  (`ApplicationManager::isTrustedInstallerApp` → `com.palm.app.{findapps,firstuse,updates}`);
+  the browser is not in it.
+* Worse, the static entry persisted into the saved mime table and **deduped** any
+  later `addResourceHandler`, so it also defeated Preware's own prompt.
+
+**The fix:** register the way Preware does — at runtime, via
+`palm://com.palm.applicationManager/addResourceHandler` with
+`{extension, mimeType, appId}` and **no** `streamable` key (that service defaults
+it to true). Done once per flash by `/etc/event.d/ce-register-ipk-handler`
+(verify-then-flag), and the static seed was removed.
+
+**Do not re-add a static ipk entry** — it will re-break this.
+
+---
+
+*Original write-up, kept for the record (its "leading theory" is disproven):*
+
 # Known issue: `.ipk` files downloaded in the browser aren't handed to Preware
 
 **Applies to:** webOS CE 3.1.0 Doctor builds up to and including the **600024**

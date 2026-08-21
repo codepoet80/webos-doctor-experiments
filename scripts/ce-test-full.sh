@@ -155,11 +155,39 @@ for f in webos-patches webos-kernels; do
   have /media/cryptofs/apps/etc/ipkg/$f.conf.disabled && P "6   $f ships disabled" \
     || { have /media/cryptofs/apps/etc/ipkg/$f.conf && F "6   $f is ENABLED (should ship disabled)" || I "6   $f feed not present"; }
 done
-grep -q "application/vnd.webos.ipk" /usr/palm/command-resource-handlers.json 2>/dev/null \
-  && P "6   .ipk handler registered" || F "6   .ipk handler not registered"
-grep -q "application/octet-stream" /usr/palm/command-resource-handlers.json 2>/dev/null \
-  && P "6   octet-stream also mapped (browser-download fix)" \
-  || I  "6   octet-stream NOT mapped -- known issue: browser .ipk downloads stop at the file"
+# .ipk -> Preware handoff. Do NOT test the static command-resource-handlers.json:
+# a static entry is always registered non-streamable, and the browser only hands a
+# .ipk URL to the handler when canStream is true, so a static entry actively BREAKS
+# this (and dedupes the runtime call that would fix it). The shipped mechanism is
+# the ce-register-ipk-handler job calling addResourceHandler at first boot, so ask
+# LunaSysMgr what it actually resolves. Guarded: an unknown method hangs luna-send.
+if grep -q '"extn": *"ipk"' /usr/palm/command-resource-handlers.json 2>/dev/null; then
+  F "6   a STATIC ipk entry is present -- it forces streamable=false and breaks the handoff"
+else
+  P "6   no static ipk entry (correct; registration is done at runtime)"
+fi
+( luna-send -n 1 palm://com.palm.applicationManager/getResourceInfo \
+    '{"uri":"file:///media/internal/downloads/.ce-test.ipk"}' </dev/null > /tmp/.ipkres 2>&1 ) &
+_p=$!; _i=0
+while [ $_i -lt 10 ] && kill -0 $_p 2>/dev/null; do sleep 1; _i=$((_i+1)); done
+kill -9 $_p 2>/dev/null
+res=$(cat /tmp/.ipkres 2>/dev/null); rm -f /tmp/.ipkres
+case "$res" in
+  *org.webosinternals.preware*) app=ok ;;
+  *) app=no ;;
+esac
+case "$res" in
+  *'"canStream": true'*) strm=ok ;;
+  *) strm=no ;;
+esac
+if [ "$app" = ok ] && [ "$strm" = ok ]; then
+  P "6   .ipk resolves to Preware AND is streamable (browser will hand off)"
+else
+  F "6   .ipk handoff broken (handler=$app streamable=$strm): $(printf '%s' "$res" | cut -c1-140)"
+fi
+have /var/luna/preferences/ce-ipk-handler-registered \
+  && P "6   ce-register-ipk-handler ran and verified" \
+  || F "6   ce-register-ipk-handler has not flagged (it retries next boot)"
 
 # ---------------------------------------------------------------- 7. CE tweaks
 grep -q "turnOnNovacomAtStart=true" /etc/palm/sysservice.conf 2>/dev/null \
