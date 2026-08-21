@@ -37,6 +37,42 @@ else
   F "0   ipkgservice NOT resident -- Luna Restart may freeze: $(initctl status org.webosinternals.ipkgservice 2>&1)"
 fi
 
+# upstart crash + self re-exec. On a fatal signal upstart forks a core-dumper and
+# then execl()s itself; the re-exec loses its job table, so `respawn` silently
+# stops working for anything already running. Check this BEFORE concluding that a
+# dead daemon "just died" -- it may have died normally and simply not come back.
+n=$(grep -cE "Caught .*(segmentation fault|core dumped)|Failed to re-execute" $LOG 2>/dev/null)
+[ "$n" = "0" ] && P "0b  upstart never crashed/re-exec'd" \
+  || F "0b  upstart crashed + re-exec'd ($n) -- respawn is UNRELIABLE for already-running jobs from that point"
+
+# rdxd crash reports, by component. The /var/log/crash* count in section 8 does
+# NOT see these, and every crash found during 600029-600033 triage was an rdxd
+# report. NB a report whose component is "upstart" is usually upstart's own
+# core-dumper child working as designed, not an upstart bug.
+n=0; comps=""
+for f in /var/log/rdxd/pending/*.tgz; do
+  [ -e "$f" ] || continue
+  c=$(tar xzOf "$f" overview.txt 2>/dev/null | sed -n 's/^REPORT_COMPONENT=//p')
+  comps="$comps $c"; n=$((n+1))
+done
+[ "$n" = "0" ] && P "0b  no rdxd crash reports" || F "0b  $n rdxd crash report(s):$(printf '%s' "$comps" | tr ' ' '\n' | sort | uniq -c | tr '\n' ' ')"
+
+# LunaDownloadMgr: hosts com.palm.appInstallService too, so its death also breaks
+# the App Catalog. 600033 shipped a one-byte patch disabling the runtime glibcurl
+# multi-handle restart (a crash trigger); "Restarting glibcurl" must stay at 0.
+if pidof LunaDownloadMgr >/dev/null 2>&1; then
+  P "0b  LunaDownloadMgr running (pid $(pidof LunaDownloadMgr))"
+else
+  F "0b  LunaDownloadMgr NOT running -- downloads and App Catalog are dead (recover: start LunaDownloadMgr)"
+fi
+m=$(md5sum /usr/bin/LunaDownloadMgr 2>/dev/null | cut -d' ' -f1)
+[ "$m" = "a618391be0d8f16f8b70fd653f85a583" ] && P "0b  LunaDownloadMgr is the patched build" \
+  || F "0b  LunaDownloadMgr md5 $m -- expected patched a618391be0d8f16f8b70fd653f85a583"
+n=$(grep -c "Restarting glibcurl" $LOG 2>/dev/null)
+[ "$n" = "0" ] && P "0b  glibcurl restart path dead (patch holding)" || F "0b  glibcurl restarted $n time(s) -- patch NOT in effect"
+n=$(grep -c "LunaDownloadMgr main process .* killed by SEGV" $LOG 2>/dev/null)
+[ "$n" = "0" ] && P "0b  LunaDownloadMgr no SEGV this boot" || F "0b  LunaDownloadMgr SEGV x$n"
+
 # ---------------------------------------------------------------- 1. first-boot seeding
 have /var/luna/preferences/ce-cryptofs-seeded && P "1   cryptofs seed flag set" || F "1   cryptofs seed flag missing"
 if have /var/log/ce-cryptofs-seed.log; then
@@ -160,8 +196,20 @@ for a in com.palm.app.enyo-findapps com.palm.app.maps; do
     F "9   $a NOT in cryptofs -- preload install failed or was deleted"
   fi
 done
-have /usr/palm/ipkgs/com.palm.app.enyo-findapps_6.1.2901_all.ipk && P "9   catalog ipk staged" || F "9   catalog ipk not staged"
-have /usr/palm/ipkgs/com.palm.app.maps/com.palm.app.maps_4.0.1_all.ipk && P "9   maps ipk staged" || F "9   maps ipk not staged"
+# Version-agnostic on purpose: these used to hardcode 6.1.2901 / 4.0.1 and went
+# stale the moment AddToImage got a newer ipk, reporting a FAIL for a healthy build.
+# Assert "exactly one staged, and it isn't the stock one" instead, and print what it is.
+n=$(ls /usr/palm/ipkgs/com.palm.app.enyo-findapps_*_all.ipk 2>/dev/null | wc -l)
+cat_ipk=$(ls /usr/palm/ipkgs/com.palm.app.enyo-findapps_*_all.ipk 2>/dev/null | head -1)
+if [ "$n" = "1" ] && [ "$(basename "${cat_ipk:-none}")" != "com.palm.app.enyo-findapps_5.0.2900_all.ipk" ]; then
+  P "9   catalog ipk staged ($(basename "$cat_ipk"))"
+else
+  F "9   catalog ipk staging wrong: $n staged [$(ls /usr/palm/ipkgs/com.palm.app.enyo-findapps_*_all.ipk 2>/dev/null | tr '\n' ' ')]"
+fi
+n=$(ls /usr/palm/ipkgs/com.palm.app.maps/com.palm.app.maps_*_all.ipk 2>/dev/null | wc -l)
+map_ipk=$(ls /usr/palm/ipkgs/com.palm.app.maps/com.palm.app.maps_*_all.ipk 2>/dev/null | head -1)
+[ "$n" = "1" ] && P "9   maps ipk staged ($(basename "$map_ipk"))" \
+  || F "9   maps ipk staging wrong: $n staged"
 [ ! -f /usr/palm/ipkgs/com.palm.app.enyo-findapps_5.0.2900_all.ipk ] && P "9   stock 5.0.2900 ipk removed" || F "9   stock catalog ipk still staged"
 c=$(grep -c "org.webosarchive.appcatalog" $STATUS 2>/dev/null)
 [ "$c" = "0" ] && P "9   no mis-named appcatalog stanza" || F "9   mis-named org.webosarchive.appcatalog stanza present"

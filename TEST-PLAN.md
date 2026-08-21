@@ -4,8 +4,9 @@
 automated half first and work the `[Human]` list from what it leaves.
 
 ```
-Build under test:  BUILDMARK ______   jar ______________________  sha256 ______
-Lineage:           [ ] CE -> CE      [ ] stock 3.0.5 -> CE
+Build under test:  BUILDMARK 600033  jar webosdoctorp305hstnh-3.1CE-600033.jar
+                   sha256 3ebb0c066a41b24ac6c43584ca1acfccb675087afa16596a0dfd24e83c9e2f02
+Lineage:           [x] CE -> CE      [ ] stock 3.0.5 -> CE
 ```
 
 Legend: `[ ]` not yet run · `[Pass]` · `[Fail]` · `[Human]` needs eyes/hands ·
@@ -35,7 +36,7 @@ Previous runs: `scripts/results-600029.txt`, `scripts/results-600014.txt`.
 
 ## 0. Luna Restart
 
-- [ ] `ipkgservice` upstart-resident (`(start) running`) — *automated*
+- [Pass] `ipkgservice` upstart-resident (`(start) running`) — *automated*
 - [Human] **Full reboot, then tap Luna Restart from the power menu.**
   Healthy: `killed by HUP` → `respawning` → `post-stop -> starting` → `running`,
   then `LunaSysMgr-ready` ~26s later.
@@ -49,17 +50,32 @@ grep -c "killed by HUP" /var/log/messages; tail -60 /var/log/messages
 
 ## 0b. Regression watch — respawn storm
 
-- [ ] `ipkgservice main process ended, respawning` → 0 — *automated*
-- [ ] `respawning too fast` (ipkgservice) → 0 — *automated*
+- [Pass] `ipkgservice main process ended, respawning` → 0 — *automated*
+- [Pass] `respawning too fast` (ipkgservice) → 0 — *automated*
+- [Pass] **upstart never crashed + re-exec'd** — *automated*
+      `grep -E "Caught .*(segmentation fault|core dumped)|Failed to re-execute" /var/log/messages`
+      A hit means upstart took a fatal signal, dumped core via a forked child and
+      `execl`'d itself — which **loses its job table**, so `respawn` silently stops
+      working for anything already running. Check this *before* concluding a dead
+      daemon "just died": it may have died normally and simply not been restarted.
+      (An rdxd report whose component is `upstart` is usually that core-dumper
+      child working as designed — not an upstart bug.)
+- [Pass] **rdxd crash reports → 0**, listed by component — *automated*
+      The `/var/log/crash*` count in §8 does **not** see these; every crash found
+      during 600029–600033 triage was an rdxd report.
+- [Pass] **LunaDownloadMgr running**, is the patched build, `Restarting glibcurl` → 0,
+      no SEGV this boot — *automated*
+      It also hosts `com.palm.appInstallService`, so if it dies the **App Catalog
+      cannot fetch anything**. Recover with `start LunaDownloadMgr`.
 
 If the storm returns the fix is **not** to drop `respawn` — find whatever is
 stop/starting the job.
 
 ## 1. First-boot seeding
 
-- [ ] Cryptofs seed flag set; `seed verified complete` — *automated*
-- [ ] All once-per-flash flags present — *automated*
-- [ ] Preware feeds seeded — *automated*
+- [Pass] Cryptofs seed flag set; `seed verified complete` — *automated*
+- [Pass] All once-per-flash flags present — *automated*
+- [Pass] Preware feeds seeded — *automated*
 
 ## 2. Ten-minute smoke test
 
@@ -79,8 +95,8 @@ stop/starting the job.
 
 ## 4. Core-apps suite
 
-- [ ] contacts / messaging / phone / accounts baked and **unshadowed** — *automated*
-- [ ] db8 healthy — `com.palm.person:1` answers — *automated*
+- [Pass] contacts / messaging / phone / accounts baked and **unshadowed** — *automated*
+- [Pass] db8 healthy — `com.palm.person:1` answers — *automated*
 - [Human] Messaging launches; new-conversation UI works
 - [Human] Contacts launches
 - [Human] Settings → Accounts shows the SYNERGY ACCOUNTS grouping
@@ -88,30 +104,30 @@ stop/starting the job.
 
 ## 5. Synergy generic runtime
 
-- [ ] synergy glibc + runtime dirs; bind mount live — *automated*
-- [ ] `imtransport` running (pid = `/usr/bin/imlibpurpletransport`) — *automated*
-- [ ] cloud-auth present; docviewer absent (intentional) — *automated*
-- [ ] Retired accounts (skype/yahoo) gone — *automated*
-- [ ] gst WebM/Opus plugins 6/6 — *automated*
-- [ ] QuickOffice ×2 + Photos installed; synergy patch markers present — *automated*
+- [Pass] synergy glibc + runtime dirs; bind mount live — *automated*
+- [Pass] `imtransport` running (pid = `/usr/bin/imlibpurpletransport`) — *automated*
+- [Pass] cloud-auth present; docviewer absent (intentional) — *automated*
+- [Pass] Retired accounts (skype/yahoo) gone — *automated*
+- [Pass] gst WebM/Opus plugins 6/6 — *automated*
+- [Pass] QuickOffice ×2 + Photos installed; synergy patch markers present — *automated*
 - [Human] QuickOffice remote-files UI opens; Photos app opens
 - [Human] An IM account actually connects
 
 ## 6. Preware / Govnah / status seeding
 
-- [ ] ipkgservice answers — *automated*
-- [ ] One well-formed stanza each: preware, govnah, synergy generic — *automated*
-- [ ] USB Settings / BT Gamepad absent from ipkg status — *automated*
-- [ ] `webos-patches` / `webos-kernels` ship **disabled** — *automated*
-- [ ] `.ipk` handler registered — *automated*
+- [Pass] ipkgservice answers — *automated*
+- [Pass] One well-formed stanza each: preware, govnah, synergy generic — *automated*
+- [Pass] USB Settings / BT Gamepad absent from ipkg status — *automated*
+- [Pass] `webos-patches` / `webos-kernels` ship **disabled** — *automated*
+- [Pass] `.ipk` handler registered — *automated*
 - [Human] Install a real package via Preware (e.g. Tweaks)
 - **Known issue:** `application/octet-stream` is not mapped, so a browser-downloaded
   `.ipk` stops at the downloaded file. See KNOWN-ISSUE-IPK-BROWSER-PROMPT.md.
 
 ## 7. CE platform tweaks
 
-- [ ] `turnOnNovacomAtStart=true`; keyboard defaults small — *automated*
-- [ ] Version-prefix patch — zero `"HP webOS "` in LunaSysMgr — *automated*
+- [Pass] `turnOnNovacomAtStart=true`; keyboard defaults small — *automated*
+- [Pass] Version-prefix patch — zero `"HP webOS "` in LunaSysMgr — *automated*
 - [Human] Device Info shows webOS CE 3.1.0
 - [Human] Developer-mode toggle survives an off/on cycle
 - [Human] Tweaks installs; LunaCE toggles appear and at least one works
@@ -119,24 +135,24 @@ stop/starting the job.
 
 ## 8. Regressions from earlier validated flashes
 
-- [ ] Kindle / Facebook / YouTube preloads absent — *automated*
-- [ ] `ls-hubd` clean (0 unlisted-service errors) — *automated*
-- [ ] Trust store populated (~190 entries) — *automated*
-- [ ] Help app repointed at webosarchive.org — *automated*
-- [ ] 0 crash artifacts; tripwire clean — *automated*
+- [Pass] Kindle / Facebook / YouTube preloads absent — *automated*
+- [Pass] `ls-hubd` clean (0 unlisted-service errors) — *automated*
+- [Pass] Trust store populated (~190 entries) — *automated*
+- [Pass] Help app repointed at webosarchive.org — *automated*
+- [Pass] 0 crash artifacts; tripwire clean — *automated*
 - [Human] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
 - [Human] Advanced reset options appear in the chosen OOBE language
 - [Human] Maps 4.0.1 opens
 
 ## 9. Preloads / un-baking
 
-- [ ] App Catalog and Maps **not baked** — *automated*
-- [ ] Both installed to cryptofs, **one stanza each** — *automated*
+- [Pass] App Catalog and Maps **not baked** — *automated*
+- [Pass] Both installed to cryptofs, **one stanza each** — *automated*
       (two stanzas = installed *alongside* rather than upgraded — the thing to catch)
-- [ ] Staged ipks present; stock 5.0.2900 ipk removed — *automated*
-- [ ] Catalog files extracted with clean names — *automated*
-      **Expected to FAIL until the App Catalog ipk is rebuilt** — see below.
-- [ ] Manifest: baked contacts/messaging entries dropped — *automated*
+- [Pass] Staged ipks present; stock 5.0.2900 ipk removed — *automated*
+- [Pass] Catalog files extracted with clean names — *automated*
+      *(was expected to fail on older builds; the catalog ipk is now 6.1.2921 as of 600033)*
+- [Pass] Manifest: baked contacts/messaging entries dropped — *automated*
 - [Human] **stock-lineage runs:** compare against the pre-flash baseline — the
   5.0.2900 / 3.0.1 copies must be *upgraded*, and the old build's
   `PivotMagazine-WOSA` tree must be gone rather than merely overwritten.
@@ -150,10 +166,10 @@ is.
 
 ## 10. Exhibition + localization
 
-- [ ] `SimpleClock.qml` present and referenced; stock faces retained — *automated*
-- [ ] GAMES localized in all 8 locales — *automated*
-- [ ] Launcher page rename favorites→games configured — *automated*
-- [ ] Photos exhibition clock installed (icon + CSS + JS) — *automated*
+- [Pass] `SimpleClock.qml` present and referenced; stock faces retained — *automated*
+- [Pass] GAMES localized in all 8 locales — *automated*
+- [Pass] Launcher page rename favorites→games configured — *automated*
+- [Pass] Photos exhibition clock installed (icon + CSS + JS) — *automated*
 - [Human] Exhibition opens on the simple clock; **swipe through all four faces**
 - [Human] GAMES reads SPIELE after switching the device language to German
 - [Human] Photos exhibition: clock toggle shows/hides; interval persists across
@@ -174,9 +190,9 @@ is.
 
 ## 12. Space / media
 
-- [ ] Staged customization media reclaimed unattended — *automated*
-- [ ] rootfs free space / % used — *automated, record the number*
-- [ ] Default wallpaper present — *automated*
+- [Pass] Staged customization media reclaimed unattended — *automated*
+- [Pass] rootfs free space / % used — *automated* — **121892K free, 79% used** (600033)
+- [Pass] Default wallpaper present — *automated*
 - [Human] Default wallpaper looks right on screen
 - *Known/accepted:* `/media/internal` **accumulates** — the customization service
   only copies in, never removes. Upgrading from an older CE build leaves the old
@@ -188,10 +204,10 @@ is.
 Google now refuses this device's user-agent and its results page will not render
 here even with the UA spoofed, so the stock default was simply broken.
 
-- [ ] All 10 locale lists default to `duckduckgo`, none still list google — *automated*
-- [ ] Search URL is the `/lite/` endpoint — *automated*
-- [ ] Both DDG icons present (48px universal search, 32px browser) — *automated*
-- [ ] Browser `URLSearch.js` fallback is DuckDuckGo, no google left — *automated*
+- [Pass] All 10 locale lists default to `duckduckgo`, none still list google — *automated*
+- [Pass] Search URL is the `/lite/` endpoint — *automated*
+- [Pass] Both DDG icons present (48px universal search, 32px browser) — *automated*
+- [Pass] Browser `URLSearch.js` fallback is DuckDuckGo, no google left — *automated*
 - [Pass/Human] **Just Type shows "Search DuckDuckGo"** and searching works —
   *confirmed by user on 600030's device*
 - [Human] The search actually returns usable results in the browser
