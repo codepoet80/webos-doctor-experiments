@@ -1,8 +1,8 @@
-===== webOS CE automated pass — expecting BUILDMARK=600033 — Fri Aug 21 11:32:10 PDT 2026 =====
+===== webOS CE automated pass — expecting BUILDMARK=600033 — Fri Aug 21 11:37:22 PDT 2026 =====
 [PASS] id  BUILDMARK=600033
 [PASS] id  version string webOS CE 3.1.0
 [INFO] id  BUILDTIME=20260821125958
-[INFO] id  uptime: up 25 min,  0 users,  load average: 1.49, 2.51, 2.81
+[INFO] id  uptime: up 30 min,  0 users,  load average: 3.35, 2.70, 2.77
 [PASS] 0b  no ipkgservice respawn events
 [PASS] 0b  no 'respawning too fast'
 [PASS] 0   ipkgservice resident (Luna Restart prerequisite)
@@ -58,8 +58,8 @@
 [PASS] 8   HP preload com.palm.app.youtube absent
 [PASS] 8   ls-hubd clean (0 unlisted-service errors)
 [PASS] 8   trust store populated (190 entries)
-[INFO] 8   crash artifacts: 0
-[INFO] 8   tripwire: no software reboot logged
+[PASS] 8   no crash artifacts
+[PASS] 8   tripwire clean (no software reboot logged)
 [PASS] 8   Help app repointed at webosarchive
 [PASS] 9   com.palm.app.enyo-findapps not baked
 [PASS] 9   com.palm.app.enyo-findapps installed in cryptofs v6.1.2921 (1 stanza)

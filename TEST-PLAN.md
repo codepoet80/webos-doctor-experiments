@@ -139,7 +139,10 @@ stop/starting the job.
 - [Pass] `ls-hubd` clean (0 unlisted-service errors) — *automated*
 - [Pass] Trust store populated (~190 entries) — *automated*
 - [Pass] Help app repointed at webosarchive.org — *automated*
-- [Pass] 0 crash artifacts; tripwire clean — *automated*
+- [Pass] 0 crash artifacts — *automated, real assertion*
+- [Pass] tripwire: no software reboot, or all UI-initiated — *automated, real assertion*
+      A reboot requested by anything other than LunaSysMgr fails the check — that is
+      what the tripwire exists to catch. A deliberate §0 reboot passes.
 - [Human] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
 - [Human] Advanced reset options appear in the chosen OOBE language
 - [Human] Maps 4.0.1 opens

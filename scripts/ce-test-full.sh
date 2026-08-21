@@ -177,9 +177,29 @@ n=$(grep -c "is not listed in any role file" $LOG 2>/dev/null)
 [ "$n" = "0" ] && P "8   ls-hubd clean (0 unlisted-service errors)" || F "8   ls-hubd unlisted-service errors: $n"
 n=$(ls /var/ssl/trustedcerts 2>/dev/null | wc -l)
 [ "$n" -gt 150 ] && P "8   trust store populated ($n entries)" || F "8   trust store thin ($n)"
-n=$(ls /media/cryptofs/.crash* /var/log/crash* 2>/dev/null | wc -l)
-I  "8   crash artifacts: $n"
-if have /var/log/reboot-tripwire.log; then I "8   tripwire: $(wc -l < /var/log/reboot-tripwire.log) line(s)"; else I "8   tripwire: no software reboot logged"; fi
+# Real assertion, not an INFO: any crash artifact is a failure.
+arts=$(ls /media/cryptofs/.crash* /var/log/crash* 2>/dev/null)
+n=$(printf '%s' "$arts" | grep -c .)
+[ "$n" = "0" ] && P "8   no crash artifacts" \
+  || { F "8   $n crash artifact(s):"; printf '%s\n' "$arts" | sed 's/^/       /'; }
+
+# Tripwire: /sbin/{reboot,telinit} are shimmed to log WHO asked for a reboot.
+# A UI-initiated reboot is legitimate -- section 0 asks you to do one -- so a bare
+# line count would fail on correct behaviour. Classify by requester instead: the
+# whole point of this tripwire is catching reboots nobody asked for.
+TW=/var/log/reboot-tripwire.log
+if [ ! -s "$TW" ]; then
+  P "8   tripwire clean (no software reboot logged)"
+else
+  n=$(grep -c . "$TW")
+  odd=$(grep -vc "LunaSysMgr" "$TW")
+  if [ "$odd" = "0" ]; then
+    P "8   tripwire: $n software reboot(s), all UI-initiated (LunaSysMgr)"
+  else
+    F "8   tripwire: $odd of $n software reboot(s) NOT UI-initiated:"
+    grep -v "LunaSysMgr" "$TW" | head -3 | sed 's/^/       /'
+  fi
+fi
 grep -q "webosarchive" /usr/palm/applications/com.palm.app.help/appinfo.json 2>/dev/null \
   || grep -rq "webosarchive" /usr/palm/applications/com.palm.app.help/ 2>/dev/null \
   && P "8   Help app repointed at webosarchive" || I "8   Help app repoint not detected by grep"
