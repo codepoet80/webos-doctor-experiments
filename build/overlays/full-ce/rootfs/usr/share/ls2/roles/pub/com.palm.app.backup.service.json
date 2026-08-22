@@ -1,0 +1,20 @@
+{
+    "role": {
+        "exeName": "js",
+        "type": "regular",
+        "allowedNames": [
+            "com.palm.app.backup.service"
+        ]
+    },
+    "permissions": [
+        {
+            "service": "com.palm.app.backup.service",
+            "inbound": [
+                "*"
+            ],
+            "outbound": [
+                "*"
+            ]
+        }
+    ]
+}

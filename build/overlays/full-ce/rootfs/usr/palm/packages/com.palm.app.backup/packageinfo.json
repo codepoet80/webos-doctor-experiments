@@ -1,0 +1,12 @@
+{
+  "app": "com.palm.app.backup",
+  "icon": "icon.png",
+  "id": "com.palm.app.backup",
+  "loc_name": "Backup",
+  "miniicon": "icon.png",
+  "package_format_version": 2,
+  "services": ["com.palm.app.backup.service"],
+  "vendor": "webOS Community Edition",
+  "vendorurl": "https://webosarchive.org",
+  "version": "3.1.0"
+}

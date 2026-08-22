@@ -1,0 +1,138 @@
+{
+    "id": "com.palm.app.backup.service",
+    "description": "woce-backup: local backup and restore for webOS",
+    "engine": "node",
+    "activityTimeout": 30,
+    "services": [
+        {
+            "name": "com.palm.app.backup.service",
+            "description": "Backs up data and settings to local storage and restores them",
+            "assistant": "ServiceAssistant",
+            "commands": [
+                {
+                    "name": "healthcheck",
+                    "assistant": "HealthCheckAssistant",
+                    "description": "Returns 'ack', may be used to see if the service can be started",
+                    "public": true
+                },
+                {
+                    "name": "register",
+                    "assistant": "RegisterAssistant",
+                    "description": "Registers a service to be called as part of backup/restore",
+                    "public": true
+                },
+                {
+                    "name": "unregister",
+                    "assistant": "UnregisterAssistant",
+                    "description": "Unregisters a service from backup/restore",
+                    "public": true
+                },
+                {
+                    "name": "startBackup",
+                    "assistant": "BackupAssistant",
+                    "description": "Starts a backup operation",
+                    "commandTimeout": 7200,
+                    "subscribe": true,
+                    "public": true
+                },
+                {
+                    "name": "cancelBackup",
+                    "assistant": "CancelBackupAssistant",
+                    "description": "Cancels the backup currently in progress",
+                    "public": true
+                },
+                {
+                    "name": "getBackupStatus",
+                    "assistant": "GetBackupStatusAssistant",
+                    "description": "Returns the backup status and, if subscribe is true, notifications when it changes",
+                    "commandTimeout": 7200,
+                    "subscribe": true,
+                    "public": true
+                },
+                {
+                    "name": "getLastBackupTime",
+                    "assistant": "GetLastBackupTimeAssistant",
+                    "description": "Returns the time of the last successful backup",
+                    "public": true
+                },
+                {
+                    "name": "optInToBackup",
+                    "assistant": "OptInAssistant",
+                    "description": "Enables backup and schedules the next one",
+                    "public": true
+                },
+                {
+                    "name": "optOutOfBackup",
+                    "assistant": "OptOutAssistant",
+                    "description": "Disables backup and removes all stored backups",
+                    "commandTimeout": 7200,
+                    "public": true
+                },
+                {
+                    "name": "restore",
+                    "assistant": "RestoreAssistant",
+                    "description": "Restores a backup to this device",
+                    "commandTimeout": 7200,
+                    "subscribe": true,
+                    "public": true
+                },
+                {
+                    "name": "reboot",
+                    "assistant": "RebootAssistant",
+                    "description": "Reboots the device via the privileged helper",
+                    "public": true
+                },
+                {
+                    "name": "getRestoreDevices",
+                    "assistant": "GetRestoreDevicesAssistant",
+                    "description": "Returns the devices available for restore, each with its available backups",
+                    "commandTimeout": 3600,
+                    "public": true
+                },
+                {
+                    "name": "listBackups",
+                    "assistant": "ListBackupsAssistant",
+                    "description": "Returns every backup held by the current target",
+                    "public": true
+                },
+                {
+                    "name": "deleteBackup",
+                    "assistant": "DeleteBackupAssistant",
+                    "description": "Deletes a single backup and purges any files it alone referenced",
+                    "commandTimeout": 3600,
+                    "public": true
+                },
+                {
+                    "name": "listTargets",
+                    "assistant": "ListTargetsAssistant",
+                    "description": "Returns the available backup targets and which one is selected",
+                    "public": true
+                },
+                {
+                    "name": "setTarget",
+                    "assistant": "SetTargetAssistant",
+                    "description": "Selects the backup target to use",
+                    "public": true
+                },
+                {
+                    "name": "getUserDataCategories",
+                    "assistant": "GetUserDataCategoriesAssistant",
+                    "description": "Returns the user data categories and whether each is enabled",
+                    "public": true
+                },
+                {
+                    "name": "setUserDataCategories",
+                    "assistant": "SetUserDataCategoriesAssistant",
+                    "description": "Sets which user data categories are included in a backup",
+                    "public": true
+                },
+                {
+                    "name": "scheduledBackup",
+                    "assistant": "ScheduledBackupAssistant",
+                    "description": "Activity Manager callback for the daily scheduled backup",
+                    "commandTimeout": 7200
+                }
+            ]
+        }
+    ]
+}

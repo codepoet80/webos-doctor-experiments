@@ -1,8 +1,10 @@
 # webOS CE 3.1.0 — Release Notes
 
-**Release candidate: BUILDMARK 600024** (2026-08-18)
-`out/webosdoctorp305hstnh-3.1CE-600024-rc.jar`
-sha256 `ec30762fdbf2be1a0f1f36b9da87eea84870b5d99709c80d7e921b628e7202d3`
+**Release candidate 2: BUILDMARK 600055** (2026-08-22)
+`out/webosdoctorp305hstnh-3.1CE-600055.jar`
+sha256 `d1bc6084faddfdf3daaa0ae362d31c8f9a400debd3e67b4f568404d72a20d183`
+
+*(RC1 was BUILDMARK 600024, 2026-08-18, sha256 `ec30762f…`.)*
 
 A community Doctor for the **HP TouchPad** (`topaz`, Wi-Fi), built by repacking
 the OEM HP webOS 3.0.5 Doctor with 14 years of community work baked directly
@@ -48,6 +50,28 @@ login on ordinary Wi-Fi).
 
 ---
 
+## New in RC2 (600055)
+
+**Backup and Restore actually works.** The stock Backup app was a UI over Palm's
+retired servers; it is replaced by an on-device backup writing content-addressed
+backups to `/media/internal/webos-backups`, and it is the supported way to carry
+data from webOS 3.0.5 onto CE. Verified end to end: a 115-package backup from a
+3.0.5 device restored onto CE with 97 apps reinstalled, their services
+registered, and a receipt naming everything it could not put back and why.
+
+**Accounts** — the Settings → Accounts list shows a single SYNERGY ACCOUNTS
+group again, rather than groups nested inside a group.
+
+**A boot-time crash is gone.** On a Wi-Fi TouchPad the stock WAN daemon
+respawn-thrashed until upstart stopped it, and jobs starting in that same moment
+died with SIGSEGV. Harmless in effect — the affected jobs had already done their
+work — but it produced a crash report on every boot and every Luna Restart. See
+`docs/4G-TOUCHPAD.md`.
+
+**Preware reports CE's baked packages honestly**, including the TLS and
+root-certificate updates, so it no longer offers them as fresh installs and a
+3.0.5 restore no longer copies their leftovers onto the device.
+
 ## Fixed since the 600023 candidate
 
 - **Luna Restart no longer freezes the device.** Restoring `respawn` on Preware's
@@ -70,15 +94,6 @@ login on ordinary Wi-Fi).
 
 ## Known issues
 
-- **Launcher may come up empty on the first boot (rare).** Restart once and it
-  is fixed permanently. See [KNOWN-ISSUE-EMPTY-LAUNCHER.md](KNOWN-ISSUE-EMPTY-LAUNCHER.md).
-- **Possible spontaneous reboot shortly after setup (rare, unconfirmed).** Not
-  observed on recent builds; instrumentation ships to identify it if it recurs.
-  See [KNOWN-ISSUE-RANDOM-REBOOT.md](KNOWN-ISSUE-RANDOM-REBOOT.md).
-- **A `.ipk` downloaded in the browser isn't handed to Preware** — it downloads
-  and stops (webOS has no "open with" prompt to fall back on). Installing from
-  the App Catalog or Preware's own feeds is unaffected. See
-  [KNOWN-ISSUE-IPK-BROWSER-PROMPT.md](KNOWN-ISSUE-IPK-BROWSER-PROMPT.md).
 - **No post-setup account manager yet.** The sign-in app is first-use only in
   this build; managing your account afterwards will come as a separate App
   Catalog app.

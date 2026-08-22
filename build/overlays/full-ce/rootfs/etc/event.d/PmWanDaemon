@@ -1,0 +1,40 @@
+description	"Palm WAN daemon"
+
+start on stopped configurator
+
+# webOS CE: refuse to start at all without a radio. Runs as `sh -e`, so
+# every test is written to exit explicitly rather than fall through.
+pre-start script
+    if [ -f /dev/tokens/RadioType ]; then
+        [ "`cat /dev/tokens/RadioType`" != "0" ] || exit 1
+        exit 0
+    fi
+    if [ -f /dev/tokens/MODEM ]; then
+        [ "`cat /dev/tokens/MODEM`" != "N" ] || exit 1
+        exit 0
+    fi
+    exit 1
+end script
+
+console output
+
+script
+
+if [ -f /dev/tokens/RadioType ]; then
+	radioType=`cat /dev/tokens/RadioType`
+	if [ "$radioType" != "0" ]; then
+		logger -p info "RadioType token: $radioType - Starting WAN"
+		exec PmWsfDaemon -c /etc/wan.d/wan.conf
+	fi
+elif [ -f /dev/tokens/MODEM ]; then
+	modem=`cat /dev/tokens/MODEM`
+	if [ "$modem" != "N" ]; then
+	    logger -p info "MODEM token: $modem - Starting WAN"
+	    exec PmWsfDaemon -c /etc/wan.d/wan.conf
+	fi
+fi
+
+end script
+
+respawn
+

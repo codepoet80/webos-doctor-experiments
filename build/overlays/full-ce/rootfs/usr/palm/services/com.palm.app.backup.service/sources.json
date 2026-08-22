@@ -1,0 +1,36 @@
+[
+    { "library": { "name": "foundations", "version": "1.0" } },
+    { "library": { "name": "foundations.io", "version": "1.0" } },
+    { "library": { "name": "foundations.json", "version": "1.0" } },
+
+    { "source": "prologue.js" },
+    { "source": "common.js" },
+    { "source": "assistants/service-assistant.js" },
+
+    { "source": "util/date-util.js" },
+    { "source": "util/file-util.js" },
+    { "source": "util/privileged.js" },
+    { "source": "util/system.js" },
+    { "source": "util/prefs.js" },
+    { "source": "util/user-data.js" },
+    { "source": "util/backup-service.js" },
+
+    { "source": "targets/target-base.js" },
+    { "source": "targets/local-target.js" },
+    { "source": "targets/targets.js" },
+
+    { "source": "handlers/health-check.js" },
+    { "source": "handlers/register.js" },
+    { "source": "handlers/backup.js" },
+    { "source": "handlers/cancel-backup.js" },
+    { "source": "handlers/get-backup-status.js" },
+    { "source": "handlers/get-last-backup-time.js" },
+    { "source": "handlers/opt-in.js" },
+    { "source": "handlers/opt-out.js" },
+    { "source": "handlers/reboot.js" },
+    { "source": "handlers/restore.js" },
+    { "source": "handlers/get-restore-devices.js" },
+    { "source": "handlers/list-backups.js" },
+    { "source": "handlers/targets.js" },
+    { "source": "handlers/user-data.js" }
+]

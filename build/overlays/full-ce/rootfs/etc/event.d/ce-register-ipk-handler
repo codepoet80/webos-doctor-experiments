@@ -11,37 +11,5 @@ start on first-use-finished
 console none
 
 script
-    FLAG=/var/luna/preferences/ce-ipk-handler-registered
-    LOG=/var/log/ce-register-ipk-handler.log
-    [ -f $FLAG ] && exit 0
-    AM=palm://com.palm.applicationManager
-    # wait for LunaSysMgr to be answering before registering
-    n=0
-    while [ $n -lt 60 ]; do
-        pidof LunaSysMgr >/dev/null 2>&1 && break
-        sleep 2; n=$((n+1))
-    done
-    sleep 10
-    # exactly Preware's payload: no streamable key, so it defaults true
-    luna-send -n 1 $AM/addResourceHandler \
-        '{"extension":"ipk","mimeType":"application/vnd.webos.ipk","appId":"org.webosinternals.preware"}' \
-        </dev/null >/dev/null 2>&1
-    sleep 2
-    # verify before flagging: handler must be Preware AND streamable.
-    # Create the probe file first -- getResourceInfo was only ever tested
-    # against a file that exists, so do not depend on it tolerating one
-    # that does not.
-    mkdir -p /media/internal/downloads 2>/dev/null
-    touch /media/internal/downloads/.ce-probe.ipk 2>/dev/null
-    R=$(luna-send -n 1 $AM/getResourceInfo \
-        '{"uri":"file:///media/internal/downloads/.ce-probe.ipk"}' </dev/null 2>&1)
-    case "$R" in
-        *org.webosinternals.preware*canStream*true*|*canStream*true*org.webosinternals.preware*)
-            touch $FLAG
-            echo "$(date 2>/dev/null) registered: $R" >> $LOG 2>/dev/null ;;
-        *)
-            echo "$(date 2>/dev/null) NOT registered, will retry next boot: $R" \
-                 >> $LOG 2>/dev/null ;;
-    esac
-    rm -f /media/internal/downloads/.ce-probe.ipk 2>/dev/null
+    exec sh -e /usr/palm/ce-seed/jobs/ce-register-ipk-handler.sh
 end script

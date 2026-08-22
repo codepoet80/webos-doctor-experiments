@@ -25,7 +25,9 @@ it has the same filename, so dropping it in replaces the old file outright.
 
 - **`PatchOrReplace/`** — ipks that fix or replace an existing system
   component: the TLS tiers (browser/downloadmgr/luna/mail), uber-kernel,
-  App Catalog, Maps, help-redirect, rootcertsupdate, curl/ntpdate (consumed by
+  App Catalog, Maps, help-redirect, rootcertsupdate, **woce-backup** (takes over
+  the stock `com.palm.app.backup` id — see the Backup note under "How it bakes"),
+  curl/ntpdate (consumed by
   the community-firstuse layer), the language-variant patches (`…---xx_`
   suffix = language, no suffix = english), and the community **core-apps
   suite** of `*-overwrite` ipks (accounts, contacts, messaging, phone,
@@ -108,6 +110,77 @@ Tier order matters only for the ssl11 stack (browser first). Highlights:
   build time (build fails if one doesn't apply); english is the rootfs
   default; all variants ship under `/usr/palm/ce-patches/lang/<lang>/` and a
   boot job aligns the live file to the selected locale.
+- **Device Info** — the "Build" row (tap *Version* to toggle it) shows the CE
+  **BUILDMARK** instead of `BUILDNUMBER`, which CE leaves at the stock 86 for the
+  OTA fingerprint. The mark reaches the app as `com.palm.properties.buildMark`:
+  libluna-prefs serves `com.palm.properties.<name>` for every file in
+  `/etc/prefs/properties`, so the tier just drops the number there (alongside
+  `buildDate`, sliced out of `BUILDTIME`). The app menu also gains **About**, a
+  scene dedicating the release to the community and crediting it by name
+  (bold = code contributor), subtitled `webOS CE 3.1.0 · Built yyyy-mm-dd`.
+  Names and dedication text live
+  in `deviceinfo/about/about-assistant.js`; the build refuses to bake while the
+  credits still hold the placeholder.
+- **Cryptofs app versions** — Photos & Videos and Clock are preload ipks, so
+  Device Info shows their own `appinfo.json` version rather than the platform's
+  `3.1.0` (LunaSysMgr only substitutes that for trusted Palm apps under `/usr`).
+  Both are repacked declaring 3.1 (`3.1.8001` / `3.1.1904`). The ipk filename,
+  its control `Version` and the preload manifest stay stock — `app-install`
+  decides whether to install by comparing the staged ipk's *filename* version
+  against the installed ipkg version, and moving one without the others gives
+  you a package that reinstalls every boot.
+- **Backup (woce-backup)** — the stock `com.palm.app.backup` is a dead UI over
+  `com.palm.service.backup`, which uploaded to Palm's servers and has failed on
+  its first real call since they went dark. It is replaced wholesale (same app
+  id, so the icon and launcher slot don't move) by woce-backup, which writes
+  content-addressed backups to `/media/internal/webos-backups`. Baked at rootfs
+  paths rather than staged, because the postinst writes two things that are read
+  **once, at boot**, by daemons that start long before it — which is why
+  upstream tells you to reboot after the first install, and why CE (no second
+  boot) bakes them instead: the `com.palm.backup.privileged` role for the
+  helper's private `luna-send` copy (`/usr/bin/woce-lunacall`) into
+  `/usr/share/ls2/roles/prv`, and the matching db8 admin grants into
+  `/etc/palm/mojodb.conf`. **Two** callers are granted there: that privileged
+  identity *and* `com.palm.app.backup.service` itself — as a ROM service it has
+  a real private-bus role, so its `com.palm.db/internal/preBackup` call reaches
+  db8 directly and comes back `access denied` rather than the `Unknown method`
+  that triggers the helper fallback. Its ls2 roles carry `outbound: ["*"]` on
+  **both** hubs (the `Triton.prv` template's `outbound: []` blocks
+  `com.palm.activitymanager` and hangs the service outright), and it launches
+  through `run-js-service-nofork` alongside accountservices. `bake.py` patches
+  the helper's `LUNACALL_ROLE` to prefer the baked role: upstream uses that one
+  constant both to decide where to write the role and to test whether the
+  privileged identity is live, so an unpatched helper would quietly fall back to
+  the anonymous stock `luna-send` and every db8 call would fail.
+- **PmWanDaemon radio gate** — stock's WAN job starts on `stopped configurator`,
+  finds no radio token on a Wi-Fi TouchPad, never reaches its `exec`, exits 0,
+  and `respawn` loops it until upstart gives up with *respawning too fast*. That
+  limit-stop happens **inside upstart's event handling**, and the jobs spawned
+  next in the same tick die with `SIGSEGV` in `job_run_process` — which is why
+  `ce-firstboot-tweaks` and `ce-remove-preloads` appeared to be crashing on
+  600042/600049/600050. They were not: they were the other jobs on that event.
+  A `pre-start` gate applies the job's own radio test as a start condition, so
+  with no modem it never reaches `running` and there is nothing to respawn; with
+  a modem it behaves exactly as stock. See `../../docs/4G-TOUCHPAD.md`.
+- **Job scripts live outside the job** — every `ce-*` body is written to
+  `/usr/palm/ce-seed/jobs/<name>.sh` and the job becomes one `exec sh -e` line.
+  This was added chasing the crash above and did **not** fix it (the cause was
+  PmWanDaemon), but it is kept: it puts our script sizes back in line with
+  stock's, whose largest inline block is 2549 bytes against our former 9255.
+  Bodies still run under `sh -e`, so the guard rules are unchanged.
+- **De-shadow list is DERIVED** — `baked_ids - staged_preload_ids`, both read
+  from the overlay just written, never transcribed. A hand-maintained list had
+  left Preware in it after Preware became a preload, which tells the job to
+  `rm -rf` the copy the preload just installed; only first-boot ordering had
+  been preventing it.
+- **ipkg status stanzas — 11, not 3** — Preware shows a package as installed by
+  name-matching the cryptofs status file, so CE seeds a stanza for everything it
+  bakes: govnah, the Synergy runtime, the Backup app, and the seven patch
+  packages whose *effects* are baked (browser/downloadmgr/luna/mail/curl-tls13,
+  rootcertsupdate, ntpdate-sync, notifications-advanced-reset-options). Without
+  those seven, restoring a webOS 3.0.5 backup puts their cryptofs staging
+  directories back — dead payload, and `browser-tls13` carries an `appinfo.json`
+  so it can surface as a junk launcher icon.
 - **Launcher placement** — `PreferAppKeywordsForAppPlacement` + the
   `wosa-settings` keyword put USB Settings and Govnah on the Settings tab.
 - **OOBE completion** — `closeApp` calls `markFirstUseDone()` and LunaSysMgr
@@ -136,7 +209,9 @@ volumes the Doctor doesn't flash, or depend on the user's OOBE choices):
 - `ce-firstboot-tweaks` — seds the default-wallpaper entries in hp.tar's
   `customization.json`, and once per flash removes stale `/media/cryptofs`
   copies of apps this image bakes (cryptofs **survives** Doctor flashes and a
-  stale copy shadows the baked app).
+  stale copy shadows the baked app) — the app dir, and also the matching
+  `services/<id>.service` and `packages/<id>` dirs, since a leftover cryptofs
+  JS service claims the same bus name the baked image now claims statically.
 - `ce-default-wallpaper` — the race-proof half of the wallpaper default: on
   the first boot after first use, if the pref is still factory `01.jpg`, set
   ours. User-chosen wallpapers are never touched.

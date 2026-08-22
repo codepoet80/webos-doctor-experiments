@@ -235,5 +235,137 @@ if ! grep -q "^Package: com.palm.synergy.generic$" $APPS/usr/lib/ipkg/status 2>/
       echo ""
    } >> $APPS/usr/lib/ipkg/status
 fi
+if ! grep -q "^Package: com.palm.app.backup$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+   mkdir -p $APPS/usr/lib/ipkg
+   {
+      echo ""
+      echo "Package: com.palm.app.backup"
+      echo "Version: 3.1.0"
+      echo "Depends: "
+      echo "Status: install ok installed"
+      echo "Architecture: all"
+      echo "Description: Backup and Restore (woce-backup)"
+      echo "Installed-Time: $(date +%s)"
+      echo ""
+   } >> $APPS/usr/lib/ipkg/status
+fi
+if ! grep -q "^Package: org.webosinternals.browser-tls13$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+   mkdir -p $APPS/usr/lib/ipkg
+   {
+      echo ""
+      echo "Package: org.webosinternals.browser-tls13"
+      echo "Version: 1.1.2"
+      echo "Depends: "
+      echo "Status: install ok installed"
+      echo "Architecture: armv7"
+      echo "Description: TLS 1.3 for the browser (baked into webOS CE)"
+      echo "Installed-Time: $(date +%s)"
+      echo ""
+   } >> $APPS/usr/lib/ipkg/status
+fi
+if ! grep -q "^Package: org.webosinternals.downloadmgr-tls13$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+   mkdir -p $APPS/usr/lib/ipkg
+   {
+      echo ""
+      echo "Package: org.webosinternals.downloadmgr-tls13"
+      echo "Version: 1.1.0"
+      echo "Depends: "
+      echo "Status: install ok installed"
+      echo "Architecture: armv7"
+      echo "Description: TLS 1.3 for the download manager (baked into webOS CE)"
+      echo "Installed-Time: $(date +%s)"
+      echo ""
+   } >> $APPS/usr/lib/ipkg/status
+fi
+if ! grep -q "^Package: org.webosinternals.luna-tls13$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+   mkdir -p $APPS/usr/lib/ipkg
+   {
+      echo ""
+      echo "Package: org.webosinternals.luna-tls13"
+      echo "Version: 1.1.3"
+      echo "Depends: "
+      echo "Status: install ok installed"
+      echo "Architecture: armv7"
+      echo "Description: TLS 1.3 for LunaSysMgr (baked into webOS CE)"
+      echo "Installed-Time: $(date +%s)"
+      echo ""
+   } >> $APPS/usr/lib/ipkg/status
+fi
+if ! grep -q "^Package: org.webosinternals.mail-tls13$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+   mkdir -p $APPS/usr/lib/ipkg
+   {
+      echo ""
+      echo "Package: org.webosinternals.mail-tls13"
+      echo "Version: 1.3.2"
+      echo "Depends: "
+      echo "Status: install ok installed"
+      echo "Architecture: armv7"
+      echo "Description: TLS 1.3 for mail (baked into webOS CE)"
+      echo "Installed-Time: $(date +%s)"
+      echo ""
+   } >> $APPS/usr/lib/ipkg/status
+fi
+if ! grep -q "^Package: com.palm.rootcertsupdate$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+   mkdir -p $APPS/usr/lib/ipkg
+   {
+      echo ""
+      echo "Package: com.palm.rootcertsupdate"
+      echo "Version: 1.0-5"
+      echo "Depends: "
+      echo "Status: install ok installed"
+      echo "Architecture: all"
+      echo "Description: Updated root certificates (baked into webOS CE)"
+      echo "Installed-Time: $(date +%s)"
+      echo ""
+   } >> $APPS/usr/lib/ipkg/status
+fi
+if ! grep -q "^Package: org.webosinternals.curl-tls13$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+   mkdir -p $APPS/usr/lib/ipkg
+   {
+      echo ""
+      echo "Package: org.webosinternals.curl-tls13"
+      echo "Version: 1.0.1"
+      echo "Depends: "
+      echo "Status: install ok installed"
+      echo "Architecture: armv7"
+      echo "Description: TLS 1.3 curl (baked into webOS CE)"
+      echo "Installed-Time: $(date +%s)"
+      echo ""
+   } >> $APPS/usr/lib/ipkg/status
+fi
+if ! grep -q "^Package: org.webosinternals.ntpdate-sync$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+   mkdir -p $APPS/usr/lib/ipkg
+   {
+      echo ""
+      echo "Package: org.webosinternals.ntpdate-sync"
+      echo "Version: 2.0.1"
+      echo "Depends: "
+      echo "Status: install ok installed"
+      echo "Architecture: armv7"
+      echo "Description: Time sync (baked into webOS CE)"
+      echo "Installed-Time: $(date +%s)"
+      echo ""
+   } >> $APPS/usr/lib/ipkg/status
+fi
+if ! grep -q "^Package: org.webosinternals.patches.notifications-advanced-reset-options$" $APPS/usr/lib/ipkg/status 2>/dev/null ; then
+   mkdir -p $APPS/usr/lib/ipkg
+   {
+      echo ""
+      echo "Package: org.webosinternals.patches.notifications-advanced-reset-options"
+      echo "Version: 3.0.5-9"
+      echo "Depends: "
+      echo "Status: install ok installed"
+      echo "Architecture: all"
+      echo "Description: Advanced reset options (baked into webOS CE)"
+      echo "Installed-Time: $(date +%s)"
+      echo ""
+   } >> $APPS/usr/lib/ipkg/status
+fi
+
+_seeded=0
+for _p in org.webosinternals.govnah com.palm.synergy.generic com.palm.app.backup org.webosinternals.browser-tls13 org.webosinternals.downloadmgr-tls13 org.webosinternals.luna-tls13 org.webosinternals.mail-tls13 com.palm.rootcertsupdate org.webosinternals.curl-tls13 org.webosinternals.ntpdate-sync org.webosinternals.patches.notifications-advanced-reset-options ; do
+   grep -q "^Package: $_p$" $APPS/usr/lib/ipkg/status 2>/dev/null && _seeded=$((_seeded+1))
+done
+echo "CE status stanzas present: $_seeded of 11"
 
 exit 0

@@ -1,0 +1,17 @@
+{
+    "title": "Backup",
+    "version": "3.1.0",
+    "vendor": "webOS Community Edition",
+    "type": "web",
+    "main": "index.html",
+    "id": "com.palm.app.backup",
+    "icon": "icon.png",
+    "splashicon": "icon-256x256.png",
+    "keywords": [
+        "Settings",
+        "Preferences",
+        "Backup",
+        "Restore"
+    ],
+    "uiRevision": 2
+}

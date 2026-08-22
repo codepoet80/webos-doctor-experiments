@@ -1,0 +1,72 @@
+/* webOS Community Edition — styles for the Device Info "About" scene.
+ * Added by build/full-ce/bake.py (deviceinfo tier); linked from index.html.
+ * Everything here is namespaced under #ce-about-main / .ce-* so it cannot
+ * reach the stock scenes. */
+
+/* .palm-page-header is absolutely positioned and pinned to the top of the
+ * scene, so content has to be pushed clear of it or the first element renders
+ * underneath. 82px is what the stock erase scene uses (.prefs-device-erase-main). */
+#ce-about-main {
+	margin: 82px 0px 24px 0px;
+}
+
+/* The header title is text-transform:capitalize by default, which turns
+ * "webOS CE" into "WebOS CE". */
+#ce-about-main .palm-page-header .title {
+	text-transform: none;
+}
+
+#ce-about-body {
+	margin: 0px auto;
+	padding: 4px 16px 0px 16px;
+	max-width: 720px;
+	color: #444444;
+}
+
+#ce-about-version {
+	margin: 0px;
+	font-size: 16px;
+	font-weight: bold;
+	color: #777777;
+	text-align: center;
+}
+
+#ce-about-dedication {
+	margin-top: 18px;
+}
+
+#ce-about-dedication .ce-about-p {
+	margin: 0px 0px 14px 0px;
+	font-size: 17px;
+	line-height: 25px;
+}
+
+.ce-about-rule {
+	margin: 22px 0px 18px 0px;
+	height: 1px;
+	background-color: #cccccc;
+}
+
+/* The name grid. inline-block cells rather than CSS columns: predictable in
+ * this WebKit, and it reflows on its own between portrait and landscape. */
+#ce-about-credits {
+	margin: 0px 0px 0px 20px;
+}
+
+.ce-credit {
+	display: inline-block;
+	width: 32%;
+	min-width: 180px;
+	padding: 3px 0px;
+	font-size: 16px;
+	line-height: 22px;
+	vertical-align: top;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ce-credit-code {
+	font-weight: bold;
+	color: #222222;
+}

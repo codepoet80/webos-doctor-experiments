@@ -1,0 +1,162 @@
+/* Copyright 2011 Palm, Inc. All rights reserved.
+ * Copyright 2025 woce-backup contributors.
+ *
+ * The layout rules are carried over from the stock BackupApp.css so the main
+ * screen looks like the one that shipped; the rest style the screens the stock
+ * app did not have.
+ */
+
+.box-center {
+	width: 500px;
+	margin: 23px auto 0;
+}
+
+.header-welcome {
+	display: -webkit-box;
+	-webkit-box-align: center;
+	-webkit-box-pack: center;
+}
+
+.box {
+	width: 496px;
+	font-size: .9rem;
+	line-height: 1.3;
+	text-align: left;
+	color: #333;
+	-webkit-border-image: url(../images/bg_box.png) 12 repeat;
+	-webkit-box-sizing: border-box;
+	margin: 3px auto 5px auto;
+	padding: 1px;
+	border-width: 12px;
+}
+
+.backup-info-text {
+	font-size: .85rem;
+	line-height: 1.4;
+}
+
+.backup-info-text a {
+	color: #54595d;
+	text-decoration: underline;
+}
+
+/* Limited-mode notice — amber rather than red: the backup still runs, it is
+   just not complete, and a red banner would read as a failure. */
+.limited-box {
+	color: #7a5200;
+}
+
+.limited-title {
+	font-weight: bold;
+	font-size: .85rem;
+	padding-bottom: 4px;
+}
+
+.info-text {
+	color: #676767;
+	font-size: .8rem;
+	line-height: 1.2rem;
+	vertical-align: middle;
+	padding-left: 10px;
+}
+
+/* Backup list and restore picker */
+
+.list-location {
+	color: #676767;
+	font-size: .8rem;
+	text-align: center;
+	padding: 10px;
+}
+
+.list-empty {
+	color: #676767;
+	font-size: .9rem;
+	text-align: center;
+	padding: 40px 20px;
+}
+
+.backup-date {
+	font-size: .95rem;
+	line-height: 1.3rem;
+}
+
+.backup-detail,
+.category-detail {
+	color: #676767;
+	font-size: .75rem;
+	line-height: 1.1rem;
+}
+
+.backup-size {
+	color: #676767;
+	font-size: .8rem;
+	padding-left: 10px;
+}
+
+.device-image {
+	max-height: 48px;
+	max-width: 48px;
+	margin-left: 10px;
+}
+
+/* Target picker rows */
+
+.target-name {
+	font-size: .95rem;
+	line-height: 1.3rem;
+}
+
+.target-description {
+	color: #676767;
+	font-size: .75rem;
+	line-height: 1.1rem;
+	/* Paths can be long; wrap rather than overflow the dialog. */
+	word-wrap: break-word;
+}
+
+.target-check {
+	color: #3a7bd5;
+	font-size: 1.2rem;
+	padding-left: 10px;
+}
+
+/* Restore flow */
+
+.restore .title {
+	font-size: 1.4rem;
+	text-align: center;
+	padding: 20px 20px 6px;
+}
+
+.restore .subtitle {
+	color: #676767;
+	font-size: .85rem;
+	line-height: 1.3;
+	text-align: center;
+	padding: 0 20px 12px;
+}
+
+.restore-progress {
+	margin: 10px 0;
+}
+
+.manual-install-list {
+	width: 100%;
+}
+
+.manual-install-name {
+	font-size: .95rem;
+	line-height: 1.3rem;
+	padding: 8px 20px;
+}
+
+.manual-install-arrow {
+	color: #3a7bd5;
+	font-size: 1.2rem;
+	padding-right: 10px;
+}
+
+.popup {
+	width: 420px;
+}

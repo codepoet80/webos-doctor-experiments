@@ -11,51 +11,5 @@ start on first-use-finished
 console none
 
 script
-    [ -f /var/luna/preferences/ran-first-use ] || exit 0
-    BASE=/usr/palm/ce-patches/lang
-    [ -d "$BASE" ] || exit 0
-    LCODE=""
-    i=0
-    while [ $i -lt 12 ]; do
-        R=$(luna-send -n 1 palm://com.palm.systemservice/getPreferences '{"keys":["locale"]}' 2>/dev/null) || true
-        LCODE=$(echo "$R" | sed -n 's/.*"languageCode"[^"]*"\([a-zA-Z]*\)".*/\1/p')
-        if [ -n "$LCODE" ]; then break; fi
-        sleep 5; i=$((i+1))
-    done
-    [ -n "$LCODE" ] || exit 0
-    SRC="$BASE/$LCODE"
-    if [ ! -d "$SRC" ]; then SRC="$BASE/en"; fi
-    changed=0
-    cd "$SRC"
-    for f in $(find . -type f); do
-        rel=${f#./}
-        if ! cmp -s "$f" "/$rel"; then
-            mount -o remount,rw / 2>/dev/null || true
-            # only claim a change if the copy actually landed: setting
-            # changed=1 unconditionally restarts LunaSysMgr, and if the
-            # copy keeps failing the compare keeps differing -- a Luna
-            # restart loop on every single boot.
-            if cp "$f" "/$rel" && cmp -s "$f" "/$rel"; then
-                changed=1
-            else
-                echo "$(date 2>/dev/null) FAILED to patch /$rel" \
-                    >> /var/log/ce-language-patches.log 2>/dev/null
-            fi
-        fi
-    done
-    if [ $changed -eq 1 ]; then
-        mount -o remount,ro / 2>/dev/null || true
-        # the UI loaded the old file this boot — one restart picks it up.
-        # NOT at first-use completion though: LunaSysMgr is already
-        # respawning out of OOBE right then, and bouncing it into that
-        # window is how the launcher comes up empty. The per-boot trigger
-        # picks it up on the next ordinary boot instead.
-        if [ "$UPSTART_EVENT" = "first-use-finished" ]; then
-            echo "$(date 2>/dev/null) patched at first-use; deferring Luna restart" \
-                >> /var/log/ce-language-patches.log 2>/dev/null
-        else
-            stop LunaSysMgr 2>/dev/null || true
-            start LunaSysMgr 2>/dev/null || true
-        fi
-    fi
+    exec sh -e /usr/palm/ce-seed/jobs/ce-language-patches.sh
 end script

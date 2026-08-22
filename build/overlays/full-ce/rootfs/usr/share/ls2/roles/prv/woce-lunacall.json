@@ -1,0 +1,20 @@
+{
+    "role": {
+        "exeName": "/usr/bin/woce-lunacall",
+        "type": "privileged",
+        "allowedNames": [
+            "com.palm.backup.privileged"
+        ]
+    },
+    "permissions": [
+        {
+            "service": "com.palm.backup.privileged",
+            "inbound": [
+                "*"
+            ],
+            "outbound": [
+                "*"
+            ]
+        }
+    ]
+}

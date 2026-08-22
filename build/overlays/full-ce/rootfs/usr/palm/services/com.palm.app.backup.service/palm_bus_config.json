@@ -1,0 +1,4 @@
+{
+	"busNames": ["", "com.palm.app.backup.service"],
+	"privateBusAccess": true
+}

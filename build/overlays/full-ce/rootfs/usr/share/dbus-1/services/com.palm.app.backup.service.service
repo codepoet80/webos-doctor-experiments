@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=com.palm.app.backup.service
+Exec=/usr/bin/run-js-service-nofork -n /usr/palm/services/com.palm.app.backup.service

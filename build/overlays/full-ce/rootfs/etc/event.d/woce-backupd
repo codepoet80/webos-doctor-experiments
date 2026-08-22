@@ -1,0 +1,19 @@
+# /etc/event.d/woce-backupd
+#
+# The privileged half of woce-backup. Starts with Luna so it is up before the
+# backup service can be launched by the app, and stops with it.
+
+description "woce-backup privileged helper"
+
+# started LunaSysMgr, not "started luna" — there is no `luna` job on the device,
+# so the original event never fired and the daemon only ever ran because
+# postinst started it by hand. It stayed down across every reboot.
+# CustomizationService, pubsubservice and firstuse-createDefaultAccount all use
+# this same event.
+start on started LunaSysMgr
+stop on stopping LunaSysMgr
+
+respawn
+respawn limit 5 30
+
+exec /usr/palm/nodejs/node /usr/bin/woce-backupd.js

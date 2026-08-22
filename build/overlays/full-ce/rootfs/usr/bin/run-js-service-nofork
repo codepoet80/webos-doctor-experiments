@@ -7,7 +7,8 @@ timeouts=on
 heap_size=0	# 0 means use default
 
 # webOS CE: the fork server is deliberately DISABLED in this copy.
-# Only com.palm.accountservices launches through it (see bake.py).
+# Used by com.palm.accountservices and com.palm.app.backup.service
+# (see bake.py); every other JS service still uses run-js-service.
 fork=off
 
 # Jail master switch overrides the other jail switches- if

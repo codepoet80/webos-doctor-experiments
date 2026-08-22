@@ -4,10 +4,13 @@
 automated half first and work the `[Human]` list from what it leaves.
 
 ```
-Build under test:  BUILDMARK 600037  jar webosdoctorp305hstnh-3.1CE-600037.jar
-                   sha256 b92de9f778f4eac227d59c724d19a0b7f0c913d1b2aee50b34f903a922b02f4f
-                   NOT a release candidate — one more change due before RC.
-Lineage:           [x] CE -> CE      [ ] stock 3.0.5 -> CE
+Build under test:  BUILDMARK 600055  jar webosdoctorp305hstnh-3.1CE-600055.jar
+                   sha256 d1bc6084faddfdf3daaa0ae362d31c8f9a400debd3e67b4f568404d72a20d183
+                   NOT yet flashed. 600052 — same content bar the derived
+                   de-shadow list and the seed-log text — ran 81 PASS / 0 FAIL /
+                   0 WARN (scripts/results-600052.txt). Re-run on 600055 and
+                   work the Human list below.
+Lineage:           [x] CE -> CE      [x] stock 3.0.5 -> CE (restore tested on 600050)
 ```
 
 Legend: `[ ]` not yet run · `[Pass]` · `[Fail]` · `[Human]` needs eyes/hands ·
@@ -31,14 +34,19 @@ section below. Run it, mark those items from its output, then work the `[Human]`
 list. Do not run it before first use finishes: preloads install during first use
 and will read as failures while merely pending.
 
-Previous runs: `scripts/results-600029.txt`, `scripts/results-600014.txt`.
+Previous runs: `scripts/results-600052.txt`, `scripts/results-600029.txt`,
+`scripts/results-600014.txt`.
 
 ---
 
 ## 0. Luna Restart
 
 - [Pass] `ipkgservice` upstart-resident (`(start) running`) — *automated*
-- [Human] **Full reboot, then tap Luna Restart from the power menu.**
+- [Pass] **Luna Restart after a full reboot** — verified on 600052: clean
+      stop/start cycle, and 0 crashes / 0 SEGV / 0 respawn-thrash across it.
+      This is the case that failed on 600042/600049/600050; see the PmWanDaemon
+      gate in `docs/4G-TOUCHPAD.md`.
+- [Human] **Repeat from the power menu by hand.**
   Healthy: `killed by HUP` → `respawning` → `post-stop -> starting` → `running`,
   then `LunaSysMgr-ready` ~26s later.
   If it freezes, capture BEFORE rebooting:
@@ -117,7 +125,10 @@ stop/starting the job.
 ## 6. Preware / Govnah / status seeding
 
 - [Pass] ipkgservice answers — *automated*
-- [Fail] One well-formed stanza each: preware, govnah, synergy generic — *automated*
+- [Pass] One well-formed stanza each — *automated*. 600052 seeds **11**:
+      preware, govnah, synergy generic, backup, and the 7 patch packages whose
+      effects CE bakes (browser/downloadmgr/luna/mail/curl-tls13, rootcertsupdate,
+      ntpdate-sync, notifications-advanced-reset-options) so a 3.0.5 restore skips them
       **600037: preware=1 (correct, from its preload install) but govnah=0 and
       synergy=0.** Regression from moving Preware to a preload: `kick_ipkg` in
       ce-cryptofs-seed was gated on `[ ! -f arch.conf ]`, which was always true
@@ -242,6 +253,118 @@ starts clean:
 2. The launcher caches the provider list at LunaSysMgr start, so restart Luna
    *after* the search service, or the "Search X" row keeps the old name.
 3. The Search Preferences app caches too — close the card, do not just relaunch.
+
+## 14. Backup and Restore — woce-backup  *(new in 600038; app rules reworked in 600039)*
+
+Replaces the stock Backup app, which could never work: it was a UI over
+`com.palm.service.backup`, and that uploaded to Palm's servers.
+
+Everything below except the last three lines was **verified on the 600037
+device** with the tier's exact output pushed in and the device rebooted, which
+is the closest stand-in for a first boot (the point of baking the grants is that
+`ls-hubd` and `mojodb-luna` read them at *their* startup, not on install).
+
+- [Pass] Helper starts with Luna and finds both grants already baked —
+  `/var/log/woce-backupd.log` says *"lunacall role is baked into the image;
+  nothing to write"* and *"db8 admin grant already in place"*
+- [Pass] It writes **nothing** to `/var/palm/ls2/roles/prv/` (a second role
+  claiming `com.palm.backup.privileged` makes ls-hubd drop *both* grants), and
+  no `/etc/palm/mojodb.conf.woce-backup-orig` appears
+- [Pass] `getBackupStatus` reports `privileged: true` (helper reachable — the
+  app shows an amber limited-mode notice when it is not)
+- [Pass] `woce-lunacall -m com.palm.backup.privileged` reaches
+  `com.palm.db/internal/preBackup`; the same call as plain `luna-send` is denied
+- [Pass] Full backup completes: 24.5 MB, `skipped: []`, 19 packages archived
+- [Pass] `listBackups` / `getRestoreDevices` / `getLastBackupTime` all answer
+- [Pass] `deleteBackup` purges by reference count — 52 files → 32, 48.7 → 24.5 MB,
+  the surviving backup intact
+- [Pass] App UI renders with the real state (destination, "Settings and data",
+  "2 backups") and **no** limited-mode notice
+- [Human] **Restore** — deliberately not run on a live device (it rewrites db8
+  and preferences and then reboots). Run it on the flashed image.
+- [Human] Backup from the app's own button, not just over the bus
+- [Human] Non-English device: the app is English-only, and the stock localized
+  `resources/<locale>/appinfo.json` files are removed with the rest of the stock
+  app, so the launcher tile now reads "Backup" rather than e.g. "Sicherung"
+
+**Watch for:** two role/permission shapes are load-bearing and both failed loudly
+when wrong. `outbound: []` on the private role (the shape `Triton.prv` generates
+for a cryptofs install) blocks `com.palm.activitymanager` and the service stops
+answering entirely — even `getBackupStatus` hangs. And without
+`com.palm.app.backup.service` in `mojodb.conf`'s admin list, `preBackup` returns
+`db: access denied`, which is *not* one of the errors that makes the service
+retry through the helper, so the backup dies on its first step.
+
+### 600039: what counts as the user's app
+
+600038's restore worked but put back the wrong set, because the app decided
+ownership by NAME (`com.palm.*` = system). Measured against a real manifest that
+was wrong both ways: it skipped `com.palm.app.codepoet.simplechat`, a community
+app that borrows the prefix, and archived + restored 11.7MB of QuickOffice that
+every image already ships. It now asks the image what it provides instead —
+baked under `/usr/palm/applications`, staged as a preload under
+`/usr/palm/ipkgs`, or an ipkg entry with no cryptofs footprint at all (how CE's
+Synergy stanza looks).
+
+Verified on the 600038 device by driving the helper's job protocol directly —
+the test suite stubs `privileged.*`, so none of its ops are covered off-device:
+
+- [Pass] `listInstalledApps` reports 19 installed / 59 image-provided, and the
+  only thing it would back up is what the user actually installed
+- [Pass] A package's archive now carries its **service**: QuickOffice came out as
+  `usr/palm/applications/…`, `usr/palm/packages/…` **and**
+  `usr/palm/services/com.quickoffice.webos.service` (8 files). Previously only
+  the app bundle was captured, which is why restored Tweaks launched and did
+  nothing — its service was never in the backup.
+- [Pass] Restore accepts an app+service archive and lands both
+- [Pass] Restore **rejects** a `..` traversal member — nothing written to `/etc`
+- [Pass] Restore **rejects** a member outside `OWNED_SUBTREES`
+- [Pass] Legacy `<id>/…` archives (written by 600038) still restore
+- [Pass] An app restored by the directory fallback has no ipkg record, and is now
+  still seen as installed via its `appinfo.json` and marked `unmanaged` — without
+  that it silently drops out of every later backup
+- [Human] The full 3.0.5 → 3.1.0 path: back up on stock 3.0.5, flash, restore
+
+**Watch for:** pushing the *upstream* `woce-backupd.js` to a CE device instead of
+bake.py's patched copy makes it write `/var/palm/ls2/roles/prv/woce-lunacall.json`
+— the duplicate role that drops both grants on next boot. Hit exactly once during
+this work. Check that file is absent after any manual helper push.
+
+### 600052: what the first real 3.0.5 -> CE restore found
+
+Verified on hardware with a 115-package backup from a daily driver:
+
+- [Pass] Receipt classifies every package and names them properly — "Hot Pursuit",
+  "DRIVER HD", not "This is a webOS application."
+- [Pass] `installed 97 / failed 5 / not-captured 1 / image-provided 12 /
+  servicesRegistered 11`
+- [Pass] The 8 TLS/rootcerts/ntpdate packages skipped as `image-provided`:
+  **nothing littered into cryptofs, nothing overwritten in `/usr`**
+- [Pass] 11 restored services reachable on the bus after reboot (`-P`, look for
+  `Unknown method`, NOT `Service does not exist`)
+
+Two bugs the receipt exposed, both fixed in 600052:
+
+- **Launcher files must end in `.service`.** Named after the bus name verbatim,
+  only the 5 whose names already ended that way were visible; 6 including Tweaks
+  were silently absent. Renaming took it from 5/11 to 11/11.
+- **`maxBuffer exceeded`, not a timeout.** The `tar tzf` validation pass read
+  stdout through node 0.2's `exec` (200KB cap); a game's tarball lists tens of
+  thousands of paths, so Tiger Woods, Driver HD, Sandstorm and Atlas failed at
+  the LISTING stage. Listing now goes via a file.
+
+**Still open:** two Preware patches CE does not bake (`calendar-default-to-week-view`,
+`photos-show-filenames`) restore as inert payload dirs — their postinst never runs,
+so they are clutter rather than applied patches.
+
+---
+
+**Dedup note:** a second identical backup did **not** halve the store (48.7 MB for
+two). Content addressing is working — the delete purged only the 20 files unique
+to the first backup, so 12 were genuinely shared — but db8 dumps and app tarballs
+differ byte-for-byte between runs. That is upstream behaviour, not CE integration.
+
+---
 
 ---
 

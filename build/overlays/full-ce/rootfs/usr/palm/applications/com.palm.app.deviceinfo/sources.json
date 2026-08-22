@@ -1,0 +1,44 @@
+[{
+    "source": "app\/models\/appManager-luna-service.js"
+}, {
+    "source": "app\/models\/btservice-luna-service.js"
+}, {
+    "source": "app\/models\/erase-luna-service.js"
+}, {
+    "source": "app\/models\/properties-luna-service.js"
+}, {
+    "source": "app\/models\/systemService-luna-service.js"
+}, {
+    "source": "app\/models\/telephony-luna-service.js"
+}, {
+	"source": "app\/models\/accountService-luna-service.js"
+}, {
+    "source": "app\/controllers\/app-assistant.js"
+}, {
+    "source": "app\/controllers\/erase-assistant.js",
+    "scenes": "erase"    
+}, {
+    "source": "app\/controllers\/list-assistant.js",
+    "scenes": "list"    
+}, {
+    "source": "app\/controllers\/more-assistant.js",
+    "scenes": "more"    
+}, {
+    "source": "app\/controllers\/defaultapps-assistant.js",
+    "scenes": "defaultapps"    
+}, {
+    "source": "app\/controllers\/mimetype-assistant.js",
+    "scenes": "mimetype"    
+},
+{
+    "source": "app\/controllers\/app-delete-assistant.js"
+}, {
+    "source": "app\/controllers\/app-info-assistant.js"
+}, {
+    "source": "app\/controllers\/customapp-assistant.js",
+    "scenes": "customapp"    
+}, {
+    "source": "app\/controllers\/about-assistant.js",
+    "scenes": "about"    
+}]
+

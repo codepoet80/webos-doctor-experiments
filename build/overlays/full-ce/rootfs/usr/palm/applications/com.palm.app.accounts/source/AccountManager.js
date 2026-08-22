@@ -56,7 +56,9 @@ enyo.kind({
 					]},                                        
 					{kind: "Control", name: "synergyAccounts", components: [
 						// This is the one-line kind to get the list of accounts.  It is initialized in your create method below                                 
-						{kind: "Accounts.accountsList", name: "accountsList", grouped: true, groupTitle: $L("SYNERGY ACCOUNTS"), onAccountsList_AccountSelected: "editAccount", onAccountsList_Ready: "listReady"}
+						{kind: "RowGroup", className:"accounts-group", name: "synergyAccountGroup", caption: $L("SYNERGY ACCOUNTS"), components: [
+							{kind: "Accounts.accountsList", name: "accountsList", grouped: false, groupTitle: $L("SYNERGY ACCOUNTS"), onAccountsList_AccountSelected: "editAccount", onAccountsList_Ready: "listReady" }
+						]},
 					]},
 					{kind: "RowGroup", className:"accounts-group", name: "simAccountGroup", components: [
 						{kind: "Accounts.accountsList", name: "SIMAccountsList", onAccountsList_AccountSelected: "editAccount", onAccountsList_Ready: "listReady"}
