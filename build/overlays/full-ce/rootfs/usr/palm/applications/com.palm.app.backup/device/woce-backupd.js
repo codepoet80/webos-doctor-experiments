@@ -66,7 +66,7 @@ var exec = require('child_process').exec;
 // Rewritten by build.sh. Reported in the ping reply and logged by the
 // service, so "Root helper available, version X" says which daemon code is
 // actually live — upstart will not restart a running job on its own.
-var VERSION = "3.1.0+20260822-155953";
+var VERSION = "3.1.0+20260822-213315";
 
 var SERVICE_ID = "com.palm.app.backup.service";
 
@@ -1336,6 +1336,7 @@ ops.restoreAppDirectories = function (job, done) {
     var files = job.files || [];
     var restored = [];
     var failed = [];
+    var failureReasons = {};         // id -> why, for the restore receipt
     var servicesRegistered = [];     // ids whose service we had to register
 
     var quote = function (text) { return "'" + text.replace(/'/g, "'\\''") + "'"; };
@@ -1343,6 +1344,7 @@ ops.restoreAppDirectories = function (job, done) {
     var restoreNext = function (i) {
         if (i >= files.length) {
             return done({ returnValue: true, restored: restored, failed: failed,
+                          failureReasons: failureReasons,
                           servicesRegistered: servicesRegistered });
         }
 
@@ -1351,8 +1353,10 @@ ops.restoreAppDirectories = function (job, done) {
         var id = entry.id;
 
         var fail = function (why) {
-            log("directory restore failed for " + (id || "(unknown)") + ": " + why);
-            failed.push(id || "(unknown)");
+            var who = id || "(unknown)";
+            log("directory restore failed for " + who + ": " + why);
+            failed.push(who);
+            failureReasons[who] = why;
             restoreNext(i + 1);
         };
 
@@ -1360,6 +1364,65 @@ ops.restoreAppDirectories = function (job, done) {
                 tarPath.slice(-7) !== ".tar.gz" || !existsSync(tarPath)) {
             return fail("bad entry");
         }
+
+        /*
+         * Size every stage by the archive, do not guess it. A flat 120s on the
+         * extraction lost exactly the apps a restore exists for: NFS Hot
+         * Pursuit (427MB installed) and Driver HD (379MB) both died at 120s on
+         * a real restore while Sandstorm (261MB) and Tiger Woods (248MB) came
+         * through. A cutoff that falls between two archives written the same
+         * way is the signature of a fixed budget, not of a bad archive. The
+         * backup side was sized for this same reason and the restore side was
+         * missed; both are sized now.
+         *
+         * The rate comes from that run, not from an idle benchmark. Extraction
+         * moved 261MB of installed files inside 120s and 379MB did not, so
+         * throughput during a live restore is about 2.2MB/s of INSTALLED bytes.
+         *
+         * The awkward part: the cost is driven by the INSTALLED size, and the
+         * only thing cheap to measure here is the ARCHIVE. 3s per archive-MB
+         * assumes the ~2:1 a game compresses to. The floor is what covers the
+         * other end - a large, highly compressible app whose archive understates
+         * the bytes about to be written. At 600s every app size actually seen on
+         * a device (up to the 427MB game above) keeps at least a 3x margin even
+         * if it compressed 5:1; without the floor that same case falls to 1.5x.
+         * The ceiling still stops a genuinely wedged tar from hanging forever.
+         *
+         * These budgets must stay comfortably inside the phase wrapper in
+         * common.js (packageOpWrapperBudget), which is itself pinned to the
+         * bus's 7200s commandTimeout - see the note on PACKAGE_OP_TIMEOUT_MAX.
+         * Sizing a single package up is safe; raising that ceiling is not.
+         *
+         * Erring long is deliberate. A budget that is too generous costs a slow
+         * failure in a case that should not happen; one that is too tight
+         * silently drops the user's largest apps, which is the whole reason a
+         * restore was run.
+         */
+        var archiveStat = statOrNull(tarPath);
+        var archiveMb   = archiveStat
+                          ? Math.ceil(archiveStat.size / (1024 * 1024))
+                          : 0;
+        var listBudget    = Math.max(600000, Math.min(1800000, archiveMb * 3000));
+        var clearBudget   = Math.max(120000, Math.min(600000,  archiveMb * 500));
+        var extractBudget = Math.max(600000, Math.min(1800000, archiveMb * 3000));
+
+        /*
+         * exec()'s timeout kill arrives as an Error whose message is "Command
+         * failed:" with nothing after it - indistinguishable at a glance from a
+         * real tar error, which is why two timed-out games read as corrupt
+         * archives for a whole release cycle. Name the stage and say plainly
+         * whether the clock ran out. Each stage times itself: one shared start
+         * would charge the extraction for the listing that preceded it.
+         */
+        var execWhy = function (stage, error, startedAt, budget) {
+            var secs = Math.round((new Date().getTime() - startedAt) / 1000);
+            if (secs * 1000 >= budget - 2000) {
+                return stage + " timed out after " + secs + "s (budget " +
+                       Math.round(budget / 1000) + "s for a " + archiveMb +
+                       "MB archive)";
+            }
+            return stage + " failed after " + secs + "s: " + error.message;
+        };
 
         // maxBuffer, not timeout, is what kills this on a big app: node 0.2's
         // exec() buffers stdout in memory and defaults to 200KB, and a game's
@@ -1370,8 +1433,9 @@ ops.restoreAppDirectories = function (job, done) {
         // only ever scanned, never kept, so it goes to a file and is read back
         // in one go rather than buffered by the child-process plumbing.
         var listFile = tarPath + ".list";
+        var listStarted = new Date().getTime();
         exec("/bin/tar tzf " + quote(tarPath) + " > " + quote(listFile),
-            { timeout: 180000 },
+            { timeout: listBudget },
             function (listError) {
                 var listOut = "";
                 try {
@@ -1381,7 +1445,8 @@ ops.restoreAppDirectories = function (job, done) {
                 }
                 try { fs.unlinkSync(listFile); } catch (ignored) {}
                 if (listError) {
-                    return fail("could not read the archive: " + listError.message);
+                    return fail(execWhy("reading the archive", listError,
+                                        listStarted, listBudget));
                 }
 
                 var members = String(listOut || "").split("\n");
@@ -1428,20 +1493,28 @@ ops.restoreAppDirectories = function (job, done) {
                     }
                 }
 
-                exec("rm -rf " + clear.map(quote).join(" "), { timeout: 30000 },
+                var clearStarted = new Date().getTime();
+                exec("rm -rf " + clear.map(quote).join(" "), { timeout: clearBudget },
                     function (rmError) {
                         if (rmError) {
-                            return fail("could not clear " + clear.join(", ") + ": " +
-                                        rmError.message);
+                            return fail(execWhy("clearing " + clear.join(", "),
+                                                rmError, clearStarted, clearBudget));
                         }
+                        var extractStarted = new Date().getTime();
                         exec("/bin/tar xzf " + quote(tarPath) + " -C " + base,
-                            { timeout: 120000 },
+                            { timeout: extractBudget },
                             function (error) {
                                 if (error) {
-                                    return fail(error.message);
+                                    return fail(execWhy("extracting", error,
+                                                        extractStarted,
+                                                        extractBudget));
                                 }
-                                log("restored " + id + " into " + clear.length +
-                                    " path(s): " + clear.join(", "));
+                                log("restored " + id + " (" + archiveMb +
+                                    "MB archive) in " +
+                                    Math.round((new Date().getTime() -
+                                                extractStarted) / 1000) +
+                                    "s into " + clear.length + " path(s): " +
+                                    clear.join(", "));
                                 // Files alone leave a service invisible to the
                                 // hub; give back what the installer would have.
                                 var registered = [];

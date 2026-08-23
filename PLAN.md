@@ -55,14 +55,17 @@ check targets a dead Palm server).
 
 ## Status
 
-**Release candidate 2: BUILDMARK 600055** —
-`out/webosdoctorp305hstnh-3.1CE-600055.jar`, sha256 `d1bc6084…`.
-**Frozen**: no further changes unless a *critical* backup/restore issue turns up.
-600052 carried the same content bar three lines and passed the automated plan
-81/0/0; 600055 adds only the derived de-shadow list and a corrected seed log.
-Release is gated on a large-app 3.0.5 → CE restore.
-See **[RELEASE-NOTES.md](RELEASE-NOTES.md)** for what ships and
-**[TEST-PLAN.md](TEST-PLAN.md)** for the current verification run.
+**Release candidate 2: BUILDMARK 600056** —
+`out/webosdoctorp305hstnh-3.1CE-600056.jar`, sha256 `cea207df…`.
+600056 differs from 600055 in the backup package alone: the restore-side `tar`
+budgets are now sized by archive rather than fixed, which is what dropped the
+two largest apps on the 600055 restore. Everything else is byte-identical —
+verified by a full rootfs diff of the two JARs (9 files, all accounted for).
+Release is gated on re-running that large-app 3.0.5 → CE restore.
+See **[RELEASE-NOTES.md](RELEASE-NOTES.md)** for what ships,
+**[TEST-PLAN.md](TEST-PLAN.md)** for the current verification run, and
+**[KNOWN-ISSUES.md](KNOWN-ISSUES.md)** for everything reproduced but not yet
+solved — the first-boot ipkgservice race is the one to fix before final.
 
 The full CE Doctor is built, flash-tested and working on real `topaz` hardware.
 Every flash passes the on-device ROM Verifyer
@@ -99,7 +102,9 @@ only in `BUILDTIME`/`BUILDMARK`.
 ## Working artifacts
 
 - `webosdoctorp305hstnhwifi.jar` — the OEM 3.0.5 Doctor (the repack base; not in git).
-- `out/webosdoctorp305hstnh-3.1CE-600055.jar` — **release candidate 2**.
+- `out/webosdoctorp305hstnh-3.1CE-600056.jar` — **release candidate 2**.
+- `out/webosdoctorp305hstnh-3.1CE-600055.jar` — identical bar the restore
+  timeout fix; the build the 100/2 restore was measured on.
 - `out/webosdoctorp305hstnh-3.1CE-600052.jar` — the previously built candidate,
   identical bar the de-shadow list and seed-log text; kept as a fallback.
 - `out/webosdoctorp305hstnh-3.1CE-600024-rc.jar` — RC1, kept as a fallback.

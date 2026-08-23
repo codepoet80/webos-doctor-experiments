@@ -288,6 +288,7 @@ function RestoreAssistant() {
                 rf.result = {
                     installed: restoreResult.restored || [],
                     failed: fetchFailed.concat(restoreResult.failed || []),
+                    failureReasons: restoreResult.failureReasons || {},
                     servicesRegistered: restoreResult.servicesRegistered || []
                 };
             });
@@ -494,6 +495,7 @@ function RestoreAssistant() {
         var imageIds = {};               // baked or preloaded by the system image
         var receipt = null;              // built at the end, written to the target
         var serviceRegisteredIds = {};   // put back by directory fallback AND had a service
+        var restoreFailureReasons = {};  // id -> why the directory restore failed
 
         skipped = [];
 
@@ -659,6 +661,16 @@ function RestoreAssistant() {
             (result.servicesRegistered || []).forEach(function (id) {
                 serviceRegisteredIds[id] = true;
             });
+            // Same carry as serviceRegisteredIds above, and for the same
+            // reason: written here, in doRestore's own chain, because the
+            // function that produced it is a sibling and cannot reach this
+            // scope. withTimeout's fallback result has no reasons at all.
+            var reasons = result.failureReasons || {};
+            for (var failedId in reasons) {
+                if (reasons.hasOwnProperty(failedId)) {
+                    restoreFailureReasons[failedId] = reasons[failedId];
+                }
+            }
             packageOpTimedOut = packageOpTimedOut || (result.timedOut === true);
             progress(92);
 
@@ -757,6 +769,12 @@ function RestoreAssistant() {
                     version: pkg.version,
                     outcome: outcome
                 };
+                if (outcome === "failed" && restoreFailureReasons[pkg.id]) {
+                    // "failed" on its own sent a whole release cycle looking
+                    // for a corrupt archive when the real answer was a budget
+                    // that ran out. Put the reason where the user reads it.
+                    entry.note = restoreFailureReasons[pkg.id];
+                }
                 if (outcome === "not-captured" && pkg.archiveError) {
                     // Carry the backup-time reason forward: "not captured" on
                     // its own does not tell you whether the app was never

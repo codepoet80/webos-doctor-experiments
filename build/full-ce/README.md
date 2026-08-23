@@ -161,7 +161,7 @@ Tier order matters only for the ssl11 stack (browser first). Highlights:
   600042/600049/600050. They were not: they were the other jobs on that event.
   A `pre-start` gate applies the job's own radio test as a start condition, so
   with no modem it never reaches `running` and there is nothing to respawn; with
-  a modem it behaves exactly as stock. See `../../docs/4G-TOUCHPAD.md`.
+  a modem it behaves exactly as stock. See `../../4G-TOUCHPAD.md`.
 - **Job scripts live outside the job** — every `ce-*` body is written to
   `/usr/palm/ce-seed/jobs/<name>.sh` and the job becomes one `exec sh -e` line.
   This was added chasing the crash above and did **not** fix it (the cause was

@@ -286,6 +286,14 @@ var PACKAGE_OP_TIMEOUT_MIN  = 120000;
 // 106 packages with every large one FAILING at the old flat 120s. Now that
 // those actually run to completion the total is necessarily larger, and the
 // ceiling has to leave room for them or it just relocates the truncation.
+//
+// Do NOT raise this. doRestore spends it TWICE - once on installArchivedPackages
+// and again on installArchivedAppDirectories - so 60 minutes each is already the
+// whole 7200s commandTimeout the bus allows startBackup/restore (see
+// RESTORE_STUCK_MS). Past that the caller has given up and there is no receipt at
+// all, which is strictly worse than a truncated one. The per-package tar budgets
+// in woce-backupd size themselves and are the right place to give a large app
+// more room.
 var PACKAGE_OP_TIMEOUT_MAX  = 3600000;
 
 function packageOpBudget(count) {

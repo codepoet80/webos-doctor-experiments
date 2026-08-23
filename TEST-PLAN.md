@@ -4,13 +4,24 @@
 automated half first and work the `[Human]` list from what it leaves.
 
 ```
-Build under test:  BUILDMARK 600055  jar webosdoctorp305hstnh-3.1CE-600055.jar
-                   sha256 d1bc6084faddfdf3daaa0ae362d31c8f9a400debd3e67b4f568404d72a20d183
-                   Automated run 2026-08-22: 80 PASS / 1 WARN / 0 FAIL
-                   (scripts/results-600055.txt). The WARN is §0b's rdxd count:
-                   the script reports it as FAIL, marked WARN by judgement —
-                   see §0b. 64 Human items below still open.
-Lineage:           [x] CE -> CE      [x] stock 3.0.5 -> CE (restore tested on 600050)
+Build under test:  BUILDMARK 600056  jar webosdoctorp305hstnh-3.1CE-600056.jar
+                   sha256 cea207df818af710dec9349400b72a3a52bf046da9fbf63b7e7c6d645cc903f6
+                   Automated run 2026-08-22: 78 PASS / 3 FAIL / 0 WARN
+                   (scripts/results-600056.txt). The 3 FAILs are one race, not
+                   three faults. Preware's postinst OWNS
+                   /var/palm/event.d/org.webosinternals.ipkgservice; during the
+                   first-use preload pass it stops ipkgservice, rewrites that
+                   job file and starts it again. Upstart's inotify re-read
+                   caught the file partially written ("unable to read: Invalid
+                   argument", 01:49:38) so the start 25ms later had no valid
+                   job definition. imtransport wedged in the same window and
+                   still points at a dead pid; the synergy bind mount is
+                   downstream of that. Latent since Preware became a preload
+                   (c3eff2b, 600037) and FIRST OBSERVED here — 0 occurrences
+                   across 600033/37/52/55. First-boot only; the file is intact
+                   afterwards, so a reboot clears it. rdxd crashes: 0 — better
+                   than 600055's 1. 64 Human items below still open.
+Lineage:           [x] CE -> CE      [ ] stock 3.0.5 -> CE (restore pending)
 ```
 
 Legend: `[ ]` not yet run · `[Pass]` · `[Fail]` · `[Human]` needs eyes/hands ·
@@ -34,18 +45,15 @@ section below. Run it, mark those items from its output, then work the `[Human]`
 list. Do not run it before first use finishes: preloads install during first use
 and will read as failures while merely pending.
 
-Previous runs: `scripts/results-600052.txt`, `scripts/results-600029.txt`,
-`scripts/results-600014.txt`.
-
 ---
 
 ## 0. Luna Restart
 
-- [Pass] `ipkgservice` upstart-resident (`(start) running`) — *automated*
+- [Fail] `ipkgservice` upstart-resident (`(start) running`) — *automated*
 - [Human] **Luna Restart after a full reboot** — verified on 600052: clean
       stop/start cycle, and 0 crashes / 0 SEGV / 0 respawn-thrash across it.
       This is the case that failed on 600042/600049/600050; see the PmWanDaemon
-      gate in `docs/4G-TOUCHPAD.md`.
+      gate in `4G-TOUCHPAD.md`.
 - [Human] **Repeat from the power menu by hand.**
   Healthy: `killed by HUP` → `respawning` → `post-stop -> starting` → `running`,
   then `LunaSysMgr-ready` ~26s later.
@@ -69,8 +77,11 @@ grep -c "killed by HUP" /var/log/messages; tail -60 /var/log/messages
       daemon "just died": it may have died normally and simply not been restarted.
       (An rdxd report whose component is `upstart` is usually that core-dumper
       child working as designed — not an upstart bug.)
-- [Warn] **rdxd crash reports → 1 (LunaSysMgr)** — *automated; the script says
-      FAIL, downgraded here by judgement*. The minimal-mode firstuse instance
+- [Pass] **rdxd crash reports → 0 on 600056.** The OOBE-teardown SIGSEGV below
+      did NOT recur on this flash — the first clean OOBE of the 3.1 cycle. Kept
+      here because one clean run does not retire a race; re-check next flash.
+      *Historic (600052/600055): 1 report, script says FAIL, downgraded by
+      judgement*. The minimal-mode firstuse instance
       (`LunaSysMgr -s -u minimal -a com.palm.app.firstuse`) faulted in its
       `PrvLogThread` on a freed GLib async queue while tearing down at OOBE
       handoff: a process that was exiting anyway, on a path that runs once per
@@ -122,8 +133,11 @@ stop/starting the job.
 
 ## 5. Synergy generic runtime
 
-- [Pass] synergy glibc + runtime dirs; bind mount live — *automated*
-- [Pass] `imtransport` running (pid = `/usr/bin/imlibpurpletransport`) — *automated*
+- [Fail] synergy glibc + runtime dirs; bind mount live — *automated*. Dirs and
+      the interpreter are present; the **bind mount is missing** and
+      `imtransport` is wedged in pre-start. Same root cause as §0's
+      ipkgservice failure — see the note at the end of this section.
+- [Fail] `imtransport` running (pid = `/usr/bin/imlibpurpletransport`) — *automated*
 - [Pass] cloud-auth present; docviewer absent (intentional) — *automated*
 - [Pass] Retired accounts (skype/yahoo) gone — *automated*
 - [Pass] gst WebM/Opus plugins 6/6 — *automated*

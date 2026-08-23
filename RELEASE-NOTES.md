@@ -1,8 +1,8 @@
 # webOS CE 3.1.0 — Release Notes
 
-**Release candidate 2: BUILDMARK 600055** (2026-08-22)
-`out/webosdoctorp305hstnh-3.1CE-600055.jar`
-sha256 `d1bc6084faddfdf3daaa0ae362d31c8f9a400debd3e67b4f568404d72a20d183`
+**Release candidate 2: BUILDMARK 600056** (2026-08-22)
+`out/webosdoctorp305hstnh-3.1CE-600056.jar`
+sha256 `cea207df818af710dec9349400b72a3a52bf046da9fbf63b7e7c6d645cc903f6`
 
 *(RC1 was BUILDMARK 600024, 2026-08-18, sha256 `ec30762f…`.)*
 
@@ -50,14 +50,21 @@ login on ordinary Wi-Fi).
 
 ---
 
-## New in RC2 (600055)
+## New in RC2 (600056)
 
 **Backup and Restore actually works.** The stock Backup app was a UI over Palm's
 retired servers; it is replaced by an on-device backup writing content-addressed
 backups to `/media/internal/webos-backups`, and it is the supported way to carry
 data from webOS 3.0.5 onto CE. Verified end to end: a 115-package backup from a
-3.0.5 device restored onto CE with 97 apps reinstalled, their services
-registered, and a receipt naming everything it could not put back and why.
+3.0.5 device restored onto CE with 100 apps reinstalled, all 11 of their
+services registered and reachable on the bus after the reboot, and a receipt
+naming everything it could not put back and why.
+
+Backup is a **best-effort** feature. Two apps over 350MB were dropped by a
+fixed extraction timeout on that run; 600056 sizes every restore stage by the
+archive it is handling, and records the reason in the receipt when a stage does
+run out of time. See `BACKUP-RESTORE.md` before moving a backup between
+devices — the manifest has to travel with it.
 
 **Accounts** — the Settings → Accounts list shows a single SYNERGY ACCOUNTS
 group again, rather than groups nested inside a group.
@@ -66,7 +73,7 @@ group again, rather than groups nested inside a group.
 respawn-thrashed until upstart stopped it, and jobs starting in that same moment
 died with SIGSEGV. Harmless in effect — the affected jobs had already done their
 work — but it produced a crash report on every boot and every Luna Restart. See
-`docs/4G-TOUCHPAD.md`.
+`4G-TOUCHPAD.md`.
 
 **Preware reports CE's baked packages honestly**, including the TLS and
 root-certificate updates, so it no longer offers them as fresh installs and a
@@ -94,6 +101,16 @@ root-certificate updates, so it no longer offers them as fresh installs and a
 
 ## Known issues
 
+Full detail, with evidence and what a fix would have to do, is in
+**[KNOWN-ISSUES.md](KNOWN-ISSUES.md)**. The ones a tester will actually meet:
+
+- **Preware may not work until you reboot once after setup.** On roughly one
+  boot in six, the package-manager service is left wedged by a first-use race.
+  A reboot fixes it permanently. Until you reboot, avoid *Luna Restart* from
+  the power menu — it can hang in this state.
+- **Restoring a backup taken on another device?** Clear the manifest cache
+  first — see `BACKUP-RESTORE.md`. Backup names are not unique across devices
+  and a stale one will shadow the real backup.
 - **No post-setup account manager yet.** The sign-in app is first-use only in
   this build; managing your account afterwards will come as a separate App
   Catalog app.
