@@ -41,12 +41,12 @@ Previous runs: `scripts/results-600052.txt`, `scripts/results-600029.txt`,
 
 ## 0. Luna Restart
 
-- [Pass] `ipkgservice` upstart-resident (`(start) running`) — *automated*
-- [Pass] **Luna Restart after a full reboot** — verified on 600052: clean
+- [ ] `ipkgservice` upstart-resident (`(start) running`) — *automated*
+- [ ] **Luna Restart after a full reboot** — verified on 600052: clean
       stop/start cycle, and 0 crashes / 0 SEGV / 0 respawn-thrash across it.
       This is the case that failed on 600042/600049/600050; see the PmWanDaemon
       gate in `docs/4G-TOUCHPAD.md`.
-- [Human] **Repeat from the power menu by hand.**
+- [ ] **Repeat from the power menu by hand.**
   Healthy: `killed by HUP` → `respawning` → `post-stop -> starting` → `running`,
   then `LunaSysMgr-ready` ~26s later.
   If it freezes, capture BEFORE rebooting:
@@ -59,9 +59,9 @@ grep -c "killed by HUP" /var/log/messages; tail -60 /var/log/messages
 
 ## 0b. Regression watch — respawn storm
 
-- [Pass] `ipkgservice main process ended, respawning` → 0 — *automated*
-- [Pass] `respawning too fast` (ipkgservice) → 0 — *automated*
-- [Pass] **upstart never crashed + re-exec'd** — *automated*
+- [ ] `ipkgservice main process ended, respawning` → 0 — *automated*
+- [ ] `respawning too fast` (ipkgservice) → 0 — *automated*
+- [ ] **upstart never crashed + re-exec'd** — *automated*
       `grep -E "Caught .*(segmentation fault|core dumped)|Failed to re-execute" /var/log/messages`
       A hit means upstart took a fatal signal, dumped core via a forked child and
       `execl`'d itself — which **loses its job table**, so `respawn` silently stops
@@ -69,10 +69,10 @@ grep -c "killed by HUP" /var/log/messages; tail -60 /var/log/messages
       daemon "just died": it may have died normally and simply not been restarted.
       (An rdxd report whose component is `upstart` is usually that core-dumper
       child working as designed — not an upstart bug.)
-- [Pass] **rdxd crash reports → 0**, listed by component — *automated*
+- [ ] **rdxd crash reports → 0**, listed by component — *automated*
       The `/var/log/crash*` count in §8 does **not** see these; every crash found
       during 600029–600033 triage was an rdxd report.
-- [Pass] **LunaDownloadMgr running**, is the patched build, `Restarting glibcurl` → 0,
+- [ ] **LunaDownloadMgr running**, is the patched build, `Restarting glibcurl` → 0,
       no SEGV this boot — *automated*
       It also hosts `com.palm.appInstallService`, so if it dies the **App Catalog
       cannot fetch anything**. Recover with `start LunaDownloadMgr`.
@@ -82,50 +82,50 @@ stop/starting the job.
 
 ## 1. First-boot seeding
 
-- [Pass] Cryptofs seed flag set; `seed verified complete` — *automated*
-- [Pass] All once-per-flash flags present — *automated*
-- [Pass] Preware feeds seeded — *automated*
+- [ ] Cryptofs seed flag set; `seed verified complete` — *automated*
+- [ ] All once-per-flash flags present — *automated*
+- [ ] Preware feeds seeded — *automated*
 
 ## 2. Ten-minute smoke test
 
-- [Human] Launcher comes up; tabs are APPS / GAMES / SETTINGS / DOWNLOADS
-- [Human] Open App Catalog, browse, install one app end-to-end
-- [Human] Browser loads a modern-HTTPS site
-- [Human] Wi-Fi reconnects after a reboot
+- [ ] Launcher comes up; tabs are APPS / GAMES / SETTINGS / DOWNLOADS
+- [ ] Open App Catalog, browse, install one app end-to-end
+- [ ] Browser loads a modern-HTTPS site
+- [ ] Wi-Fi reconnects after a reboot
 
 ## 3. OOBE (first boot)
 
-- [Human] Card order: language → terms → sign-in → name device
-- [Human] Terms card loads community terms over HTTPS
-- [Human] Sign-in **and** Skip Account Setup (skip → profile named "webOS User")
-- [Human] Finishes **without a reboot**; launcher comes up
-- [Human] Non-English OOBE run (localization)
-- [Human] No spurious hotspot prompt on a normal home network
+- [ ] Card order: language → terms → sign-in → name device
+- [ ] Terms card loads community terms over HTTPS
+- [ ] Sign-in **and** Skip Account Setup (skip → profile named "webOS User")
+- [ ] Finishes **without a reboot**; launcher comes up
+- [ ] Non-English OOBE run (localization)
+- [ ] No spurious hotspot prompt on a normal home network
 
 ## 4. Core-apps suite
 
-- [Pass] contacts / messaging / phone / accounts baked and **unshadowed** — *automated*
-- [Pass] db8 healthy — `com.palm.person:1` answers — *automated*
-- [Human] Messaging launches; new-conversation UI works
-- [Human] Contacts launches
-- [Human] Settings → Accounts shows the SYNERGY ACCOUNTS grouping
-- [Human] Email sync against a real account
+- [ ] contacts / messaging / phone / accounts baked and **unshadowed** — *automated*
+- [ ] db8 healthy — `com.palm.person:1` answers — *automated*
+- [ ] Messaging launches; new-conversation UI works
+- [ ] Contacts launches
+- [ ] Settings → Accounts shows the SYNERGY ACCOUNTS grouping
+- [ ] Email sync against a real account
 
 ## 5. Synergy generic runtime
 
-- [Pass] synergy glibc + runtime dirs; bind mount live — *automated*
-- [Pass] `imtransport` running (pid = `/usr/bin/imlibpurpletransport`) — *automated*
-- [Pass] cloud-auth present; docviewer absent (intentional) — *automated*
-- [Pass] Retired accounts (skype/yahoo) gone — *automated*
-- [Pass] gst WebM/Opus plugins 6/6 — *automated*
-- [Pass] QuickOffice ×2 + Photos installed; synergy patch markers present — *automated*
-- [Human] QuickOffice remote-files UI opens; Photos app opens
-- [Human] An IM account actually connects
+- [ ] synergy glibc + runtime dirs; bind mount live — *automated*
+- [ ] `imtransport` running (pid = `/usr/bin/imlibpurpletransport`) — *automated*
+- [ ] cloud-auth present; docviewer absent (intentional) — *automated*
+- [ ] Retired accounts (skype/yahoo) gone — *automated*
+- [ ] gst WebM/Opus plugins 6/6 — *automated*
+- [ ] QuickOffice ×2 + Photos installed; synergy patch markers present — *automated*
+- [ ] QuickOffice remote-files UI opens; Photos app opens
+- [ ] An IM account actually connects
 
 ## 6. Preware / Govnah / status seeding
 
-- [Pass] ipkgservice answers — *automated*
-- [Pass] One well-formed stanza each — *automated*. 600052 seeds **11**:
+- [ ] ipkgservice answers — *automated*
+- [ ] One well-formed stanza each — *automated*. 600052 seeds **11**:
       preware, govnah, synergy generic, backup, and the 7 patch packages whose
       effects CE bakes (browser/downloadmgr/luna/mail/curl-tls13, rootcertsupdate,
       ntpdate-sync, notifications-advanced-reset-options) so a 3.0.5 restore skips them
@@ -138,53 +138,53 @@ stop/starting the job.
       offers Govnah and Synergy Revival as fresh installs (confirmed on-device).
       FIXED in bake.py for the next build — gate now also fires when either stanza
       is missing; preware-seed.sh is idempotent so re-running is safe.
-- [Pass] USB Settings / BT Gamepad absent from ipkg status — *automated*
-- [Pass] `webos-patches` / `webos-kernels` ship **disabled** — *automated*
-- [Pass] **no static ipk entry** in command-resource-handlers.json — *automated*
+- [ ] USB Settings / BT Gamepad absent from ipkg status — *automated*
+- [ ] `webos-patches` / `webos-kernels` ship **disabled** — *automated*
+- [ ] **no static ipk entry** in command-resource-handlers.json — *automated*
       A static entry is always registered `streamable:false`, which BREAKS the
       browser handoff and dedupes the runtime call that would fix it. Its absence
       is the correct state.
-- [Pass] **`.ipk` resolves to Preware AND is streamable** — *automated*
+- [ ] **`.ipk` resolves to Preware AND is streamable** — *automated*
       Asks LunaSysMgr (`getResourceInfo`) rather than grepping a file; the browser
       only hands a `.ipk` URL to the handler when `canStream` is true.
-- [Pass] `ce-register-ipk-handler` ran and verified — *automated*
-- [Human] Install a real package via Preware (e.g. Tweaks)
-- [Human] Open a `.ipk` link in the **browser** — it should open Preware, not
+- [ ] `ce-register-ipk-handler` ran and verified — *automated*
+- [ ] Install a real package via Preware (e.g. Tweaks)
+- [ ] Open a `.ipk` link in the **browser** — it should open Preware, not
   just download. (Fixed in 600037; confirmed working on-device.)
 
 ## 7. CE platform tweaks
 
-- [Pass] `turnOnNovacomAtStart=true`; keyboard defaults small — *automated*
-- [Pass] Version-prefix patch — zero `"HP webOS "` in LunaSysMgr — *automated*
-- [Human] Device Info shows webOS CE 3.1.0
-- [Human] Developer-mode toggle survives an off/on cycle
-- [Human] Tweaks installs; LunaCE toggles appear and at least one works
-- [Human] Captive-portal network → portal page loads from the archive-pointed webview
+- [ ] `turnOnNovacomAtStart=true`; keyboard defaults small — *automated*
+- [ ] Version-prefix patch — zero `"HP webOS "` in LunaSysMgr — *automated*
+- [ ] Device Info shows webOS CE 3.1.0
+- [ ] Developer-mode toggle survives an off/on cycle
+- [ ] Tweaks installs; LunaCE toggles appear and at least one works
+- [ ] Captive-portal network → portal page loads from the archive-pointed webview
 
 ## 8. Regressions from earlier validated flashes
 
-- [Pass] Kindle / Facebook / YouTube preloads absent — *automated*
-- [Pass] `ls-hubd` clean (0 unlisted-service errors) — *automated*
-- [Pass] Trust store populated (~190 entries) — *automated*
-- [Pass] Help app repointed at webosarchive.org — *automated*
-- [Pass] 0 crash artifacts — *automated, real assertion*
-- [Pass] tripwire: no software reboot, or all UI-initiated — *automated, real assertion*
+- [ ] Kindle / Facebook / YouTube preloads absent — *automated*
+- [ ] `ls-hubd` clean (0 unlisted-service errors) — *automated*
+- [ ] Trust store populated (~190 entries) — *automated*
+- [ ] Help app repointed at webosarchive.org — *automated*
+- [ ] 0 crash artifacts — *automated, real assertion*
+- [ ] tripwire: no software reboot, or all UI-initiated — *automated, real assertion*
       A reboot requested by anything other than LunaSysMgr fails the check — that is
       what the tripwire exists to catch. A deliberate §0 reboot passes.
-- [Human] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
-- [Human] Advanced reset options appear in the chosen OOBE language
-- [Human] Maps 4.0.1 opens
+- [ ] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
+- [ ] Advanced reset options appear in the chosen OOBE language
+- [ ] Maps 4.0.1 opens
 
 ## 9. Preloads / un-baking
 
-- [Pass] App Catalog and Maps **not baked** — *automated*
-- [Pass] Both installed to cryptofs, **one stanza each** — *automated*
+- [ ] App Catalog and Maps **not baked** — *automated*
+- [ ] Both installed to cryptofs, **one stanza each** — *automated*
       (two stanzas = installed *alongside* rather than upgraded — the thing to catch)
-- [Pass] Staged ipks present; stock 5.0.2900 ipk removed — *automated*
-- [Pass] Catalog files extracted with clean names — *automated*
+- [ ] Staged ipks present; stock 5.0.2900 ipk removed — *automated*
+- [ ] Catalog files extracted with clean names — *automated*
       *(was expected to fail on older builds; the catalog ipk is now 6.1.2921 as of 600033)*
-- [Pass] Manifest: baked contacts/messaging entries dropped — *automated*
-- [Human] **stock-lineage runs:** compare against the pre-flash baseline — the
+- [ ] Manifest: baked contacts/messaging entries dropped — *automated*
+- [ ] **stock-lineage runs:** compare against the pre-flash baseline — the
   5.0.2900 / 3.0.1 copies must be *upgraded*, and the old build's
   `PivotMagazine-WOSA` tree must be gone rather than merely overwritten.
 
@@ -197,34 +197,34 @@ is.
 
 ## 10. Exhibition + localization
 
-- [Pass] `SimpleClock.qml` present and referenced; stock faces retained — *automated*
-- [Pass] GAMES localized in all 8 locales — *automated*
-- [Pass] Launcher page rename favorites→games configured — *automated*
-- [Pass] Photos exhibition clock installed (icon + CSS + JS) — *automated*
-- [Human] Exhibition opens on the simple clock; **swipe through all four faces**
-- [Human] GAMES reads SPIELE after switching the device language to German
-- [Human] Photos exhibition: clock toggle shows/hides; interval persists across
+- [ ] `SimpleClock.qml` present and referenced; stock faces retained — *automated*
+- [ ] GAMES localized in all 8 locales — *automated*
+- [ ] Launcher page rename favorites→games configured — *automated*
+- [ ] Photos exhibition clock installed (icon + CSS + JS) — *automated*
+- [ ] Exhibition opens on the simple clock; **swipe through all four faces**
+- [ ] GAMES reads SPIELE after switching the device language to German
+- [ ] Photos exhibition: clock toggle shows/hides; interval persists across
   leaving and re-entering Exhibition *(a flash wipes `/var`, so prefs start fresh)*
-- [Human] Rotate the device in Exhibition — portrait clock sizing (125/37px)
+- [ ] Rotate the device in Exhibition — portrait clock sizing (125/37px)
 
 ## 11. Photos filename  *(new in 600030)*
 
-- [Human] Open a photo full-screen, tap once — the **filename** shows centred in
+- [ ] Open a photo full-screen, tap once — the **filename** shows centred in
   the control bar, and updates as you swipe between photos
-- [Human] **A video** in Photos shows its name only ONCE (the label is suppressed
+- [ ] **A video** in Photos shows its name only ONCE (the label is suppressed
   for `mediaType === "video"`; videos already show it in the video control bar)
   — *never yet tested, no video on the device*
-- [Human] A **long filename** truncates with "…" rather than overlapping the
+- [ ] A **long filename** truncates with "…" rather than overlapping the
   buttons — *never yet tested, all test files are `NN.jpg`*
-- [Human] A **cloud album** photo (Facebook/Dropbox) shows something sane — those
+- [ ] A **cloud album** photo (Facebook/Dropbox) shows something sane — those
   records may carry synthetic paths
 
 ## 12. Space / media
 
-- [Pass] Staged customization media reclaimed unattended — *automated*
-- [Pass] rootfs free space / % used — *automated* — record the number
-- [Pass] Default wallpaper present — *automated*
-- [Human] Default wallpaper looks right on screen
+- [ ] Staged customization media reclaimed unattended — *automated*
+- [ ] rootfs free space / % used — *automated* — record the number
+- [ ] Default wallpaper present — *automated*
+- [ ] Default wallpaper looks right on screen
 - *Known/accepted:* `/media/internal` **accumulates** — the customization service
   only copies in, never removes. Upgrading from an older CE build leaves the old
   `NN.png` wallpapers beside the new `.jpg` set. Decision: do not delete from the
@@ -235,14 +235,14 @@ is.
 Google now refuses this device's user-agent and its results page will not render
 here even with the UA spoofed, so the stock default was simply broken.
 
-- [Pass] All 10 locale lists default to `duckduckgo`, none still list google — *automated*
-- [Pass] Search URL is the `/lite/` endpoint — *automated*
-- [Pass] Both DDG icons present (48px universal search, 32px browser) — *automated*
-- [Pass] Browser `URLSearch.js` fallback is DuckDuckGo, no google left — *automated*
+- [ ] All 10 locale lists default to `duckduckgo`, none still list google — *automated*
+- [ ] Search URL is the `/lite/` endpoint — *automated*
+- [ ] Both DDG icons present (48px universal search, 32px browser) — *automated*
+- [ ] Browser `URLSearch.js` fallback is DuckDuckGo, no google left — *automated*
 - [Pass/Human] **Just Type shows "Search DuckDuckGo"** and searching works —
   *confirmed by user on 600030's device*
-- [Human] The search actually returns usable results in the browser
-- [Human] A non-English locale shows the localized form (`Rechercher DuckDuckGo`,
+- [ ] The search actually returns usable results in the browser
+- [ ] A non-English locale shows the localized form (`Rechercher DuckDuckGo`,
   `Buscar DuckDuckGo` — the string is a template, so this comes for free)
 
 **Testing note:** three layers cache this, so a live push needs all three cleared —
@@ -264,26 +264,26 @@ device** with the tier's exact output pushed in and the device rebooted, which
 is the closest stand-in for a first boot (the point of baking the grants is that
 `ls-hubd` and `mojodb-luna` read them at *their* startup, not on install).
 
-- [Pass] Helper starts with Luna and finds both grants already baked —
+- [ ] Helper starts with Luna and finds both grants already baked —
   `/var/log/woce-backupd.log` says *"lunacall role is baked into the image;
   nothing to write"* and *"db8 admin grant already in place"*
-- [Pass] It writes **nothing** to `/var/palm/ls2/roles/prv/` (a second role
+- [ ] It writes **nothing** to `/var/palm/ls2/roles/prv/` (a second role
   claiming `com.palm.backup.privileged` makes ls-hubd drop *both* grants), and
   no `/etc/palm/mojodb.conf.woce-backup-orig` appears
-- [Pass] `getBackupStatus` reports `privileged: true` (helper reachable — the
+- [ ] `getBackupStatus` reports `privileged: true` (helper reachable — the
   app shows an amber limited-mode notice when it is not)
-- [Pass] `woce-lunacall -m com.palm.backup.privileged` reaches
+- [ ] `woce-lunacall -m com.palm.backup.privileged` reaches
   `com.palm.db/internal/preBackup`; the same call as plain `luna-send` is denied
-- [Pass] Full backup completes: 24.5 MB, `skipped: []`, 19 packages archived
-- [Pass] `listBackups` / `getRestoreDevices` / `getLastBackupTime` all answer
-- [Pass] `deleteBackup` purges by reference count — 52 files → 32, 48.7 → 24.5 MB,
+- [ ] Full backup completes: 24.5 MB, `skipped: []`, 19 packages archived
+- [ ] `listBackups` / `getRestoreDevices` / `getLastBackupTime` all answer
+- [ ] `deleteBackup` purges by reference count — 52 files → 32, 48.7 → 24.5 MB,
   the surviving backup intact
-- [Pass] App UI renders with the real state (destination, "Settings and data",
+- [ ] App UI renders with the real state (destination, "Settings and data",
   "2 backups") and **no** limited-mode notice
-- [Human] **Restore** — deliberately not run on a live device (it rewrites db8
+- [ ] **Restore** — deliberately not run on a live device (it rewrites db8
   and preferences and then reboots). Run it on the flashed image.
-- [Human] Backup from the app's own button, not just over the bus
-- [Human] Non-English device: the app is English-only, and the stock localized
+- [ ] Backup from the app's own button, not just over the bus
+- [ ] Non-English device: the app is English-only, and the stock localized
   `resources/<locale>/appinfo.json` files are removed with the rest of the stock
   app, so the launcher tile now reads "Backup" rather than e.g. "Sicherung"
 
@@ -309,21 +309,21 @@ Synergy stanza looks).
 Verified on the 600038 device by driving the helper's job protocol directly —
 the test suite stubs `privileged.*`, so none of its ops are covered off-device:
 
-- [Pass] `listInstalledApps` reports 19 installed / 59 image-provided, and the
+- [ ] `listInstalledApps` reports 19 installed / 59 image-provided, and the
   only thing it would back up is what the user actually installed
-- [Pass] A package's archive now carries its **service**: QuickOffice came out as
+- [ ] A package's archive now carries its **service**: QuickOffice came out as
   `usr/palm/applications/…`, `usr/palm/packages/…` **and**
   `usr/palm/services/com.quickoffice.webos.service` (8 files). Previously only
   the app bundle was captured, which is why restored Tweaks launched and did
   nothing — its service was never in the backup.
-- [Pass] Restore accepts an app+service archive and lands both
-- [Pass] Restore **rejects** a `..` traversal member — nothing written to `/etc`
-- [Pass] Restore **rejects** a member outside `OWNED_SUBTREES`
-- [Pass] Legacy `<id>/…` archives (written by 600038) still restore
-- [Pass] An app restored by the directory fallback has no ipkg record, and is now
+- [ ] Restore accepts an app+service archive and lands both
+- [ ] Restore **rejects** a `..` traversal member — nothing written to `/etc`
+- [ ] Restore **rejects** a member outside `OWNED_SUBTREES`
+- [ ] Legacy `<id>/…` archives (written by 600038) still restore
+- [ ] An app restored by the directory fallback has no ipkg record, and is now
   still seen as installed via its `appinfo.json` and marked `unmanaged` — without
   that it silently drops out of every later backup
-- [Human] The full 3.0.5 → 3.1.0 path: back up on stock 3.0.5, flash, restore
+- [ ] The full 3.0.5 → 3.1.0 path: back up on stock 3.0.5, flash, restore
 
 **Watch for:** pushing the *upstream* `woce-backupd.js` to a CE device instead of
 bake.py's patched copy makes it write `/var/palm/ls2/roles/prv/woce-lunacall.json`
@@ -334,13 +334,13 @@ this work. Check that file is absent after any manual helper push.
 
 Verified on hardware with a 115-package backup from a daily driver:
 
-- [Pass] Receipt classifies every package and names them properly — "Hot Pursuit",
+- [ ] Receipt classifies every package and names them properly — "Hot Pursuit",
   "DRIVER HD", not "This is a webOS application."
-- [Pass] `installed 97 / failed 5 / not-captured 1 / image-provided 12 /
+- [ ] `installed 97 / failed 5 / not-captured 1 / image-provided 12 /
   servicesRegistered 11`
-- [Pass] The 8 TLS/rootcerts/ntpdate packages skipped as `image-provided`:
+- [ ] The 8 TLS/rootcerts/ntpdate packages skipped as `image-provided`:
   **nothing littered into cryptofs, nothing overwritten in `/usr`**
-- [Pass] 11 restored services reachable on the bus after reboot (`-P`, look for
+- [ ] 11 restored services reachable on the bus after reboot (`-P`, look for
   `Unknown method`, NOT `Service does not exist`)
 
 Two bugs the receipt exposed, both fixed in 600052:
