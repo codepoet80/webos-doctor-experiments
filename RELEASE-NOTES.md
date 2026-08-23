@@ -1,8 +1,19 @@
 # webOS CE 3.1.0 — Release Notes
 
-**Release candidate 2: BUILDMARK 600056** (2026-08-22)
-`out/webosdoctorp305hstnh-3.1CE-600056.jar`
-sha256 `cea207df818af710dec9349400b72a3a52bf046da9fbf63b7e7c6d645cc903f6`
+**Release candidate 2 — BUILDMARK 600056** (2026-08-23)
+
+| | |
+|---|---|
+| Asset | `webosdoctorp305hstnh-3.1CE-600056-rc.jar` |
+| Size | 243,412,798 bytes (233 MB) |
+| sha256 | `cea207df818af710dec9349400b72a3a52bf046da9fbf63b7e7c6d645cc903f6` |
+| md5 | `9f0c0823d6e7eb5d32469b7b972d990b` |
+
+Verify before flashing:
+
+```
+sha256sum webosdoctorp305hstnh-3.1CE-600056-rc.jar
+```
 
 *(RC1 was BUILDMARK 600024, 2026-08-18, sha256 `ec30762f…`.)*
 
