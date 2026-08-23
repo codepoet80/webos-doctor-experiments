@@ -178,6 +178,12 @@ Building the image is out-of-scope for this document and will be covered elsewhe
 - Follow the on-screen prompts
     - on a Mac, you may be prompted to re-install the Drivers. You can skip this step (it will error on modern Macs anyway)
 
+### Complete OOBE
+
+- The firstrun will walk you through the Out of Box Experience on-device: join a WiFi network, and create or sign-in to a webOS Community account (or Skip Account Creation)
+- Luna will restart
+- **RC2 Known Issue Mitigation**: Wait 3 minutes and do a FULL reboot.
+
 ---
 
 ## Problems and Support

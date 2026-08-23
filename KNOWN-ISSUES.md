@@ -20,11 +20,9 @@ after reboot:  imtransport                     (start) running, process 3242
 ```
 
 Preware's postinst owns `/var/palm/event.d/org.webosinternals.ipkgservice`
-(confirmed: the path is listed in
-`/media/cryptofs/apps/usr/lib/ipkg/info/org.webosinternals.preware.list`).
+(confirmed: the path is listed in `/media/cryptofs/apps/usr/lib/ipkg/info/org.webosinternals.preware.list`).
 During the first-use preload pass it stops ipkgservice, rewrites that job file,
-and starts it again. Upstart watches that directory and re-reads on change — and
-caught the file **partially written**:
+and starts it again. Upstart watches that directory and re-reads on change — and caught the file **partially written**:
 
 ```
 01:49:24  app-install -install-only                          preload pass
@@ -42,12 +40,7 @@ not work** until the device is rebooted. Worse, a power-menu Luna Restart taken
 in this state can freeze the device — the failure mode that made `respawn`
 non-negotiable on this job in the first place.
 
-**Collateral, same window.** `ce-cryptofs-seed`'s `kick_imtransport` fired while
-the synergy interpreter was still unseeded, so imtransport's pre-start correctly
-declined to exec (`interpreter still absent -- not exec'ing`, 18:50:16) — but the
-job is left wedged in `pre-start` pointing at **pid 8565, which no longer
-exists**. The missing synergy bind mount is downstream of that, not a third
-fault. All three automated FAILs on 600056 are this one race.
+**Collateral, same window.** `ce-cryptofs-seed`'s `kick_imtransport` fired while the synergy interpreter was still unseeded, so imtransport's pre-start correctly declined to exec (`interpreter still absent -- not exec'ing`, 18:50:16) — but the job is left wedged in `pre-start` pointing at **pid 8565, which no longer exists**. The missing synergy bind mount is downstream of that, not a third fault. All three automated FAILs on 600056 are this one race.
 
 **Frequency: 1 of 6 observed boots.** Zero occurrences across
 600033/600037/600052/600055 (`grep -c 'ipkgservice NOT resident' scripts/results-*.txt`).
@@ -60,8 +53,7 @@ write the job file to a temp path in the same directory and `mv` it into place.
 file or the complete new one. The natural home is `ce-cryptofs-seed`, which
 already runs after first use and already kicks this job.
 
-**Why a timing tweak is not acceptable here.** The race fires roughly one boot in
-six, so a single clean boot after a change proves nothing. Any fix has to be
+**Why a timing tweak is not acceptable here.** The race fires roughly one boot in six, so a single clean boot after a change proves nothing. Any fix has to be
 justified structurally and validated as "no regression across N boots", not by
 one green run.
 
@@ -72,9 +64,7 @@ one green run.
 **Severity: high — the fix ships in 600056 but has not yet run on hardware.**
 
 On the 600055 restore, 2 of 115 packages failed: Hot Pursuit (427MB) and
-Driver HD (379MB). Sandstorm (261MB) and Tiger Woods (248MB) succeeded. A cutoff
-falling *between* archives written the same way is the signature of a fixed
-budget, not a bad archive — `restoreAppDirectories` extracted with a flat
+Driver HD (379MB). Sandstorm (261MB) and Tiger Woods (248MB) succeeded. A cutoff falling *between* archives written the same way is the signature of a fixed budget, not a bad archive — `restoreAppDirectories` extracted with a flat
 `{ timeout: 120000 }`.
 
 600056 sizes every restore stage by the archive it is handling:
@@ -90,10 +80,7 @@ weak spot; the 600 s floor is what covers a large, highly compressible app. At
 that floor every app size seen on a device keeps a ≥3x margin.
 
 **Diagnosability was the deeper bug.** `exec()`'s timeout kill arrives as an
-Error whose message is `Command failed:` with nothing after it — indistinguishable
-from a real tar error, which is why this read as archive corruption for a full
-release cycle. 600056 names the stage, says whether the clock ran out, and
-carries the reason into the restore receipt.
+Error whose message is `Command failed:` with nothing after it — indistinguishable from a real tar error, which is why this read as archive corruption for a full release cycle. 600056 names the stage, says whether the clock ran out, and carries the reason into the restore receipt.
 
 **Constraint for anyone tempted to add more room:** `PACKAGE_OP_TIMEOUT_MAX` in
 `common.js` must **not** be raised. `doRestore` spends it twice, so 60 minutes
@@ -132,11 +119,7 @@ package count should also be treated as a failure, not reported as success.
 
 **Severity: low — did NOT recur on 600056.**
 
-The minimal-mode first-use instance
-(`LunaSysMgr -s -u minimal -a com.palm.app.firstuse`) faulted in `PrvLogThread`
-on a freed GLib async queue while tearing down at OOBE handoff. Seen on 600052
-and 600055; **0 rdxd crash reports on 600056** — the first clean OOBE of the
-cycle.
+The minimal-mode first-use instance (`LunaSysMgr -s -u minimal -a com.palm.app.firstuse`) faulted in `PrvLogThread` on a freed GLib async queue while tearing down at OOBE handoff. Seen on 600052 and 600055; **0 rdxd crash reports on 600056** — the first clean OOBE of the cycle.
 
 A process that was exiting anyway, on a path that runs once per device. One
 clean run does not retire a race, so this stays on the list until it survives
@@ -166,8 +149,7 @@ has not been investigated.
 **Severity: low.**
 
 Two Preware-installed *patches* come back from a directory restore as their
-payload directories rather than as applied patches — the files land, but nothing
-re-applies them. Patches are outside what `ipkg` can reinstall from an archive.
+payload directories rather than as applied patches — the files land, but nothing re-applies them. Patches are outside what `ipkg` can reinstall from an archive.
 Not investigated further; recorded so it is not rediscovered as a restore bug.
 
 ---
@@ -198,8 +180,4 @@ not report it.
 
 ## How these were found
 
-`scripts/ce-test-full.sh` decides ~90 checks a shell can decide; results land in
-`scripts/results-<BUILDMARK>.txt` and are marked into `TEST-PLAN.md`. Comparing
-runs across builds is what surfaced #1 — the check had passed in four prior runs
-and failed in the fifth, which is the only reason it was recognised as new
-rather than assumed to be longstanding.
+`scripts/ce-test-full.sh` decides ~90 checks a shell can decide; results land in `scripts/results-<BUILDMARK>.txt` and are marked into `TEST-PLAN.md`. Comparing runs across builds is what surfaced #1 — the check had passed in four prior runs and failed in the fifth, which is the only reason it was recognised as new rather than assumed to be longstanding.
