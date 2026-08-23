@@ -61,7 +61,13 @@ check targets a dead Palm server).
 budgets are now sized by archive rather than fixed, which is what dropped the
 two largest apps on the 600055 restore. Everything else is byte-identical —
 verified by a full rootfs diff of the two JARs (9 files, all accounted for).
-Release is gated on re-running that large-app 3.0.5 → CE restore.
+
+**The release gate is met.** A 115-package 3.0.5 → CE restore ran on 600056
+with **102 installed, 0 failed**, counts reconciling 115/115, and both
+previously-failing games recovered. Service registration for the 11 restored
+cryptofs services is written and pending its reboot.
+See **[KNOWN-ISSUES.md](KNOWN-ISSUES.md)** — the first-boot ipkgservice race is
+the one to solve before final.
 See **[RELEASE-NOTES.md](RELEASE-NOTES.md)** for what ships,
 **[TEST-PLAN.md](TEST-PLAN.md)** for the current verification run, and
 **[KNOWN-ISSUES.md](KNOWN-ISSUES.md)** for everything reproduced but not yet

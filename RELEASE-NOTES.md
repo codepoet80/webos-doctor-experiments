@@ -56,15 +56,16 @@ login on ordinary Wi-Fi).
 retired servers; it is replaced by an on-device backup writing content-addressed
 backups to `/media/internal/webos-backups`, and it is the supported way to carry
 data from webOS 3.0.5 onto CE. Verified end to end: a 115-package backup from a
-3.0.5 device restored onto CE with 100 apps reinstalled, all 11 of their
-services registered and reachable on the bus after the reboot, and a receipt
-naming everything it could not put back and why.
+3.0.5 device restored onto CE with **102 apps reinstalled and none failed**,
+all 11 of their services registered and reachable on the bus after the reboot,
+and a receipt naming everything it could not put back and why. The largest app
+in that set was a 296MB archive.
 
-Backup is a **best-effort** feature. Two apps over 350MB were dropped by a
-fixed extraction timeout on that run; 600056 sizes every restore stage by the
-archive it is handling, and records the reason in the receipt when a stage does
-run out of time. See `BACKUP-RESTORE.md` before moving a backup between
-devices — the manifest has to travel with it.
+Backup is still a **best-effort** feature — it restores applications and their
+data, not Preware patches, and one package in that run was never captured at
+backup time. See `BACKUP-RESTORE.md` before moving a backup between devices:
+the manifest has to travel with it, and a stale one will shadow the real
+backup.
 
 **Accounts** — the Settings → Accounts list shows a single SYNERGY ACCOUNTS
 group again, rather than groups nested inside a group.

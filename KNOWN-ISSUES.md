@@ -59,9 +59,21 @@ one green run.
 
 ---
 
-## 2. Restore silently dropped apps over ~350MB (fixed in 600056, unverified)
+## 2. Restore silently dropped apps over ~350MB — FIXED, verified on 600056
 
-**Severity: high — the fix ships in 600056 but has not yet run on hardware.**
+**Severity: was high. Verified fixed on hardware 2026-08-23.** A 115-package
+3.0.5 backup restored onto 600056 with **102 installed, 0 failed**, and both
+previously-failing games came back. The measured times prove it was the budget:
+
+```
+com.ea.app.nfshp.pad.na    296MB archive   127s   old budget 120s -- missed by 7s
+com.gameloft.app.driverhd  199MB archive   157s   old budget 120s -- missed by 37s
+```
+
+Worst observed cost was 0.79 s per archive-MB (driverhd); the budget allows 3 s,
+so the thinnest real margin was 3.8x. Zero occurrences of "timed out" or
+"failed" in the whole helper log. Retained here for the history and for the
+constraint at the end, which still binds.
 
 On the 600055 restore, 2 of 115 packages failed: Hot Pursuit (427MB) and
 Driver HD (379MB). Sandstorm (261MB) and Tiger Woods (248MB) succeeded. A cutoff falling *between* archives written the same way is the signature of a fixed budget, not a bad archive — `restoreAppDirectories` extracted with a flat
@@ -131,16 +143,19 @@ several flashes.
 
 **Severity: medium — recorded honestly, not silently swallowed.**
 
-Seen on both the 600055 and earlier restores:
+**Intermittent.** Seen on the 600055 and earlier restores:
 
 ```
 com.palm.appDataBackup/postRestore did not answer within 60000ms
 ```
 
-The service is registered and the restore records it in the receipt's `skipped`
-list rather than failing the run. Consequence: HTML5 app data and the launcher
-page layout are not restored. It has appeared on every large restore so far and
-has not been investigated.
+but **not** on the 600056 restore, which finished with `skipped: []` — the
+service answered. So this is a timing/load condition, not a permanent
+incapacity, which also means a single clean run does not clear it.
+
+The restore records it in the receipt's `skipped` list rather than failing the
+run. When it does fire, HTML5 app data and the launcher page layout are not
+restored. Not yet investigated.
 
 ---
 

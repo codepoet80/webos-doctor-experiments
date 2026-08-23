@@ -21,7 +21,14 @@ Build under test:  BUILDMARK 600056  jar webosdoctorp305hstnh-3.1CE-600056.jar
                    across 600033/37/52/55. First-boot only; the file is intact
                    afterwards, so a reboot clears it. rdxd crashes: 0 — better
                    than 600055's 1. 64 Human items below still open.
-Lineage:           [x] CE -> CE      [ ] stock 3.0.5 -> CE (restore pending)
+Lineage:           [x] CE -> CE      [x] stock 3.0.5 -> CE
+Restore (600056):  115-package 3.0.5 backup -> 102 installed, 0 FAILED,
+                   1 not-captured, 12 image-provided, 11 services registered.
+                   Counts reconcile 115/115. Both apps that failed on 600055
+                   recovered: nfshp 296MB/127s, driverhd 199MB/157s -- both
+                   over the old flat 120s budget. Receipt + helper log kept at
+                   scripts/restore-600056-receipt.json and -helper.log.
+                   PENDING: reboot, then verify the 11 services on the bus.
 ```
 
 Legend: `[ ]` not yet run · `[Pass]` · `[Fail]` · `[Human]` needs eyes/hands ·

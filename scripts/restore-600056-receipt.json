@@ -1,0 +1,737 @@
+{
+  "manifestName": "000001-19Q",
+  "restoredAt": "Sun, 23 Aug 2026 02:43:26 GMT",
+  "restoreCount": 2,
+  "backedUpFrom": {
+    "deviceName": "FreshPad",
+    "nduId": "19Q",
+    "hardwareType": "topaz",
+    "deviceModel": "HSTNH-I29C"
+  },
+  "backedUpOs": {
+    "softwareVersion": "Nova-HP-Topaz-86"
+  },
+  "summary": {
+    "installed": 102,
+    "failed": 0,
+    "notCaptured": 1,
+    "alreadyPresent": 0,
+    "imageProvided": 12,
+    "servicesRegistered": 11
+  },
+  "skipped": [],
+  "packages": [
+    {
+      "id": "ca.canucksoftware.filemgr",
+      "title": "FileMgr",
+      "version": "2.0.9",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "ca.canucksoftware.internalz",
+      "title": "Internalz Pro",
+      "version": "1.5.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "ca.canucksoftware.js-service-framework",
+      "title": "Homebrew JS Service Framework",
+      "version": "1.0.2",
+      "outcome": "not-captured"
+    },
+    {
+      "id": "ca.canucksoftware.systoolsmgr",
+      "title": "SysToolsMgr",
+      "version": "1.0.6",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "com.10tons.azkend2",
+      "title": "Azkend 2",
+      "version": "1.1.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.accuweather.accuweather",
+      "title": "AccuWeather",
+      "version": "2.3.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.apkenv.wheresmywater",
+      "title": "Where's My Water?",
+      "version": "1.0.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.aventer.webdavclient",
+      "title": "WebDAV Client",
+      "version": "0.7.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.backelite.dailymotion",
+      "title": "Dailymotion",
+      "version": "2.1.2",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.cmdrkeen.game",
+      "title": "Commander Keen",
+      "version": "1.3.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.codepoet.hackermystery",
+      "title": "Hacker Mystery 95",
+      "version": "1.1.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.codepoet.tapmap",
+      "title": "TapMap",
+      "version": "1.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.codepoet.trapperkeeper",
+      "title": "Trapper Keeper",
+      "version": "2.0.5",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "com.codepoet.wordsel",
+      "title": "Wordsel",
+      "version": "1.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.cyber-nova.towersofhanoi",
+      "title": "Towers of Hanoi",
+      "version": "1.0.2",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.drnull.drpodder",
+      "title": "drPodder Redux",
+      "version": "2.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.ea.app.monopoly.eu.efigs",
+      "title": "Monopoly",
+      "version": "20.1.00",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.ea.app.nfshp.pad.na",
+      "title": "Hot Pursuit",
+      "version": "1.0.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.ea.app.tw09",
+      "title": "Tiger Woods PGA Tour",
+      "version": "1.1.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.emu7800.touchpad",
+      "title": "EMU7800",
+      "version": "1.8.3",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.explusalpha.nesemu",
+      "title": "NES.emu",
+      "version": "1.5.2",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.explusalpha.snes9x",
+      "title": "Snes9x EX",
+      "version": "1.5.2",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.foxtailsoftware.pulseaudiorestarter",
+      "title": "PulseAudio Restarter",
+      "version": "1.0.1",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "com.gameduell.app.junglejewels",
+      "title": "Jungle Jewels",
+      "version": "1.0.4",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.gameloft.app.driverhd",
+      "title": "DRIVER HD",
+      "version": "2.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.gameloft.app.nova",
+      "title": "N.O.V.A",
+      "version": "1.1.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.gameloft.app.sandstorm",
+      "title": "Sandstorm",
+      "version": "1.2.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.glu.app.transg1",
+      "title": "Transformers G1",
+      "version": "1.2.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.grabber.moviedb",
+      "title": "Movie DB",
+      "version": "1.4.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.jmtk.apollo",
+      "title": "Apollo",
+      "version": "1.2.6",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.jonandnic.metube",
+      "title": "MeTube",
+      "version": "2.3.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.lazydayproject.cablenews",
+      "title": "CableNews",
+      "version": "1.1.2",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.nizovn.cacert",
+      "title": "Bundle of CA Root Certificates",
+      "version": "2021-09-30",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.nizovn.glibc",
+      "title": "Glibc runtime libraries (linaro)",
+      "version": "4.8-2015.06-0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.nizovn.openssl",
+      "title": "Shared OpenSSL libs",
+      "version": "1.0.2p",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.nizovn.qt5",
+      "title": "Qt5 framework libraries",
+      "version": "5.9.7-0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.nizovn.qt5qpaplugins",
+      "title": "webOS Qt5 QPA Plugins",
+      "version": "1.0.4",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.nizovn.qt5sdk",
+      "title": "Qt5 webOS SDK",
+      "version": "1.0.2",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.nizovn.qupzilla",
+      "title": "QupZilla",
+      "version": "2.3.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.othelloventures.feedspider2",
+      "title": "FeedSpider",
+      "version": "2.3.4",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.palm.app.backup",
+      "title": "Backup",
+      "version": "3.1.0",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "com.palm.app.jonandnic.simplechat",
+      "title": "SimpleChat",
+      "version": "1.9.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.palm.app.jonandnic.urlassist",
+      "title": "URL Assist",
+      "version": "1.1.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.palm.biz.sketchyplace.jstop",
+      "title": "JSTop",
+      "version": "0.2.9",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.palm.codepoet.papyrus",
+      "title": "Papyrus eReader",
+      "version": "1.6.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.palm.jonandnic.stopwatch",
+      "title": "Stopwatch",
+      "version": "1.1.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.palm.rootcertsupdate",
+      "title": "RootCertsUpdate (Updated 2025-12-28 with Mozilla CA bundle from 2025-12-02, fixed postinst)",
+      "version": "1.0-5",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "com.palm.webos.nightmoves",
+      "title": "Night Moves",
+      "version": "1.0.7",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.preciouscoders.pre.auctionmatepro",
+      "title": "AuctionMate Pro for eBay",
+      "version": "2.1.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.sopwith.game",
+      "title": "SDL Sopwith",
+      "version": "2.9.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.splashtop.remote.webos",
+      "title": "Splashtop Remote",
+      "version": "1.3.2",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.tehtorq.reddit",
+      "title": "IAmA reddit",
+      "version": "0.2.9",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.ttpsoft.dailydevopro",
+      "title": "Daily Devo Pro",
+      "version": "1.0.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.usatoday.webos",
+      "title": "World Today",
+      "version": "1.3.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.webosarchive.checkmatehd",
+      "title": "Check Mate HD",
+      "version": "2.2.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.webosarchive.usbsettings",
+      "title": "USB Settings",
+      "version": "1.1.8",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "com.wordpress.touchcontrol.touchvol",
+      "title": "TouchVol",
+      "version": "0.1.5",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "com.wosa.bluebubbles",
+      "title": "BlueBubbles",
+      "version": "1.0.4",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "de.zefanjas.biblez.enyo",
+      "title": "BibleZ HD",
+      "version": "0.6.0",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "eu.weboslives.webostracker",
+      "title": "webOS Tracker",
+      "version": "1.1.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "mobi.optware.ipkg-opt",
+      "title": "Optware Advanced Linux Command Line Installer",
+      "version": "0.99.163-16",
+      "outcome": "installed"
+    },
+    {
+      "id": "mobi.optware.openssh",
+      "title": "OpenSSH",
+      "version": "5.9.1-4",
+      "outcome": "installed"
+    },
+    {
+      "id": "mobi.optware.openssl",
+      "title": "OpenSSL",
+      "version": "0.9.8.12-4",
+      "outcome": "installed"
+    },
+    {
+      "id": "mobi.optware.zlib",
+      "title": "zlib",
+      "version": "1.2.5-1",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.scummvm.scummvm",
+      "title": "ScummVM",
+      "version": "2.6.2026",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.accountsapp",
+      "title": "Accounts (webOS Archive build)",
+      "version": "3.1.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.btgamepad",
+      "title": "Bluetooth game controller support for the HP TouchPad",
+      "version": "1.1.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.claudechat",
+      "title": "Claude Chat",
+      "version": "1.2.5",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.flixnet",
+      "title": "Flixnet",
+      "version": "2.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.geminibrowser",
+      "title": "Gemini Browser",
+      "version": "1.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.help-redirect",
+      "title": "Point the Help app at help.webosarchive.org",
+      "version": "1.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.lunedrop",
+      "title": "LuneDrop",
+      "version": "0.4.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.open-in-atlas",
+      "title": "Add an Open in Atlas item to the stock browser App Menu",
+      "version": "1.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.openvpn",
+      "title": "OpenVPN 2",
+      "version": "2.5.9",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.pwainstaller",
+      "title": "PWA Installer",
+      "version": "1.0.0",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "org.webosarchive.readontouch",
+      "title": "ReadOnTouch PRO",
+      "version": "4.0.2",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.sdlquakehd",
+      "title": "Quake HD",
+      "version": "1.1.3",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.secondscreen",
+      "title": "Second Screen",
+      "version": "0.3.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.tailscale",
+      "title": "Tailscale",
+      "version": "1.78.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.tls-updates",
+      "title": "TLS 1.3 Updates - SSL/TLS, root certs, App Catalog, Help, USB, gamepad and Accounts fixes",
+      "version": "1.0.13",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.vlcplayer",
+      "title": "VLC Player",
+      "version": "1.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.webcal",
+      "title": "This is a webOS application.",
+      "version": "0.2.2",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "org.webosarchive.webosaccount",
+      "title": "webOS Community Account Manager",
+      "version": "1.1.3",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.xashhl",
+      "title": "Half-Life",
+      "version": "0.1.12",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.ausmt",
+      "title": "AUSMT Scripts",
+      "version": "1.2.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.browser-tls13",
+      "title": "Browser TLS 1.3",
+      "version": "1.1.2",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "org.webosinternals.curl-tls13",
+      "title": "curl (TLS 1.3)",
+      "version": "1.0.1",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "org.webosinternals.dbus",
+      "title": "dbus",
+      "version": "1.4.16-3",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.downloadmgr-tls13",
+      "title": "Download Manager TLS 1.3",
+      "version": "1.0.0",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "org.webosinternals.govnah",
+      "title": "Govnah",
+      "version": "1.3.9",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "org.webosinternals.impostah",
+      "title": "Impostah",
+      "version": "0.9.20",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.kernels.uber-kernel-touchpad",
+      "title": "UberKernel (TouchPad)",
+      "version": "3.0.5-93",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.lsdiff",
+      "title": "Lsdiff",
+      "version": "0.3.1-1",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.luna-tls13",
+      "title": "Luna TLS 1.3",
+      "version": "1.1.3",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "org.webosinternals.mail-tls13",
+      "title": "Mail TLS 1.3",
+      "version": "1.3.2",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "org.webosinternals.mojomail-imap-tagfix",
+      "title": "Mojomail IMAP Tag Fix",
+      "version": "1.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.ntpdate-sync",
+      "title": "NTP Clock Sync",
+      "version": "2.0.1",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "org.webosinternals.optware",
+      "title": "Optware Bootstrap",
+      "version": "1.6.1",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.patch",
+      "title": "GNU Patch",
+      "version": "2.5.9-4",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.patches.calendar-default-to-week-view",
+      "title": "Default to Week View",
+      "version": "3.0.5-10",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.patches.notifications-advanced-reset-options",
+      "title": "Advanced Reset Options",
+      "version": "3.0.5-9",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "org.webosinternals.patches.photos-show-filenames",
+      "title": "Show Filenames",
+      "version": "3.0.5-20",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosinternals.preware",
+      "title": "Preware",
+      "version": "1.9.18",
+      "outcome": "image-provided"
+    },
+    {
+      "id": "org.webosinternals.tweaks",
+      "title": "Tweaks",
+      "version": "3.0.1",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "org.webosports.app.atlas",
+      "title": "Atlas Web",
+      "version": "0.9.8",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosports.cdav",
+      "title": "This is a webOS application.",
+      "version": "0.3.37",
+      "outcome": "installed",
+      "serviceRegistered": true,
+      "note": "service registered by restore; needs the reboot to start"
+    },
+    {
+      "id": "org.wz2100.warzone2100",
+      "title": "Warzone 2100",
+      "version": "2.3.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "se.jelica.bob.plex-client",
+      "title": "Plex for webOS",
+      "version": "0.9.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "us.ryanhope.wterm",
+      "title": "wTerm",
+      "version": "0.4.0-2",
+      "outcome": "installed"
+    },
+    {
+      "id": "webosbuzz.com.bigfishgames.app.serpentofisishd",
+      "title": "Serpent Of Isis HD",
+      "version": "1.0.6",
+      "outcome": "installed"
+    },
+    {
+      "id": "webosbuzz.com.gameloft.app.shrekkartinghd",
+      "title": "Shrek Kart",
+      "version": "1.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosarchive.webcal.app",
+      "title": "WebCal Sync",
+      "version": "0.2.2",
+      "outcome": "installed"
+    },
+    {
+      "id": "org.webosports.cdav.app",
+      "title": "C+DAV Sync App",
+      "version": "0.3.37",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.gameloft.app.shrekkartinghd",
+      "title": "Shrek Kart",
+      "version": "1.0.0",
+      "outcome": "installed"
+    },
+    {
+      "id": "com.bigfishgames.app.serpentofisishd",
+      "title": "Serpent Of Isis HD",
+      "version": "1.0.6",
+      "outcome": "installed"
+    }
+  ]
+}
