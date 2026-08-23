@@ -1,7 +1,13 @@
 # webOS CE 3.1 Flash Test Plan
 
-**Ready for the next flash.** Fill in the build under test, then run the
-automated half first and work the `[Human]` list from what it leaves.
+**600056 is RC2.** Everything automated or measurable is green: 78 PASS /
+3 FAIL (one first-boot race, cleared by reboot, documented in
+KNOWN-ISSUES.md #1), a 115-package 3.0.5 -> CE restore at 102 installed /
+0 failed, and 14/14 services live on the bus. The `[Human]` list below is
+what remains.
+
+For the next build: fill in the build under test, run the automated half
+first, and work the `[Human]` list from what it leaves.
 
 ```
 Build under test:  BUILDMARK 600056  jar webosdoctorp305hstnh-3.1CE-600056.jar
@@ -28,7 +34,14 @@ Restore (600056):  115-package 3.0.5 backup -> 102 installed, 0 FAILED,
                    recovered: nfshp 296MB/127s, driverhd 199MB/157s -- both
                    over the old flat 120s budget. Receipt + helper log kept at
                    scripts/restore-600056-receipt.json and -helper.log.
-                   PENDING: reboot, then verify the 11 services on the bus.
+                   Post-reboot 2026-08-23: all 14 launcher files correctly
+                   .service-suffixed, and 14/14 REACHABLE on the public bus --
+                   the 11 the restore registered plus QuickOffice x2 and
+                   payment from the image. 0 rdxd crashes; the first-boot
+                   ipkgservice race did not recur (it only fires during the
+                   first-use preload pass -- see KNOWN-ISSUES.md #1).
+                   Bus-reachable proves the hub launched each service, NOT that
+                   its UI works; BlueBubbles and Tweaks still want a tap.
 ```
 
 Legend: `[ ]` not yet run · `[Pass]` · `[Fail]` · `[Human]` needs eyes/hands ·
