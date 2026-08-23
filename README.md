@@ -17,7 +17,7 @@ and built all new apps. This release has two goals:
 
 At the time of this writing, *only* **Topaz WiFi** is supported. These are the most common Touchpad devices, without a cellular radio, at 9.7" screen size.
 
-Do not attempt to install on the 4G-equiped Touchpad, or the smaller Touchpad Go prototypes.
+Do not attempt to install on the 4G-equipped Touchpad, or the smaller Touchpad Go prototypes.
 
 ---
 
@@ -135,7 +135,7 @@ Note: please consider Backup as a "best-effort" and make sure you know where to 
 **A community created [App Scanner](https://appcatalog.webosarchive.org/app/webOSAppScanner) inventory app can help you identify if your device has apps that have not been archived.**
 **Please help us rescue lost apps before you wipe your device!**
 
-The 3.1.0 Backup app is avalable in **Preware**. If upgrading a device with apps, you can install and run a backup, which can be restored after flashing.
+The 3.1.0 Backup app is avalable in **Preware**. If upgrading a device with apps, you can install and [run a backup, which can be restored](BACKUP-RESTORE.md) after flashing.
 
 ### Install Java on your PC
 
