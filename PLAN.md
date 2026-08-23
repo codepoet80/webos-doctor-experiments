@@ -113,27 +113,26 @@ only in `BUILDTIME`/`BUILDMARK`.
    same directory and `mv` it into place. Fires ~1 boot in 6, so validation is
    "no regression across N boots", never a single clean run.
 
-2. **Trim the Preware status seeds to user-facing apps only.** bake.py currently
-   seeds 11 ipkg status stanzas: 3 user-facing (`govnah`, `synergy`, `backup`)
-   and 8 patch packages (`browser`/`downloadmgr`/`luna`/`mail`/`curl-tls13`,
-   `rootcertsupdate`, `ntpdate-sync`, `notifications-advanced-reset-options`).
-   Only the first 3 should appear to the user as installed.
+2. **Tidy the Preware seed descriptions.** Keep all 11 status stanzas and keep
+   them displayed — the change is wording only. Every patch description in
+   bake.py ends in `(baked into webOS CE)`, which reads as noise in Preware's
+   list:
 
-   **Do not simply delete the other 8.** They were added for a second reason
-   that has nothing to do with Preware's display, documented at bake.py's
-   `PATCH_SEED`: on a 3.0.5 → CE restore, each patch's staging directory under
-   `/media/cryptofs/apps/usr/palm/applications/<id>/files` looks like an app
-   directory to backup, so it gets archived and put back — ~2.5MB of dead
-   payload, and `browser-tls13` carries an `appinfo.json` that can surface as a
-   junk launcher icon. The stanza is what makes restore skip them. It also
-   stops Preware offering a security patch as a fresh install over the baked
-   one.
+   ```
+   TLS 1.3 for the browser (baked into webOS CE)   ->  TLS 1.3 for the browser
+   Updated root certificates (baked into webOS CE) ->  Updated root certificates
+   Time sync (baked into webOS CE)                 ->  Time sync
+   ```
 
-   So the work is to separate the two jobs, not remove one: keep restore's
-   skip-and-Preware's-isInstalled behaviour for the 8, while keeping them out
-   of whatever the user actually browses. Verify against TEST-PLAN §6 (which
-   asserts exactly one stanza per package) and re-run a 3.0.5 → CE restore to
-   confirm no patch payload comes back. Related: KNOWN-ISSUES #6.
+   Eight strings in `PATCH_SEED` and `EXTRA_PATCH_SEED`. The Description field
+   doubles as Preware's display title for a package that is in no feed, so
+   these strings are literally what the user reads. `Backup and Restore
+   (woce-backup)` carries the same kind of parenthetical — worth deciding on at
+   the same time.
+
+   Behaviour must not change: the stanzas are also what makes a 3.0.5 -> CE
+   restore skip the patches' staging directories, so keep all 11 and keep
+   TEST-PLAN section 6 passing (exactly one stanza per package).
 
 ## Working artifacts
 
