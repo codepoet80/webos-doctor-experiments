@@ -2190,6 +2190,35 @@ def main():
     wcopy("usr/bin/usbctl-watchd", os.path.join(uapp, "usbctl-watchd.sh"), 0o755)
     wcopy("usr/bin/usbdevmon", os.path.join(uapp, "usbdevmon"), 0o755)
     wcopy("etc/event.d/usbctl-watchd", os.path.join(uapp, "usbctl-watchd.conf"), 0o644)
+    # 15a) the storage MOUNTPOINT must pre-exist in the rootfs. usbctl-watchd
+    # 1.1.9 moved the mount OUT of /media/internal (mtools-backed file managers
+    # such as Internalz read that partition's FAT directly and show a stick
+    # mounted inside it as an empty folder) to a plain /media directory. Its own
+    # `mkdir -p` cannot create that on CE, where / is mounted READ-ONLY at
+    # runtime -- the script then falls back to the in-partition path and the bug
+    # comes right back. So bake the directory the same way as the
+    # synergy-runtime bind target: a placeholder file makes the flash create it,
+    # and the mount masks it. Stock already ships /media/{card,cf,hdd,mmc1,...}
+    # this way, so this only adds a sibling.
+    #
+    # The path is READ OUT OF the script rather than transcribed, so a later ipk
+    # that moves the mountpoint again is followed automatically; a version that
+    # goes back inside /media/internal needs no directory at all.
+    watchd_sh = open(os.path.join(uapp, "usbctl-watchd.sh")).read()
+    m = re.search(r"^MNT=(/\S+)", watchd_sh, re.M)
+    if not m:
+        sys.exit("ERROR: no MNT= default in usbctl-watchd.sh -- the USB mountpoint "
+                 "cannot be baked, and the read-only root cannot create it at runtime")
+    usb_mnt = m.group(1).rstrip("/")
+    if usb_mnt.startswith("/media/internal"):
+        log(f"  USB mountpoint {usb_mnt} is inside /media/internal (writable) "
+            f"-- nothing to bake")
+    else:
+        w(usb_mnt.lstrip("/") + "/.keep",
+          "webOS CE: mountpoint for a USB mass-storage stick (see "
+          "usbctl-watchd); this placeholder only exists so the flash creates "
+          "the directory on the read-only root.\n", 0o644)
+        log(f"  USB mountpoint {usb_mnt} baked (read-only root cannot mkdir it)")
     urole = json.dumps({
         "role": {"exeName": "js", "type": "regular", "allowedNames": [USVC]},
         "permissions": [{"service": USVC, "inbound": ["*"], "outbound": ["*"]}],
