@@ -134,6 +134,20 @@ only in `BUILDTIME`/`BUILDMARK`.
    restore skip the patches' staging directories, so keep all 11 and keep
    TEST-PLAN section 6 passing (exactly one stanza per package).
 
+3. **luna-tls13 is at 1.1.4** (dropped in 2026-08-24; 1.1.3 removed). Nothing
+   to change in the tree — `bake.py`'s `ati_ipk()` picks the highest-versioned
+   `org.webosinternals.luna-tls13_*.ipk` in `AddToImage/PatchOrReplace`, and the
+   Preware status stanza takes its `Version:` from that ipk's control, so the
+   next bake carries 1.1.4 end to end. The checked-in
+   `build/overlays/full-ce/.../preware-seed.sh` still says `Version: 1.1.3`;
+   that file is bake.py output and is regenerated, not hand-edited.
+
+   The diff from 1.1.3 is **wording only** — three postinst echo lines, one
+   preremove echo line, and the version in `appinfo.json`/control. Identical
+   payload file list, no change to the LunaSysMgr launcher patch or the three
+   env-scrub wrappers. So it needs no re-verification beyond a normal build;
+   sha256 `e8107550e037e5fe7cb502f93601b4f1eb31770e53a4d00f512b59351e1dd9ec`.
+
 ## Working artifacts
 
 - `webosdoctorp305hstnhwifi.jar` — the OEM 3.0.5 Doctor (the repack base; not in git).
