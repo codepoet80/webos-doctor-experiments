@@ -282,7 +282,7 @@ if ! grep -q "^Package: org.webosinternals.luna-tls13$" $APPS/usr/lib/ipkg/statu
    {
       echo ""
       echo "Package: org.webosinternals.luna-tls13"
-      echo "Version: 1.1.3"
+      echo "Version: 1.1.4"
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: armv7"

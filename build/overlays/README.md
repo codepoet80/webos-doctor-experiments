@@ -19,8 +19,12 @@ CE Doctor. Pass one to the build:
 
 - **Add / replace:** any file under `rootfs/` is written to the matching path in
   the rootfs. If the path already exists it is replaced; otherwise it is added.
-  All added/replaced files are forced to `root:root`, mode preserved from the
-  original when replacing (else `0644`).
+  All added/replaced files are forced to `root:root`. Mode: a **replaced** file
+  keeps the stock member's mode — the overlay file's own mode is ignored, and
+  the harness logs a `WARNING` when an executable source lands on a
+  non-executable stock path; an **added** file gets `0755` or `0644` by its
+  source's exec bit. Tighter stock modes (`0700`) cannot be reproduced for
+  added files.
 - **Remove:** list device paths in `changes.json` `"remove": [...]`.
 
 ### `changes.json`

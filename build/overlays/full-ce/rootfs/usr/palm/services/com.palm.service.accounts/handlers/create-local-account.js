@@ -30,7 +30,7 @@ CreateLocalAccountAssistant.prototype.run = function(future) {
 	future.then(this, function() {
 		var results = future.result.results;
 		if(results.length === 0) {
-			this.createLocalAccount("Open webOS");
+			this.createLocalAccount("LuneOS");
 			return {returnValue:true, accountCreated:true};
 		}
 		return {returnValue:true, accountCreated:false};
@@ -71,13 +71,11 @@ CreateLocalAccountAssistant.prototype.createLocalAccount =  function (username) 
 
 //Creation flag is used to create a default palmprofile account if firstuse is skipped
 CreateLocalAccountAssistant.prototype.createAccountCreatedFlag =  function () {
-		var node_fs = require('fs');
-		var pathLib = require('path');
-        var accountCreationFlagPath = "/var/luna/preferences/first-use-profile-created";
-        if (pathLib.existsSync(accountCreationFlagPath)){
-                console.log(accountCreationFlagPath + " already exists");
-        } else {
-                //Touches the file
-                node_fs.openSync(accountCreationFlagPath, "w");
-        }
+    var node_fs = require('fs');
+    var accountCreationFlagPath = "/var/luna/preferences/first-use-profile-created";
+    //Touches the file
+    var flagFd = node_fs.openSync(accountCreationFlagPath, "w");
+    if(flagFd) {
+        node_fs.closeSync(flagFd);
+    }
 };

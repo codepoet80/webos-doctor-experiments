@@ -10,7 +10,7 @@
 	{"source": "publicwhitelist.js"},
 	{"source": "models/account-model.js"},
 	{"source": "models/template-model.js"},
-	{"source": "models/credentials-model.js"},
+	{"source": "models/credentials-model_keymanager.js"},
 	{"source": "handlers/apps-changed.js"},
 	{"source": "handlers/list-templates.js"},
 	{"source": "handlers/create.js"},

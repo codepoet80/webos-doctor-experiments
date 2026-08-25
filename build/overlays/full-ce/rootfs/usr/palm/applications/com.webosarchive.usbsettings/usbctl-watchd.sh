@@ -20,11 +20,30 @@ WATCH=/media/internal/.usbctl-watch          # app keepalive: run the device mon
 DEVICES=/media/internal/.usbctl-devices      # device monitor -> app (JSON list)
 USBDEVMON=/usr/bin/usbdevmon
 OTG=/sys/kernel/debug/otg/mode
-# The root fs (and thus /media) is mounted READ-ONLY on a stock device, so we
-# cannot create a mountpoint there. /media/internal is the writable user
-# storage partition and is exactly where webOS file managers browse, so the
-# stick shows up as a folder the user can open.
-MNT=/media/internal/usbdrive
+# Mountpoint. Prefer /media/usb -- OUTSIDE /media/internal.
+#
+# WHY NOT /media/internal/usbdrive, the obvious choice (cost a full debug
+# session 2026-08-24): Internalz Pro's backend, FileMgr-Service, lists ANY path
+# under /media/internal with MTOOLS -- `mdir` against mtools.conf's
+# `drive A: file="/dev/mapper/store-media"` -- whenever the caller asks to hide
+# hidden files, which is that app's default. mtools parses the internal
+# partition's FAT directly and is therefore blind to the kernel mount table: a
+# stick mounted at a subdirectory of that volume lists as an EMPTY folder, while
+# writes into it silently land on internal storage underneath the mountpoint.
+# Mounting anywhere else takes FileMgr's plain readdir path and it all works.
+# Any file manager that special-cases the media partition will have this bug.
+# Don't use a name like /media/internal-usb either -- the check is a bare
+# startsWith("/media/internal"), no trailing slash.
+#
+# The catch the old comment was right about: the root fs (and thus /media) is
+# READ-ONLY on a stock device, so we can only create a mountpoint there once
+# rootfs has been opened for writing (which Preware/webOS Internals users have
+# done). Fall back to the in-partition path when we cannot, so a locked-down
+# device still gets a working -- if Internalz-blind -- mount.
+MNT=/media/usb
+if [ ! -d "$MNT" ] && ! mkdir -p "$MNT" 2>/dev/null; then
+    MNT=/media/internal/usbdrive
+fi
 LOG=/tmp/usbctl-watchd.log
 
 log() { echo "$(date '+%H:%M:%S') usbctl: $*" >> "$LOG" 2>&1; }

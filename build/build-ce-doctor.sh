@@ -34,6 +34,30 @@ if pgrep -f "java .*-jar .*$(basename "$OUT")" > /dev/null 2>&1; then
     exit 1
 fi
 
+# Refuse to repack a full-ce overlay whose inputs have changed since it was
+# baked. The overlay is generated output that happens to be tracked in git, so
+# nothing about it reveals that AddToImage/ moved on -- the 2026-08-25 core-apps
+# refresh left a committed overlay missing the new db8 grants, and this script
+# would have shipped it without a word. bake.py records a sha256 over every
+# AddToImage/ file (+ the LunaCE binary) in the manifest; recompute and compare.
+if [[ "${OVERLAY:-}" == *overlays/full-ce* ]] && [ -f "$HERE/full-ce/BUILDMARK" ]; then
+    MANIFEST="$HERE/full-ce/manifests/$(cat "$HERE/full-ce/BUILDMARK").json"
+    if [ -f "$MANIFEST" ]; then
+        RECORDED="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("inputs_sha256",""))' "$MANIFEST")"
+        CURRENT="$(cd "$HERE/full-ce" && python3 -c 'import bake; print(bake.inputs_stamp())')"
+        if [ -z "$RECORDED" ]; then
+            echo "WARNING: $(basename "$MANIFEST") predates the inputs stamp; cannot verify the overlay is fresh." >&2
+        elif [ "$RECORDED" != "$CURRENT" ]; then
+            echo "ERROR: overlays/full-ce is STALE: AddToImage/ (or the LunaCE binary) changed" >&2
+            echo "       since BUILDMARK $(cat "$HERE/full-ce/BUILDMARK") was baked." >&2
+            echo "       Run: python3 full-ce/bake.py   (or ALLOW_STALE_OVERLAY=1 to override)" >&2
+            [ "${ALLOW_STALE_OVERLAY:-0}" = "1" ] || exit 1
+        else
+            echo ">>> overlay inputs verified against $(basename "$MANIFEST")"
+        fi
+    fi
+fi
+
 args=(build --jar "$JAR" --out "$OUT" --work "$WORK")
 [ -n "$OVERLAY" ] && args+=(--overlay "$OVERLAY")
 [ "${REEXTRACT:-0}" = "1" ] && args+=(--reextract)

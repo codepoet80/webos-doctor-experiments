@@ -379,7 +379,21 @@ def rewrite_rootfs(base_tar, out_tar, adds, removes, md5sums_rewrites, new_membe
                 kind, val = substitutions[name]
                 if kind == "file":
                     size = os.path.getsize(val)
-                    ti = make_ti(name, size, mode=m.mode)  # keep original mode
+                    # Keep the base member's mode: the overlay's own mode is
+                    # NOT consulted for a path that already exists (stock's
+                    # 0555/0700 etc. are not reproducible from a host file).
+                    # Flag the one case where that silently bites -- an
+                    # executable overlay source over a non-executable stock
+                    # file -- rather than fix it up: upstream ipks carry stray
+                    # exec bits on plain .js/.json payload (contacts.linker,
+                    # 15 files), and promoting those would change a verified
+                    # image for nothing. A script that genuinely needs the bit
+                    # has to be handled by the overlay author.
+                    if (os.stat(val).st_mode & 0o111) and not (m.mode & 0o111):
+                        log(f"  WARNING replace {name}: overlay source is executable "
+                            f"but stock mode {m.mode:o} is kept -- if this is a "
+                            f"script, it will NOT be executable on the device")
+                    ti = make_ti(name, size, mode=m.mode)
                     with open(val, "rb") as f:
                         dst.addfile(ti, f)
                     log(f"  replace {name} ({size} bytes)")
@@ -395,8 +409,11 @@ def rewrite_rootfs(base_tar, out_tar, adds, removes, md5sums_rewrites, new_membe
                     dst.addfile(m, src.extractfile(m))
                 else:
                     dst.addfile(m)  # dirs, symlinks, hardlinks, devices
-        # brand-new files not present in the base
-        for name, val in substitutions.items():
+        # brand-new files not present in the base. Sorted: the dict is in
+        # os.walk() order, i.e. the build host's directory-read order, which
+        # made the tar (and so the JAR) differ between hosts with identical
+        # inputs.
+        for name, val in sorted(substitutions.items()):
             if name in appended:
                 continue
             kind, v = val
@@ -415,14 +432,14 @@ def rewrite_rootfs(base_tar, out_tar, adds, removes, md5sums_rewrites, new_membe
                 dst.addfile(ti, io.BytesIO(v))
                 log(f"  add     {name}")
             appended.add(name)
-        for name, data in new_members.items():
+        for name, data in sorted(new_members.items()):
             if name in appended:
                 continue
             ti = make_ti(name, len(data))
             dst.addfile(ti, io.BytesIO(data))
             log(f"  add     {name} (ipkg meta)")
         # symlinks (SYMTYPE) — invisible to integcheck, emitted verbatim
-        for name, target in symlinks.items():
+        for name, target in sorted(symlinks.items()):
             nm = norm(name)
             if nm in appended:
                 continue

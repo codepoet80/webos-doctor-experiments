@@ -222,9 +222,17 @@ volumes the Doctor doesn't flash, or depend on the user's OOBE choices):
   every boot, kicks `imtransport` in case it exhausted its respawn limit
   before cryptofs mounted.
 
-Upstart runs these with `sh -e`: guards must be `[ ! -d x ] || cmd` /
-`if [ -f x ]; then exit 0; fi` forms — `[ -f x ] && exit 0` aborts the script
-when x is absent.
+Upstart runs these with `sh -e`: a failing command that stands alone (or ends
+an AND/OR list) aborts the script, so anything that may legitimately fail wants
+`|| true`. Guard forms like `[ -f x ] && exit 0` and `[ ! -d x ] || cmd` are
+both safe — `-e` is ignored for non-final commands in a list (verified under
+dash and busybox ash; an earlier note here claimed otherwise).
+
+**Overlay freshness.** `build-ce-doctor.sh overlays/full-ce` refuses to repack
+when `AddToImage/` (or the LunaCE binary) no longer matches the
+`inputs_sha256` recorded in `manifests/<BUILDMARK>.json` — the generated
+overlay is tracked in git, so a stale one looks exactly like a fresh one.
+Rebake, or set `ALLOW_STALE_OVERLAY=1` to override deliberately.
 
 ## Status
 
