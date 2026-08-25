@@ -49,17 +49,25 @@ ATI_POR="$BUILD/../AddToImage/PatchOrReplace"
 # A plain `ls glob | tail` dies under set -euo pipefail when the glob is empty
 # (ls exits 2, pipefail propagates, errexit kills the shell with stderr
 # discarded) — which made the fallbacks below dead code and the missing-input
-# diagnostics unreachable. Version order (sort -V on the filename), not mtime:
-# git does not preserve mtimes, so a fresh clone made an mtime pick arbitrary;
-# a corrected rebuild that reuses the same version string overwrites the same
-# filename, so version order loses nothing.
+# diagnostics unreachable. Version order, not mtime: git does not preserve
+# mtimes, so a fresh clone made an mtime pick arbitrary; a corrected rebuild
+# that reuses the same version string overwrites the same filename, so version
+# order loses nothing.
+#
+# Sort the VERSION FIELD, not the whole filename: for 1.0.1 vs 1.0.1.1 the tail
+# after the common part is "_all.ipk" vs ".", and `sort -V` ranks the shorter
+# version HIGHER there, so filename order would pick the superseded ipk. Same
+# trap bake.py's _verkey() avoids.
 newest_ipk() {
-    local matches=()
+    local matches=() m ver
     shopt -s nullglob
     matches=("$1"/"$2"_*.ipk)
     shopt -u nullglob
     [ ${#matches[@]} -gt 0 ] || return 0
-    printf '%s\n' "${matches[@]}" | sort -V | tail -n 1
+    for m in "${matches[@]}"; do
+        ver="$(basename "$m")"; ver="${ver#"$2"_}"; ver="${ver%_*}"
+        printf '%s\t%s\n' "$ver" "$m"
+    done | sort -V -k1,1 | tail -n 1 | cut -f2-
 }
 
 CURL_IPK="$(newest_ipk "$ATI_POR" org.webosinternals.curl-tls13)"

@@ -113,16 +113,28 @@ def _natkey(name):
             for t in re.split(r"(\d+)", name)]
 
 
+def _verkey(path, pkgprefix):
+    """Natural-sort key over the VERSION FIELD ONLY of <pkgprefix>_<ver>_<arch>.ipk.
+
+    Sorting the whole filename gets a shorter-prefix version wrong: the tail
+    after the common part is "_all.ipk" for 1.0.1 but "." for 1.0.1.1, and
+    "." < "_", so plain natural sort ranked 1.0.1 ABOVE 1.0.1.1 and baked the
+    superseded ipk. Comparing just "1.0.1" vs "1.0.1.1" leaves "" vs "." and
+    orders correctly."""
+    ver = os.path.basename(path)[len(pkgprefix) + 1:].rsplit("_", 1)[0]
+    return _natkey(ver)
+
+
 def ati_ipk(folder, pkgprefix):
     """Highest-versioned <pkgprefix>_*.ipk in an AddToImage folder (natural
-    sort of the filename). mtime was used before, but git does not preserve
+    sort of the version field). mtime was used before, but git does not preserve
     mtimes, so a fresh clone made the pick arbitrary; a corrected rebuild that
     reuses the same version string overwrites the same filename, so version
     order loses nothing."""
     cands = glob.glob(os.path.join(folder, pkgprefix + "_*.ipk"))
     if not cands:
         sys.exit(f"ERROR: no {pkgprefix}_*.ipk in {folder}")
-    return max(cands, key=lambda p: _natkey(os.path.basename(p)))
+    return max(cands, key=lambda p: _verkey(p, pkgprefix))
 
 
 IPK = {
