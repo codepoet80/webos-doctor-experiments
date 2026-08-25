@@ -53,7 +53,7 @@
     "AddToImage/PreInstall/org.webosinternals.preware_1.9.19_arm.ipk": "b4ef779dda860b135732bfdba4957585ca02b64f6f100bcedccd470102086ddf"
   },
   "output_jar": {
-    "path": "/home/jonwise/Projects/webos-doctor-ce/build/../out/webosdoctorp305hstnh-3.1CE.jar",
+    "path": "out/webosdoctorp305hstnh-3.1CE-600057.jar",
     "sha256": "41e5426fac226f42239385e66c338bb0cd77197226edc95f5b73cad027ff3641"
   }
 }

@@ -9,16 +9,27 @@
 #
 # Env overrides:
 #   JAR    OEM Doctor JAR         (default: ../webosdoctorp305hstnhwifi.jar)
-#   OUT    output CE Doctor JAR   (default: ../out/webosdoctorp305hstnh-3.1CE.jar)
+#   OUT    output CE Doctor JAR   (default: ../out/webosdoctorp305hstnh-3.1CE-<BUILDMARK>.jar
+#                                 for a full-ce overlay, else ...-3.1CE.jar)
 #   WORK   work directory         (default: ./work)
 #   REEXTRACT=1  force re-extract of the OEM JAR into WORK
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JAR="${JAR:-$HERE/../webosdoctorp305hstnhwifi.jar}"
-OUT="${OUT:-$HERE/../out/webosdoctorp305hstnh-3.1CE.jar}"
 WORK="${WORK:-$HERE/work}"
 OVERLAY="${1:-}"
+
+# Default output name carries the BUILDMARK for a full-ce build, so every JAR
+# in out/ says which bake it is and a rebuild never overwrites an earlier mark
+# (the -<mark>-rc.jar release files used to be renamed by hand).
+if [ -z "${OUT:-}" ]; then
+    if [[ "${OVERLAY:-}" == *overlays/full-ce* ]] && [ -f "$HERE/full-ce/BUILDMARK" ]; then
+        OUT="$HERE/../out/webosdoctorp305hstnh-3.1CE-$(cat "$HERE/full-ce/BUILDMARK").jar"
+    else
+        OUT="$HERE/../out/webosdoctorp305hstnh-3.1CE.jar"
+    fi
+fi
 
 mkdir -p "$(dirname "$OUT")"
 

@@ -12,7 +12,7 @@ moment the flash lays down. `bake.py` generates `../overlays/full-ce/`; then
 
 ```
 python3 bake.py
-../build-ce-doctor.sh overlays/full-ce      # -> out/webosdoctorp305hstnh-3.1CE.jar
+../build-ce-doctor.sh overlays/full-ce      # -> out/webosdoctorp305hstnh-3.1CE-<BUILDMARK>.jar
 ```
 
 ## Inputs: `AddToImage/` (project root)
@@ -240,7 +240,7 @@ Flash-tested end to end on hardware (2026-08-16, four flashes): OOBE in
 English and German completes and reboots itself; every baked app and service
 works on first boot; trust store, media, launcher placement, wallpaper and
 language alignment all verified. Shipping artifact:
-`out/webosdoctorp305hstnh-3.1CE.jar`.
+`out/webosdoctorp305hstnh-3.1CE-<BUILDMARK>.jar`.
 
 Operational notes: `sync` before `tellbootie recover` (cryptofs lives on the
 FAT media partition and a dirty hard reboot can wipe its contents); launch the
