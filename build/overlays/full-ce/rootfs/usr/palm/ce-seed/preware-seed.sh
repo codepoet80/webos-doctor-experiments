@@ -226,7 +226,7 @@ if ! grep -q "^Package: com.palm.synergy.generic$" $APPS/usr/lib/ipkg/status 2>/
    {
       echo ""
       echo "Package: com.palm.synergy.generic"
-      echo "Version: 0.9.3"
+      echo "Version: 0.9.3.1"
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: all"
