@@ -50,6 +50,20 @@ Legend: `[ ]` not yet run · `[Pass]` · `[Fail]` · `[Human]` needs eyes/hands 
 
 ## How to run
 
+**Check the Doctor's own log before trusting a flash.** It reports
+`Flash End time (Success)` whether or not the app-store wipe worked, so grep the
+run for both markers (KNOWN-ISSUES #10):
+
+```
+grep -c "Read-only file system" <doctor-log>        # must be 0
+grep "AppDeletion: removed the appDirectory" <doctor-log>   # must be present
+```
+
+A read-only `/media/internal` during `AppDeletion` (a dirty VFAT volume, typically
+after a force-reboot into recovery) leaves the encrypted store half-wiped and the
+device boots with no app store. Cure: Device Info -> Reset Options -> Erase USB
+Drive, then enter recovery from a clean power-off.
+
 ```
 # 1. stock-lineage runs only: BEFORE flashing CE over stock, capture the baseline
 novacom put file:///tmp/base.sh < scripts/ce-capture-stock-baseline.sh
@@ -206,14 +220,45 @@ stop/starting the job.
 
 ## 8. Regressions from earlier validated flashes
 
+- [Pass] **ipkgservice survives repeated reboots** — *600067, 5 cycles x 5-minute soak*
+      Both faults are fixed at the source in Preware 1.9.19 (KNOWN-ISSUES #1, #1b),
+      so the check is not "did the repair work" but "did the fault occur at all":
+      `repairs-since-flash=0` across all five boots, zero `respawning too fast`,
+      zero crash reports, ipkgservice resident every time.
+- [Pass] **App-store root present, and no repair was needed** — *automated (600061)*
+      Two assertions, because they fail differently. A missing
+      `/media/cryptofs/apps` means the preload pass cannot install anything and the
+      device sits on the pulsing logo; a `REPAIRED:` line in
+      `/var/log/ce-cryptofs-seed.log` means the root was missing and our seed job
+      rebuilt it — i.e. the flash silently failed to wipe the store and we are only
+      papering over it. See KNOWN-ISSUES #10.
 - [Pass] Kindle / Facebook / YouTube preloads absent — *automated*
 - [Pass] `ls-hubd` clean (0 unlisted-service errors) — *automated*
 - [Pass] Trust store populated (~190 entries) — *automated*
 - [Pass] Help app repointed at webosarchive.org — *automated*
 - [Human] 0 crash artifacts — *automated, real assertion*
-- [Human] tripwire: no software reboot, or all UI-initiated — *automated, real assertion*
-      A reboot requested by anything other than LunaSysMgr fails the check — that is
-      what the tripwire exists to catch. A deliberate §0 reboot passes.
+- [Pass] Power-off path unwrapped — *automated, real assertion (600059)*
+      `/sbin/{reboot,poweroff,halt,telinit}` must be the stock ELF binaries with no
+      `*.real` leftovers. `halt` and `poweroff` are symlinks to `reboot`, which picks
+      its action from `basename(argv[0])`, so ANY shell wrapper over these names turns
+      Shut Down into a reboot — which is exactly what the retired 600011..600058 reboot
+      tripwire did (KNOWN-ISSUES #8).
+- [Pass] Power menu → **Shut Down** powers the device off and it stays off —
+      verified on 600059, along with Device Restart and Luna Restart: every option
+      in the menu performs its own action (KNOWN-ISSUES #8).
+      Re-test **on battery**: a TouchPad on a charger powers itself back on, which
+      is indistinguishable from the bug.
+- [Pass] **App uninstall after a PDK-app launch** (LunaCE 600058) — verified on
+      600059. Uninstall from the launcher works both before a PDK launch (control)
+      and after one, which is the case the fix addresses: `launchNativeProcess()`
+      used to leave `LD_PRELOAD=libpvrtc.so` in LunaSysMgr's own environment, so
+      every child it spawned until the next Luna restart died before `main()` with
+      exit 127 — including the `ipkg remove` the installer runs after dropping the
+      app from the registry, which is why the app came back at the next restart and
+      could not be removed. Evidence: `added watch on child pid 3604` ->
+      `util_ipkgRemoveDone: successful ipkg remove`, cryptofs apps 21 -> 20 and
+      ipkg stanzas 32 -> 31 (files and registry agreeing is the point — the tile
+      disappearing is not, since the old bug did that too).
 - [Human] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
 - [Human] Advanced reset options appear in the chosen OOBE language
 - [Human] Maps 4.0.1 opens
@@ -366,6 +411,12 @@ the test suite stubs `privileged.*`, so none of its ops are covered off-device:
 - [Human] An app restored by the directory fallback has no ipkg record, and is now
   still seen as installed via its `appinfo.json` and marked `unmanaged` — without
   that it silently drops out of every later backup
+- [Pass] The full 3.0.5 → 3.1.0 path — **verified on 600067, 2026-08-29**:
+      102 installed / 0 failed / 0 skipped / 11 services registered, with the
+      3.1.1 manifest reconciliation live (`Manifest cache synced: 1 of 1 refreshed
+      from the target`, on all four call sites). No ENOSPC, no timeouts, no
+      restore errors. One expected gap: an EAS account comes back without its
+      password (`CREDENTIALS_NOT_FOUND`) and must be re-entered.
 - [Human] The full 3.0.5 → 3.1.0 path: back up on stock 3.0.5, flash, restore
 
 **Watch for:** pushing the *upstream* `woce-backupd.js` to a CE device instead of

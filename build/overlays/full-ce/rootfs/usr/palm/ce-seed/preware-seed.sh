@@ -240,7 +240,7 @@ if ! grep -q "^Package: com.palm.app.backup$" $APPS/usr/lib/ipkg/status 2>/dev/n
    {
       echo ""
       echo "Package: com.palm.app.backup"
-      echo "Version: 3.1.0"
+      echo "Version: 3.1.1"
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: all"
@@ -258,7 +258,7 @@ if ! grep -q "^Package: org.webosinternals.browser-tls13$" $APPS/usr/lib/ipkg/st
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: armv7"
-      echo "Description: TLS 1.3 for the browser (baked into webOS CE)"
+      echo "Description: TLS 1.3 for the browser (Pre-loaded)"
       echo "Installed-Time: $(date +%s)"
       echo ""
    } >> $APPS/usr/lib/ipkg/status
@@ -272,7 +272,7 @@ if ! grep -q "^Package: org.webosinternals.downloadmgr-tls13$" $APPS/usr/lib/ipk
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: armv7"
-      echo "Description: TLS 1.3 for the download manager (baked into webOS CE)"
+      echo "Description: TLS 1.3 for the download manager (Pre-loaded)"
       echo "Installed-Time: $(date +%s)"
       echo ""
    } >> $APPS/usr/lib/ipkg/status
@@ -286,7 +286,7 @@ if ! grep -q "^Package: org.webosinternals.luna-tls13$" $APPS/usr/lib/ipkg/statu
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: armv7"
-      echo "Description: TLS 1.3 for LunaSysMgr (baked into webOS CE)"
+      echo "Description: TLS 1.3 for LunaSysMgr (Pre-loaded)"
       echo "Installed-Time: $(date +%s)"
       echo ""
    } >> $APPS/usr/lib/ipkg/status
@@ -300,7 +300,7 @@ if ! grep -q "^Package: org.webosinternals.mail-tls13$" $APPS/usr/lib/ipkg/statu
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: armv7"
-      echo "Description: TLS 1.3 for mail (baked into webOS CE)"
+      echo "Description: TLS 1.3 for mail (Pre-loaded)"
       echo "Installed-Time: $(date +%s)"
       echo ""
    } >> $APPS/usr/lib/ipkg/status
@@ -314,7 +314,7 @@ if ! grep -q "^Package: com.palm.rootcertsupdate$" $APPS/usr/lib/ipkg/status 2>/
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: all"
-      echo "Description: Updated root certificates (baked into webOS CE)"
+      echo "Description: Updated root certificates (Pre-loaded)"
       echo "Installed-Time: $(date +%s)"
       echo ""
    } >> $APPS/usr/lib/ipkg/status
@@ -328,7 +328,7 @@ if ! grep -q "^Package: org.webosinternals.curl-tls13$" $APPS/usr/lib/ipkg/statu
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: armv7"
-      echo "Description: TLS 1.3 curl (baked into webOS CE)"
+      echo "Description: TLS 1.3 curl (Pre-loaded)"
       echo "Installed-Time: $(date +%s)"
       echo ""
    } >> $APPS/usr/lib/ipkg/status
@@ -342,7 +342,7 @@ if ! grep -q "^Package: org.webosinternals.ntpdate-sync$" $APPS/usr/lib/ipkg/sta
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: armv7"
-      echo "Description: Time sync (baked into webOS CE)"
+      echo "Description: Time sync (Pre-loaded)"
       echo "Installed-Time: $(date +%s)"
       echo ""
    } >> $APPS/usr/lib/ipkg/status
@@ -356,7 +356,7 @@ if ! grep -q "^Package: org.webosinternals.patches.notifications-advanced-reset-
       echo "Depends: "
       echo "Status: install ok installed"
       echo "Architecture: all"
-      echo "Description: Advanced reset options (baked into webOS CE)"
+      echo "Description: Advanced reset options (Pre-loaded)"
       echo "Installed-Time: $(date +%s)"
       echo ""
    } >> $APPS/usr/lib/ipkg/status

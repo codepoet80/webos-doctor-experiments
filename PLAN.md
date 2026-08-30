@@ -105,60 +105,186 @@ header, ipks are selected by version (not mtime), and the staged ipks the build
 repacks are produced deterministically — so two builds of the same inputs differ
 only in `BUILDTIME`/`BUILDMARK`.
 
-## Next (after RC2)
+## RC3 (in progress)
 
-1. **The first-boot upstart race** — KNOWN-ISSUES #1. Preware's postinst rewrites
-   ipkgservice's upstart job file during the first-use preload pass and upstart
-   can read it partially written. Fix is structural: write to a temp path in the
-   same directory and `mv` it into place. Fires ~1 boot in 6, so validation is
-   "no regression across N boots", never a single clean run.
+RC2 field feedback is in `RC2-Issues.txt`; the reproduced/diagnosed items live in
+`KNOWN-ISSUES.md`. State as of 2026-08-29:
 
-2. **Tidy the Preware seed descriptions.** Keep all 11 status stanzas and keep
-   them displayed — the change is wording only. Every patch description in
-   bake.py ends in `(baked into webOS CE)`, which reads as noise in Preware's
-   list:
+1. **Power menu Shut Down rebooted the device** — KNOWN-ISSUES #8. **Fixed,
+   flashed and verified on hardware (600059): every power-menu option now
+   performs its own action.** The reboot tripwire's `/sbin/reboot` shell shim
+   could not preserve `argv[0]`, and `poweroff`/`halt` are symlinks to `reboot`,
+   whose action comes from that name alone — so every power-off became a reboot.
+   The tripwire is retired: `bake.py` §19d writes no shims, the four overlay
+   files are deleted, and `ce-test-full.sh` check 8 now asserts the path stays
+   unwrapped. Verify on hardware **on battery**.
 
-   ```
-   TLS 1.3 for the browser (baked into webOS CE)   ->  TLS 1.3 for the browser
-   Updated root certificates (baked into webOS CE) ->  Updated root certificates
-   Time sync (baked into webOS CE)                 ->  Time sync
-   ```
+2. **Preware seed wording** — RC2-Issues #2. The eight `(baked into webOS CE)`
+   suffixes in `PATCH_SEED`/`EXTRA_PATCH_SEED` are now `(Pre-loaded)`, and the
+   tracked `preware-seed.sh` carries the same text. Behaviour is untouched: all
+   11 stanzas remain, one per package (TEST-PLAN §6). `Backup and Restore
+   (woce-backup)` keeps its parenthetical — it names the package, it is not a
+   bake note.
 
-   Eight strings in `PATCH_SEED` and `EXTRA_PATCH_SEED`. The Description field
-   doubles as Preware's display title for a package that is in no feed, so
-   these strings are literally what the user reads. `Backup and Restore
-   (woce-backup)` carries the same kind of parenthetical — worth deciding on at
-   the same time.
+3. **The first-boot upstart race** — KNOWN-ISSUES #1. **Repaired in 600062**
+   (not prevented). Preware's postinst `cp`s ipkgservice's upstart job file into
+   the watched directory in place and `start`s it 25 ms later, so upstart can
+   read it partially written; the job then sits `(stop) waiting` and Preware has
+   no backend until a reboot. The bad write lives in a signed third-party ipk, so
+   `ce-cryptofs-seed` now repairs instead: if the service is not running once
+   Preware is installed, rewrite the job file via a temp path OUTSIDE
+   `/var/palm/event.d` and `mv` it in (atomic `rename(2)`), then start it. The
+   settled-system fast path now also requires ipkgservice to be running, or a
+   Luna Restart would skip the repair on exactly the boots that need it.
+   Bench-tested under busybox against all three states; logs `REPAIRING
+   ipkgservice:` and `ce-test-full.sh` surfaces it as INFO. The race can still
+   fire — the cost is now one repaired boot instead of a dead Preware — and
+   validation is unchanged: one clean boot proves nothing.
+   **Also worth sending upstream:** every Preware install on any device runs that
+   same non-atomic `cp`; the two-line patch is in KNOWN-ISSUES #1.
 
-   Behaviour must not change: the stanzas are also what makes a 3.0.5 -> CE
-   restore skip the patches' staging directories, so keep all 11 and keep
-   TEST-PLAN section 6 passing (exactly one stanza per package).
+4. **Newly installed apps land on GAMES, not DOWNLOADS** — **closed, not
+   reproducible.** On a clean 600059 flash, installs from the browser, the App
+   Catalog and Preware all landed on DOWNLOADS. The RC2 device had taken a
+   115-package restore, and the launcher marshal consults the saved per-app
+   position before every other rule, so the sighting is most likely restored
+   device state rather than the image. Kept in KNOWN-ISSUES #9 as a closed entry
+   with the diagnosis to run if it is ever seen again. README corrected: CE
+   renames **Favorites** to Games, not Downloads.
 
-3. **luna-tls13 is at 1.1.4** (dropped in 2026-08-24; 1.1.3 removed). Nothing
-   to change in the tree — `bake.py`'s `ati_ipk()` picks the highest-versioned
-   `org.webosinternals.luna-tls13_*.ipk` in `AddToImage/PatchOrReplace`, and the
+5. **Atlas grabbed every local media file** — RC2-Issues #4, **fixed in
+   `../atlas-browser-app`, nothing to change here.** Its `appinfo.json` claimed
+   `{"urlPattern": "^file:"}`, which `ApplicationDescription` registers as a
+   non-scheme redirect handler — and `ApplicationManagerService` resolves
+   redirect handlers *before* mime and extension handlers, so one claim
+   outranked Photos, Music and Video for every `file://` open. The claim is
+   gone, and its postinst/prerm now drop Atlas's stale entries from
+   `/var/usr/palm/command-resource-handlers-active.json` (the persisted table
+   that survives upgrades and Luna restarts) so the fix reaches devices that
+   already have 0.9.11.
+
+6. **luna-tls13 is at 1.1.4** (dropped in 2026-08-24; 1.1.3 removed) — **done,
+   nothing left to do.** `bake.py`'s `ati_ipk()` picks the highest-versioned
+   `org.webosinternals.luna-tls13_*.ipk` in `AddToImage/PatchOrReplace` and the
    Preware status stanza takes its `Version:` from that ipk's control, so the
-   next bake carries 1.1.4 end to end. The checked-in
-   `build/overlays/full-ce/.../preware-seed.sh` still says `Version: 1.1.3`;
-   that file is bake.py output and is regenerated, not hand-edited.
+   600058 bake already carried 1.1.4 end to end and 600059 still does.
+   `preware-seed.sh` is bake.py output: regenerate it, never hand-edit the
+   versions. (One deliberate exception on 2026-08-29: its eight *description*
+   strings were re-worded by hand ahead of the bake so an un-baked build would
+   not ship the old text. The 600059 bake reproduced them byte for byte.)
 
-   The diff from 1.1.3 is **wording only** — three postinst echo lines, one
+   The diff from 1.1.3 was **wording only** — three postinst echo lines, one
    preremove echo line, and the version in `appinfo.json`/control. Identical
    payload file list, no change to the LunaSysMgr launcher patch or the three
    env-scrub wrappers. So it needs no re-verification beyond a normal build;
    sha256 `e8107550e037e5fe7cb502f93601b4f1eb31770e53a4d00f512b59351e1dd9ec`.
 
+
+7. **The installer wrapper still said HP** — done in 600060. The Doctor's own
+   window said `HP(R) webOS(tm) Doctor (Build Hp.88.86 12/21/11 19:58)`, its
+   begin/end cards promised that an HP profile would restore the user's apps and
+   contacts, and its help links pointed at `go.palm.com` / `hpwebos.com` pages
+   that have been dead for over a decade. `harness.py` now brands the wrapper at
+   repack time from the overlay's own `etc/palm-build-info`, so the installer and
+   the OS it installs cannot disagree:
+
+   - `recoverytool.config`: `VersionStr` -> the CE version string,
+     `RomBuildNumber` -> the BUILDMARK, `RecoveryToolBuildTime` -> the bake time.
+     Title bar now reads `webOS(tm) Doctor (Build Hp.88.600060 08/29/26 16:58)`.
+   - `messages*.properties`, all 9 locales, 7 strings each: the HP/Palm-profile
+     promises become the Backup-app truth, and every dead support link becomes
+     `docs.webosarchive.org/doctor/`.
+   - `CardController.class`: the `HP(R) ` vendor mark dropped from the title
+     constant (a `CONSTANT_Utf8` swap; `javap` re-parses the patched class).
+
+   Which keys were safe to touch and which are load-bearing is audited in
+   **TEARDOWN §2**. Deliberately untouched: `RecoveryToolBuildNumber` (fed to the
+   build-approval check) and `CustomizationBuild` (names `resources/hp.tar` — it
+   is why the title still says `Hp.`). Still HP-branded and worth a decision:
+   the 9 `EULA_*.html` files, and `BootiefyCard.2/.3`, which tell the user to
+   take off the back cover and remove the battery — no TouchPad has either.
+
+8. **The output JAR was named after the OEM product** — **done 2026-08-29.**
+   `build-ce-doctor.sh` now writes `out/webosdoctorp310hstnh-ce-<mark>.jar`: CE's
+   own version and suffix, instead of HP's `p305` product code with a `3.1CE` tag
+   bolted on. Takes effect from **600063**, which was rebuilt under the new name
+   (byte-identical, sha256 `67544cb8…` before and after — a rename, not a new
+   image); 600062 and earlier keep the names they were built and flashed under,
+   and their manifests record those paths. The
+   input, `webosdoctorp305hstnhwifi.jar`, keeps its name — that is a fact about
+   HP's file. `build/README.md` and the RELEASE-NOTES asset line updated with it.
+
+9. **The app-store root can go missing on a flash** — KNOWN-ISSUES #10, found
+   and guarded on 2026-08-29. A dirty VFAT `/media/internal` (mounted
+   `errors=remount-ro`) makes the Doctor's `AppDeletion` stage go read-only; it
+   then fails every removal, **reports the flash successful anyway**, and the
+   device boots with no `/media/cryptofs/apps` — preloads fail forever on the
+   pulsing logo. `ce-cryptofs-seed` now probes the real path and rebuilds the root
+   before the preload pass, `ce-test-full.sh` asserts both the root and the absence
+   of a repair, and TEST-PLAN's flash checklist says to grep the Doctor log for
+   `removed the appDirectory` / `Read-only file system`. Still open: the Doctor
+   itself treats a wholly failed wipe as success — fixing that means patching OEM
+   Java, which is a bigger call than the first-boot guard.
+
+**Baked as 600059** (2026-08-29), sha256 `230f66ff…`, integcheck clean,
+**flashed successfully** the same day, and the first fully clean automated pass
+of the cycle: **81 PASS / 0 FAIL / 9 INFO** (`scripts/results-600059.txt`; RC2
+had three FAILs, all the ipkgservice race). 600060 re-bakes it with the wrapper
+branding above. The
+built rootfs was checked on both fixes: `/sbin/reboot` and `/sbin/telinit` are
+the stock OEM binaries again with no `*.real` leftovers and `halt`/`poweroff`
+still symlinked to `reboot`; `preware-seed.sh` carries 11 stanzas with the eight
+`(Pre-loaded)` descriptions, and luna-tls13's stanza now reads 1.1.4 by itself.
+Nothing has been flashed.
+
+**A caution for the next change to `bake.py`:** the stale-overlay guard does
+**not** cover it. `inputs_sha256` is computed over `AddToImage/` and the LunaCE
+binary only, so a `bake.py` edit never trips the guard — the tracked overlay
+will simply build with the old behaviour. Re-bake after touching it.
+
 ## Working artifacts
 
 - `webosdoctorp305hstnhwifi.jar` — the OEM 3.0.5 Doctor (the repack base; not in git).
-- `out/webosdoctorp305hstnh-3.1CE-600056.jar` — **release candidate 2**.
+- `out/webosdoctorp310hstnh-ce-600067.jar` — **the current RC3 candidate**,
+  sha256 `eadd365f…`. Everything below, plus **Preware 1.9.19 rebuilt from source**
+  carrying both ipkgservice fixes (atomic job-file write, and registration failure
+  no longer reported to upstart as success — KNOWN-ISSUES #1 and #1b), and
+  woce-backup 3.1.1 with the manifest, dedup and orphan-purge fixes. Built and
+  integchecked; not yet flashed.
+- `out/webosdoctorp310hstnh-ce-600066.jar` — the polling ipkgservice repair only;
+  the Preware source fix is NOT in this one.
+- `out/webosdoctorp310hstnh-ce-600064.jar` — flashed; the boot that exposed the
+  respawn storm (KNOWN-ISSUES #1b). 82 PASS / 2 FAIL.
+- `out/webosdoctorp305hstnh-3.1CE-600062.jar` — an earlier candidate,
+  sha256 `89d32952…`. 600061 plus the ipkgservice job repair (KNOWN-ISSUES #1).
+  Built and integchecked; **not yet flashed**.
+- `out/webosdoctorp305hstnh-3.1CE-600061.jar` — the previous candidate,
+  sha256 `5cdd09ef…`. 600060 plus the `ce-cryptofs-seed` app-store-root probe and
+  repair (KNOWN-ISSUES #10). Flashed and verified on hardware 2026-08-29:
+  **83 PASS / 0 FAIL / 9 INFO** (`scripts/results-600061.txt`), clean OOBE with
+  account sign-in, quick Luna restart, `AppDeletion: removed the appDirectory`
+  present with zero read-only errors, and the repair path correctly dormant
+  (`cryptofs usable after 0s`, no `REPAIRED:` lines).
+- `out/webosdoctorp305hstnh-3.1CE-600060.jar` — the branded wrapper (config
+  strings, 9 message bundles, the title constant) on 600059's rootfs. Flashed;
+  its first boot hit the dirty-VFAT store wipe failure of KNOWN-ISSUES #10 —
+  a device-state fault, not an image one, confirmed by reflashing on an erased
+  volume. Superseded by 600061.
+- `out/webosdoctorp305hstnh-3.1CE-600059.jar` — **flashed and verified booting
+  on hardware 2026-08-29**, sha256 `230f66ff…`. First build with the retired
+  tripwire and the `(Pre-loaded)` seed wording. Trenchcoat ran to 100% and the
+  Doctor reported `Flash End time (Success)`.
+- `out/webosdoctorp305hstnh-3.1CE-600058.jar` — LunaCE with the PDK
+  `LD_PRELOAD` / app-remove fixes. **Never flashed**; the baseline 600059 sits on.
+- `out/webosdoctorp305hstnh-3.1CE-600056.jar` — **release candidate 2**, the last
+  build validated on hardware.
 - `out/webosdoctorp305hstnh-3.1CE-600055.jar` — identical bar the restore
   timeout fix; the build the 100/2 restore was measured on.
 - `out/webosdoctorp305hstnh-3.1CE-600052.jar` — the previously built candidate,
   identical bar the de-shadow list and seed-log text; kept as a fallback.
 - `out/webosdoctorp305hstnh-3.1CE-600024-rc.jar` — RC1, kept as a fallback.
 
-600053 and 600054 are intermediate bakes, not candidates.
+600053, 600054 and 600057 are intermediate bakes, not candidates.
 
 `out/` is gitignored; rebuild with `build/full-ce/bake.py` then
 `build/build-ce-doctor.sh overlays/full-ce`.

@@ -1,8 +1,0 @@
-#!/bin/sh
-# webOS CE tripwire: record who requests reboots (see bake.py 19d),
-# then do exactly what the real binary would have done.
-PC=$(cat /proc/$PPID/cmdline 2>/dev/null | tr '\0' ' ')
-echo "$(date) telinit pid=$$ ppid=$PPID parent=[$PC] args=[$*]" >> /var/log/reboot-tripwire.log 2>/dev/null
-logger -t reboot-tripwire "telinit ppid=$PPID parent=[$PC] args=[$*]" 2>/dev/null
-sync
-exec /sbin/telinit.real "$@"

@@ -1,0 +1,13 @@
+Issues discovered since RC2:
+
+#1 Power Menu Shut Down option only reboots the device
+- Our "Advanced Reset Options" integration works, but the "Shut Down" button does the same thing as the "Device Restart" button.
+
+#2 Preware pre-seed statement is too verbose
+- Replace "Baked into webOS 3.1.0" with "Pre-loaded"
+
+#3 Default install tab is wrong
+- Not sure if this is a Luna, Preware or installer issue, but newly installed apps appear in the "Games" tab (3rd tab from the left). They should appear in the "Files" tab (2nd tab from the left.) This is an issue we caused by renaming "Downloads" to "Games" so its on us to try to fix.
+
+#4 Atlas Handling Media Launches
+- This is probably not our problem, but let's take a look. Once the community-created Atlas web browser (a sister project to this one) is installed, tapping on media (photos, videos, music) in a file manager opens Atlas, instead of the built-in media player app. We DO want to allow Atlas to handle appropriate media types, but it seems something in that project is too aggressive. See /home/jonwise/Projects/atlas-browser-app

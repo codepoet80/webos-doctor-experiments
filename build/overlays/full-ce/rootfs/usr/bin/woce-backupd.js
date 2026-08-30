@@ -66,7 +66,7 @@ var exec = require('child_process').exec;
 // Rewritten by build.sh. Reported in the ping reply and logged by the
 // service, so "Root helper available, version X" says which daemon code is
 // actually live — upstart will not restart a running job on its own.
-var VERSION = "3.1.0+20260822-213315";
+var VERSION = "3.1.1+20260829-161700";
 
 var SERVICE_ID = "com.palm.app.backup.service";
 
@@ -952,6 +952,51 @@ function listImageApps() {
  * user actually sees lives (com.10tons.azkend2: Description "This is a webOS
  * application.", appinfo title "Azkend 2").
  */
+/*
+ * Zeroes the MTIME field of a gzip header (bytes 4..7, little-endian).
+ *
+ * `tar czf` stamps the moment the archive was created into that field, so two
+ * archives of BYTE-IDENTICAL content differ in four bytes and hash differently.
+ * The backup store is content addressed and the manifest dedups on that hash,
+ * so an app that has not changed since yesterday was stored again in full on
+ * every run -- incremental backup silently degraded to a full copy of every
+ * archived app, every time.
+ *
+ * Measured on a daily driver (2026-08-29): com.ea.app.nfshp.pad.na-app.tar.gz,
+ * 309,556,846 bytes, stored SIX times under six different checksums across four
+ * days of scheduled backups. /media/internal reached 100% full and backups then
+ * failed with ENOSPC.
+ *
+ * The other inputs to the archive are already stable run to run -- the app's
+ * own files, their mtimes, and readdir order on the same filesystem -- so this
+ * field is the only thing that moves. Patching the header afterwards rather
+ * than passing a gzip flag keeps this working with whatever gzip busybox
+ * provides (its -n is not dependable across versions), and it is four bytes.
+ */
+var normalizeGzipMtime = function (file) {
+    var fd = null;
+    try {
+        fd = fs.openSync(file, "r+");
+        var head = new Buffer(4);
+        if (fs.readSync(fd, head, 0, 4, 0) !== 4 || head[0] !== 0x1f || head[1] !== 0x8b) {
+            log("not a gzip file, leaving header alone: " + file);
+            return false;
+        }
+        var zeros = new Buffer(4);
+        zeros[0] = 0; zeros[1] = 0; zeros[2] = 0; zeros[3] = 0;
+        fs.writeSync(fd, zeros, 0, 4, 4);
+        return true;
+    } catch (err) {
+        // Non-fatal: a stamped archive still restores, it just will not dedup.
+        log("could not normalise the gzip header for " + file + ": " + err.message);
+        return false;
+    } finally {
+        if (fd !== null) {
+            try { fs.closeSync(fd); } catch (ignored) {}
+        }
+    }
+};
+
 var SDK_PLACEHOLDER_TITLE = "This is a webOS application.";
 
 function appInfoFor(id) {
@@ -1200,6 +1245,8 @@ ops.archivePackages = function (job, done) {
                     archiveFailures.push({ id: id, reason: why });
                     try { fs.unlinkSync(tarball); } catch (ignored) {}
                 } else {
+                    // Before anything hashes it: see normalizeGzipMtime.
+                    normalizeGzipMtime(tarball);
                     log("archived " + id + " as " + owned.length + " owned path(s), " +
                         sizeMb + "MB in " + secs + "s: " + owned.join(", "));
                     archivedDirs.push(id);

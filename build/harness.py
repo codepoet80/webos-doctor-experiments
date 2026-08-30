@@ -43,6 +43,83 @@ FLASHER_CLASS = "com/palm/nova/installer/core/FlasherThread.class"
 MAIN_CLASS = "com.palm.nova.installer.recoverytool.RecoveryTool"
 IPKG_INFO_DIR = "./usr/lib/ipkg/info"
 
+# ---- CE branding of the installer wrapper (JAR resources) -------------------
+# The OEM Doctor's own UI still says HP everywhere: the title bar, the two cards
+# that promise an HP profile restore, and support links to servers that have
+# been dead for over a decade. None of it is load-bearing — see the audit in
+# TEARDOWN §2 — so it is rewritten at repack time from the SAME build metadata
+# the rootfs is branded with (etc/palm-build-info in the overlay), which keeps
+# the wrapper and the OS it installs from disagreeing about what this is.
+CONFIG_ENTRY = "resources/recoverytool.config"
+CARDCTL_CLASS = "com/palm/nova/installer/recoverytool/CardController.class"
+MESSAGES_GLOB = "resources/messages"
+
+# The window title is built in CardController as
+#   "HP(R) webOS(tm) Doctor (Build " + ConfigFileMgr.getPhoenixBuildVersion() + ")"
+# so dropping the vendor mark here is the whole change. It is a length-prefixed
+# CONSTANT_Utf8 entry, so a SHORTER replacement is fine (see patch_class_utf8).
+TITLE_OLD = b"HP(R) webOS(tm) Doctor (Build "
+TITLE_NEW = b"webOS(tm) Doctor (Build "
+
+# recoverytool.config keys that are safe to rewrite. Audited against every class
+# in the JAR:
+#   VersionStr           read by NO class — ConfigFileMgr's key set does not
+#                        include it; it only reaches the log because
+#                        loadConfiguration enumerates every property.
+#   RomBuildNumber       reaches getPhoenixBuildVersion() (the title bar) only.
+#   RecoveryToolBuildTime  same — title bar only.
+# DELIBERATELY NOT TOUCHED: RecoveryToolBuildNumber (MainFlasher hands it to the
+# build-approval check alongside the Approval*Hash blobs — the dead-server gate
+# we neutralise via setCheckFlash(false); no reason to poke it), and
+# CustomizationBuild (it names the resources/hp.tar payload the customization
+# stage flashes — it is not a display string, even though the title's "Hp."
+# prefix is derived from it), BaseBuild, DeviceType, ForceModemUpdate,
+# SoftwareUpdateSite, Approval*.
+SUPPORT_URL = "https://docs.webosarchive.org/doctor/"
+
+# Every message bundle carries the same keys; the localized ones are older still
+# and say "Palm profile". Replaced in all 9 so no locale keeps the dead promise.
+# Not touched here, and worth deciding on separately: BootiefyCard.2/.3 tell the
+# user to pull the back cover and remove the battery, which no TouchPad has, and
+# EulaCard.1 still points at HP's EULA.
+_MSG_EN = {
+    "EndFlashingCard.2": "Your device is now restarting. Follow the instructions on your device to set your language and finish setup.\n\n",
+    "EndFlashingCard.4": "After your device is reset, your apps and data can be restored from a backup made with the webOS CE Backup app. Music, videos and documents already on the device are not affected.",
+    "BeginFlashingCard.3": "After your device is reset, your apps and data can be restored from a backup made with the webOS CE Backup app. Music, videos and documents already on the device are not affected.",
+    "FlashingFailedCard.2": " webOS Archive",
+}
+_MSG_DE = {
+    "EndFlashingCard.2": "Ihr Ger\u00E4t wird jetzt neu gestartet. Folgen Sie den Anweisungen auf dem Ger\u00E4t, um die Sprache einzustellen und die Einrichtung abzuschlie\u00DFen.\n\n",
+    "EndFlashingCard.4": "Nach dem Zur\u00FCcksetzen k\u00F6nnen Ihre Apps und Daten aus einer Sicherung wiederhergestellt werden, die mit der Backup-App von webOS CE erstellt wurde. Musik, Videos und Dokumente auf dem Ger\u00E4t sind nicht betroffen.",
+    "FlashingFailedCard.2": " webOS Archive",
+}
+_MSG_ES = {
+    "EndFlashingCard.2": "El dispositivo se est\u00E1 reiniciando. Sigue las instrucciones en pantalla para elegir el idioma y completar la configuraci\u00F3n.\n\n",
+    "EndFlashingCard.4": "Despu\u00E9s de restablecer el dispositivo, tus aplicaciones y datos se pueden restaurar desde una copia de seguridad creada con la aplicaci\u00F3n Backup de webOS CE. La m\u00FAsica, los v\u00EDdeos y los documentos del dispositivo no se ven afectados.",
+    "FlashingFailedCard.2": " webOS Archive",
+}
+_MSG_FR = {
+    "EndFlashingCard.2": "Votre appareil red\u00E9marre. Suivez les instructions affich\u00E9es pour choisir la langue et terminer la configuration.\n\n",
+    "EndFlashingCard.4": "Une fois l\u2019appareil r\u00E9initialis\u00E9, vos applications et vos donn\u00E9es peuvent \u00EAtre restaur\u00E9es \u00E0 partir d\u2019une sauvegarde cr\u00E9\u00E9e avec l\u2019application Backup de webOS CE. La musique, les vid\u00E9os et les documents pr\u00E9sents sur l\u2019appareil ne sont pas affect\u00E9s.",
+    "FlashingFailedCard.2": " webOS Archive",
+}
+_MSG_IT = {
+    "EndFlashingCard.2": "Il dispositivo si sta riavviando. Segui le istruzioni sul dispositivo per impostare la lingua e completare la configurazione.\n\n",
+    "EndFlashingCard.4": "Dopo il ripristino, le tue app e i tuoi dati possono essere ripristinati da un backup creato con l\u2019app Backup di webOS CE. Musica, video e documenti gi\u00E0 presenti sul dispositivo non vengono modificati.",
+    "FlashingFailedCard.2": " webOS Archive",
+}
+for _m in (_MSG_DE, _MSG_ES, _MSG_FR, _MSG_IT):
+    _m["BeginFlashingCard.3"] = _m["EndFlashingCard.4"]
+# All dead links (go.palm.com, palm.com/us/support, hpwebos.com) -> the community
+# doctor docs, in every bundle.
+_MSG_LINKS = {k: SUPPORT_URL for k in
+              ("CardController.14", "FlashingFailedCard.5", "FlashingFailedCard.7")}
+MESSAGE_OVERRIDES = {}
+for _suffix, _base in (("", _MSG_EN), ("_en_GB", _MSG_EN), ("_en_IE", _MSG_EN),
+                       ("_de_DE", _MSG_DE), ("_es_ES", _MSG_ES), ("_es_US", _MSG_ES),
+                       ("_fr_FR", _MSG_FR), ("_fr_CA", _MSG_FR), ("_it_IT", _MSG_IT)):
+    MESSAGE_OVERRIDES[f"resources/messages{_suffix}.properties"] = dict(_base, **_MSG_LINKS)
+
 # integcheck ipkg-mode semantics, copied verbatim from /usr/sbin/integcheck.
 IGNORE_IPKG_PREFIXES = ("./dev", "./media/internal", "./var")
 FS_EXCLUDE_PREFIXES = ("./usr/lib/ipkg", "./dev", "./media/internal", "./var")
@@ -690,12 +767,99 @@ def rebuild_webos_tar(webos_dir, out_path, overrides=None):
                 tf.addfile(ti)
 
 
-def rebuild_jar(src_jar, out_jar, new_webos_tar):
+def ce_branding(overlay_dir):
+    """Read the overlay's etc/palm-build-info and turn it into the JAR-side
+    branding values, so the installer wrapper and the OS it flashes cannot
+    disagree. Returns None when the overlay has no build info (the
+    community-firstuse overlay, or no overlay at all) — then the OEM strings are
+    left exactly as they are rather than half-branded."""
+    if not overlay_dir:
+        return None
+    info_path = os.path.join(overlay_dir, "rootfs", "etc", "palm-build-info")
+    if not os.path.isfile(info_path):
+        return None
+    info = {}
+    for line in open(info_path):
+        if "=" in line:
+            k, _, v = line.partition("=")
+            info[k.strip()] = v.strip()
+    version = info.get("PRODUCT_VERSION_STRING")
+    mark = info.get("BUILDMARK")
+    if not version or not mark:
+        return None
+    # BUILDTIME is YYYYMMDDhhmmss; the config field it feeds is displayed
+    # verbatim in the title bar, in the OEM's MM/DD/YY hh:mm shape.
+    bt = info.get("BUILDTIME", "")
+    when = (f"{bt[4:6]}/{bt[6:8]}/{bt[2:4]} {bt[8:10]}:{bt[10:12]}"
+            if len(bt) >= 12 and bt.isdigit() else None)
+    cfg = {"VersionStr": version, "RomBuildNumber": mark}
+    if when:
+        cfg["RecoveryToolBuildTime"] = when
+    return {"config": cfg, "version": version}
+
+
+def props_escape(value):
+    """Java .properties escaping: a value is one physical line, so newlines
+    become \\n, and anything outside printable ASCII becomes \\uXXXX (the OEM
+    bundles are written that way, and it keeps the file 7-bit whatever the
+    reader assumes). Lets the override tables above hold readable text."""
+    out = []
+    for ch in value:
+        if ch == "\n":
+            out.append("\\n")
+        elif ch == "\r":
+            out.append("\\r")
+        elif ch == "\t":
+            out.append("\\t")
+        elif ord(ch) > 0x7E:
+            out.append("\\u%04X" % ord(ch))
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def rewrite_kv_lines(data, overrides, sep="=", escape=False):
+    """Replace the value of each `key<sep>value` line present in `data`, leaving
+    every other line (and the file's order) untouched. Returns (bytes, hit-keys).
+    With escape=True the value is run through props_escape first."""
+    out, hits = [], set()
+    for raw in data.split(b"\n"):
+        line = raw.decode("latin-1")
+        key = line.split(sep, 1)[0].strip() if sep in line else None
+        if key in overrides:
+            val = overrides[key]
+            out.append(f"{key}{sep}{props_escape(val) if escape else val}"
+                       .encode("ascii"))
+            hits.add(key)
+        else:
+            out.append(raw)
+    return b"\n".join(out), hits
+
+
+def patch_class_utf8(data, old, new):
+    """Swap a CONSTANT_Utf8 entry in a .class file. The entry is
+    tag(0x01) + u2 length + bytes, and nothing in the format holds an absolute
+    offset, so a different-length replacement is safe as long as the length
+    prefix is rewritten with it. Fails loudly on 0 or >1 matches — a silent
+    no-op here would ship OEM branding while the log claimed otherwise."""
+    pat = b"\x01" + len(old).to_bytes(2, "big") + old
+    n = data.count(pat)
+    if n != 1:
+        raise SystemExit(f"[ce-harness] FATAL: expected exactly 1 CONSTANT_Utf8 "
+                         f"{old!r} in the class, found {n}")
+    return data.replace(pat, b"\x01" + len(new).to_bytes(2, "big") + new, 1)
+
+
+def rebuild_jar(src_jar, out_jar, new_webos_tar, branding=None):
     """Copy every entry from src_jar into out_jar, except:
       - resources/webOS.tar   (substitute new_webos_tar)
       - META-INF/*.SF, *.RSA  (drop -> unsigned)
       - META-INF/MANIFEST.MF  (replace with a minimal Main-Class manifest)
       - FlasherThread.class   (apply the checkToFlash patch)
+    and, when `branding` is given (see ce_branding):
+      - recoverytool.config   (VersionStr / RomBuildNumber / build time)
+      - messages*.properties  (HP-profile promises + dead support links)
+      - CardController.class  (drop the vendor mark from the window title)
     """
     manifest = (
         "Manifest-Version: 1.0\r\n"
@@ -734,6 +898,25 @@ def rebuild_jar(src_jar, out_jar, new_webos_tar):
             if n == FLASHER_CLASS:
                 data, off, idx = patch_flasher_bytes(data)
                 log(f"  patched FlasherThread.class (checkToFlash off @ {off})")
+            elif branding and n == CONFIG_ENTRY:
+                data, hit = rewrite_kv_lines(data, branding["config"])
+                missing = set(branding["config"]) - hit
+                if missing:
+                    sys.exit(f"[ce-harness] FATAL: {CONFIG_ENTRY} has no "
+                             f"{sorted(missing)} line(s) — the OEM config moved")
+                log(f"  branded {n}: " + ", ".join(
+                    f"{k}={v}" for k, v in sorted(branding["config"].items())))
+            elif branding and n in MESSAGE_OVERRIDES:
+                data, hit = rewrite_kv_lines(data, MESSAGE_OVERRIDES[n], escape=True)
+                missing = set(MESSAGE_OVERRIDES[n]) - hit
+                if missing:
+                    sys.exit(f"[ce-harness] FATAL: {n} has no {sorted(missing)} "
+                             f"key(s) — the OEM bundle moved")
+                log(f"  branded {n} ({len(hit)} strings)")
+            elif branding and n == CARDCTL_CLASS:
+                data = patch_class_utf8(data, TITLE_OLD, TITLE_NEW)
+                log(f"  patched CardController.class title "
+                    f"({TITLE_OLD.decode().strip()!r} -> {TITLE_NEW.decode().strip()!r})")
             zi = zipfile.ZipInfo(n, date_time=item.date_time)
             zi.compress_type = zipfile.ZIP_DEFLATED if not n.endswith("/") else zipfile.ZIP_STORED
             zi.external_attr = item.external_attr
@@ -800,7 +983,13 @@ def cmd_build(args):
     webos_tar = os.path.join(work, "webOS.ce.tar")
     rebuild_webos_tar(webos_dir, webos_tar,
                       overrides={os.path.basename(ROOTFS_MEMBER): new_rootfs})
-    rebuild_jar(args.jar, args.out, webos_tar)
+    branding = ce_branding(args.overlay)
+    if branding:
+        log(f"branding the installer wrapper as {branding['version']} "
+            f"(build {branding['config']['RomBuildNumber']})")
+    else:
+        log("no etc/palm-build-info in the overlay — OEM installer strings kept")
+    rebuild_jar(args.jar, args.out, webos_tar, branding)
 
     log(f"DONE in {time.time()-t0:.0f}s -> {args.out} "
         f"({os.path.getsize(args.out)} bytes)")

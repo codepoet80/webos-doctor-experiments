@@ -211,23 +211,62 @@ n=$(printf '%s' "$arts" | grep -c .)
 [ "$n" = "0" ] && P "8   no crash artifacts" \
   || { F "8   $n crash artifact(s):"; printf '%s\n' "$arts" | sed 's/^/       /'; }
 
-# Tripwire: /sbin/{reboot,telinit} are shimmed to log WHO asked for a reboot.
-# A UI-initiated reboot is legitimate -- section 0 asks you to do one -- so a bare
-# line count would fail on correct behaviour. Classify by requester instead: the
-# whole point of this tripwire is catching reboots nobody asked for.
-TW=/var/log/reboot-tripwire.log
-if [ ! -s "$TW" ]; then
-  P "8   tripwire clean (no software reboot logged)"
+# Did the ipkgservice upstart race fire this boot (KNOWN-ISSUES #1)? The repair
+# in ce-cryptofs-seed makes it recoverable, so this is INFO, not FAIL -- the
+# pass/fail assertion is the "ipkgservice resident" check in section 0. But the
+# marker is how we learn the race's real frequency across builds, so surface it.
+# NB "seen at least once", NOT "this boot": ce-cryptofs-seed.log is never
+# truncated, so it spans every boot since the flash. Saying "this boot" once
+# reported a repair from the PREVIOUS boot as if it had just happened.
+n=$(grep -c "REPAIRING ipkgservice" /var/log/ce-cryptofs-seed.log 2>/dev/null)
+if [ "${n:-0}" != "0" ]; then
+  I "0b  ipkgservice race fired $n time(s) since this flash, each repaired:"
+  grep -A2 "REPAIRING ipkgservice" /var/log/ce-cryptofs-seed.log | tail -3 | sed 's/^/       /'
+  I "       (last repair above; ipkgservice residency is asserted in section 0)"
 else
-  n=$(grep -c . "$TW")
-  odd=$(grep -vc "LunaSysMgr" "$TW")
-  if [ "$odd" = "0" ]; then
-    P "8   tripwire: $n software reboot(s), all UI-initiated (LunaSysMgr)"
-  else
-    F "8   tripwire: $odd of $n software reboot(s) NOT UI-initiated:"
-    grep -v "LunaSysMgr" "$TW" | head -3 | sed 's/^/       /'
-  fi
+  P "0b  ipkgservice job intact (race has not fired since this flash)"
 fi
+
+# App-store root + repair marker (KNOWN-ISSUES #10). A flash whose AppDeletion
+# stage hit a read-only /media/internal leaves the encrypted store half-wiped:
+# /media/cryptofs/apps never comes back, so the stock preload pass fails every
+# package and retries forever on the pulsing logo. ce-cryptofs-seed now recreates
+# the root -- so ALSO fail when it had to, because a repair on a supposedly clean
+# flash means the wipe failed and we are only papering over it.
+if [ -d /media/cryptofs/apps/usr/palm/applications ]; then
+  P "8   app-store root present ($(ls /media/cryptofs/apps/usr/palm/applications 2>/dev/null | wc -l) apps)"
+else
+  F "8   app-store root MISSING -- preloads cannot install (see KNOWN-ISSUES #10)"
+fi
+n=$(grep -c "REPAIRED" /var/log/ce-cryptofs-seed.log 2>/dev/null)
+if [ "${n:-0}" = "0" ]; then
+  P "8   no store repair needed (flash wiped the app store cleanly)"
+else
+  F "8   store root was REPAIRED by ce-cryptofs-seed -- the flash left it missing:"
+  grep "REPAIRED" /var/log/ce-cryptofs-seed.log 2>/dev/null | head -2 | sed 's/^/       /'
+fi
+
+# Power-off path (RC2 issue #1). /sbin/{halt,poweroff} are symlinks to
+# /sbin/reboot, and that binary picks halt vs power-off vs reboot from
+# basename(argv[0]) -- so ANY wrapper in front of these three names turns the
+# power menu's Shut Down into a reboot. The retired 600011..600058 reboot
+# tripwire did exactly that. Assert the three names still reach the real
+# binary directly: ELF, not a script, and no *.real leftovers.
+# Test for a SHEBANG, not for ELF: this busybox (1.17.3) has no `head -c` and no
+# `od`, so the first version of this check read every binary as a script and
+# failed on a device that was correct. `head -n 1 | grep "^#!"` needs nothing
+# busybox lacks, and it tests the thing that actually matters — whether a shell
+# wrapper sits in front of the name.
+bad=""
+for t in reboot poweroff halt telinit; do
+  [ -e "/sbin/$t" ] || { bad="$bad $t:missing"; continue; }
+  head -n 1 "/sbin/$t" 2>/dev/null | grep -q "^#!" && bad="$bad $t:script"
+done
+for t in /sbin/reboot.real /sbin/telinit.real; do
+  [ -e "$t" ] && bad="$bad $t:present"
+done
+[ -z "$bad" ] && P "8   power-off path unwrapped (reboot/poweroff/halt/telinit are the real binaries)" \
+  || F "8   power-off path WRAPPED -- Shut Down will reboot:$bad"
 grep -q "webosarchive" /usr/palm/applications/com.palm.app.help/appinfo.json 2>/dev/null \
   || grep -rq "webosarchive" /usr/palm/applications/com.palm.app.help/ 2>/dev/null \
   && P "8   Help app repointed at webosarchive" || I "8   Help app repoint not detected by grep"

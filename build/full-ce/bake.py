@@ -559,7 +559,7 @@ def verify_generated_sources():
             for i, b in enumerate(blocks):
                 sh_n(b, f"/etc/event.d/{name} (block {i + 1})")
 
-    # standalone shell we generate (launch wrappers, the reboot tripwire shims)
+    # standalone shell we generate (launch wrappers, seed + helper scripts)
     for rel in sorted(set(WROTE)):
         p = os.path.join(OUT_ROOT, rel)
         if not os.path.isfile(p):
@@ -1481,7 +1481,108 @@ def main():
       "    kick_imtransport() {\n"
       "        kick_bg start imtransport\n"
       "    }\n"
-      "    kick_dependents() { kick_ipkg; kick_imtransport; }\n"
+      "    # KNOWN-ISSUES #1: Preware's postinst deletes\n"
+      "    # /var/palm/event.d/org.webosinternals.ipkgservice, then seconds later\n"
+      "    # `cp`s it back IN PLACE and calls `start` ~25ms after that. upstart\n"
+      "    # watches that directory and re-reads on change, so it can catch the\n"
+      "    # file PARTIALLY WRITTEN (\"unable to read: Invalid argument\"). The\n"
+      "    # job then has no valid definition: it sits (stop) waiting, `start` is\n"
+      "    # a no-op, Preware has no backend until the device is rebooted, and a\n"
+      "    # power-menu Luna Restart taken in that state can freeze the device.\n"
+      "    # Fires ~1 boot in 6 (600056).\n"
+      "    #\n"
+      "    # The write itself is not ours to fix: it lives in Preware's own\n"
+      "    # signed ipk, and a Preware updated from the feed later would\n"
+      "    # reintroduce it regardless. So REPAIR it, the way the postinst\n"
+      "    # should have written it -- temp file OUTSIDE the watched directory\n"
+      "    # but on the same filesystem (/var), then mv. rename(2) is atomic, so\n"
+      "    # upstart's inotify sees either the old file or the complete new one,\n"
+      "    # never a half-written one, and re-reads a valid job.\n"
+      "    #\n"
+      "    # Waits for the preload pass to install Preware first: our job and\n"
+      "    # that pass are both triggered around first-use-finished and the order\n"
+      "    # is not guaranteed. Costs nothing on a healthy boot -- it returns on\n"
+      "    # the first probe as soon as the service is running.\n"
+      "    repair_ipkgservice() {\n"
+      "        _sid=org.webosinternals.ipkgservice\n"
+      "        _src=/media/cryptofs/apps/usr/palm/applications/org.webosinternals.preware/upstart/$_sid\n"
+      "        _dst=/var/palm/event.d/$_sid\n"
+      "        _tmp=/var/palm/.ce-$_sid.job\n"
+      "        _fixed=0\n"
+      "        # Wait for the preload pass to install Preware: our job and that\n"
+      "        # pass are both triggered around first-use-finished, in no\n"
+      "        # guaranteed order. Bounded, and skipped entirely once the file\n"
+      "        # is there.\n"
+      "        _i=0\n"
+      "        while [ $_i -lt 18 ] && [ ! -f \"$_src\" ]; do\n"
+      "            sleep 5\n"
+      "            _i=$((_i+1))\n"
+      "        done\n"
+      "        if [ ! -f \"$_src\" ]; then\n"
+      "            log \"ipkgservice: Preware never installed a job file -- nothing to repair\"\n"
+      "            return 0\n"
+      "        fi\n"
+      "        # POLL, do not check once. Two different faults leave this job\n"
+      "        # dead, and the second one lands AFTER the seed finishes:\n"
+      "        #\n"
+      "        #  1. partial job file (KNOWN-ISSUES #1) -- Preware cp\'s the job\n"
+      "        #     into the watched directory and upstart reads it half\n"
+      "        #     written. The job is then unusable and `start` is a no-op.\n"
+      "        #  2. respawn storm (seen on 600064) -- the D-Bus hub activates\n"
+      "        #     ipkgservice itself, so the instance upstart spawns finds the\n"
+      "        #     bus name already owned and exits at once. upstart respawns,\n"
+      "        #     it exits, and 11 rounds later: `respawn_count: 11 >\n"
+      "        #     respawn_limit: 10 / respawning too fast, stopped`, leaving\n"
+      "        #     (stop) waiting. The job file is INTACT in this case.\n"
+      "        #\n"
+      "        # A single early check missed #2 entirely on 600064: the service\n"
+      "        # was running when we looked and stormed a minute later. So keep\n"
+      "        # looking for ~3 minutes past the seed, rewrite the file only when\n"
+      "        # it actually differs from Preware's copy, and `start` in either\n"
+      "        # case -- a manual start is also what clears a respawn-limit stop.\n"
+      "        _i=0\n"
+      "        while [ $_i -lt 12 ]; do\n"
+      "            _st=$(/sbin/initctl status $_sid 2>&1)\n"
+      "            case \"$_st\" in\n"
+      "                *\"(start) running\"*)\n"
+      "                    if [ \"$_fixed\" = 1 ]; then\n"
+      "                        log \"  ipkgservice resident again: $_st\"\n"
+      "                    fi\n"
+      "                    return 0\n"
+      "                    ;;\n"
+      "            esac\n"
+      "            # Give it a moment to settle on the first look: on a healthy\n"
+      "            # boot the job is usually mid-start when we arrive.\n"
+      "            # Cap the ATTEMPTS but keep POLLING: while the hub-activated\n"
+      "            # instance owns the bus name, every start re-runs the same\n"
+      "            # futile 10-respawn cycle, so hammering it for three minutes\n"
+      "            # just fills the log. Three tries, then watch quietly in case\n"
+      "            # it settles on its own.\n"
+      "            if [ $_i -gt 0 ] && [ \"${_tries:-0}\" -lt 3 ]; then\n"
+      "                _tries=$((${_tries:-0}+1))\n"
+      "                log \"REPAIRING ipkgservice (attempt $_tries): $_st\"\n"
+      "                if [ \"$(wc -c < \"$_dst\" 2>/dev/null)\" != \"$(wc -c < \"$_src\" 2>/dev/null)\" ]; then\n"
+      "                    log \"  job file differs from Preware's copy -- rewriting atomically\"\n"
+      "                    if cp -f \"$_src\" \"$_tmp\" 2>/dev/null && mv -f \"$_tmp\" \"$_dst\" 2>/dev/null; then\n"
+      "                        log \"  job file replaced\"\n"
+      "                    else\n"
+      "                        log \"  job rewrite FAILED -- left alone\"\n"
+      "                        rm -f \"$_tmp\" 2>/dev/null\n"
+      "                    fi\n"
+      "                else\n"
+      "                    log \"  job file is intact -- respawn-limit stop, not a partial write\"\n"
+      "                fi\n"
+      "                kick_bg start $_sid\n"
+      "                _fixed=1\n"
+      "            fi\n"
+      "            sleep 15\n"
+      "            _i=$((_i+1))\n"
+      "        done\n"
+      "        log \"ipkgservice STILL not resident after repair attempts: $(/sbin/initctl status $_sid 2>&1)\"\n"
+      "        log \"  -- Preware may still answer (the hub activates it), but a\"\n"
+      "        log \"     power-menu Luna Restart is risky in this state\"\n"
+      "    }\n"
+      "    kick_dependents() { kick_ipkg; kick_imtransport; repair_ipkgservice; }\n"
       "    # Settled-system fast path. `start on started LunaSysMgr` is a\n"
       "    # deliberate third chance (the first-use-finished emit can be lost),\n"
       "    # but restartLuna re-fires it on EVERY power-menu Luna Restart, for\n"
@@ -1500,7 +1601,9 @@ def main():
       "    if [ -f \"$FLAG\" ] \\\n"
       "       && [ -f /media/cryptofs/apps/etc/ipkg/arch.conf ] \\\n"
       "       && grep -q \"^Package: org.webosinternals.govnah$\" /media/cryptofs/apps/usr/lib/ipkg/status 2>/dev/null \\\n"
-      "       && pidof imtransport > /dev/null 2>&1; then\n"
+      "       && pidof imtransport > /dev/null 2>&1 \\\n"
+      "       && case \"$(/sbin/initctl status org.webosinternals.ipkgservice 2>&1)\" in \\\n"
+      "            *\"(start) running\"*) true ;; *) false ;; esac; then\n"
       "        exit 0\n"
       "    fi\n"
       "    if [ ! -d \"$SEED\" ]; then kick_dependents; exit 0; fi\n"
@@ -1532,23 +1635,48 @@ def main():
       "        kick_dependents\n"
       "        exit 0\n"
       "    fi\n"
-      "    # mounted != writable: poll until the store really takes a write\n"
+      "    # mounted != writable, and a probe in a scratch directory does not\n"
+      "    # prove the store is USABLE. Probe the thing everything downstream\n"
+      "    # actually needs: /media/cryptofs/apps, the app-store root. It is\n"
+      "    # created inside the encrypted store (the image ships only the bare\n"
+      "    # /media/cryptofs mountpoint), and if it is absent the stock preload\n"
+      "    # pass fails EVERY package and retries on a 3s sleep forever -- the\n"
+      "    # device sits on the pulsing logo and never reaches the launcher.\n"
+      "    #\n"
+      "    # Seen for real on the 600060 flash (2026-08-29): /media/internal is\n"
+      "    # VFAT mounted errors=remount-ro, and an unclean entry into recovery\n"
+      "    # left it dirty, so the Doctor\'s AppDeletion stage mounted it, went\n"
+      "    # read-only, failed ~17,700 removals, IGNORED every one of them and\n"
+      "    # reported the flash successful. The store came up half-wiped: tmp\n"
+      "    # and the browser caches survived, apps did not, and nothing recreated\n"
+      "    # it. The old probe passed in 0s (a scratch mkdir works fine) and the\n"
+      "    # very next line was `mkdir failed: apps`.\n"
+      "    #\n"
+      "    # mkdir -p is idempotent, so on a healthy flash this is a no-op stat.\n"
       "    i=0\n"
+      "    had_apps=1\n"
+      "    [ -d /media/cryptofs/apps ] || had_apps=0\n"
       "    while [ $i -lt 60 ]; do\n"
-      "        if mkdir -p /media/cryptofs/.ce-seed-probe 2>/dev/null \\\n"
-      "           && touch /media/cryptofs/.ce-seed-probe/w 2>/dev/null; then\n"
-      "            rm -rf /media/cryptofs/.ce-seed-probe 2>/dev/null\n"
+      "        if mkdir -p /media/cryptofs/apps/usr/lib/ipkg 2>/dev/null \\\n"
+      "           && touch /media/cryptofs/apps/.ce-seed-probe 2>/dev/null; then\n"
+      "            rm -f /media/cryptofs/apps/.ce-seed-probe 2>/dev/null\n"
       "            break\n"
       "        fi\n"
       "        sleep 5\n"
       "        i=$((i+1))\n"
       "    done\n"
       "    if [ $i -ge 60 ]; then\n"
-      "        log \"cryptofs mounted but never writable -- nothing seeded\"\n"
+      "        log \"cryptofs mounted but the app-store root is not creatable\"\n"
+      "        log \"  -- the store is damaged; Preware and every preload will fail\"\n"
       "        kick_dependents\n"
       "        exit 0\n"
       "    fi\n"
-      "    log \"cryptofs writable after $((i*5))s of probing\"\n"
+      "    log \"cryptofs usable after $((i*5))s of probing\"\n"
+      "    if [ \"$had_apps\" = 0 ]; then\n"
+      "        log \"REPAIRED: /media/cryptofs/apps was MISSING and has been created\"\n"
+      "        log \"  -- the flash did not wipe the app store cleanly (check the\"\n"
+      "        log \"     Doctor log for AppDeletion \'Read-only file system\')\"\n"
+      "    fi\n"
       "    # FIRST, before the big copy: repair the ipkg feed config. This is the\n"
       "    # difference between Preware working the moment the user reaches the\n"
       "    # launcher and Preware looking broken for a minute and a half.\n"
@@ -2213,11 +2341,11 @@ def main():
     # still shows as an update -- these are security patches; being able to
     # take a newer one matters more than pinning.
     PATCH_SEED = {
-        "browser":     ("org.webosinternals.browser-tls13",     "TLS 1.3 for the browser (baked into webOS CE)"),
-        "downloadmgr": ("org.webosinternals.downloadmgr-tls13", "TLS 1.3 for the download manager (baked into webOS CE)"),
-        "luna":        ("org.webosinternals.luna-tls13",        "TLS 1.3 for LunaSysMgr (baked into webOS CE)"),
-        "mail":        ("org.webosinternals.mail-tls13",        "TLS 1.3 for mail (baked into webOS CE)"),
-        "rootcerts":   ("com.palm.rootcertsupdate",             "Updated root certificates (baked into webOS CE)"),
+        "browser":     ("org.webosinternals.browser-tls13",     "TLS 1.3 for the browser (Pre-loaded)"),
+        "downloadmgr": ("org.webosinternals.downloadmgr-tls13", "TLS 1.3 for the download manager (Pre-loaded)"),
+        "luna":        ("org.webosinternals.luna-tls13",        "TLS 1.3 for LunaSysMgr (Pre-loaded)"),
+        "mail":        ("org.webosinternals.mail-tls13",        "TLS 1.3 for mail (Pre-loaded)"),
+        "rootcerts":   ("com.palm.rootcertsupdate",             "Updated root certificates (Pre-loaded)"),
     }
     for pkey, (pname, pdesc) in PATCH_SEED.items():
         STATUS_SEED_DESC[pkey] = pdesc
@@ -2225,10 +2353,10 @@ def main():
     # community-firstuse layer / the language tier, so they are not in IPK;
     # resolve them straight from AddToImage by the same rule.
     EXTRA_PATCH_SEED = {
-        "org.webosinternals.curl-tls13":  "TLS 1.3 curl (baked into webOS CE)",
-        "org.webosinternals.ntpdate-sync": "Time sync (baked into webOS CE)",
+        "org.webosinternals.curl-tls13":  "TLS 1.3 curl (Pre-loaded)",
+        "org.webosinternals.ntpdate-sync": "Time sync (Pre-loaded)",
         "org.webosinternals.patches.notifications-advanced-reset-options":
-            "Advanced reset options (baked into webOS CE)",
+            "Advanced reset options (Pre-loaded)",
     }
     # (package-name, ipk-path, description). The name is NOT derived from the
     # filename for the patch set: com.palm_.rootcertsupdate_*.ipk carries that
@@ -3693,16 +3821,18 @@ def main():
         "PmWanDaemon pre-start radio gate", count=1)
     w("etc/event.d/PmWanDaemon", wan, 0o644)
 
-    # 19d) reboot tripwire (diagnostic, log-only). Post-flash devices reboot
-    # "spontaneously" (once at the end of the OOBE boot — right after the A6
-    # battery-firmware flashing sequence — and once ~9 min into the next
-    # boot); the initiator writes NOTHING to any log before calling
-    # /sbin/reboot (powerd's machineReboot path is provably not involved — its
-    # "Powerd rebooting system because of" line is absent). Wrap reboot and
-    # telinit with logging shims that record the caller's pid + parent cmdline
-    # to /var/log/reboot-tripwire.log and syslog, then exec the real binary
-    # (preserved as *.real). Behavior is unchanged; this exists purely to name
-    # the rebooter on the next occurrence.
+    # 19d) RETIRED: the reboot tripwire (log-only shims over /sbin/reboot and
+    # /sbin/telinit, 600011..600058). It was never behaviour-neutral. /sbin/halt
+    # and /sbin/poweroff are SYMLINKS to /sbin/reboot, and /sbin/reboot is
+    # upstart's reboot(8), which picks halt vs power-off vs reboot from
+    # basename(argv[0]) alone. A `#!/bin/sh` shim cannot preserve argv[0], so
+    # `exec /sbin/reboot.real "$@"` presented the name "reboot.real" — an
+    # unknown name, which that binary treats as the reboot default. powerd
+    # calls /sbin/poweroff for machineOff, so from 600011 on EVERY power-off
+    # request (the power menu's Shut Down, and critical-battery shutdown) came
+    # back as a reboot. Reported against RC2 as "Shut Down only reboots".
+    # Anything that replaces these three names again must keep argv[0] intact
+    # (same-named binaries in their own directory, not one shim for all three).
     # 19e) skip-setup profile name. Skipping account setup does NOT create the
     # profile in the OOBE app — it only closes. On the next boot
     # /etc/event.d/firstuse-createDefaultAccount calls the stock palmprofile
@@ -3736,20 +3866,6 @@ def main():
     n_pn = ppu.count(OLD_PN)
     w(ppu_rel, ppu.replace(OLD_PN, NEW_PN), os.stat(ppu_path).st_mode & 0o777)
     log(f"  profile placeholder renamed in 2 files ({n_pn} sentinel occurrence(s))")
-
-    log("tier: reboot tripwire (log-only shims for /sbin/reboot + /sbin/telinit)")
-    trip_stock = read_rootfs(ROOTFS_TGZ, exact=["./sbin/reboot", "./sbin/telinit"])
-    for tool in ("reboot", "telinit"):
-        w(f"sbin/{tool}.real", trip_stock[f"./sbin/{tool}"]["data"], 0o755)
-        w(f"sbin/{tool}",
-          "#!/bin/sh\n"
-          "# webOS CE tripwire: record who requests reboots (see bake.py 19d),\n"
-          "# then do exactly what the real binary would have done.\n"
-          "PC=$(cat /proc/$PPID/cmdline 2>/dev/null | tr '\\0' ' ')\n"
-          f"echo \"$(date) {tool} pid=$$ ppid=$PPID parent=[$PC] args=[$*]\" >> /var/log/reboot-tripwire.log 2>/dev/null\n"
-          f"logger -t reboot-tripwire \"{tool} ppid=$PPID parent=[$PC] args=[$*]\" 2>/dev/null\n"
-          "sync\n"
-          f"exec /sbin/{tool}.real \"$@\"\n", 0o755)
 
     # 20) merge changes.json (carry over community-firstuse removals, add ours)
     cf_cfg = {}

@@ -1,21 +1,26 @@
 # webOS CE 3.1.0 — Release Notes
 
-**Release candidate 2 — BUILDMARK 600056** (2026-08-23)
+**Release candidate 3 — BUILDMARK 600067** (2026-08-29)
 
 | | |
 |---|---|
-| Asset | `webosdoctorp305hstnh-3.1CE-600056-rc.jar` |
-| Size | 243,412,798 bytes (233 MB) |
-| sha256 | `cea207df818af710dec9349400b72a3a52bf046da9fbf63b7e7c6d645cc903f6` |
-| md5 | `9f0c0823d6e7eb5d32469b7b972d990b` |
+| Asset | `webosdoctorp310hstnh-ce-600067.jar` |
+| Size | 242,910,109 bytes (232 MB) |
+| sha256 | `eadd365feb413abb7bd37ea384472efdec3ad236e86e8d8f56349c7b0966c011` |
+| md5 | `ea9369a592366e3fd1a63eb8551ec722` |
 
 Verify before flashing:
 
 ```
-sha256sum webosdoctorp305hstnh-3.1CE-600056-rc.jar
+sha256sum webosdoctorp310hstnh-ce-600067.jar
 ```
 
-*(RC1 was BUILDMARK 600024, 2026-08-18, sha256 `ec30762f…`.)*
+**The asset name changed.** Earlier candidates were
+`webosdoctorp305hstnh-3.1CE-<mark>.jar`, carrying HP's `p305` product code for
+the 3.0.5 Doctor this is repacked from. This is 3.1.0, so it is named for what it
+is. The input JAR keeps its own name — that is HP's file.
+
+*(RC2 was BUILDMARK 600056, 2026-08-23, sha256 `cea207df…`; RC1 was 600024.)*
 
 A community Doctor for the **HP TouchPad** (`topaz`, Wi-Fi), built by repacking
 the OEM HP webOS 3.0.5 Doctor with 14 years of community work baked directly
@@ -58,6 +63,66 @@ login on ordinary Wi-Fi).
 `3.1.0` platform version. Developer mode is on out of the box and stays on.
 
 **Removed** — Kindle, Facebook and YouTube preloads.
+
+---
+
+## New in RC3 (600067)
+
+Everything in RC2, plus:
+
+**The power menu's Shut Down actually shuts down.** It rebooted instead, on every
+CE build since 600011. `/sbin/halt` and `/sbin/poweroff` are symlinks to
+`/sbin/reboot`, which picks its action from `basename(argv[0])`; a diagnostic
+shim we had wrapped around that name could not preserve argv[0], so every
+power-off — the menu, and critical-battery shutdown — came back as a reboot. The
+shim is gone and the test suite now asserts those four names stay unwrapped.
+
+**Preware's package service no longer loses its upstart job.** Two separate
+faults, both fixed in Preware itself and rebuilt from source for this image:
+
+* Its postinst copied the upstart job *into* the watched directory, so upstart
+  could read it half-written and end up with no valid job — Preware then had no
+  backend until you rebooted. It now writes to a temp path and renames it in.
+* Its service returned success when it could **not** take the D-Bus name, which
+  upstart read as a clean exit and respawned instantly — eleven times in a
+  second, tripping the respawn limit and parking the job. Preware kept answering,
+  so this hid for years, but a Luna Restart in that state can freeze the device.
+  It now pauses and exits non-zero, so a name conflict is a paced retry.
+
+Verified across five consecutive reboots with a five-minute soak each: the job
+stayed resident every time and the fault never fired.
+
+**A half-wiped app store is now repaired instead of hanging the boot.** If the
+Doctor's app-deletion stage hits a read-only `/media/internal` — a dirty VFAT
+volume, typically after a force-reboot into recovery — it fails every removal,
+**reports the flash successful anyway**, and the device boots with no
+`/media/cryptofs/apps`. Every preload then fails and retries forever on the
+pulsing logo. First boot now rebuilds that directory and says so in the log.
+*After any flash, check the Doctor's log for `AppDeletion: removed the
+appDirectory` and for `Read-only file system` — its success message does not
+distinguish them.*
+
+**Backup and Restore 3.1.1.** Three fixes:
+
+* Restores no longer read the wrong manifest. The on-device cache was reconciled
+  by *name*, and names are not unique — a stale manifest from an earlier restore
+  could shadow the real one, which once turned a 115-package restore into six
+  files and reported success. The target is now the source of truth for content.
+* Scheduled backups no longer grow without bound. Each run re-archived every app
+  and `tar czf` stamps the creation time into the gzip header, so byte-identical
+  content hashed differently every time and the content-addressed store kept a
+  full copy per run. Measured on a real device: six copies of one 295 MB game
+  across four days, `/media/internal` at 100%, backups then failing with ENOSPC.
+* A failed backup no longer leaks. Files are stored as the run goes and the
+  manifest is written last, so a run that died left full-size files nothing
+  referenced — and only the success path purged.
+
+**Local media opens in the media apps again** — with Atlas 0.9.12, released
+alongside. Atlas claimed every `file://` URL, which outranks mime and extension
+handlers, so photos, videos and music opened in the browser.
+
+**Cosmetic.** Preware's baked-in package descriptions read `(Pre-loaded)` instead
+of `(baked into webOS CE)`, and the Doctor window no longer says `HP(R)`.
 
 ---
 
@@ -116,13 +181,13 @@ root-certificate updates, so it no longer offers them as fresh installs and a
 Full detail, with evidence and what a fix would have to do, is in
 **[KNOWN-ISSUES.md](KNOWN-ISSUES.md)**. The ones a tester will actually meet:
 
-- **Preware may not work until you reboot once after setup.** On roughly one
-  boot in six, the package-manager service is left wedged by a first-use race.
-  A reboot fixes it permanently. Until you reboot, avoid *Luna Restart* from
-  the power menu — it can hang in this state.
-- **Restoring a backup taken on another device?** Clear the manifest cache
-  first — see `BACKUP-RESTORE.md`. Backup names are not unique across devices
-  and a stale one will shadow the real backup.
+- ~~**Preware may not work until you reboot once after setup.**~~ **Fixed in
+  RC3** — both causes fixed in Preware itself and verified across five reboots.
+  No post-setup reboot is needed any more.
+- **Restoring a backup taken on another device?** The cause is fixed in RC3 (the
+  cache is now reconciled on content, not on name), but a genuine cross-device
+  collision has not yet been restored through on hardware, so the workaround in
+  `BACKUP-RESTORE.md` stands until it has.
 - **No post-setup account manager yet.** The sign-in app is first-use only in
   this build; managing your account afterwards will come as a separate App
   Catalog app.
@@ -135,5 +200,7 @@ Full detail, with evidence and what a fix would have to do, is in
 - The first boot does housekeeping for about 90 seconds after setup completes
   (seeding the IM runtime and Preware's feeds). If the IM transport or Preware
   feeds look absent immediately after setup, give it a minute.
-- Logs worth capturing for any report: `/var/log/messages`,
-  `/var/log/ce-*.log`, and `/var/log/reboot-tripwire.log`.
+- Logs worth capturing for any report: `/var/log/messages` and
+  `/var/log/ce-*.log`. (`/var/log/reboot-tripwire.log` is gone: the tripwire
+  that wrote it was retired after it was found to turn every power-off into a
+  reboot — see KNOWN-ISSUES #8.)

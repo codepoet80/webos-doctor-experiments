@@ -83,6 +83,39 @@ Notable stage classes (`.../core/stages/`): `ChargeBatteryStage`,
 `CustomizationBuild=hp.tar`, `ForceModemUpdate=true`, `DeviceType=topaz`,
 plus base64/gzip'd `Approval*` blobs (build-approval hashes).
 
+#### Which of these the code actually reads (audited 2026-08-29)
+
+`ConfigFileMgr` reads a fixed key set; anything outside it reaches the log only,
+because `loadConfiguration` enumerates and logs every property it loads. That
+distinction is what makes CE branding of the wrapper safe, so it is recorded
+rather than rediscovered:
+
+| Key | Read by | Verdict |
+|-----|---------|---------|
+| `VersionStr` | **no class** | display/log only — free to rewrite |
+| `RomBuildNumber` | `getPhoenixBuildVersion()` | title bar only — free |
+| `RecoveryToolBuildTime` | `getPhoenixBuildVersion()` | title bar only — free |
+| `RecoveryToolBuildNumber` | title bar **+ `MainFlasher`** | fed to the build-approval check beside the `Approval*Hash` blobs — leave it |
+| `CustomizationBuild` | customization stage **+ title bar** | names `resources/hp.tar`; the title's `Hp.` prefix is `split(".")[0]` capitalized. Not a display string — leave it |
+| `BaseBuild`, `DeviceType`, `ForceModemUpdate`, `Approval*`, `SoftwareUpdateSite`, `PrevPayload*` | flash path | leave |
+| `AppSubmssion`, `LibCoreSubmssion`, `WcpSubmssion` | **no class** | inert |
+
+The window title is assembled in `CardController` as the literal
+`"HP(R) webOS(tm) Doctor (Build "` + `getPhoenixBuildVersion()` + `")"`, i.e.
+`Hp.<RecoveryToolBuildNumber>.<RomBuildNumber> <RecoveryToolBuildTime>`. The
+prefix is a `CONSTANT_Utf8` entry, and class files hold no absolute offsets, so
+swapping it for a **shorter** string is safe provided the u2 length prefix is
+rewritten with it (`harness.py: patch_class_utf8`).
+
+The user-visible HP text is not in the config at all: it lives in
+`resources/messages*.properties` (9 locales — the localized ones are older still
+and say *Palm profile*), and in the 9 `EULA_*.html` files. The message bundles
+promise that an HP/Palm profile will restore the user's apps and contacts, and
+point at `go.palm.com` / `hpwebos.com` support pages that have been dead for
+over a decade. CE rewrites those at repack time; the EULAs and the
+`BootiefyCard` steps (which still say to remove the back cover and the battery —
+neither of which a TouchPad has) are untouched so far.
+
 > **Gotcha:** `unzip -p` returns 0 bytes for the two large tar entries. Use
 > Python `zipfile` (or `jar`) to stream them — plain `unzip` chokes on the
 > large deflate members here.

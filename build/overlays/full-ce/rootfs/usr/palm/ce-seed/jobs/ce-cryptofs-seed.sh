@@ -74,7 +74,108 @@
     kick_imtransport() {
         kick_bg start imtransport
     }
-    kick_dependents() { kick_ipkg; kick_imtransport; }
+    # KNOWN-ISSUES #1: Preware's postinst deletes
+    # /var/palm/event.d/org.webosinternals.ipkgservice, then seconds later
+    # `cp`s it back IN PLACE and calls `start` ~25ms after that. upstart
+    # watches that directory and re-reads on change, so it can catch the
+    # file PARTIALLY WRITTEN ("unable to read: Invalid argument"). The
+    # job then has no valid definition: it sits (stop) waiting, `start` is
+    # a no-op, Preware has no backend until the device is rebooted, and a
+    # power-menu Luna Restart taken in that state can freeze the device.
+    # Fires ~1 boot in 6 (600056).
+    #
+    # The write itself is not ours to fix: it lives in Preware's own
+    # signed ipk, and a Preware updated from the feed later would
+    # reintroduce it regardless. So REPAIR it, the way the postinst
+    # should have written it -- temp file OUTSIDE the watched directory
+    # but on the same filesystem (/var), then mv. rename(2) is atomic, so
+    # upstart's inotify sees either the old file or the complete new one,
+    # never a half-written one, and re-reads a valid job.
+    #
+    # Waits for the preload pass to install Preware first: our job and
+    # that pass are both triggered around first-use-finished and the order
+    # is not guaranteed. Costs nothing on a healthy boot -- it returns on
+    # the first probe as soon as the service is running.
+    repair_ipkgservice() {
+        _sid=org.webosinternals.ipkgservice
+        _src=/media/cryptofs/apps/usr/palm/applications/org.webosinternals.preware/upstart/$_sid
+        _dst=/var/palm/event.d/$_sid
+        _tmp=/var/palm/.ce-$_sid.job
+        _fixed=0
+        # Wait for the preload pass to install Preware: our job and that
+        # pass are both triggered around first-use-finished, in no
+        # guaranteed order. Bounded, and skipped entirely once the file
+        # is there.
+        _i=0
+        while [ $_i -lt 18 ] && [ ! -f "$_src" ]; do
+            sleep 5
+            _i=$((_i+1))
+        done
+        if [ ! -f "$_src" ]; then
+            log "ipkgservice: Preware never installed a job file -- nothing to repair"
+            return 0
+        fi
+        # POLL, do not check once. Two different faults leave this job
+        # dead, and the second one lands AFTER the seed finishes:
+        #
+        #  1. partial job file (KNOWN-ISSUES #1) -- Preware cp's the job
+        #     into the watched directory and upstart reads it half
+        #     written. The job is then unusable and `start` is a no-op.
+        #  2. respawn storm (seen on 600064) -- the D-Bus hub activates
+        #     ipkgservice itself, so the instance upstart spawns finds the
+        #     bus name already owned and exits at once. upstart respawns,
+        #     it exits, and 11 rounds later: `respawn_count: 11 >
+        #     respawn_limit: 10 / respawning too fast, stopped`, leaving
+        #     (stop) waiting. The job file is INTACT in this case.
+        #
+        # A single early check missed #2 entirely on 600064: the service
+        # was running when we looked and stormed a minute later. So keep
+        # looking for ~3 minutes past the seed, rewrite the file only when
+        # it actually differs from Preware's copy, and `start` in either
+        # case -- a manual start is also what clears a respawn-limit stop.
+        _i=0
+        while [ $_i -lt 12 ]; do
+            _st=$(/sbin/initctl status $_sid 2>&1)
+            case "$_st" in
+                *"(start) running"*)
+                    if [ "$_fixed" = 1 ]; then
+                        log "  ipkgservice resident again: $_st"
+                    fi
+                    return 0
+                    ;;
+            esac
+            # Give it a moment to settle on the first look: on a healthy
+            # boot the job is usually mid-start when we arrive.
+            # Cap the ATTEMPTS but keep POLLING: while the hub-activated
+            # instance owns the bus name, every start re-runs the same
+            # futile 10-respawn cycle, so hammering it for three minutes
+            # just fills the log. Three tries, then watch quietly in case
+            # it settles on its own.
+            if [ $_i -gt 0 ] && [ "${_tries:-0}" -lt 3 ]; then
+                _tries=$((${_tries:-0}+1))
+                log "REPAIRING ipkgservice (attempt $_tries): $_st"
+                if [ "$(wc -c < "$_dst" 2>/dev/null)" != "$(wc -c < "$_src" 2>/dev/null)" ]; then
+                    log "  job file differs from Preware's copy -- rewriting atomically"
+                    if cp -f "$_src" "$_tmp" 2>/dev/null && mv -f "$_tmp" "$_dst" 2>/dev/null; then
+                        log "  job file replaced"
+                    else
+                        log "  job rewrite FAILED -- left alone"
+                        rm -f "$_tmp" 2>/dev/null
+                    fi
+                else
+                    log "  job file is intact -- respawn-limit stop, not a partial write"
+                fi
+                kick_bg start $_sid
+                _fixed=1
+            fi
+            sleep 15
+            _i=$((_i+1))
+        done
+        log "ipkgservice STILL not resident after repair attempts: $(/sbin/initctl status $_sid 2>&1)"
+        log "  -- Preware may still answer (the hub activates it), but a"
+        log "     power-menu Luna Restart is risky in this state"
+    }
+    kick_dependents() { kick_ipkg; kick_imtransport; repair_ipkgservice; }
     # Settled-system fast path. `start on started LunaSysMgr` is a
     # deliberate third chance (the first-use-finished emit can be lost),
     # but restartLuna re-fires it on EVERY power-menu Luna Restart, for
@@ -93,7 +194,9 @@
     if [ -f "$FLAG" ] \
        && [ -f /media/cryptofs/apps/etc/ipkg/arch.conf ] \
        && grep -q "^Package: org.webosinternals.govnah$" /media/cryptofs/apps/usr/lib/ipkg/status 2>/dev/null \
-       && pidof imtransport > /dev/null 2>&1; then
+       && pidof imtransport > /dev/null 2>&1 \
+       && case "$(/sbin/initctl status org.webosinternals.ipkgservice 2>&1)" in \
+            *"(start) running"*) true ;; *) false ;; esac; then
         exit 0
     fi
     if [ ! -d "$SEED" ]; then kick_dependents; exit 0; fi
@@ -125,23 +228,48 @@
         kick_dependents
         exit 0
     fi
-    # mounted != writable: poll until the store really takes a write
+    # mounted != writable, and a probe in a scratch directory does not
+    # prove the store is USABLE. Probe the thing everything downstream
+    # actually needs: /media/cryptofs/apps, the app-store root. It is
+    # created inside the encrypted store (the image ships only the bare
+    # /media/cryptofs mountpoint), and if it is absent the stock preload
+    # pass fails EVERY package and retries on a 3s sleep forever -- the
+    # device sits on the pulsing logo and never reaches the launcher.
+    #
+    # Seen for real on the 600060 flash (2026-08-29): /media/internal is
+    # VFAT mounted errors=remount-ro, and an unclean entry into recovery
+    # left it dirty, so the Doctor's AppDeletion stage mounted it, went
+    # read-only, failed ~17,700 removals, IGNORED every one of them and
+    # reported the flash successful. The store came up half-wiped: tmp
+    # and the browser caches survived, apps did not, and nothing recreated
+    # it. The old probe passed in 0s (a scratch mkdir works fine) and the
+    # very next line was `mkdir failed: apps`.
+    #
+    # mkdir -p is idempotent, so on a healthy flash this is a no-op stat.
     i=0
+    had_apps=1
+    [ -d /media/cryptofs/apps ] || had_apps=0
     while [ $i -lt 60 ]; do
-        if mkdir -p /media/cryptofs/.ce-seed-probe 2>/dev/null \
-           && touch /media/cryptofs/.ce-seed-probe/w 2>/dev/null; then
-            rm -rf /media/cryptofs/.ce-seed-probe 2>/dev/null
+        if mkdir -p /media/cryptofs/apps/usr/lib/ipkg 2>/dev/null \
+           && touch /media/cryptofs/apps/.ce-seed-probe 2>/dev/null; then
+            rm -f /media/cryptofs/apps/.ce-seed-probe 2>/dev/null
             break
         fi
         sleep 5
         i=$((i+1))
     done
     if [ $i -ge 60 ]; then
-        log "cryptofs mounted but never writable -- nothing seeded"
+        log "cryptofs mounted but the app-store root is not creatable"
+        log "  -- the store is damaged; Preware and every preload will fail"
         kick_dependents
         exit 0
     fi
-    log "cryptofs writable after $((i*5))s of probing"
+    log "cryptofs usable after $((i*5))s of probing"
+    if [ "$had_apps" = 0 ]; then
+        log "REPAIRED: /media/cryptofs/apps was MISSING and has been created"
+        log "  -- the flash did not wipe the app store cleanly (check the"
+        log "     Doctor log for AppDeletion 'Read-only file system')"
+    fi
     # FIRST, before the big copy: repair the ipkg feed config. This is the
     # difference between Preware working the moment the user reaches the
     # launcher and Preware looking broken for a minute and a half.

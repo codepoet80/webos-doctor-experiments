@@ -968,6 +968,27 @@ function BackupAssistant() {
 
         // Best-effort cleanup; the failure we report is the original one.
         var cleanup = stageDir ? fileUtil.rmFiles(stageDir, true) : new Future({});
+
+        /*
+         * Sweep what this run already stored. A backup stores each file as it
+         * goes and writes the manifest LAST, so a run that dies partway has
+         * left files in the store that no manifest references -- and only the
+         * success path used to purge. Every failure therefore leaked, at full
+         * size, and the leak made the next run likelier to fail the same way.
+         *
+         * Measured on a daily driver (2026-08-29): two failed runs in one day
+         * left two unreferenced copies of a 295MB app archive; /media/internal
+         * hit 100% and backups then failed with ENOSPC on every attempt.
+         *
+         * keep = 100000 sweeps orphans WITHOUT trimming manifests: a failed
+         * backup must not also delete the user's older good backups. (Same
+         * call shape list-backups uses.) Tolerated -- a cleanup that fails
+         * must not replace the error we are actually reporting.
+         */
+        cleanup.then(this, function (f) {
+            var result = f.result;
+            f.nest(tolerate(backup.purge(target, 100000), null));
+        });
         cleanup.then(this, function (f) {
             var result = f.result;
 

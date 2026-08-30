@@ -36,7 +36,7 @@ webOS CE 3.1.0 includes features not available in the final commercial release..
 #### Tab Management
 
 - Launcher tabs can now be renamed: press and hold a tab to enter a new name
-- The Downloads tab has been renamed to Games by default
+- The Favorites tab has been renamed to Games by default (Downloads keeps its name)
 - New Launcher tabs can now be added: press and hold the empty space next to existing tabs to add a new one
 - User-added Launcher tabs can be removed: press and hold the tab, then tap the Trash icon to remove the tab
 
@@ -182,7 +182,9 @@ Building the image is out-of-scope for this document and will be covered elsewhe
 
 - The firstrun will walk you through the Out of Box Experience on-device: join a WiFi network, and create or sign-in to a webOS Community account (or Skip Account Creation)
 - Luna will restart
-- **RC2 Known Issue Mitigation**: Wait 3 minutes and do a FULL reboot.
+- Give it about 90 seconds to finish first-boot housekeeping (Preware's feeds and
+  the IM runtime are seeded then). RC2 needed a full reboot at this point; RC3
+  does not.
 
 ---
 

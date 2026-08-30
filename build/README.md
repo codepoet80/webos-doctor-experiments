@@ -22,7 +22,7 @@ cd build
 ./build-ce-doctor.sh overlays/sample-rdxd-fix
 ```
 
-Output: `../out/webosdoctorp305hstnh-3.1CE-<BUILDMARK>.jar` (full-ce) or `...-3.1CE.jar` (other overlays). First run extracts the OEM JAR
+Output: `../out/webosdoctorp310hstnh-ce-<BUILDMARK>.jar` (full-ce) or `...-ce.jar` (other overlays) — CE's own version, not the OEM `p305` the input JAR carries (renamed 2026-08-29; 600062 and earlier used `webosdoctorp305hstnh-3.1CE-<mark>.jar`). First run extracts the OEM JAR
 into `work/` (cached for later runs; `REEXTRACT=1` forces re-extract).
 
 ## What it does

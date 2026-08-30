@@ -9,8 +9,8 @@
 #
 # Env overrides:
 #   JAR    OEM Doctor JAR         (default: ../webosdoctorp305hstnhwifi.jar)
-#   OUT    output CE Doctor JAR   (default: ../out/webosdoctorp305hstnh-3.1CE-<BUILDMARK>.jar
-#                                 for a full-ce overlay, else ...-3.1CE.jar)
+#   OUT    output CE Doctor JAR   (default: ../out/webosdoctorp310hstnh-ce-<BUILDMARK>.jar
+#                                 for a full-ce overlay, else ...-ce.jar)
 #   WORK   work directory         (default: ./work)
 #   REEXTRACT=1  force re-extract of the OEM JAR into WORK
 set -euo pipefail
@@ -23,11 +23,21 @@ OVERLAY="${1:-}"
 # Default output name carries the BUILDMARK for a full-ce build, so every JAR
 # in out/ says which bake it is and a rebuild never overwrites an earlier mark
 # (the -<mark>-rc.jar release files used to be renamed by hand).
+#
+# The name is CE's own, not the OEM's: webosdoctorp310hstnh-ce-<mark>.jar.
+# "p305" was HP's product code for the 3.0.5 Doctor we repack -- this build is
+# 3.1.0, and shipping it under the OEM's version misdescribes what a tester
+# downloads. Changed 2026-08-29, from 600064 on; 600063 and earlier keep the
+# old webosdoctorp305hstnh-3.1CE-<mark>.jar names they were built and flashed
+# under, and the manifests record those paths.
+#
+# The INPUT keeps its own name: webosdoctorp305hstnhwifi.jar is HP's file and
+# a fact about it, not a choice of ours.
 if [ -z "${OUT:-}" ]; then
     if [[ "${OVERLAY:-}" == *overlays/full-ce* ]] && [ -f "$HERE/full-ce/BUILDMARK" ]; then
-        OUT="$HERE/../out/webosdoctorp305hstnh-3.1CE-$(cat "$HERE/full-ce/BUILDMARK").jar"
+        OUT="$HERE/../out/webosdoctorp310hstnh-ce-$(cat "$HERE/full-ce/BUILDMARK").jar"
     else
-        OUT="$HERE/../out/webosdoctorp305hstnh-3.1CE.jar"
+        OUT="$HERE/../out/webosdoctorp310hstnh-ce.jar"
     fi
 fi
 
