@@ -1,10 +1,10 @@
 # webOS CE 3.1.0 — Release Notes
 
-**BUILDMARK 600070** (2026-08-30)
+**Final release candidate — BUILDMARK 600070** (2026-08-30)
 
 | | |
 |---|---|
-| Asset | `webosdoctorp310hstnh-ce-600070.jar` |
+| Asset | `webosdoctorp310hstnh-ce-600070-frc.jar` |
 | Size | 242,920,348 bytes (232 MB) |
 | sha256 | `392f2122e3bd95f6f6b4f89acff2e8038508746a6fdeac7f4c5716834178e65a` |
 | md5 | `d804b15312428e29172e27a17a7493f1` |
@@ -12,8 +12,12 @@
 Verify before flashing:
 
 ```
-sha256sum webosdoctorp310hstnh-ce-600070.jar
+sha256sum webosdoctorp310hstnh-ce-600070-frc.jar
 ```
+
+*The `-frc` suffix is a rename only. The file is byte-identical to the
+`webosdoctorp310hstnh-ce-600070.jar` that every test below was run against —
+same size, same sha256 — so the results carry over unchanged.*
 
 **The asset name changed** during the candidate series. Earlier candidates were
 `webosdoctorp305hstnh-3.1CE-<mark>.jar`, carrying HP's `p305` product code for
@@ -230,13 +234,23 @@ root-certificate updates, so it no longer offers them as fresh installs and a
 
 Numbers, so you can judge the coverage rather than take "tested" on faith.
 
-**Automated: 90 checks, 0 failures** on the flashed device — the first fully
-clean run of the 3.1 series, with nothing downgraded by judgement. It covers
-identity, first-boot seeding, the core apps, the Synergy runtime, Preware's
+**Automated: 90 checks, 0 failures — on two different TouchPads.** The first
+fully clean runs of the 3.1 series, with nothing downgraded by judgement. They
+cover identity, first-boot seeding, the core apps, the Synergy runtime, Preware's
 package state, the un-baking of App Catalog and Maps, Exhibition, search,
-storage, and both additions above. Kept in `scripts/results-600070.txt`; the
-suite itself is `scripts/ce-test-full.sh`, so you can re-run it on your own
-device.
+storage, and both additions above. Kept in `scripts/results-600070.txt` and
+`scripts/results-600070-device2.txt`; the suite itself is
+`scripts/ce-test-full.sh`, so you can re-run it on your own device.
+
+**Two independent flashes, two OOBE languages.** The second device was flashed
+from scratch and set up in French (Canada), which exercises the nested
+locale-override path rather than the plain one. Device Info reads "Compte webOS"
+there and "webOS-Konto" after a German factory reset on the first device — the
+account-label change verified in both languages on real hardware, not just in
+the image.
+
+**A full factory reset returns the device to webOS CE 3.1.0**, with setup in
+another language, and the app store intact.
 
 **Reboot soak: 7 consecutive reboots, 112 checks, 0 failures.** Five minutes of
 running time after each boot, then the full check set — ipkgservice resident
@@ -251,9 +265,15 @@ or not its app-deletion stage worked, so both markers are read from its log
 afterwards, and the device is separately asked whether its app store had to be
 repaired on first boot. Both were clean here.
 
-What is *not* covered: everything needing eyes and hands — the OOBE, app
-launches, Bluetooth pairing, and restoring a real backup — is tracked in
-`TEST-PLAN.md` rather than claimed here.
+**Restore onto the flashed image:** a 43-package backup restored with zero errors
+and nothing skipped, and after the reboot all 11 restored services were reachable
+on the bus — including apps whose own services came back with them, which is the
+case that used to restore as a tile that launches and does nothing.
+
+What is *not* covered: the remaining hands-on items — Bluetooth pairing, an IM
+account actually connecting, and the Exhibition faces — are tracked in
+`TEST-PLAN.md` rather than claimed here. Bus-reachable proves a service launched,
+not that its UI works.
 
 ---
 

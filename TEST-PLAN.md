@@ -1,18 +1,26 @@
 # webOS CE 3.1 Flash Test Plan
 
-**600070 is the final release candidate.** Automated: 90 PASS / 0 FAIL — the
-first fully clean run of the 3.1 cycle, with the first-boot ipkgservice race not
-firing. Reboot soak: 7 cycles, 112 PASS / 0 FAIL. Restore onto the flashed
-image: clean, 11/11 services back on the bus. Both 600070 additions pass on
-hardware, and the OTA anchor verifies against the real offline key.
-The `[Human]` list is what remains. Prose citing 600052 / 600059 / 600067 is
-*prior-build evidence*: it says what a check is for, not what happened here.
+**600070 is the FINAL RELEASE CANDIDATE — shipped as
+`webosdoctorp310hstnh-ce-600070-frc.jar`.** Automated: 90 PASS / 0 FAIL on
+**two independent devices**, the first fully clean runs of the 3.1 cycle, with
+the first-boot ipkgservice race not firing on either flash. Reboot soak: 7
+cycles, 112 PASS / 0 FAIL. Restore onto the flashed image: clean, 11/11 services
+back on the bus. A German factory reset and a French (Canada) fresh flash both
+return a correct device. Both 600070 additions pass on hardware in three
+languages, and the OTA anchor verifies against the real offline key.
+Prose citing 600052 / 600059 / 600067 is *prior-build evidence*: it says what a
+check is for, not what happened here.
 
 ```
-Build under test:  BUILDMARK 600070  jar out/webosdoctorp310hstnh-ce-600070.jar
+Build under test:  BUILDMARK 600070
+                   jar out/webosdoctorp310hstnh-ce-600070-frc.jar
                    sha256 392f2122e3bd95f6f6b4f89acff2e8038508746a6fdeac7f4c5716834178e65a
+                   (the -frc suffix is a rename only; byte-identical to the
+                    -600070.jar every result below was produced against)
                    Flashed:  2026-08-30          Automated run: 90 PASS / 0 FAIL / 0 WARN
-                   Results:  scripts/results-600070.txt   (BUILDTIME 20260830192741)
+                   Results:  scripts/results-600070.txt          (device 1, c37f7a34…)
+                             scripts/results-600070-device2.txt  (device 2, cb7077b7…,
+                             fresh flash, fr/ca OOBE — also 90/0)   BUILDTIME 20260830192741
                    Doctor log clean: 0 "Read-only file system", AppDeletion
                    removed /tmp_mediafs/.palm, Flash End time (Success).
                    So the app-store wipe really happened (KNOWN-ISSUES #10) —

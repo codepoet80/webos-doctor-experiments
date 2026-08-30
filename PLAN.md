@@ -285,10 +285,14 @@ will simply build with the old behaviour. Re-bake after touching it.
 ## Working artifacts
 
 - `webosdoctorp305hstnhwifi.jar` — the OEM 3.0.5 Doctor (the repack base; not in git).
-- `out/webosdoctorp310hstnh-ce-600070.jar` — 600067 plus two additions: the Device
-  Info account label ("HP webOS Account" -> "webOS Account", 12 localized view
-  files) and the **CE OTA trust anchor** (signing public key + `ce-ota-verify`).
-  Built and integchecked; **not yet flashed**.
+- `out/webosdoctorp310hstnh-ce-600070-frc.jar` — **the final release candidate**,
+  sha256 `392f2122…`. 600067 plus two additions: the Device Info account label
+  ("HP webOS Account" -> "webOS Account", 13 view files) and the **CE OTA trust
+  anchor** (signing public key + `ce-ota-verify`). The `-frc` suffix is a rename
+  only — byte-identical to the `-600070.jar` all testing was done against.
+  **Tested on two devices: 90 PASS / 0 FAIL each**, a 7-cycle reboot soak at
+  112/0, a clean restore, a German factory reset and a French (Canada) fresh
+  flash. See `TEST-PLAN.md`.
 - `out/webosdoctorp310hstnh-ce-600067.jar` — the RC3 candidate as tested,
   sha256 `eadd365f…`. Everything below, plus **Preware 1.9.19 rebuilt from source**
   carrying both ipkgservice fixes (atomic job-file write, and registration failure

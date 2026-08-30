@@ -1,4 +1,4 @@
-# webOS CE 3.1.0 — Known Issues (600070; last hardware run 600070, 2026-08-30)
+# webOS CE 3.1.0 — Known Issues (600070 FRC; last hardware run 2026-08-30)
 
 Everything below is reproduced, measured, or traced to a specific line. Each
 entry says what it costs a user, what is actually known, and what a fix would
@@ -6,17 +6,22 @@ have to do. Nothing here is speculation dressed as a diagnosis.
 
 Ordered by what should be solved before the final release.
 
-**Status on 600070.** Automated: 90 checks, 0 failures — the first fully clean
-run of the cycle, with nothing downgraded by judgement. Reboot soak: 7 cycles ×
-5 minutes, 112 checks, 0 failures. #1 and #1b did not fire on the flash boot or
-on any of the seven reboots. Nothing below is a new fault found on 600070; the
-two entries added for this build (#12, #13) are log noise that was always there
-and had simply never been written down.
+**Status on 600070 (FRC).** Automated: 90 checks, 0 failures on **two
+independent devices** — the first fully clean runs of the cycle, with nothing
+downgraded by judgement. Reboot soak: 7 cycles × 5 minutes, 112 checks, 0
+failures. Restore onto the flashed image: 0 errors, 11/11 services back on the
+bus. **#1 and #1b did not fire on either flash**, nor on any of the seven
+reboots.
 
-*One thing a clean soak does not settle:* #1 fires during the first-use preload
-pass, which runs **once per flash**, so reboots cannot exercise it. Its
-frequency is measured across flashes, and the count of clean ones is the number
-that matters for closing it.
+Nothing below is a new fault found on 600070. #12 and #13 are log noise that was
+always there and had simply never been written down; #4 recurred and is
+explicitly accepted for the release.
+
+*What the clean runs do and do not settle:* #1 fires during the first-use preload
+pass, which runs **once per flash**, so reboots cannot exercise it. 600070 has
+two clean flashes on different hardware — the first flashes in the cycle to be
+measured this way — which is evidence, not closure. #4 fires per **OOBE**, and
+600070 saw three OOBEs with one hit.
 
 ---
 
@@ -392,8 +397,9 @@ pc/lr -> _ZL12PrvLogThreadPv
 | 600055 flash | 1 |
 | 600056 flash | 0 |
 | 600067 flash | 0 |
-| 600070 flash | 0 |
-| 600070 full erase + German OOBE | **1** |
+| 600070 flash (device 1) | 0 |
+| 600070 full erase + German OOBE (device 1) | **1** |
+| 600070 fresh flash + French OOBE (device 2) | 0 |
 
 The last row is the useful new data point: it is an **OOBE without a flash**, which
 localises the trigger to the first-use teardown itself rather than to anything the
