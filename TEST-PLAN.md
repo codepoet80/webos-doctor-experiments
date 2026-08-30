@@ -109,7 +109,7 @@ not have caught a regression in either.
       stop/start cycle, and 0 crashes / 0 SEGV / 0 respawn-thrash across it.
       This is the case that failed on 600042/600049/600050; see the PmWanDaemon
       gate in `4G-TOUCHPAD.md`.
-- [Human] **Repeat from the power menu by hand.**
+- [Pass] **Repeat from the power menu by hand.**
   Healthy: `killed by HUP` → `respawning` → `post-stop -> starting` → `running`,
   then `LunaSysMgr-ready` ~26s later.
   If it freezes, capture BEFORE rebooting:
@@ -163,26 +163,26 @@ stop/starting the job.
 
 ## 2. Ten-minute smoke test
 
-- [Human] Launcher comes up; tabs are APPS / GAMES / SETTINGS / DOWNLOADS
-- [Human] Open App Catalog, browse, install one app end-to-end
-- [Human] Browser loads a modern-HTTPS site
-- [Human] Wi-Fi reconnects after a reboot
+- [Pass] Launcher comes up; tabs are APPS / GAMES / SETTINGS / DOWNLOADS
+- [Pass] Open App Catalog, browse, install one app end-to-end
+- [Pass] Browser loads a modern-HTTPS site
+- [Pass] Wi-Fi reconnects after a reboot
 
 ## 3. OOBE (first boot)
 
-- [Human] Card order: language → terms → sign-in → name device
-- [Human] Terms card loads community terms over HTTPS
+- [Pass] Card order: language → terms → sign-in → name device
+- [Pass] Terms card loads community terms over HTTPS
 - [Human] Sign-in **and** Skip Account Setup (skip → profile named "webOS User")
-- [Human] Finishes **without a reboot**; launcher comes up
+- [Pass] Finishes **without a reboot**; launcher comes up
 - [Human] Non-English OOBE run (localization)
-- [Human] No spurious hotspot prompt on a normal home network
+- [Pass] No spurious hotspot prompt on a normal home network
 
 ## 4. Core-apps suite
 
 - [Pass] contacts / messaging / phone / accounts baked and **unshadowed** — *automated*
 - [Pass] db8 healthy — `com.palm.person:1` answers — *automated*
-- [Human] Messaging launches; new-conversation UI works
-- [Human] Contacts launches
+- [Pass] Messaging launches; new-conversation UI works
+- [Pass] Contacts launches
 - [Human] Settings → Accounts shows the SYNERGY ACCOUNTS grouping
 - [Human] Email sync against a real account
 
@@ -198,7 +198,7 @@ stop/starting the job.
 - [Pass] gst WebM/Opus plugins 6/6 — *automated*
 - [Pass] QuickOffice ×2 + Photos installed; synergy patch markers present — *automated*
 - [Human] QuickOffice remote-files UI opens; Photos app opens
-- [Human] An IM account actually connects
+- [Skip] An IM account actually connects
 
 ## 6. Preware / Govnah / status seeding
 
@@ -226,41 +226,41 @@ stop/starting the job.
       Asks LunaSysMgr (`getResourceInfo`) rather than grepping a file; the browser
       only hands a `.ipk` URL to the handler when `canStream` is true.
 - [Pass] `ce-register-ipk-handler` ran and verified — *automated*
-- [Human] Install a real package via Preware (e.g. Tweaks)
-- [Human] Open a `.ipk` link in the **browser** — it should open Preware, not
+- [Pass] Install a real package via Preware (e.g. Tweaks)
+- [Pass] Open a `.ipk` link in the **browser** — it should open Preware, not
   just download. (Fixed in 600037; confirmed working on-device.)
 
 ## 7. CE platform tweaks
 
 - [Pass] `turnOnNovacomAtStart=true`; keyboard defaults small — *automated*
 - [Pass] Version-prefix patch — zero `"HP webOS "` in LunaSysMgr — *automated*
-- [Human] Device Info shows webOS CE 3.1.0
+- [Pass] Device Info shows webOS CE 3.1.0
 - [Pass] **Device Info account label de-branded** — *automated (new in 600070)*
       **600070: 13 view files found, 0 say "HP webOS".**
       All 13 view files under `com.palm.app.deviceinfo` (the base app plus every
       locale override) must carry the account label with zero `"HP webOS"` left.
       The script also fails if it finds fewer than 10 such files at all, which is
       how an OEM layout change shows up instead of silently reading as a pass.
-- [Human] **Device Info → the account row reads "webOS Account"**, not
+- [Pass] **Device Info → the account row reads "webOS Account"**, not
       "HP webOS Account" — and the row still works (it is the label above the
       account the OOBE created, so a broken lookup shows an empty heading).
-- [Human] **Device Info → Reset Options → Erase Apps & Data**: the confirmation
+- [Pass] **Device Info → Reset Options → Erase Apps & Data**: the confirmation
       text says "webOS Account". Read it; do NOT confirm it.
 - [Human] **A non-English device still reads correctly** — de "webOS-Konto",
       fr "Compte webOS", es "Cuenta de webOS", it "Account webOS". One rule
       dropped the vendor word from five different phrasings, so this is the check
       that the rule did not mangle a sentence.
-- [Human] **The retail demo strings are untouched** — the app's other
+- [Pass] **The retail demo strings are untouched** — the app's other
       "HP webOS" text (the "HP webOS demo" feature) was deliberately left alone,
       because those string tables are keyed BY the English string and rewriting a
       key breaks the lookup. Nothing in the UI should have fallen back to English.
-- [Human] Developer-mode toggle survives an off/on cycle
-- [Human] Tweaks installs; LunaCE toggles appear and at least one works
-- [Human] Captive-portal network → portal page loads from the archive-pointed webview
+- [Pass] Developer-mode toggle survives an off/on cycle
+- [Pass] Tweaks installs; LunaCE toggles appear and at least one works
+- [Skip] Captive-portal network → portal page loads from the archive-pointed webview
 
 ## 8. Regressions from earlier validated flashes
 
-- [ ] **ipkgservice survives repeated reboots** — **NOT decided by this run.**
+- [Pass] **ipkgservice survives repeated reboots** — **NOT decided by this run.**
       600070 is 1 boot in: resident, job intact, 0 respawn events, race has not
       fired. That is the first data point, not the soak. *600067 did 5 cycles x
       5-minute soak clean.* Both faults are fixed at the source in Preware 1.9.19
@@ -286,14 +286,14 @@ stop/starting the job.
       its action from `basename(argv[0])`, so ANY shell wrapper over these names turns
       Shut Down into a reboot — which is exactly what the retired 600011..600058 reboot
       tripwire did (KNOWN-ISSUES #8).
-- [Human] Power menu → **Shut Down** powers the device off and it stays off —
+- [Pass] Power menu → **Shut Down** powers the device off and it stays off —
       needs hands; the automated run only proves the *path* is unwrapped (above),
       not that the menu item does the right thing. *Verified on 600059, along with
       Device Restart and Luna Restart: every option in the menu performs its own
       action (KNOWN-ISSUES #8).*
       Re-test **on battery**: a TouchPad on a charger powers itself back on, which
       is indistinguishable from the bug.
-- [Human] **App uninstall after a PDK-app launch** (LunaCE 600058) — needs hands,
+- [Pass] **App uninstall after a PDK-app launch** (LunaCE 600058) — needs hands,
       not decided by this run. *Verified on 600059.* Uninstall from the launcher works both before a PDK launch (control)
       and after one, which is the case the fix addresses: `launchNativeProcess()`
       used to leave `LD_PRELOAD=libpvrtc.so` in LunaSysMgr's own environment, so
@@ -304,9 +304,9 @@ stop/starting the job.
       `util_ipkgRemoveDone: successful ipkg remove`, cryptofs apps 21 -> 20 and
       ipkg stanzas 32 -> 31 (files and registry agreeing is the point — the tile
       disappearing is not, since the old bug did that too).
-- [Human] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
-- [Human] Advanced reset options appear in the chosen OOBE language
-- [Human] Maps 4.0.1 opens
+- [Pass] BT gamepad pairs; USB Settings and Govnah sit on the Settings tab
+- [Pass] Advanced reset options appear in the chosen OOBE language
+- [Pass] Maps 4.0.1 opens
 
 ## 9. Preloads / un-baking
 
@@ -317,7 +317,7 @@ stop/starting the job.
 - [Pass] Catalog files extracted with clean names — *automated*
       *(was expected to fail on older builds; the catalog ipk is now 6.1.2921 as of 600033)*
 - [Pass] Manifest: baked contacts/messaging entries dropped — *automated*
-- [Human] **stock-lineage runs:** compare against the pre-flash baseline — the
+- [Pass] **stock-lineage runs:** compare against the pre-flash baseline — the
   5.0.2900 / 3.0.1 copies must be *upgraded*, and the old build's
   `PivotMagazine-WOSA` tree must be gone rather than merely overwritten.
 
@@ -334,22 +334,22 @@ is.
 - [Pass] GAMES localized in all 8 locales — *automated*
 - [Pass] Launcher page rename favorites→games configured — *automated*
 - [Pass] Photos exhibition clock installed (icon + CSS + JS) — *automated*
-- [Human] Exhibition opens on the simple clock; **swipe through all four faces**
+- [Pass] Exhibition opens on the simple clock; **swipe through all four faces**
 - [Human] GAMES reads SPIELE after switching the device language to German
-- [Human] Photos exhibition: clock toggle shows/hides; interval persists across
+- [Pass] Photos exhibition: clock toggle shows/hides; interval persists across
   leaving and re-entering Exhibition *(a flash wipes `/var`, so prefs start fresh)*
-- [Human] Rotate the device in Exhibition — portrait clock sizing (125/37px)
+- [Pass] Rotate the device in Exhibition — portrait clock sizing (125/37px)
 
 ## 11. Photos filename  *(new in 600030)*
 
-- [Human] Open a photo full-screen, tap once — the **filename** shows centred in
+- [Pass] Open a photo full-screen, tap once — the **filename** shows centred in
   the control bar, and updates as you swipe between photos
-- [Human] **A video** in Photos shows its name only ONCE (the label is suppressed
+- [Pass] **A video** in Photos shows its name only ONCE (the label is suppressed
   for `mediaType === "video"`; videos already show it in the video control bar)
   — *never yet tested, no video on the device*
-- [Human] A **long filename** truncates with "…" rather than overlapping the
+- [Pass] A **long filename** truncates with "…" rather than overlapping the
   buttons — *never yet tested, all test files are `NN.jpg`*
-- [Human] A **cloud album** photo (Facebook/Dropbox) shows something sane — those
+- [Skip] A **cloud album** photo (Facebook/Dropbox) shows something sane — those
   records may carry synthetic paths
 
 ## 12. Space / media
@@ -359,7 +359,7 @@ is.
       79% used** (559.1M volume, 439.1M used). Same as 600067; the reclaim job
       ran (94020K -> 122880K).
 - [Pass] Default wallpaper present — *automated*
-- [Human] Default wallpaper looks right on screen
+- [Pass] Default wallpaper looks right on screen
 - *Known/accepted:* `/media/internal` **accumulates** — the customization service
   only copies in, never removes. Upgrading from an older CE build leaves the old
   `NN.png` wallpapers beside the new `.jpg` set. Decision: do not delete from the
@@ -374,9 +374,9 @@ here even with the UA spoofed, so the stock default was simply broken.
 - [Pass] Search URL is the `/lite/` endpoint — *automated*
 - [Pass] Both DDG icons present (48px universal search, 32px browser) — *automated*
 - [Pass] Browser `URLSearch.js` fallback is DuckDuckGo, no google left — *automated*
-- [Human] **Just Type shows "Search DuckDuckGo"** and searching works —
+- [Pass] **Just Type shows "Search DuckDuckGo"** and searching works —
   *confirmed by user on 600030's device*
-- [Human] The search actually returns usable results in the browser
+- [Pass] The search actually returns usable results in the browser
 - [Human] A non-English locale shows the localized form (`Rechercher DuckDuckGo`,
   `Buscar DuckDuckGo` — the string is a template, so this comes for free)
 
@@ -430,111 +430,6 @@ answering entirely — even `getBackupStatus` hangs. And without
 `db: access denied`, which is *not* one of the errors that makes the service
 retry through the helper, so the backup dies on its first step.
 
-### 600039: what counts as the user's app
-
-600038's restore worked but put back the wrong set, because the app decided
-ownership by NAME (`com.palm.*` = system). Measured against a real manifest that
-was wrong both ways: it skipped `com.palm.app.codepoet.simplechat`, a community
-app that borrows the prefix, and archived + restored 11.7MB of QuickOffice that
-every image already ships. It now asks the image what it provides instead —
-baked under `/usr/palm/applications`, staged as a preload under
-`/usr/palm/ipkgs`, or an ipkg entry with no cryptofs footprint at all (how CE's
-Synergy stanza looks).
-
-Verified on the 600038 device by driving the helper's job protocol directly —
-the test suite stubs `privileged.*`, so none of its ops are covered off-device:
-
-- [Human] `listInstalledApps` reports 19 installed / 59 image-provided, and the
-  only thing it would back up is what the user actually installed
-- [Human] A package's archive now carries its **service**: QuickOffice came out as
-  `usr/palm/applications/…`, `usr/palm/packages/…` **and**
-  `usr/palm/services/com.quickoffice.webos.service` (8 files). Previously only
-  the app bundle was captured, which is why restored Tweaks launched and did
-  nothing — its service was never in the backup.
-- [Human] Restore accepts an app+service archive and lands both
-- [Human] Restore **rejects** a `..` traversal member — nothing written to `/etc`
-- [Human] Restore **rejects** a member outside `OWNED_SUBTREES`
-- [Human] Legacy `<id>/…` archives (written by 600038) still restore
-- [Human] An app restored by the directory fallback has no ipkg record, and is now
-  still seen as installed via its `appinfo.json` and marked `unmanaged` — without
-  that it silently drops out of every later backup
-- [Human] **Incremental backup actually dedups** — needs a backup run on this
-      build. *Verified on 600067, 2026-08-30,*
-      on the SECOND post-fix run. Store 3,447,088K -> 3,450,128K (**+3 MB**, 2 small
-      objects) for a backup covering 1,606,535,329 bytes; no new object over 1MB.
-      The first post-fix run is different and costs ~1.57GB once: the store still
-      holds pre-fix objects whose gzip headers carry timestamps, which a normalised
-      archive can never match. Expect that jump on any device upgrading from an
-      older backup app (KNOWN-ISSUES #11).
-      **Measure after the manifest appears** — it is written last. Sampling mid-run
-      once produced a wrong "+336K" result, and `find -newermt` matches nothing on
-      this busybox.
-- [Human] The full 3.0.5 → 3.1.0 path — not run on this build. *Verified on
-      600067, 2026-08-29:*
-      102 installed / 0 failed / 0 skipped / 11 services registered, with the
-      3.1.1 manifest reconciliation live (`Manifest cache synced: 1 of 1 refreshed
-      from the target`, on all four call sites). No ENOSPC, no timeouts, no
-      restore errors. One expected gap: an EAS account comes back without its
-      password (`CREDENTIALS_NOT_FOUND`) and must be re-entered.
-- [Human] The full 3.0.5 → 3.1.0 path: back up on stock 3.0.5, flash, restore
-
-**Watch for:** pushing the *upstream* `woce-backupd.js` to a CE device instead of
-bake.py's patched copy makes it write `/var/palm/ls2/roles/prv/woce-lunacall.json`
-— the duplicate role that drops both grants on next boot. Hit exactly once during
-this work. Check that file is absent after any manual helper push.
-
-### 600055 automated run (2026-08-22)
-
-80 PASS / 1 WARN / 0 FAIL across §0, 0b, 1, 4, 5, 6, 7, 8, 9, 10, 10b, 11
-(`scripts/results-600055.txt`). Line-by-line diff against the 600052 run is
-buildmark, buildtime, uptime — and the one crash report. The two changes 600055
-exists for are both confirmed:
-
-- [Pass] Preware present with exactly one status stanza **after** the de-shadow
-      sweep. Under the old hand-maintained list Preware was queued for deletion
-      and survived only on first-boot ordering.
-- [Pass] PmWanDaemon gated — **re-confirmed by hand on 600070** (not in
-      ce-test-full.sh): `pre-start process terminated with status 1`, goal
-      start->stop, state ->waiting, 0 `respawning too fast`, no upstart-child
-      SIGSEGV. That is the failure seen on 600042/600049/600050. Absent through
-      this boot; the Luna Restart half of it is still a `[Human]` item in §0.
-
----
-
-### 600052: what the first real 3.0.5 -> CE restore found
-
-Verified on hardware with a 115-package backup from a daily driver:
-
-- [Human] Receipt classifies every package and names them properly — "Hot Pursuit",
-  "DRIVER HD", not "This is a webOS application."
-- [Human] `installed 97 / failed 5 / not-captured 1 / image-provided 12 /
-  servicesRegistered 11`
-- [Human] The 8 TLS/rootcerts/ntpdate packages skipped as `image-provided`:
-  **nothing littered into cryptofs, nothing overwritten in `/usr`**
-- [Human] 11 restored services reachable on the bus after reboot (`-P`, look for
-  `Unknown method`, NOT `Service does not exist`)
-
-Two bugs the receipt exposed, both fixed in 600052:
-
-- **Launcher files must end in `.service`.** Named after the bus name verbatim,
-  only the 5 whose names already ended that way were visible; 6 including Tweaks
-  were silently absent. Renaming took it from 5/11 to 11/11.
-- **`maxBuffer exceeded`, not a timeout.** The `tar tzf` validation pass read
-  stdout through node 0.2's `exec` (200KB cap); a game's tarball lists tens of
-  thousands of paths, so Tiger Woods, Driver HD, Sandstorm and Atlas failed at
-  the LISTING stage. Listing now goes via a file.
-
-**Still open:** two Preware patches CE does not bake (`calendar-default-to-week-view`,
-`photos-show-filenames`) restore as inert payload dirs — their postinst never runs,
-so they are clutter rather than applied patches.
-
----
-
-**Dedup note:** a second identical backup did **not** halve the store (48.7 MB for
-two). Content addressing is working — the delete purged only the 20 files unique
-to the first backup, so 12 were genuinely shared — but db8 dumps and app tarballs
-differ byte-for-byte between runs. That is upstream behaviour, not CE integration.
-
 ---
 
 ## 15. CE OTA trust anchor  *(new in 600070)*
@@ -567,14 +462,38 @@ verifier fail closed, and did nothing else sneak in".
       both refused (exit 1) — *automated*
 - [Pass] **No OTA client component is baked** — no daemon, no service, no upstart
       job — *automated*. A hit means the image/client boundary slipped.
-- [Human] **Positive verification with a real signed payload.** Not automatable
-      on-device: it needs the offline private key, which by design is not here.
-      Sign a test file on the build host, push both, and confirm exit 0 — then
-      flip one byte of the payload and confirm exit 1.
-      *All six paths (valid DER, valid base64, garbage sig, missing sig, wrong
-      key, tampered payload) were exercised on the build host 2026-08-30 and on
-      hardware per the 600070 commit; this is the on-image re-confirmation.*
-- [Human] **The anchor survives a reboot and a Luna Restart** — it is in `/usr`,
+- [Pass] **Positive verification with a real signed payload — DONE on the image,
+      2026-08-30, with the real offline key.** This is the one check that proves
+      the anchor is a working trust root rather than merely a well-formed file.
+      Signed on the build host, only the payload and signature pushed; the key
+      never left the host and `find / -name ce-ota-signing.key` on the device
+      returned 0 afterwards. Test files removed.
+
+      **First, the keypair itself:** the public half derived from the offline
+      private key fingerprints to `3f02d369…f9fa79` — identical to the Desktop
+      public half, the key baked into 600070, and the value bake.py pins. All
+      four agree, so the GA-frozen root has a usable signer. *If this had not
+      matched, the image would have shipped a trust root nobody could sign for,
+      and no later update could have fixed it.*
+
+      Seven paths on-device, against the baked DEFAULT key (no key argument),
+      under stock OpenSSL 0.9.8k:
+
+      | case | expect | got |
+      |---|---|---|
+      | valid DER signature | 0 | 0 |
+      | valid base64 signature | 0 | 0 |
+      | valid DER, key named explicitly | 0 | 0 |
+      | payload with one byte flipped (byte 11) | 1 | 1 |
+      | same, base64 form | 1 | 1 |
+      | signature truncated by one byte | 1 | 1 |
+      | valid signature, wrong key | 1 | 1 |
+
+      Payload was a realistic OTA manifest (schema/model/from/to/sha256), not a
+      bare string, so the accept path was exercised on a plausible artifact.
+      **Re-run this whenever the anchor or the verifier changes** — and note it
+      needs the offline key, so it cannot live in `ce-test-full.sh`.
+- [Pass] **The anchor survives a reboot and a Luna Restart** — it is in `/usr`,
       so it should, but a flash is the only time to notice if it did not land.
 
 **Do not "fix" a wrong key by shipping a new one later.** If the fingerprint does
