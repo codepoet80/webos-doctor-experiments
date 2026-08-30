@@ -1,0 +1,173 @@
+===== webOS CE reboot soak — 7 cycles x 300s — BUILDMARK 600070 — Sun Aug 30 05:00:52 PM EDT 2026 =====
+
+[INFO] baseline: uptime=259s repairs=0 rdxd=0 apps=18 msgsize=166457 varfree=56676K
+[INFO] note: respawn/thrash/upstart counters are read PER BOOT (messages rotates ~2MB)
+
+───────────────────────────── CYCLE 1 / 7 ─────────────────────────────
+17:00:53 rebooting…
+17:01:17 device dropped off the bus after 24s
+17:01:38 device back on the bus
+17:01:48 LunaSysMgr up; soaking 300s
+[INFO] cycle 1: uptime=330s apps=20 repairs=0 thrash=0 rdxd=0 segv=0 msgsize=1622391 varfree=56860K slice=from-marker
+[PASS] cycle 1: really rebooted (uptime 330s)
+[PASS] cycle 1: BUILDMARK=600070
+[PASS] cycle 1: ipkgservice resident
+[PASS] cycle 1: ipkgservice job file intact
+[PASS] cycle 1: no new ipkgservice repair (total 0)
+[PASS] cycle 1: 0 respawn thrash this boot
+[PASS] cycle 1: 0 ipkgservice respawn events this boot
+[PASS] cycle 1: upstart never crashed/re-exec'd this boot
+[PASS] cycle 1: no SEGV this boot
+[PASS] cycle 1: no new rdxd report (total 0)
+[PASS] cycle 1: no crash artifacts
+[PASS] cycle 1: no store repair
+[PASS] cycle 1: imtransport running
+[PASS] cycle 1: synergy bind mount live
+[PASS] cycle 1: LunaDownloadMgr running
+[PASS] cycle 1: OTA anchor survived the reboot
+
+───────────────────────────── CYCLE 2 / 7 ─────────────────────────────
+17:06:53 rebooting…
+17:07:17 device dropped off the bus after 24s
+17:07:37 device back on the bus
+17:07:50 LunaSysMgr up; soaking 300s
+[INFO] cycle 2: uptime=334s apps=20 repairs=0 thrash=0 rdxd=0 segv=0 msgsize=581572 varfree=56848K slice=whole-file-marker-rotated
+[PASS] cycle 2: really rebooted (uptime 334s)
+[PASS] cycle 2: BUILDMARK=600070
+[PASS] cycle 2: ipkgservice resident
+[PASS] cycle 2: ipkgservice job file intact
+[PASS] cycle 2: no new ipkgservice repair (total 0)
+[PASS] cycle 2: 0 respawn thrash this boot
+[PASS] cycle 2: 0 ipkgservice respawn events this boot
+[PASS] cycle 2: upstart never crashed/re-exec'd this boot
+[PASS] cycle 2: no SEGV this boot
+[PASS] cycle 2: no new rdxd report (total 0)
+[PASS] cycle 2: no crash artifacts
+[PASS] cycle 2: no store repair
+[PASS] cycle 2: imtransport running
+[PASS] cycle 2: synergy bind mount live
+[PASS] cycle 2: LunaDownloadMgr running
+[PASS] cycle 2: OTA anchor survived the reboot
+
+───────────────────────────── CYCLE 3 / 7 ─────────────────────────────
+17:12:52 rebooting…
+17:13:16 device dropped off the bus after 24s
+17:13:32 device back on the bus
+17:13:44 LunaSysMgr up; soaking 300s
+[INFO] cycle 3: uptime=327s apps=22 repairs=0 thrash=0 rdxd=0 segv=0 msgsize=193519 varfree=56612K slice=whole-file-marker-rotated
+[PASS] cycle 3: really rebooted (uptime 327s)
+[PASS] cycle 3: BUILDMARK=600070
+[PASS] cycle 3: ipkgservice resident
+[PASS] cycle 3: ipkgservice job file intact
+[PASS] cycle 3: no new ipkgservice repair (total 0)
+[PASS] cycle 3: 0 respawn thrash this boot
+[PASS] cycle 3: 0 ipkgservice respawn events this boot
+[PASS] cycle 3: upstart never crashed/re-exec'd this boot
+[PASS] cycle 3: no SEGV this boot
+[PASS] cycle 3: no new rdxd report (total 0)
+[PASS] cycle 3: no crash artifacts
+[PASS] cycle 3: no store repair
+[PASS] cycle 3: imtransport running
+[PASS] cycle 3: synergy bind mount live
+[PASS] cycle 3: LunaDownloadMgr running
+[PASS] cycle 3: OTA anchor survived the reboot
+
+───────────────────────────── CYCLE 4 / 7 ─────────────────────────────
+17:18:45 rebooting…
+17:19:06 device dropped off the bus after 21s
+17:19:27 device back on the bus
+17:19:39 LunaSysMgr up; soaking 300s
+[INFO] cycle 4: uptime=330s apps=21 repairs=0 thrash=0 rdxd=0 segv=0 msgsize=1275951 varfree=56608K slice=from-marker
+[PASS] cycle 4: really rebooted (uptime 330s)
+[PASS] cycle 4: BUILDMARK=600070
+[PASS] cycle 4: ipkgservice resident
+[PASS] cycle 4: ipkgservice job file intact
+[PASS] cycle 4: no new ipkgservice repair (total 0)
+[PASS] cycle 4: 0 respawn thrash this boot
+[PASS] cycle 4: 0 ipkgservice respawn events this boot
+[PASS] cycle 4: upstart never crashed/re-exec'd this boot
+[PASS] cycle 4: no SEGV this boot
+[PASS] cycle 4: no new rdxd report (total 0)
+[PASS] cycle 4: no crash artifacts
+[PASS] cycle 4: no store repair
+[PASS] cycle 4: imtransport running
+[PASS] cycle 4: synergy bind mount live
+[PASS] cycle 4: LunaDownloadMgr running
+[PASS] cycle 4: OTA anchor survived the reboot
+
+───────────────────────────── CYCLE 5 / 7 ─────────────────────────────
+17:24:42 rebooting…
+17:25:03 device dropped off the bus after 21s
+17:25:24 device back on the bus
+17:25:35 LunaSysMgr up; soaking 300s
+[INFO] cycle 5: uptime=329s apps=21 repairs=0 thrash=0 rdxd=0 segv=0 msgsize=217228 varfree=56832K slice=whole-file-marker-rotated
+[PASS] cycle 5: really rebooted (uptime 329s)
+[PASS] cycle 5: BUILDMARK=600070
+[PASS] cycle 5: ipkgservice resident
+[PASS] cycle 5: ipkgservice job file intact
+[PASS] cycle 5: no new ipkgservice repair (total 0)
+[PASS] cycle 5: 0 respawn thrash this boot
+[PASS] cycle 5: 0 ipkgservice respawn events this boot
+[PASS] cycle 5: upstart never crashed/re-exec'd this boot
+[PASS] cycle 5: no SEGV this boot
+[PASS] cycle 5: no new rdxd report (total 0)
+[PASS] cycle 5: no crash artifacts
+[PASS] cycle 5: no store repair
+[PASS] cycle 5: imtransport running
+[PASS] cycle 5: synergy bind mount live
+[PASS] cycle 5: LunaDownloadMgr running
+[PASS] cycle 5: OTA anchor survived the reboot
+
+───────────────────────────── CYCLE 6 / 7 ─────────────────────────────
+17:30:36 rebooting…
+17:30:57 device dropped off the bus after 21s
+17:31:17 device back on the bus
+17:31:29 LunaSysMgr up; soaking 300s
+[INFO] cycle 6: uptime=330s apps=21 repairs=0 thrash=0 rdxd=0 segv=0 msgsize=1199753 varfree=56832K slice=from-marker
+[PASS] cycle 6: really rebooted (uptime 330s)
+[PASS] cycle 6: BUILDMARK=600070
+[PASS] cycle 6: ipkgservice resident
+[PASS] cycle 6: ipkgservice job file intact
+[PASS] cycle 6: no new ipkgservice repair (total 0)
+[PASS] cycle 6: 0 respawn thrash this boot
+[PASS] cycle 6: 0 ipkgservice respawn events this boot
+[PASS] cycle 6: upstart never crashed/re-exec'd this boot
+[PASS] cycle 6: no SEGV this boot
+[PASS] cycle 6: no new rdxd report (total 0)
+[PASS] cycle 6: no crash artifacts
+[PASS] cycle 6: no store repair
+[PASS] cycle 6: imtransport running
+[PASS] cycle 6: synergy bind mount live
+[PASS] cycle 6: LunaDownloadMgr running
+[PASS] cycle 6: OTA anchor survived the reboot
+
+───────────────────────────── CYCLE 7 / 7 ─────────────────────────────
+17:36:32 rebooting…
+17:36:56 device dropped off the bus after 24s
+17:37:12 device back on the bus
+17:37:23 LunaSysMgr up; soaking 300s
+[INFO] cycle 7: uptime=327s apps=21 repairs=0 thrash=0 rdxd=0 segv=0 msgsize=100609 varfree=56832K slice=whole-file-marker-rotated
+[PASS] cycle 7: really rebooted (uptime 327s)
+[PASS] cycle 7: BUILDMARK=600070
+[PASS] cycle 7: ipkgservice resident
+[PASS] cycle 7: ipkgservice job file intact
+[PASS] cycle 7: no new ipkgservice repair (total 0)
+[PASS] cycle 7: 0 respawn thrash this boot
+[PASS] cycle 7: 0 ipkgservice respawn events this boot
+[PASS] cycle 7: upstart never crashed/re-exec'd this boot
+[PASS] cycle 7: no SEGV this boot
+[PASS] cycle 7: no new rdxd report (total 0)
+[PASS] cycle 7: no crash artifacts
+[PASS] cycle 7: no store repair
+[PASS] cycle 7: imtransport running
+[PASS] cycle 7: synergy bind mount live
+[PASS] cycle 7: LunaDownloadMgr running
+[PASS] cycle 7: OTA anchor survived the reboot
+
+═════════════════════════════════════════════════════════════════════
+SOAK COMPLETE — 7 cycles — 112 PASS / 0 FAIL
+final:    repairs=0 rdxd=0 apps=21 varfree=56832K
+baseline: repairs=0 rdxd=0 apps=18 varfree=56676K
+(repairs and rdxd are totals since the flash and do not rotate; a rise at any
+ point above is a real fault. respawn/thrash/SEGV were asserted per boot.)
+===== done Sun Aug 30 05:42:24 PM EDT 2026 =====

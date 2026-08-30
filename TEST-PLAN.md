@@ -260,14 +260,19 @@ stop/starting the job.
 
 ## 8. Regressions from earlier validated flashes
 
-- [Pass] **ipkgservice survives repeated reboots** — **NOT decided by this run.**
-      600070 is 1 boot in: resident, job intact, 0 respawn events, race has not
-      fired. That is the first data point, not the soak. *600067 did 5 cycles x
-      5-minute soak clean.* Both faults are fixed at the source in Preware 1.9.19
-      (KNOWN-ISSUES #1, #1b), so the check is not "did the repair work" but "did
-      the fault occur at all": `repairs-since-flash=0` across every boot, zero
-      `respawning too fast`, zero crash reports, ipkgservice resident every time.
-      **Re-run the soak on this build before calling it.**
+- [Pass] **ipkgservice survives repeated reboots** — **7 cycles x 5-minute soak,
+      112 PASS / 0 FAIL, 2026-08-30** (`scripts/results-600070-soak.txt`, run by
+      `scripts/ce-reboot-soak.sh`). Two more cycles than 600067's gate.
+      Both faults are fixed at the source in Preware 1.9.19 (KNOWN-ISSUES #1,
+      #1b), so the check is not "did the repair work" but "did the fault occur at
+      all": `repairs-since-flash=0` across all seven boots, zero `respawning too
+      fast`, zero rdxd reports, zero SEGV, ipkgservice resident with its job file
+      intact every time. imtransport, the Synergy bind mount, LunaDownloadMgr and
+      the OTA anchor all came back on every boot.
+      *Caveat that does not go away with a green soak:* this proves ipkgservice
+      stays healthy across reboots, NOT that the original race is retired. That
+      race fires during the first-use preload pass, which runs once per flash —
+      retiring it takes clean **flashes**, not clean reboots.
 - [Pass] **App-store root present, and no repair was needed** — *automated (600061)*
       Two assertions, because they fail differently. A missing
       `/media/cryptofs/apps` means the preload pass cannot install anything and the
@@ -315,7 +320,8 @@ stop/starting the job.
       (two stanzas = installed *alongside* rather than upgraded — the thing to catch)
 - [Pass] Staged ipks present; stock 5.0.2900 ipk removed — *automated*
 - [Pass] Catalog files extracted with clean names — *automated*
-      *(was expected to fail on older builds; the catalog ipk is now 6.1.2921 as of 600033)*
+      *(was expected to fail on older builds; the catalog ipk is 6.1.2923 as of 600070 —
+      confirmed on-device by the automated run, which reads the installed version)*
 - [Pass] Manifest: baked contacts/messaging entries dropped — *automated*
 - [Pass] **stock-lineage runs:** compare against the pre-flash baseline — the
   5.0.2900 / 3.0.1 copies must be *upgraded*, and the old build's

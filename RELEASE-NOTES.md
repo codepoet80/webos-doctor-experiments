@@ -1,26 +1,27 @@
 # webOS CE 3.1.0 — Release Notes
 
-**Release candidate 3 — BUILDMARK 600067** (2026-08-29)
+**BUILDMARK 600070** (2026-08-30)
 
 | | |
 |---|---|
-| Asset | `webosdoctorp310hstnh-ce-600067.jar` |
-| Size | 242,910,109 bytes (232 MB) |
-| sha256 | `eadd365feb413abb7bd37ea384472efdec3ad236e86e8d8f56349c7b0966c011` |
-| md5 | `ea9369a592366e3fd1a63eb8551ec722` |
+| Asset | `webosdoctorp310hstnh-ce-600070.jar` |
+| Size | 242,920,348 bytes (232 MB) |
+| sha256 | `392f2122e3bd95f6f6b4f89acff2e8038508746a6fdeac7f4c5716834178e65a` |
+| md5 | `d804b15312428e29172e27a17a7493f1` |
 
 Verify before flashing:
 
 ```
-sha256sum webosdoctorp310hstnh-ce-600067.jar
+sha256sum webosdoctorp310hstnh-ce-600070.jar
 ```
 
-**The asset name changed.** Earlier candidates were
+**The asset name changed** during the candidate series. Earlier candidates were
 `webosdoctorp305hstnh-3.1CE-<mark>.jar`, carrying HP's `p305` product code for
 the 3.0.5 Doctor this is repacked from. This is 3.1.0, so it is named for what it
 is. The input JAR keeps its own name — that is HP's file.
 
-*(RC2 was BUILDMARK 600056, 2026-08-23, sha256 `cea207df…`; RC1 was 600024.)*
+*(RC3 was 600067, 2026-08-29, sha256 `eadd365f…`; RC2 was 600056, 2026-08-23,
+sha256 `cea207df…`; RC1 was 600024.)*
 
 A community Doctor for the **HP TouchPad** (`topaz`, Wi-Fi), built by repacking
 the OEM HP webOS 3.0.5 Doctor with 14 years of community work baked directly
@@ -42,7 +43,7 @@ install Tweaks from Preware).
 HP's dead activation servers, and **account setup is skippable**.
 
 **Pre-installed, baked into the image** — no first-boot installs, no postinsts:
-Preware 1.9.19, Govnah 1.3.9, App Catalog 6.1.2901, Maps 4.0.1, USB Settings,
+Preware 1.9.19, Govnah 1.3.9, App Catalog 6.1.2923, Maps 4.0.1, USB Settings,
 BT Gamepad support, and the Synergy Revival shared runtime. Preware knows they
 are installed and offers Preware feeds out of the box.
 
@@ -63,6 +64,49 @@ login on ordinary Wi-Fi).
 `3.1.0` platform version. Developer mode is on out of the box and stays on.
 
 **Removed** — Kindle, Facebook and YouTube preloads.
+
+---
+
+## New in 600070
+
+Two additions on top of RC3, both small in surface and deliberately so — the
+rootfs is frozen for the life of this release, so late changes were limited to
+what could be fully verified.
+
+**Device Info no longer says "HP webOS Account".** There is no HP account in CE
+— first use creates a webOS Archive community account — so the heading over the
+account row, and the same phrase in the full-erase confirmation, named something
+that does not exist. Now both read "webOS Account", in all five shipped
+languages (`webOS-Konto`, `Compte webOS`, `Cuenta de webOS`, `Account webOS`).
+The app's separate "HP webOS demo" strings are a different, retail feature and
+are untouched.
+
+**A signing key for future updates is now in the image.** This is the only
+over-the-air component here, and it is worth being precise about what it is and
+is not.
+
+*What shipped:* a public key at `/usr/share/ce-ota/keys/ce-ota-signing.pub` and
+a small verifier, `/usr/bin/ce-ota-verify`. That is all.
+
+*What did not ship:* any update client. Nothing checks for updates, nothing
+contacts a server, and nothing on the device will install anything on its own.
+There is no update to fetch yet.
+
+*Why it is here at all,* given the client is not: a trust root cannot be
+delivered over the channel it exists to protect. If the key arrived in a future
+update, that update would itself be unauthenticated — which is the exact problem
+the key is meant to solve. So the key has to be in the image a device is
+*flashed* with, or it is worth nothing. Everything else can come later, over
+Preware, and be authenticated by this key.
+
+The verifier deliberately uses the device's original 2009 OpenSSL rather than
+the modern TLS stack CE adds, so it works identically on stock webOS 3.0.5 and
+on CE — a device does not need the modern crypto it might be installing in order
+to check the signature on it.
+
+Verified on the flashed image with the real offline key: a signed manifest
+verifies, and a single flipped byte, a truncated signature, or the wrong key are
+all refused. Design notes are in `OTA-STRATEGY.md` §5.
 
 ---
 
@@ -169,7 +213,8 @@ root-certificate updates, so it no longer offers them as fresh installs and a
 
 ## Fixed since 600020
 
-- **App Catalog is now the community 6.1.2901.** A stock staged catalog ipk was
+- **App Catalog is now the community build** (6.1.2901 at the time; 6.1.2923
+  ships in 600070). A stock staged catalog ipk was
   being installed over it at first boot, so earlier builds silently ran the old
   5.0.2900.
 - **Synergy runtime seeds reliably.** A blocking `initctl` call could stall the
@@ -178,6 +223,37 @@ root-certificate updates, so it no longer offers them as fresh installs and a
   postinst rather than a hand-maintained copy — so the version-specific feeds
   that have no 3.1 content ship correctly disabled instead of failing on every
   update.
+
+---
+
+## How this build was tested
+
+Numbers, so you can judge the coverage rather than take "tested" on faith.
+
+**Automated: 90 checks, 0 failures** on the flashed device — the first fully
+clean run of the 3.1 series, with nothing downgraded by judgement. It covers
+identity, first-boot seeding, the core apps, the Synergy runtime, Preware's
+package state, the un-baking of App Catalog and Maps, Exhibition, search,
+storage, and both additions above. Kept in `scripts/results-600070.txt`; the
+suite itself is `scripts/ce-test-full.sh`, so you can re-run it on your own
+device.
+
+**Reboot soak: 7 consecutive reboots, 112 checks, 0 failures.** Five minutes of
+running time after each boot, then the full check set — ipkgservice resident
+with its job file intact, no respawn thrash, no crash reports, and the IM
+transport, Synergy mount and download manager all back up. This exists because
+the fault that dogged RC2 fired roughly one boot in six, so a single clean boot
+proves very little; the gate is repeated boots rather than one lucky one.
+*(`scripts/ce-reboot-soak.sh`, results in `scripts/results-600070-soak.txt`.)*
+
+**The flash itself is checked, not assumed.** The Doctor reports success whether
+or not its app-deletion stage worked, so both markers are read from its log
+afterwards, and the device is separately asked whether its app store had to be
+repaired on first boot. Both were clean here.
+
+What is *not* covered: everything needing eyes and hands — the OOBE, app
+launches, Bluetooth pairing, and restoring a real backup — is tracked in
+`TEST-PLAN.md` rather than claimed here.
 
 ---
 
@@ -196,7 +272,12 @@ Full detail, with evidence and what a fix would have to do, is in
 - **No post-setup account manager yet.** The sign-in app is first-use only in
   this build; managing your account afterwards will come as a separate App
   Catalog app.
-- **No on-device rollback.** Recovery is re-Doctoring — by design.
+- **No on-device rollback.** Recovery is re-Doctoring — by design. This is also
+  why the update key above matters: the rootfs cannot be repaired in place, so
+  anything frozen into it has to be right the first time.
+- **No over-the-air updates yet.** The image carries the key that will
+  authenticate them, and nothing else — see "New in 600070". Updates will arrive
+  through Preware when the client is ready.
 
 ## Notes for testers
 
