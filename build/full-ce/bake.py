@@ -2079,6 +2079,82 @@ def main():
         "deviceinfo list-assistant: pushAbout", count=1)
     w(f"{DIAPP}/app/controllers/list-assistant.js", la, 0o644)
 
+    # 11b-2) CE OTA trust anchor: the signing public key + its verifier.
+    #
+    # This is the ONLY OTA component in the image, and it is here because it is
+    # the only one that cannot be added later. A trust root delivered over an
+    # untrusted channel is not a trust root: if the key shipped in a future
+    # update, that update would itself be unauthenticated. Everything else --
+    # the daemon, the bridge service, the patched Updates UI -- can arrive via
+    # Preware afterwards and be authenticated BY this key.
+    # (OTA project: OTA-IMAGE-INTEGRATION.md rev2 §1 + §11 option A;
+    #  here: OTA-STRATEGY.md §5.)
+    #
+    # The verifier deliberately uses the STOCK /usr/bin/openssl (0.9.8k, 2009),
+    # which this image does not replace -- the TLS tier adds /usr/lib/ssl11 and
+    # wraps curl, but leaves openssl alone. So the same script verifies on
+    # stock 3.0.5 and on CE 3.1.0: a device does not need the modern crypto it
+    # might be trying to install in order to check the signature on it.
+    log("tier: CE OTA trust anchor (signing key + verifier)")
+    OTA_SRC = os.path.join(HERE, "ce-ota")
+    OTA_KEY_FPR = ("3f02d369e69d86e3616f85f04b42db6dc7383817fc48078987"
+                   "7216f2e3f9fa79")
+    ota_key = os.path.join(OTA_SRC, "ce-ota-signing.pub")
+    # Assert the key we are about to freeze into a GA image is the intended one.
+    # Fingerprint is over the DER SubjectPublicKeyInfo, not the PEM bytes, so it
+    # is stable across re-encoding. A wrong or truncated key fails the build.
+    der = subprocess.run(["openssl", "rsa", "-pubin", "-in", ota_key,
+                          "-outform", "DER"], capture_output=True)
+    if der.returncode != 0:
+        sys.exit("ERROR: CE OTA key is not a readable public key: "
+                 + der.stderr.decode()[:200])
+    got = hashlib.sha256(der.stdout).hexdigest()
+    if got != OTA_KEY_FPR:
+        sys.exit(f"ERROR: CE OTA signing key fingerprint mismatch\n"
+                 f"  expected {OTA_KEY_FPR}\n  got      {got}\n"
+                 f"  refusing to bake an unexpected trust anchor")
+    wcopy("usr/share/ce-ota/keys/ce-ota-signing.pub", ota_key, 0o644)
+    wcopy("usr/bin/ce-ota-verify", os.path.join(OTA_SRC, "ce-ota-verify"), 0o755)
+    log(f"  key fingerprint (DER SPKI sha256) verified: {got[:16]}…")
+
+    # 11c) Device Info: "HP webOS Account" -> "webOS Account".
+    #
+    # The heading over the account row, and the same phrase in the full-erase
+    # confirmation. There is no HP account any more -- CE's first-use creates a
+    # webOS Archive community account -- so the label names a thing that does
+    # not exist.
+    #
+    # Localization here is per-locale HTML overrides, not a string table, so the
+    # phrase is duplicated across every language and each wraps it differently:
+    #   en  HP webOS Account      de  HP webOS-Konto
+    #   fr  Compte HP webOS       es  Cuenta de HP webOS
+    #   it  Account HP webOS
+    # All of them contain the literal "HP webOS", so dropping the vendor word is
+    # one rule that reads correctly in every language.
+    #
+    # DELIBERATELY NOT the app's other "HP webOS" strings: customapp-assistant.js
+    # and the strings.json tables carry the retail "HP webOS demo" text, which is
+    # a different feature -- and those tables are keyed BY the English string, so
+    # rewriting a key there would break the lookup and fall back to English.
+    log('tier: Device Info account label ("HP webOS Account" -> "webOS Account")')
+    # `stock` carries only the members other tiers asked for, so read the app's
+    # own tree here rather than widening that list for one label.
+    di_stock = read_rootfs(ROOTFS_TGZ, prefixes=[DEVINFO])
+    di_views = sorted(n for n in di_stock
+                      if n.endswith("/views/list/list-scene.html")
+                      or n.endswith("/views/erase/fullerase-dialog.html"))
+    di_done = []
+    for name in di_views:
+        body = di_stock[name]["data"].decode("utf-8")
+        if "HP webOS" not in body:
+            continue          # de's erase dialog already says "webOS-Kontos"
+        w(name[2:], body.replace("HP webOS", "webOS").encode("utf-8"), 0o644)
+        di_done.append(name.split("com.palm.app.deviceinfo/")[1])
+    if len(di_done) < 10:
+        sys.exit(f"ERROR: deviceinfo account label: expected the phrase in ~12 "
+                 f"view files, patched {len(di_done)}: {di_done}")
+    log(f"  account label de-branded in {len(di_done)} view file(s)")
+
     # register the new scene with Mojo, and link its stylesheet
     sj = sdata(DEVINFO + "sources.json").decode()
     sj = sure_replace(

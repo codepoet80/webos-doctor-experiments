@@ -235,6 +235,37 @@ RC2 field feedback is in `RC2-Issues.txt`; the reproduced/diagnosed items live i
    itself treats a wholly failed wipe as success — fixing that means patching OEM
    Java, which is a bigger call than the first-boot guard.
 
+10. **OTA readiness — the trust anchor ships, the client does not.** The OTA
+   project's `OTA-IMAGE-INTEGRATION.md` (rev 2) and our `IMAGE-SIDE-DECISIONS.md`
+   in that repo settled on **option A**: bake only what cannot be added later.
+
+   That is exactly one thing. A trust root delivered over an untrusted channel is
+   not a trust root — if the signing key shipped in a future update, that update
+   would itself be unauthenticated. So 600070 bakes
+   `/usr/share/ce-ota/keys/ce-ota-signing.pub` (RSA-4096) and `/usr/bin/ce-ota-verify`,
+   and nothing else. The daemon, bridge service and patched Updates UI arrive
+   later via Preware and are authenticated BY this key.
+
+   `bake.py` asserts the key's DER SubjectPublicKeyInfo fingerprint
+   (`3f02d369…f9fa79`) and refuses to build on a mismatch — verified by
+   substituting an imposter key and watching the build abort.
+
+   The verifier targets the **stock** `/usr/bin/openssl` (0.9.8k, 2009), which this
+   image does not replace: our TLS work adds `/usr/lib/ssl11` and wraps `curl` but
+   leaves `openssl` alone (confirmed: 448889 bytes, 2011-12-21, zero references in
+   bake.py). So the same script verifies on stock 3.0.5 and on CE 3.1.0 — a device
+   does not need the modern crypto it might be installing in order to check the
+   signature on it.
+
+   Deliberately NOT baked: the OTA client itself. Its armed-flash path has never
+   been verified end to end and no real payload exists, and the rootfs is frozen
+   for the life of the release. Four findings were sent back to that project and
+   remain open: manifests must bind to their target model/version; payloads must be
+   moved to root-only storage before verification (`/media/internal` is
+   USB-exported, so verify-then-install is a TOCTOU); rotation keys and the
+   downgrade serial are wiped by a re-flash, so the baked root must remain a valid
+   signer forever; and their status whitelist inherits from `Object.prototype`.
+
 **Baked as 600059** (2026-08-29), sha256 `230f66ff…`, integcheck clean,
 **flashed successfully** the same day, and the first fully clean automated pass
 of the cycle: **81 PASS / 0 FAIL / 9 INFO** (`scripts/results-600059.txt`; RC2
@@ -254,7 +285,11 @@ will simply build with the old behaviour. Re-bake after touching it.
 ## Working artifacts
 
 - `webosdoctorp305hstnhwifi.jar` — the OEM 3.0.5 Doctor (the repack base; not in git).
-- `out/webosdoctorp310hstnh-ce-600067.jar` — **the current RC3 candidate**,
+- `out/webosdoctorp310hstnh-ce-600070.jar` — 600067 plus two additions: the Device
+  Info account label ("HP webOS Account" -> "webOS Account", 12 localized view
+  files) and the **CE OTA trust anchor** (signing public key + `ce-ota-verify`).
+  Built and integchecked; **not yet flashed**.
+- `out/webosdoctorp310hstnh-ce-600067.jar` — the RC3 candidate as tested,
   sha256 `eadd365f…`. Everything below, plus **Preware 1.9.19 rebuilt from source**
   carrying both ipkgservice fixes (atomic job-file write, and registration failure
   no longer reported to upstart as success — KNOWN-ISSUES #1 and #1b), and
