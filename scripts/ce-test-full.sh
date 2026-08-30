@@ -197,6 +197,32 @@ grep -q '"keyboardSize":-1\|keyboardSize.*-1' /etc/palm/defaultPreferences.txt 2
 n=$(strings /usr/bin/LunaSysMgr 2>/dev/null | grep -c "HP webOS ")
 [ "$n" = "0" ] && P "7   version-prefix patch: 0 'HP webOS ' in LunaSysMgr" || F "7   'HP webOS ' still in LunaSysMgr x$n"
 
+# Device Info account label (600070): "HP webOS Account" -> "webOS Account" across
+# every locale's view overrides. Counts the phrase in the VIEW files only -- the
+# app's other "HP webOS" strings are the retail demo feature and stay put, so a
+# grep over the whole app would always hit.
+DI=/usr/palm/applications/com.palm.app.deviceinfo
+# Explicit globs rather than find -path: busybox find is not guaranteed to have
+# -path, and an empty result piped to xargs grep would read stdin and hang.
+di_seen=0; di_bad=0
+for f in $DI/app/views/list/list-scene.html \
+         $DI/app/views/erase/fullerase-dialog.html \
+         $DI/resources/*/views/list/list-scene.html \
+         $DI/resources/*/views/erase/fullerase-dialog.html \
+         $DI/resources/*/*/views/list/list-scene.html \
+         $DI/resources/*/*/views/erase/fullerase-dialog.html; do
+  [ -f "$f" ] || continue
+  di_seen=$((di_seen + 1))
+  grep -q "HP webOS" "$f" 2>/dev/null && { di_bad=$((di_bad + 1)); I "7   still branded: $f"; }
+done
+if [ "$di_seen" -lt 10 ]; then
+  F "7   Device Info: only $di_seen view file(s) found -- expected ~12, check the layout"
+elif [ "$di_bad" = "0" ]; then
+  P "7   Device Info account label de-branded ($di_seen view files, 0 say 'HP webOS')"
+else
+  F "7   Device Info still says 'HP webOS' in $di_bad of $di_seen view file(s)"
+fi
+
 # ---------------------------------------------------------------- 8. regressions
 for a in com.palm.app.kindle com.palm.app.enyo-facebook com.palm.app.youtube; do
   [ ! -d $APPS/$a ] && P "8   HP preload $a absent" || F "8   HP preload $a present"
@@ -368,5 +394,47 @@ I  "11  media: wallpapers=$(ls /media/internal/wallpapers 2>/dev/null | wc -l) r
 n=$(ls /media/internal/wallpapers/*.png 2>/dev/null | wc -l)
 [ "$n" = "0" ] && P "11  no orphaned .png wallpapers" || I "11  $n orphaned .png wallpapers (upgrade-from-CE artifact, accepted)"
 have /media/internal/wallpapers/22.jpg && P "11  default wallpaper 22.jpg present" || F "11  default wallpaper 22.jpg MISSING"
+
+# ---------------------------------------------------------------- ota. CE OTA trust anchor
+# The only OTA component in the image (600070). No private key on the device, so
+# this cannot test a POSITIVE verification -- it tests that the anchor is the
+# intended key, and that the verifier fails closed, which is the half that must
+# never regress. A signed-payload test needs the offline key and stays [Human].
+OTAK=/usr/share/ce-ota/keys/ce-ota-signing.pub
+OTAV=/usr/bin/ce-ota-verify
+OTA_FPR=3f02d369e69d86e3616f85f04b42db6dc7383817fc480789877216f2e3f9fa79
+if have $OTAK && have $OTAV; then
+  P "ota OTA anchor: key + verifier present"
+  [ -x $OTAV ] && P "ota ce-ota-verify is executable" || F "ota ce-ota-verify not executable"
+  # Fingerprint over the DER SubjectPublicKeyInfo -- stable across PEM re-encoding.
+  got=$(openssl rsa -pubin -in $OTAK -outform DER 2>/dev/null \
+         | openssl dgst -sha256 2>/dev/null | sed 's/.*=[ ]*//')
+  if [ -z "$got" ]; then
+    F "ota OTA key did not parse under stock openssl ($(openssl version 2>&1))"
+  elif [ "$got" = "$OTA_FPR" ]; then
+    P "ota OTA key fingerprint matches the baked anchor"
+  else
+    F "ota OTA key fingerprint MISMATCH: $got"
+  fi
+  # Fail-closed: a garbage signature must be refused, and so must a missing file.
+  echo test-payload > /tmp/ce-ota-t.bin; echo not-a-signature > /tmp/ce-ota-t.sig
+  $OTAV /tmp/ce-ota-t.bin /tmp/ce-ota-t.sig >/dev/null 2>&1 \
+    && F "ota ce-ota-verify ACCEPTED a garbage signature" \
+    || P "ota ce-ota-verify refuses a garbage signature"
+  $OTAV /tmp/ce-ota-t.bin /tmp/nope.sig >/dev/null 2>&1 \
+    && F "ota ce-ota-verify ACCEPTED a missing signature file" \
+    || P "ota ce-ota-verify refuses a missing signature file"
+  rm -f /tmp/ce-ota-t.bin /tmp/ce-ota-t.sig
+  # The verifier targets stock openssl on purpose; if the image ever replaces it
+  # the anchor's assumptions change, so record what is actually there.
+  I  "ota openssl on device: $(openssl version 2>&1)"
+else
+  F "ota OTA anchor missing (key=$(have $OTAK && echo yes || echo NO) verifier=$(have $OTAV && echo yes || echo NO))"
+fi
+# Nothing else OTA may be baked -- the client ships via Preware, authenticated by
+# this key. A daemon or Updates patch appearing here means the boundary slipped.
+for p in /usr/bin/ce-ota-daemon /usr/palm/services/org.webosarchive.ota.service /var/palm/event.d/ce-ota; do
+  [ ! -e "$p" ] || F "ota unexpected OTA client component baked: $p"
+done
 
 echo "===== done ====="
