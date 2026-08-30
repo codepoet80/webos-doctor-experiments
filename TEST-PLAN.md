@@ -1,11 +1,12 @@
 # webOS CE 3.1 Flash Test Plan
 
-**600070 is the final release candidate. Automated half: 90 PASS / 0 FAIL.**
-The first fully clean automated run of the 3.1 cycle — including the first-boot
-ipkgservice race, which did not fire. Both 600070 additions pass on hardware.
-The `[Human]` list is what remains, plus one reboot soak (§8) that a single boot
-cannot decide. Prose citing 600052 / 600059 / 600067 is *prior-build evidence*:
-it says what a check is for, not what happened on this flash.
+**600070 is the final release candidate.** Automated: 90 PASS / 0 FAIL — the
+first fully clean run of the 3.1 cycle, with the first-boot ipkgservice race not
+firing. Reboot soak: 7 cycles, 112 PASS / 0 FAIL. Restore onto the flashed
+image: clean, 11/11 services back on the bus. Both 600070 additions pass on
+hardware, and the OTA anchor verifies against the real offline key.
+The `[Human]` list is what remains. Prose citing 600052 / 600059 / 600067 is
+*prior-build evidence*: it says what a check is for, not what happened here.
 
 ```
 Build under test:  BUILDMARK 600070  jar out/webosdoctorp310hstnh-ce-600070.jar
@@ -17,13 +18,14 @@ Build under test:  BUILDMARK 600070  jar out/webosdoctorp310hstnh-ce-600070.jar
                    So the app-store wipe really happened (KNOWN-ISSUES #10) —
                    confirmed downstream by "no store repair needed".
 Lineage:           [x] CE -> CE      [ ] stock 3.0.5 -> CE
-Restore:           [ ] not yet run on this build
+Restore:           [x] run 2026-08-30 — 43-package backup, 0 errors, skipped: [],
+                   11/11 restored services reachable on the bus after reboot
 
 What this run does NOT decide, despite being green:
                    - the ipkgservice reboot soak (§8): this is 1 boot, not 5
                    - every `[Human]` item: UI, taps, hardware, and the OTA
                      positive-verification test, which needs the offline key
-                   - the stock-3.0.5 lineage and the restore path
+                   - the stock-3.0.5 lineage (the restore itself has now run)
 
 Pre-flash verification (2026-08-30, before the jar was opened by the Doctor):
                    jar sha256 matches the 600070 manifest; the bake inputs stamp
@@ -50,10 +52,15 @@ Carried in from 600067 — where each one landed on this build:
                    store wipe needing no repair ......... re-confirmed (automated)
                    power-off path unwrapped ............. re-confirmed (automated)
                    PmWanDaemon gated .................... re-confirmed by hand
-                   ipkgservice across 5 reboot cycles ... OPEN, 1 boot so far
+                   ipkgservice reboot soak .............. 7 cycles, 112/0 clean
                    power menu / Shut Down on battery .... OPEN, needs hands
                    app uninstall after a PDK launch ..... OPEN, needs hands
-                   3.0.5 -> 3.1.0 restore ............... OPEN, not run
+                   restore onto the flashed image ....... run clean (§14)
+                     — the source device's lineage is not asserted here: the
+                       backup reports nduId "CUc" with currentDevice:false and
+                       osVersion Nova-HP-Topaz-86, which CE and stock 3.0.5
+                       share. Whether this was the stock-3.0.5 path is for
+                       whoever made the backup to say.
 ```
 
 Legend: `[ ]` not yet run · `[Pass]` · `[Fail]` · `[Human]` needs eyes/hands ·
@@ -405,24 +412,55 @@ device** with the tier's exact output pushed in and the device rebooted, which
 is the closest stand-in for a first boot (the point of baking the grants is that
 `ls-hubd` and `mojodb-luna` read them at *their* startup, not on install).
 
-- [Human] Helper starts with Luna and finds both grants already baked —
+- [Pass] Helper starts with Luna and finds both grants already baked —
   `/var/log/woce-backupd.log` says *"lunacall role is baked into the image;
   nothing to write"* and *"db8 admin grant already in place"*
-- [Human] It writes **nothing** to `/var/palm/ls2/roles/prv/` (a second role
+  *600070: all three lines present, plus "service role is baked into the image".*
+- [Pass] It writes **nothing** to `/var/palm/ls2/roles/prv/` (a second role
   claiming `com.palm.backup.privileged` makes ls-hubd drop *both* grants), and
   no `/etc/palm/mojodb.conf.woce-backup-orig` appears
-- [Human] `getBackupStatus` reports `privileged: true` (helper reachable — the
-  app shows an amber limited-mode notice when it is not)
+  *600070: 0 woce files in `roles/prv/`, no `mojodb.conf.woce-backup-orig`.*
+- [Pass] `getBackupStatus` reports `privileged: true` (helper reachable — the
+  app shows an amber limited-mode notice when it is not) — *600070: confirmed,
+  `{"returnValue":true,"privileged":true}`*
 - [Human] `woce-lunacall -m com.palm.backup.privileged` reaches
   `com.palm.db/internal/preBackup`; the same call as plain `luna-send` is denied
 - [Human] Full backup completes: 24.5 MB, `skipped: []`, 19 packages archived
-- [Human] `listBackups` / `getRestoreDevices` / `getLastBackupTime` all answer
+- [Pass] `listBackups` / `getRestoreDevices` / `getLastBackupTime` all answer
+  *600070: all three returned `returnValue:true`. `listBackups` lists both
+  manifests with per-service file counts; `getRestoreDevices` reports the source
+  device and its 43-package backups. `getLastBackupTime` answers but returns
+  `lastbackupTime: "."` with `optOut: true` — it answers, which is what this
+  line asserts, but that value looks like a placeholder rather than a time.*
 - [Human] `deleteBackup` purges by reference count — 52 files → 32, 48.7 → 24.5 MB,
   the surviving backup intact
 - [Human] App UI renders with the real state (destination, "Settings and data",
   "2 backups") and **no** limited-mode notice
-- [Human] **Restore** — deliberately not run on a live device (it rewrites db8
-  and preferences and then reboots). Run it on the flashed image.
+- [Pass] **Restore — run on the flashed 600070 image, 2026-08-30.** Restored
+  `000002-CUc` (incremental, 43 packages, 78 MB declared). Result: **zero errors
+  in the whole helper log** — no failures, no ENOSPC, no timeouts, no denials —
+  and `skipped: []`. The manifest now records `restoredCount: 1`,
+  `lastRestored: Sun, 30 Aug 2026 22:09:10 GMT`.
+  Device after the reboot: 50 cryptofs apps / 34 ipkg stanzas / 11 services, and
+  **all 11 services reachable on the public bus**, including the four registered
+  during the restore (`com.wosa.bluebubbles.service`,
+  `org.webosarchive.otaready.service`, `de.zefanjas.biblez.enyo.fileio`,
+  `com.messagingbypass.synergy.service`). 0 rdxd reports, 0 crash artifacts,
+  0 SEGV, 0 ls-hubd role errors; ipkgservice, imtransport and LunaDownloadMgr all
+  up. Apps landed with their services attached — BlueBubbles restored into 3
+  paths including its `.service`, which is the case that used to come back as a
+  tile that launches and does nothing.
+  **Pre-flight on the store before restoring** (worth repeating next time): both
+  manifests parsed, and all 55 referenced objects resolved in `files/` with no
+  size mismatches. Note the store names compressed objects by `origChecksum`
+  with a `.gz` suffix, *not* by `finalChecksum` — checking the wrong one reports
+  false missing objects.
+  *Still `[Human]`: bus-reachable proves the hub launched each service, NOT that
+  its UI works. BlueBubbles and Tweaks still want a tap.*
+- [ ] **34 ipkg stanzas against 50 apps** — restored apps that landed via the
+  directory path have no ipkg record and are marked `unmanaged`. Confirm they
+  still appear in a **later backup**; that is the regression the `unmanaged`
+  handling exists to prevent, and it is not decided by this restore.
 - [Human] Backup from the app's own button, not just over the bus
 - [Human] Non-English device: the app is English-only, and the stock localized
   `resources/<locale>/appinfo.json` files are removed with the rest of the stock
