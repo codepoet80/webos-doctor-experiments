@@ -596,18 +596,49 @@ cannot: a stamped archive still restores, it just will not dedup).
 stay, because a failed backup must not also delete the user's good ones. The
 purge machinery itself was never broken: opting out reclaimed all 11.5GB.
 
-**Verified end to end on hardware, 2026-08-30 (600067).** A second backup taken
-a day after the first, on a device holding a 115-package restore:
+**Verified end to end on hardware, 2026-08-30 (600067)** — but only on the
+*second* post-fix run, and the first one is worth understanding before anyone
+panics at it.
+
+**Run 1 after the upgrade cost 1.57GB, and that is expected, once.** The store
+still held objects written by the OLD code, which carry a timestamp in the gzip
+header. A normalised archive can never match one of those, so every large app was
+stored a second time:
 
 ```
-store:  1,877,552 KB  ->  1,877,888 KB    (+336 KB)
-objects stored that run:        12, all small (changed db8/prefs/cookies)
-objects stored that run >1MB:   0
+309,556,846  Aug 22 20:36  768c725f…     309,556,846  Aug 30 09:06  b5ae8d53…
+208,060,017  Aug 22 20:40  58e745ae…     208,060,017  Aug 30 09:10  839309a9…
+store: 1.88GB -> 3.45GB, 128 -> 216 objects
 ```
 
-The helper rebuilt and hashed every app archive during that run — including a
-124MB Serpent of Isis and a 64MB Monopoly — and stored **none** of them again.
-Under the old code the same run would have added roughly another 1.8GB.
+Those pairs are byte-identical except bytes 4..7 — proven on device:
+
+```
+bytes 0..3 (magic)  SAME     bytes 8..15   SAME     bytes 16..1039  SAME
+bytes 4..7 (MTIME)  DIFFER
+Aug 22 object bytes 4..7 = 0125f911…  (a real timestamp, old code)
+Aug 30 object bytes 4..7 = f1d3ff84…  = four zero bytes (fixed code)
+```
+
+**Run 2, with both sides written by the fixed code, is the real measurement:**
+
+```
+                 before          after          delta
+manifests            2              3           +1
+objects            216            218           +2
+store        3,447,088 KB   3,450,128 KB    +3,040 KB  (3 MB)
+```
+
+Two small objects — changed db8/prefs/cookies — for a backup covering
+1,606,535,329 bytes of content. No new object over 1MB; the largest objects in
+the store are unchanged. Under the old code that run would have added ~1.6GB.
+
+**Method note, because the first attempt at this got it wrong.** An earlier check
+sampled the store *mid-run*, before the large archives were processed, and
+reported +336KB as if the run had finished — it had actually added 1.57GB. Take
+the measurement after the manifest appears (it is written last), and do not trust
+`find -newermt` on this busybox: it silently matches nothing, which produced a
+second false "0 objects" reading.
 
 ---
 
