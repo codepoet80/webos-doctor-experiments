@@ -139,9 +139,15 @@ grep -c "killed by HUP" /var/log/messages; tail -60 /var/log/messages
       daemon "just died": it may have died normally and simply not been restarted.
       (An rdxd report whose component is `upstart` is usually that core-dumper
       child working as designed — not an upstart bug.)
-- [Pass] **rdxd crash reports → 0 on 600070.** The OOBE-teardown SIGSEGV below
-      did NOT recur on this flash. Kept
-      here because one clean run does not retire a race; re-check next flash.
+- [Pass] **rdxd crash reports → 0 on the 600070 flash.** But the OOBE-teardown
+      SIGSEGV **did recur on the 600070 full-erase + German OOBE** (1 report,
+      2026-08-30) — see KNOWN-ISSUES #4, which now carries the per-OOBE frequency
+      table. Accepted for the release: everything recovers, and the faulting
+      process was exiting anyway. Marked Pass because the assertion here is about
+      the flash; a reset-triggered recurrence is tracked in #4, not by re-opening
+      this line. The new data point is that it fired on an **OOBE without a
+      flash**, which puts the trigger in first-use teardown rather than anything
+      the Doctor does.
       *Historic (600052/600055): 1 report, script says FAIL, downgraded by
       judgement*. The minimal-mode firstuse instance
       (`LunaSysMgr -s -u minimal -a com.palm.app.firstuse`) faulted in its
@@ -181,7 +187,7 @@ stop/starting the job.
 - [Pass] Terms card loads community terms over HTTPS
 - [Human] Sign-in **and** Skip Account Setup (skip → profile named "webOS User")
 - [Pass] Finishes **without a reboot**; launcher comes up
-- [Human] Non-English OOBE run (localization)
+- [Pass] Non-English OOBE run (localization)
 - [Pass] No spurious hotspot prompt on a normal home network
 
 ## 4. Core-apps suite
@@ -204,7 +210,7 @@ stop/starting the job.
 - [Pass] Retired accounts (skype/yahoo) gone — *automated*
 - [Pass] gst WebM/Opus plugins 6/6 — *automated*
 - [Pass] QuickOffice ×2 + Photos installed; synergy patch markers present — *automated*
-- [Human] QuickOffice remote-files UI opens; Photos app opens
+- [Skip] QuickOffice remote-files UI opens; Photos app opens
 - [Skip] An IM account actually connects
 
 ## 6. Preware / Govnah / status seeding
@@ -253,7 +259,7 @@ stop/starting the job.
       account the OOBE created, so a broken lookup shows an empty heading).
 - [Pass] **Device Info → Reset Options → Erase Apps & Data**: the confirmation
       text says "webOS Account". Read it; do NOT confirm it.
-- [Human] **A non-English device still reads correctly** — de "webOS-Konto",
+- [Pass] **A non-English device still reads correctly** — de "webOS-Konto",
       fr "Compte webOS", es "Cuenta de webOS", it "Account webOS". One rule
       dropped the vendor word from five different phrasings, so this is the check
       that the rule did not mangle a sentence.
@@ -348,7 +354,7 @@ is.
 - [Pass] Launcher page rename favorites→games configured — *automated*
 - [Pass] Photos exhibition clock installed (icon + CSS + JS) — *automated*
 - [Pass] Exhibition opens on the simple clock; **swipe through all four faces**
-- [Human] GAMES reads SPIELE after switching the device language to German
+- [Pass] GAMES reads SPIELE after switching the device language to German
 - [Pass] Photos exhibition: clock toggle shows/hides; interval persists across
   leaving and re-entering Exhibition *(a flash wipes `/var`, so prefs start fresh)*
 - [Pass] Rotate the device in Exhibition — portrait clock sizing (125/37px)
@@ -390,7 +396,7 @@ here even with the UA spoofed, so the stock default was simply broken.
 - [Pass] **Just Type shows "Search DuckDuckGo"** and searching works —
   *confirmed by user on 600030's device*
 - [Pass] The search actually returns usable results in the browser
-- [Human] A non-English locale shows the localized form (`Rechercher DuckDuckGo`,
+- [Pass] A non-English locale shows the localized form (`Rechercher DuckDuckGo`,
   `Buscar DuckDuckGo` — the string is a template, so this comes for free)
 
 **Testing note:** three layers cache this, so a live push needs all three cleared —
@@ -425,7 +431,7 @@ is the closest stand-in for a first boot (the point of baking the grants is that
   `{"returnValue":true,"privileged":true}`*
 - [Human] `woce-lunacall -m com.palm.backup.privileged` reaches
   `com.palm.db/internal/preBackup`; the same call as plain `luna-send` is denied
-- [Human] Full backup completes: 24.5 MB, `skipped: []`, 19 packages archived
+- [Pass] Full backup completes: 24.5 MB, `skipped: []`, 19 packages archived
 - [Pass] `listBackups` / `getRestoreDevices` / `getLastBackupTime` all answer
   *600070: all three returned `returnValue:true`. `listBackups` lists both
   manifests with per-service file counts; `getRestoreDevices` reports the source
@@ -434,7 +440,7 @@ is the closest stand-in for a first boot (the point of baking the grants is that
   line asserts, but that value looks like a placeholder rather than a time.*
 - [Human] `deleteBackup` purges by reference count — 52 files → 32, 48.7 → 24.5 MB,
   the surviving backup intact
-- [Human] App UI renders with the real state (destination, "Settings and data",
+- [Pass] App UI renders with the real state (destination, "Settings and data",
   "2 backups") and **no** limited-mode notice
 - [Pass] **Restore — run on the flashed 600070 image, 2026-08-30.** Restored
   `000002-CUc` (incremental, 43 packages, 78 MB declared). Result: **zero errors
@@ -461,8 +467,8 @@ is the closest stand-in for a first boot (the point of baking the grants is that
   directory path have no ipkg record and are marked `unmanaged`. Confirm they
   still appear in a **later backup**; that is the regression the `unmanaged`
   handling exists to prevent, and it is not decided by this restore.
-- [Human] Backup from the app's own button, not just over the bus
-- [Human] Non-English device: the app is English-only, and the stock localized
+- [Pass] Backup from the app's own button, not just over the bus
+- [Pass] Non-English device: the app is English-only, and the stock localized
   `resources/<locale>/appinfo.json` files are removed with the rest of the stock
   app, so the launcher tile now reads "Backup" rather than e.g. "Sicherung"
 

@@ -368,15 +368,48 @@ that has been restored through, the `BACKUP-RESTORE.md` workaround stands.
 
 ---
 
-## 4. LunaSysMgr SIGSEGV at OOBE teardown
+## 4. LunaSysMgr SIGSEGV at OOBE teardown — RECURRED on 600070, NOT a ship blocker
 
-**Severity: low — did NOT recur on 600056, nor on 600059.**
+**Severity: low. Shipping with it.** Everything recovers: OOBE handoff completes,
+the launcher comes up, upstart is untouched, and the device is fully functional
+afterwards. The faulting process was exiting anyway.
 
-The minimal-mode first-use instance (`LunaSysMgr -s -u minimal -a com.palm.app.firstuse`) faulted in `PrvLogThread` on a freed GLib async queue while tearing down at OOBE handoff. Seen on 600052 and 600055; **0 rdxd crash reports on 600056** — the first clean OOBE of the cycle.
+The minimal-mode first-use instance (`LunaSysMgr -s -u minimal -a com.palm.app.firstuse`)
+faults in `PrvLogThread` on a freed GLib async queue while tearing down at OOBE
+handoff. Signature, identical every time:
 
-A process that was exiting anyway, on a path that runs once per device. Two
-consecutive clean flashes (600056, 600059: `0 rdxd crash reports`, `0 crash
-artifacts`) still do not retire a race, so this stays on the list.
+```
+Cmd: /usr/bin/LunaSysMgr -s -u minimal -a com.palm.app.firstuse
+Signal: 11 (SIGSEGV), kernel-generated
+pc/lr -> _ZL12PrvLogThreadPv
+```
+
+**Frequency across the 3.1 cycle — roughly one OOBE in three:**
+
+| build / event | rdxd reports |
+|---|---|
+| 600052 flash | 0 |
+| 600055 flash | 1 |
+| 600056 flash | 0 |
+| 600067 flash | 0 |
+| 600070 flash | 0 |
+| 600070 full erase + German OOBE | **1** |
+
+The last row is the useful new data point: it is an **OOBE without a flash**, which
+localises the trigger to the first-use teardown itself rather than to anything the
+Doctor does. It also means a factory reset can produce a crash report on a device
+that was previously clean — worth knowing before someone reads that report as
+evidence of a bad flash.
+
+**Why it is not fixed:** the fault is in a thread being torn down on a path that
+runs once per OOBE, in stock Palm code. The fix would be ordering work inside
+`LunaSysMgr`'s log thread shutdown against the GLib queue's free, on a code path
+with no user-visible symptom. That is real risk against a cosmetic report, on a
+rootfs frozen for the release.
+
+**If you are triaging a crash report on a CE device, check the component first.**
+This one is `LunaSysMgr` with `PrvLogThread` in the stack and a first-use command
+line. Anything else is not this issue.
 
 ---
 

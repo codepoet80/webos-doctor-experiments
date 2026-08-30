@@ -275,6 +275,12 @@ Full detail, with evidence and what a fix would have to do, is in
 - **No on-device rollback.** Recovery is re-Doctoring — by design. This is also
   why the update key above matters: the rootfs cannot be repaired in place, so
   anything frozen into it has to be right the first time.
+- **A crash report may appear after first-time setup.** Roughly one setup in
+  three, the first-use process faults as it hands off to the launcher. It is
+  already on its way out when it happens: setup completes, the launcher comes up,
+  and the device is fine. Nothing is lost and no action is needed. A factory
+  reset can produce one too, so a report on a previously clean device is not
+  evidence of a bad flash. Detail in KNOWN-ISSUES.md #4.
 - **No over-the-air updates yet.** The image carries the key that will
   authenticate them, and nothing else — see "New in 600070". Updates will arrive
   through Preware when the client is ready.
