@@ -1,20 +1,29 @@
 # webOS CE 3.1 Flash Test Plan
 
-**600070 is the final release candidate — this plan is RESET for a fresh run.**
-Every result marker below is back to `[ ]`. Prose that cites 600052 / 600059 /
-600067 is *prior-build evidence*: it says what the check is for and what the
-result was expected to be, not what happened on this flash. Nothing here counts
-as verified on 600070 until this run marks it.
-
-Run the automated half first, then work the `[Human]` list from what it leaves.
+**600070 is the final release candidate. Automated half: 90 PASS / 0 FAIL.**
+The first fully clean automated run of the 3.1 cycle — including the first-boot
+ipkgservice race, which did not fire. Both 600070 additions pass on hardware.
+The `[Human]` list is what remains, plus one reboot soak (§8) that a single boot
+cannot decide. Prose citing 600052 / 600059 / 600067 is *prior-build evidence*:
+it says what a check is for, not what happened on this flash.
 
 ```
 Build under test:  BUILDMARK 600070  jar out/webosdoctorp310hstnh-ce-600070.jar
                    sha256 392f2122e3bd95f6f6b4f89acff2e8038508746a6fdeac7f4c5716834178e65a
-                   Flashed:  2026-08-__          Automated run: ___ PASS / ___ FAIL / ___ WARN
-                   Results:  scripts/results-600070.txt
-Lineage:           [ ] CE -> CE      [ ] stock 3.0.5 -> CE
+                   Flashed:  2026-08-30          Automated run: 90 PASS / 0 FAIL / 0 WARN
+                   Results:  scripts/results-600070.txt   (BUILDTIME 20260830192741)
+                   Doctor log clean: 0 "Read-only file system", AppDeletion
+                   removed /tmp_mediafs/.palm, Flash End time (Success).
+                   So the app-store wipe really happened (KNOWN-ISSUES #10) —
+                   confirmed downstream by "no store repair needed".
+Lineage:           [x] CE -> CE      [ ] stock 3.0.5 -> CE
 Restore:           [ ] not yet run on this build
+
+What this run does NOT decide, despite being green:
+                   - the ipkgservice reboot soak (§8): this is 1 boot, not 5
+                   - every `[Human]` item: UI, taps, hardware, and the OTA
+                     positive-verification test, which needs the offline key
+                   - the stock-3.0.5 lineage and the restore path
 
 Pre-flash verification (2026-08-30, before the jar was opened by the Doctor):
                    jar sha256 matches the 600070 manifest; the bake inputs stamp
@@ -37,11 +46,14 @@ New in 600070 — the two things this run exists to check on hardware:
                       correct it, because a replacement key would arrive over
                       the channel the key exists to authenticate.
 
-Carried into this run from 600067 (expected green, must be re-confirmed):
-                   ipkgservice across 5 reboot cycles, the power-off path and
-                   the whole power menu, app uninstall after a PDK launch, the
-                   store wipe needing no repair, and the 3.0.5 -> 3.1.0 restore
-                   at 102 installed / 0 failed. None of these are assumed here.
+Carried in from 600067 — where each one landed on this build:
+                   store wipe needing no repair ......... re-confirmed (automated)
+                   power-off path unwrapped ............. re-confirmed (automated)
+                   PmWanDaemon gated .................... re-confirmed by hand
+                   ipkgservice across 5 reboot cycles ... OPEN, 1 boot so far
+                   power menu / Shut Down on battery .... OPEN, needs hands
+                   app uninstall after a PDK launch ..... OPEN, needs hands
+                   3.0.5 -> 3.1.0 restore ............... OPEN, not run
 ```
 
 Legend: `[ ]` not yet run · `[Pass]` · `[Fail]` · `[Human]` needs eyes/hands ·
@@ -92,7 +104,7 @@ not have caught a regression in either.
 
 ## 0. Luna Restart
 
-- [ ] `ipkgservice` upstart-resident (`(start) running`) — *automated*
+- [Pass] `ipkgservice` upstart-resident (`(start) running`) — *automated*
 - [Human] **Luna Restart after a full reboot** — verified on 600052: clean
       stop/start cycle, and 0 crashes / 0 SEGV / 0 respawn-thrash across it.
       This is the case that failed on 600042/600049/600050; see the PmWanDaemon
@@ -110,9 +122,9 @@ grep -c "killed by HUP" /var/log/messages; tail -60 /var/log/messages
 
 ## 0b. Regression watch — respawn storm
 
-- [ ] `ipkgservice main process ended, respawning` → 0 — *automated*
-- [ ] `respawning too fast` (ipkgservice) → 0 — *automated*
-- [ ] **upstart never crashed + re-exec'd** — *automated*
+- [Pass] `ipkgservice main process ended, respawning` → 0 — *automated*
+- [Pass] `respawning too fast` (ipkgservice) → 0 — *automated*
+- [Pass] **upstart never crashed + re-exec'd** — *automated*
       `grep -E "Caught .*(segmentation fault|core dumped)|Failed to re-execute" /var/log/messages`
       A hit means upstart took a fatal signal, dumped core via a forked child and
       `execl`'d itself — which **loses its job table**, so `respawn` silently stops
@@ -120,8 +132,8 @@ grep -c "killed by HUP" /var/log/messages; tail -60 /var/log/messages
       daemon "just died": it may have died normally and simply not been restarted.
       (An rdxd report whose component is `upstart` is usually that core-dumper
       child working as designed — not an upstart bug.)
-- [ ] **rdxd crash reports → 0 on 600056.** The OOBE-teardown SIGSEGV below
-      did NOT recur on this flash — the first clean OOBE of the 3.1 cycle. Kept
+- [Pass] **rdxd crash reports → 0 on 600070.** The OOBE-teardown SIGSEGV below
+      did NOT recur on this flash. Kept
       here because one clean run does not retire a race; re-check next flash.
       *Historic (600052/600055): 1 report, script says FAIL, downgraded by
       judgement*. The minimal-mode firstuse instance
@@ -135,7 +147,7 @@ grep -c "killed by HUP" /var/log/messages; tail -60 /var/log/messages
       hit; the genuinely fatal cases have their own checks and still Fail.
       The `/var/log/crash*` count in §8 does **not** see these; every crash found
       during 600029–600033 triage was an rdxd report.
-- [ ] **LunaDownloadMgr running**, is the patched build, `Restarting glibcurl` → 0,
+- [Pass] **LunaDownloadMgr running**, is the patched build, `Restarting glibcurl` → 0,
       no SEGV this boot — *automated*
       It also hosts `com.palm.appInstallService`, so if it dies the **App Catalog
       cannot fetch anything**. Recover with `start LunaDownloadMgr`.
@@ -145,9 +157,9 @@ stop/starting the job.
 
 ## 1. First-boot seeding
 
-- [ ] Cryptofs seed flag set; `seed verified complete` — *automated*
-- [ ] All once-per-flash flags present — *automated*
-- [ ] Preware feeds seeded — *automated*
+- [Pass] Cryptofs seed flag set; `seed verified complete` — *automated*
+- [Pass] All once-per-flash flags present — *automated*
+- [Pass] Preware feeds seeded — *automated*
 
 ## 2. Ten-minute smoke test
 
@@ -167,8 +179,8 @@ stop/starting the job.
 
 ## 4. Core-apps suite
 
-- [ ] contacts / messaging / phone / accounts baked and **unshadowed** — *automated*
-- [ ] db8 healthy — `com.palm.person:1` answers — *automated*
+- [Pass] contacts / messaging / phone / accounts baked and **unshadowed** — *automated*
+- [Pass] db8 healthy — `com.palm.person:1` answers — *automated*
 - [Human] Messaging launches; new-conversation UI works
 - [Human] Contacts launches
 - [Human] Settings → Accounts shows the SYNERGY ACCOUNTS grouping
@@ -176,22 +188,22 @@ stop/starting the job.
 
 ## 5. Synergy generic runtime
 
-- [ ] synergy glibc + runtime dirs; bind mount live — *automated*. Dirs and
+- [Pass] synergy glibc + runtime dirs; bind mount live — *automated*. Dirs and
       the interpreter are present; the **bind mount is missing** and
       `imtransport` is wedged in pre-start. Same root cause as §0's
       ipkgservice failure — see the note at the end of this section.
-- [ ] `imtransport` running (pid = `/usr/bin/imlibpurpletransport`) — *automated*
-- [ ] cloud-auth present; docviewer absent (intentional) — *automated*
-- [ ] Retired accounts (skype/yahoo) gone — *automated*
-- [ ] gst WebM/Opus plugins 6/6 — *automated*
-- [ ] QuickOffice ×2 + Photos installed; synergy patch markers present — *automated*
+- [Pass] `imtransport` running (pid = `/usr/bin/imlibpurpletransport`) — *automated*
+- [Pass] cloud-auth present; docviewer absent (intentional) — *automated*
+- [Pass] Retired accounts (skype/yahoo) gone — *automated*
+- [Pass] gst WebM/Opus plugins 6/6 — *automated*
+- [Pass] QuickOffice ×2 + Photos installed; synergy patch markers present — *automated*
 - [Human] QuickOffice remote-files UI opens; Photos app opens
 - [Human] An IM account actually connects
 
 ## 6. Preware / Govnah / status seeding
 
-- [ ] ipkgservice answers — *automated*
-- [ ] One well-formed stanza each — *automated*. 600052 seeds **11**:
+- [Pass] ipkgservice answers — *automated*
+- [Pass] One well-formed stanza each — *automated*. 600052 seeds **11**:
       preware, govnah, synergy generic, backup, and the 7 patch packages whose
       effects CE bakes (browser/downloadmgr/luna/mail/curl-tls13, rootcertsupdate,
       ntpdate-sync, notifications-advanced-reset-options) so a 3.0.5 restore skips them
@@ -204,26 +216,27 @@ stop/starting the job.
       offers Govnah and Synergy Revival as fresh installs (confirmed on-device).
       FIXED in bake.py for the next build — gate now also fires when either stanza
       is missing; preware-seed.sh is idempotent so re-running is safe.
-- [ ] USB Settings / BT Gamepad absent from ipkg status — *automated*
-- [ ] `webos-patches` / `webos-kernels` ship **disabled** — *automated*
-- [ ] **no static ipk entry** in command-resource-handlers.json — *automated*
+- [Pass] USB Settings / BT Gamepad absent from ipkg status — *automated*
+- [Pass] `webos-patches` / `webos-kernels` ship **disabled** — *automated*
+- [Pass] **no static ipk entry** in command-resource-handlers.json — *automated*
       A static entry is always registered `streamable:false`, which BREAKS the
       browser handoff and dedupes the runtime call that would fix it. Its absence
       is the correct state.
-- [ ] **`.ipk` resolves to Preware AND is streamable** — *automated*
+- [Pass] **`.ipk` resolves to Preware AND is streamable** — *automated*
       Asks LunaSysMgr (`getResourceInfo`) rather than grepping a file; the browser
       only hands a `.ipk` URL to the handler when `canStream` is true.
-- [ ] `ce-register-ipk-handler` ran and verified — *automated*
+- [Pass] `ce-register-ipk-handler` ran and verified — *automated*
 - [Human] Install a real package via Preware (e.g. Tweaks)
 - [Human] Open a `.ipk` link in the **browser** — it should open Preware, not
   just download. (Fixed in 600037; confirmed working on-device.)
 
 ## 7. CE platform tweaks
 
-- [ ] `turnOnNovacomAtStart=true`; keyboard defaults small — *automated*
-- [ ] Version-prefix patch — zero `"HP webOS "` in LunaSysMgr — *automated*
+- [Pass] `turnOnNovacomAtStart=true`; keyboard defaults small — *automated*
+- [Pass] Version-prefix patch — zero `"HP webOS "` in LunaSysMgr — *automated*
 - [Human] Device Info shows webOS CE 3.1.0
-- [ ] **Device Info account label de-branded** — *automated (new in 600070)*
+- [Pass] **Device Info account label de-branded** — *automated (new in 600070)*
+      **600070: 13 view files found, 0 say "HP webOS".**
       All 13 view files under `com.palm.app.deviceinfo` (the base app plus every
       locale override) must carry the account label with zero `"HP webOS"` left.
       The script also fails if it finds fewer than 10 such files at all, which is
@@ -247,36 +260,41 @@ stop/starting the job.
 
 ## 8. Regressions from earlier validated flashes
 
-- [ ] **ipkgservice survives repeated reboots** — *600067, 5 cycles x 5-minute soak*
-      Both faults are fixed at the source in Preware 1.9.19 (KNOWN-ISSUES #1, #1b),
-      so the check is not "did the repair work" but "did the fault occur at all":
-      `repairs-since-flash=0` across all five boots, zero `respawning too fast`,
-      zero crash reports, ipkgservice resident every time.
-- [ ] **App-store root present, and no repair was needed** — *automated (600061)*
+- [ ] **ipkgservice survives repeated reboots** — **NOT decided by this run.**
+      600070 is 1 boot in: resident, job intact, 0 respawn events, race has not
+      fired. That is the first data point, not the soak. *600067 did 5 cycles x
+      5-minute soak clean.* Both faults are fixed at the source in Preware 1.9.19
+      (KNOWN-ISSUES #1, #1b), so the check is not "did the repair work" but "did
+      the fault occur at all": `repairs-since-flash=0` across every boot, zero
+      `respawning too fast`, zero crash reports, ipkgservice resident every time.
+      **Re-run the soak on this build before calling it.**
+- [Pass] **App-store root present, and no repair was needed** — *automated (600061)*
       Two assertions, because they fail differently. A missing
       `/media/cryptofs/apps` means the preload pass cannot install anything and the
       device sits on the pulsing logo; a `REPAIRED:` line in
       `/var/log/ce-cryptofs-seed.log` means the root was missing and our seed job
       rebuilt it — i.e. the flash silently failed to wipe the store and we are only
       papering over it. See KNOWN-ISSUES #10.
-- [ ] Kindle / Facebook / YouTube preloads absent — *automated*
-- [ ] `ls-hubd` clean (0 unlisted-service errors) — *automated*
-- [ ] Trust store populated (~190 entries) — *automated*
-- [ ] Help app repointed at webosarchive.org — *automated*
-- [ ] 0 crash artifacts — *automated, real assertion*
-- [ ] Power-off path unwrapped — *automated, real assertion (600059)*
+- [Pass] Kindle / Facebook / YouTube preloads absent — *automated*
+- [Pass] `ls-hubd` clean (0 unlisted-service errors) — *automated*
+- [Pass] Trust store populated (~190 entries) — *automated*
+- [Pass] Help app repointed at webosarchive.org — *automated*
+- [Pass] 0 crash artifacts — *automated, real assertion*
+- [Pass] Power-off path unwrapped — *automated, real assertion (600059)*
       `/sbin/{reboot,poweroff,halt,telinit}` must be the stock ELF binaries with no
       `*.real` leftovers. `halt` and `poweroff` are symlinks to `reboot`, which picks
       its action from `basename(argv[0])`, so ANY shell wrapper over these names turns
       Shut Down into a reboot — which is exactly what the retired 600011..600058 reboot
       tripwire did (KNOWN-ISSUES #8).
-- [ ] Power menu → **Shut Down** powers the device off and it stays off —
-      verified on 600059, along with Device Restart and Luna Restart: every option
-      in the menu performs its own action (KNOWN-ISSUES #8).
+- [Human] Power menu → **Shut Down** powers the device off and it stays off —
+      needs hands; the automated run only proves the *path* is unwrapped (above),
+      not that the menu item does the right thing. *Verified on 600059, along with
+      Device Restart and Luna Restart: every option in the menu performs its own
+      action (KNOWN-ISSUES #8).*
       Re-test **on battery**: a TouchPad on a charger powers itself back on, which
       is indistinguishable from the bug.
-- [ ] **App uninstall after a PDK-app launch** (LunaCE 600058) — verified on
-      600059. Uninstall from the launcher works both before a PDK launch (control)
+- [Human] **App uninstall after a PDK-app launch** (LunaCE 600058) — needs hands,
+      not decided by this run. *Verified on 600059.* Uninstall from the launcher works both before a PDK launch (control)
       and after one, which is the case the fix addresses: `launchNativeProcess()`
       used to leave `LD_PRELOAD=libpvrtc.so` in LunaSysMgr's own environment, so
       every child it spawned until the next Luna restart died before `main()` with
@@ -292,13 +310,13 @@ stop/starting the job.
 
 ## 9. Preloads / un-baking
 
-- [ ] App Catalog and Maps **not baked** — *automated*
-- [ ] Both installed to cryptofs, **one stanza each** — *automated*
+- [Pass] App Catalog and Maps **not baked** — *automated*
+- [Pass] Both installed to cryptofs, **one stanza each** — *automated*
       (two stanzas = installed *alongside* rather than upgraded — the thing to catch)
-- [ ] Staged ipks present; stock 5.0.2900 ipk removed — *automated*
-- [ ] Catalog files extracted with clean names — *automated*
+- [Pass] Staged ipks present; stock 5.0.2900 ipk removed — *automated*
+- [Pass] Catalog files extracted with clean names — *automated*
       *(was expected to fail on older builds; the catalog ipk is now 6.1.2921 as of 600033)*
-- [ ] Manifest: baked contacts/messaging entries dropped — *automated*
+- [Pass] Manifest: baked contacts/messaging entries dropped — *automated*
 - [Human] **stock-lineage runs:** compare against the pre-flash baseline — the
   5.0.2900 / 3.0.1 copies must be *upgraded*, and the old build's
   `PivotMagazine-WOSA` tree must be gone rather than merely overwritten.
@@ -312,10 +330,10 @@ is.
 
 ## 10. Exhibition + localization
 
-- [ ] `SimpleClock.qml` present and referenced; stock faces retained — *automated*
-- [ ] GAMES localized in all 8 locales — *automated*
-- [ ] Launcher page rename favorites→games configured — *automated*
-- [ ] Photos exhibition clock installed (icon + CSS + JS) — *automated*
+- [Pass] `SimpleClock.qml` present and referenced; stock faces retained — *automated*
+- [Pass] GAMES localized in all 8 locales — *automated*
+- [Pass] Launcher page rename favorites→games configured — *automated*
+- [Pass] Photos exhibition clock installed (icon + CSS + JS) — *automated*
 - [Human] Exhibition opens on the simple clock; **swipe through all four faces**
 - [Human] GAMES reads SPIELE after switching the device language to German
 - [Human] Photos exhibition: clock toggle shows/hides; interval persists across
@@ -336,9 +354,11 @@ is.
 
 ## 12. Space / media
 
-- [ ] Staged customization media reclaimed unattended — *automated*
-- [ ] rootfs free space / % used — *automated* — record the number
-- [ ] Default wallpaper present — *automated*
+- [Pass] Staged customization media reclaimed unattended — *automated*
+- [Pass] rootfs free space / % used — *automated* — **600070: 122880K free,
+      79% used** (559.1M volume, 439.1M used). Same as 600067; the reclaim job
+      ran (94020K -> 122880K).
+- [Pass] Default wallpaper present — *automated*
 - [Human] Default wallpaper looks right on screen
 - *Known/accepted:* `/media/internal` **accumulates** — the customization service
   only copies in, never removes. Upgrading from an older CE build leaves the old
@@ -350,10 +370,10 @@ is.
 Google now refuses this device's user-agent and its results page will not render
 here even with the UA spoofed, so the stock default was simply broken.
 
-- [ ] All 10 locale lists default to `duckduckgo`, none still list google — *automated*
-- [ ] Search URL is the `/lite/` endpoint — *automated*
-- [ ] Both DDG icons present (48px universal search, 32px browser) — *automated*
-- [ ] Browser `URLSearch.js` fallback is DuckDuckGo, no google left — *automated*
+- [Pass] All 10 locale lists default to `duckduckgo`, none still list google — *automated*
+- [Pass] Search URL is the `/lite/` endpoint — *automated*
+- [Pass] Both DDG icons present (48px universal search, 32px browser) — *automated*
+- [Pass] Browser `URLSearch.js` fallback is DuckDuckGo, no google left — *automated*
 - [Human] **Just Type shows "Search DuckDuckGo"** and searching works —
   *confirmed by user on 600030's device*
 - [Human] The search actually returns usable results in the browser
@@ -438,7 +458,8 @@ the test suite stubs `privileged.*`, so none of its ops are covered off-device:
 - [Human] An app restored by the directory fallback has no ipkg record, and is now
   still seen as installed via its `appinfo.json` and marked `unmanaged` — without
   that it silently drops out of every later backup
-- [ ] **Incremental backup actually dedups** — verified on 600067, 2026-08-30,
+- [Human] **Incremental backup actually dedups** — needs a backup run on this
+      build. *Verified on 600067, 2026-08-30,*
       on the SECOND post-fix run. Store 3,447,088K -> 3,450,128K (**+3 MB**, 2 small
       objects) for a backup covering 1,606,535,329 bytes; no new object over 1MB.
       The first post-fix run is different and costs ~1.57GB once: the store still
@@ -448,7 +469,8 @@ the test suite stubs `privileged.*`, so none of its ops are covered off-device:
       **Measure after the manifest appears** — it is written last. Sampling mid-run
       once produced a wrong "+336K" result, and `find -newermt` matches nothing on
       this busybox.
-- [ ] The full 3.0.5 → 3.1.0 path — **verified on 600067, 2026-08-29**:
+- [Human] The full 3.0.5 → 3.1.0 path — not run on this build. *Verified on
+      600067, 2026-08-29:*
       102 installed / 0 failed / 0 skipped / 11 services registered, with the
       3.1.1 manifest reconciliation live (`Manifest cache synced: 1 of 1 refreshed
       from the target`, on all four call sites). No ENOSPC, no timeouts, no
@@ -468,12 +490,14 @@ this work. Check that file is absent after any manual helper push.
 buildmark, buildtime, uptime — and the one crash report. The two changes 600055
 exists for are both confirmed:
 
-- [ ] Preware present with exactly one status stanza **after** the de-shadow
+- [Pass] Preware present with exactly one status stanza **after** the de-shadow
       sweep. Under the old hand-maintained list Preware was queued for deletion
       and survived only on first-boot ordering.
-- [ ] PmWanDaemon gated — `pre-start terminated with status 1`, no respawn
-      thrash, no upstart-child SIGSEGV. That is the failure seen on
-      600042/600049/600050, now absent through a boot **and** a Luna Restart.
+- [Pass] PmWanDaemon gated — **re-confirmed by hand on 600070** (not in
+      ce-test-full.sh): `pre-start process terminated with status 1`, goal
+      start->stop, state ->waiting, 0 `respawning too fast`, no upstart-child
+      SIGSEGV. That is the failure seen on 600042/600049/600050. Absent through
+      this boot; the Luna Restart half of it is still a `[Human]` item in §0.
 
 ---
 
@@ -525,21 +549,23 @@ This is frozen for the life of the release, so the thing to check is not "does
 OTA work" — there is no payload yet — but "is the right key in there, does the
 verifier fail closed, and did nothing else sneak in".
 
-- [ ] Key at `/usr/share/ce-ota/keys/ce-ota-signing.pub` (644) and
+- [Pass] Key at `/usr/share/ce-ota/keys/ce-ota-signing.pub` (644) and
       `/usr/bin/ce-ota-verify` (755) both present — *automated*
-- [ ] **Key fingerprint matches the baked anchor** — *automated*
+- [Pass] **Key fingerprint matches the baked anchor** — *automated, confirmed on
+      hardware 600070*
       sha256 over the DER SubjectPublicKeyInfo (stable across PEM re-encoding):
       `3f02d369e69d86e3616f85f04b42db6dc7383817fc480789877216f2e3f9fa79`
-- [ ] **The key parses under the device's STOCK openssl** — *automated*
+- [Pass] **The key parses under the device's STOCK openssl** — *automated*
+      **600070 on-device: OpenSSL 0.9.8k 25 Mar 2009** — as assumed, unreplaced.*
       0.9.8k (2009), which this image does not replace: the TLS tier adds
       `/usr/lib/ssl11` and wraps curl but leaves `/usr/bin/openssl` alone. The
       point is that a device does not need the modern crypto it might be
       installing in order to check the signature on it. The run records the
       device's openssl version as INFO — if it is ever not 0.9.8k, that
       assumption moved and this section needs re-reading.
-- [ ] **Fails closed** — a garbage signature and a missing signature file are
+- [Pass] **Fails closed** — a garbage signature and a missing signature file are
       both refused (exit 1) — *automated*
-- [ ] **No OTA client component is baked** — no daemon, no service, no upstart
+- [Pass] **No OTA client component is baked** — no daemon, no service, no upstart
       job — *automated*. A hit means the image/client boundary slipped.
 - [Human] **Positive verification with a real signed payload.** Not automatable
       on-device: it needs the offline private key, which by design is not here.
