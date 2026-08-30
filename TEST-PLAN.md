@@ -411,6 +411,13 @@ the test suite stubs `privileged.*`, so none of its ops are covered off-device:
 - [Human] An app restored by the directory fallback has no ipkg record, and is now
   still seen as installed via its `appinfo.json` and marked `unmanaged` — without
   that it silently drops out of every later backup
+- [Pass] **Incremental backup actually dedups** — verified on 600067, 2026-08-30.
+      A second backup a day after the first, on a device holding a 115-package
+      restore: store 1,877,552K -> 1,877,888K (+336K), 12 small objects stored
+      (changed db8/prefs/cookies), **0 objects over 1MB**. The helper rebuilt and
+      hashed every app archive during the run — including a 124MB and a 64MB
+      game — and stored none of them again. Under the old code the same run added
+      ~1.8GB (KNOWN-ISSUES #11).
 - [Pass] The full 3.0.5 → 3.1.0 path — **verified on 600067, 2026-08-29**:
       102 installed / 0 failed / 0 skipped / 11 services registered, with the
       3.1.1 manifest reconciliation live (`Manifest cache synced: 1 of 1 refreshed

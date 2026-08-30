@@ -113,6 +113,8 @@ distinguish them.*
   content hashed differently every time and the content-addressed store kept a
   full copy per run. Measured on a real device: six copies of one 295 MB game
   across four days, `/media/internal` at 100%, backups then failing with ENOSPC.
+  Verified fixed on hardware: a second backup added **336 KB** and not one
+  object over 1 MB, after rebuilding and hashing every app archive on the device.
 * A failed backup no longer leaks. Files are stored as the run goes and the
   manifest is written last, so a run that died left full-size files nothing
   referenced — and only the success path purged.

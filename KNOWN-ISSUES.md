@@ -344,9 +344,15 @@ only restore-adjacent error was `mojomail-eas: CREDENTIALS_NOT_FOUND` — an EAS
 account restored without its password, which is expected (credentials are not in
 a backup) and needs re-entering by hand.
 
-**Still to do:** the `BACKUP-RESTORE.md` workaround (clear the manifest cache
-before restoring another device's backup) can come out once a genuine
-cross-device collision has been restored through.
+**Partially exercised 2026-08-30.** A backup taken *on* the CE device now sits
+beside the restored one from another device, and their names differ in the nduId
+suffix exactly as designed — `000001-19Q` (the other device) and
+`000002-z4hm8DO` (this one) — with `Manifest cache synced: 2 of 2 refreshed from
+the target` handling both. That is the first run with more than one manifest.
+
+**Still to do:** the collision itself needs two manifests with the *same* name
+from different stores, which requires a device whose counter has restarted. Until
+that has been restored through, the `BACKUP-RESTORE.md` workaround stands.
 
 ---
 
@@ -543,6 +549,65 @@ Making `AppDeletion` fatal means patching OEM Java; the first-boot guard was the
 cheaper half. **After any flash, check the Doctor log for
 `AppDeletion: removed the appDirectory` and for `Read-only file system`** — its
 own success message does not distinguish them.
+
+---
+
+## 11. Scheduled backups grew without bound — FIXED, verified end to end
+
+**Severity: was high — it filled a 27.5GB volume to 100% in four days and then
+every backup failed. Found on a 3.0.5 daily driver 2026-08-29, fixed in
+woce-backup 3.1.1, verified on hardware 2026-08-30.**
+
+The user's device kept filling up "even when I'm not using it". `webos-backups`
+was 9.6GB and the leftover staging directory another 1.85GB — together ~42% of
+the volume — with a scheduled backup running daily at ~05:05.
+
+**Cause 1: the content-addressed store never deduped app archives.** The same
+archive was stored six times:
+
+```
+com.ea.app.nfshp.pad.na-app.tar.gz   309,556,846 bytes   (Need for Speed: Hot Pursuit)
+  c66cbfd7… Aug 26 05:05    ef782df1… Aug 28 11:46
+  741bd4e9… Aug 27 05:06    61839db2… Aug 29 05:04
+  36a733b9… Aug 28 05:04    ee6208f6… Aug 29 15:56
+```
+
+Six checksums, one identical byte length. `tar czf` stamps the moment of
+creation into the gzip header, so an app that had not changed since yesterday
+produced a *different* archive and the store took another full copy. Growth was
+therefore per **run**, not per **change** — ~295MB/day from that one app.
+
+Confirmed on the device rather than assumed: two `tar czf` runs of identical
+content two seconds apart differ in **bytes 4..7 and nowhere else**. (A host
+check misled at first — GNU tar compresses from a stream and gzip writes MTIME=0
+for stdin, so the fault does not reproduce with desktop tar.)
+
+**Cause 2: a failed run leaked everything it had already stored.** Files are
+stored as the run goes and the manifest is written last, so a run that dies
+leaves full-size objects nothing references — and only the success path purged.
+Two of the six copies above belonged to failed runs. By the end the device was in
+a death spiral: `Backup failed: ENOSPC, No space left on device`, each attempt
+leaving more behind.
+
+**Fixed in woce-backup 3.1.1.** `normalizeGzipMtime()` zeroes the four header
+bytes after tar succeeds, before anything hashes the file (non-fatal if it
+cannot: a stamped archive still restores, it just will not dedup).
+`handleError` now sweeps with `purge(target, 100000)` — orphans go, manifests
+stay, because a failed backup must not also delete the user's good ones. The
+purge machinery itself was never broken: opting out reclaimed all 11.5GB.
+
+**Verified end to end on hardware, 2026-08-30 (600067).** A second backup taken
+a day after the first, on a device holding a 115-package restore:
+
+```
+store:  1,877,552 KB  ->  1,877,888 KB    (+336 KB)
+objects stored that run:        12, all small (changed db8/prefs/cookies)
+objects stored that run >1MB:   0
+```
+
+The helper rebuilt and hashed every app archive during that run — including a
+124MB Serpent of Isis and a 64MB Monopoly — and stored **none** of them again.
+Under the old code the same run would have added roughly another 1.8GB.
 
 ---
 

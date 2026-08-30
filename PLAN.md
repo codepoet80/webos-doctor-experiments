@@ -105,7 +105,16 @@ header, ipks are selected by version (not mtime), and the staged ipks the build
 repacks are produced deterministically — so two builds of the same inputs differ
 only in `BUILDTIME`/`BUILDMARK`.
 
-## RC3 (in progress)
+## RC3 (600067) — candidate complete, in soak
+
+Every release blocker is closed with hardware evidence. Built 2026-08-29, flashed
+and verified the same day; ten hours idle overnight with **zero crashes of any
+kind** (no rdxd reports, no SEGV, no upstart re-exec, no respawn storms, both
+repair paths dormant), and the backup dedup fix proven end to end on 2026-08-30.
+
+Remaining before release is soak time and manual use, not code.
+
+## RC3 work log
 
 RC2 field feedback is in `RC2-Issues.txt`; the reproduced/diagnosed items live in
 `KNOWN-ISSUES.md`. State as of 2026-08-29:
