@@ -1,10 +1,22 @@
-# webOS CE 3.1.0 — Known Issues (RC3 in progress; last hardware run 600059)
+# webOS CE 3.1.0 — Known Issues (600070; last hardware run 600070, 2026-08-30)
 
 Everything below is reproduced, measured, or traced to a specific line. Each
 entry says what it costs a user, what is actually known, and what a fix would
 have to do. Nothing here is speculation dressed as a diagnosis.
 
 Ordered by what should be solved before the final release.
+
+**Status on 600070.** Automated: 90 checks, 0 failures — the first fully clean
+run of the cycle, with nothing downgraded by judgement. Reboot soak: 7 cycles ×
+5 minutes, 112 checks, 0 failures. #1 and #1b did not fire on the flash boot or
+on any of the seven reboots. Nothing below is a new fault found on 600070; the
+two entries added for this build (#12, #13) are log noise that was always there
+and had simply never been written down.
+
+*One thing a clean soak does not settle:* #1 fires during the first-use preload
+pass, which runs **once per flash**, so reboots cannot exercise it. Its
+frequency is measured across flashes, and the count of clean ones is the number
+that matters for closing it.
 
 ---
 
@@ -642,6 +654,56 @@ second false "0 objects" reading.
 
 ---
 
+## 12. `PALMPROFILE SET ERROR` in the log on every account operation — cosmetic
+
+**Severity: none (log noise), but it reads like a failure.** Observed on 600070
+after a deliberate account sign-out / sign-in, 2026-08-30: five occurrences
+across the operation, then none.
+
+What actually happens, from the log rather than from guessing:
+
+```
+{palmprofile/accountservices}: Sending regular request (curl/https) to:
+    https://appcatalog.webosarchive.…
+{palmprofile/accountservices}: Sending regular request to server with method: getPreferences
+{palmprofile/accountservices}: ---------- PALMPROFILE exception log ---------"UNKNOWN_METHOD"
+{palmprofile/accountservices}: ---------- PALMPROFILE JSONException (getPreferences) ---------
+{palmprofile/accountservices}: ---------- PALMPROFILE SET ERROR ---------
+```
+
+The account service asks the community profile server for `getPreferences`; the
+server does not implement that method and answers `UNKNOWN_METHOD`, which the
+stock client logs as a "SET ERROR". `keymanager: BackupInfoSendHandler received
+error: UNKNOWN` in the same instants is the same cause, not a second fault.
+
+**What it costs a user: nothing observable.** The account is created and
+persists, `listAccounts` returns it, db8 answers, and sign-out/sign-in both
+complete. The messages are logged at `user.info`, not error level.
+
+**Why it is here and not fixed:** the missing method is server-side, on the
+webOS Archive side rather than in the image, so no image change can silence it.
+A fix would be either implementing `getPreferences` on the server or teaching
+the client that the method is optional — the latter means patching stock
+`accountservices`, which is not worth the risk for log noise.
+
+**Why it is written down at all:** anyone reading `/var/log/messages` after an
+account problem will find five lines shouting ERROR and reasonably conclude
+they have found the cause. They have not.
+
+## 13. `phoneNumberQuery: Unknown PalmCall failure` on a Wi-Fi TouchPad — expected
+
+**Severity: none.** `com.palm.deviceprofile` calls
+`palm://com.palm.telephony/phoneNumberQuery` while assembling the device
+profile. A Wi-Fi-only TouchPad has no telephony stack to answer, so the call
+fails and the framework logs a stack trace at `user.warning`.
+
+Stock behaviour on Wi-Fi hardware, not something CE introduced — `listAccounts`
+still reports a `com.palm.telephony` template on these devices because the
+account type is present even where the radio is not. Same reasoning as #12: it
+is documented so a stack trace in the log is not mistaken for a real failure.
+
+---
+
 ## Carried over from earlier builds
 
 - **LunaDownloadMgr SIGSEGV** (`curl_multi_remove_handle`). The 1.1.0 patch
@@ -657,4 +719,8 @@ second false "0 objects" reading.
 
 ## How these were found
 
-`scripts/ce-test-full.sh` decides ~90 checks a shell can decide; results land in `scripts/results-<BUILDMARK>.txt` and are marked into `TEST-PLAN.md`. Comparing runs across builds is what surfaced #1 — the check had passed in four prior runs and failed in the fifth, which is the only reason it was recognised as new rather than assumed to be longstanding.
+`scripts/ce-test-full.sh` decides ~100 checks a shell can decide; results land in `scripts/results-<BUILDMARK>.txt` and are marked into `TEST-PLAN.md`. Comparing runs across builds is what surfaced #1 — the check had passed in four prior runs and failed in the fifth, which is the only reason it was recognised as new rather than assumed to be longstanding.
+
+`scripts/ce-reboot-soak.sh` reboots the device N times and re-runs the check set after each boot; results land in `scripts/results-<BUILDMARK>-soak.txt`. It exists because #1 fires roughly one boot in six, so a single clean boot is not evidence. One design note worth keeping: `/var/log/messages` rotates at ~2 MB, which on this device is every ~13 minutes, so any counter read as a since-flash total can be silently reset mid-soak — a rotation would then read as an improvement. Per-boot counters are scoped to the current boot's slice of the log, and reboots are proved with `/proc/uptime`, which cannot rotate.
+
+#12 and #13 came from reading the log around a deliberate account sign-out/sign-in rather than from any check — both are stock components complaining about things that do not exist in CE (a server method, and a cellular radio).
