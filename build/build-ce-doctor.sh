@@ -8,7 +8,8 @@
 #   ./build-ce-doctor.sh [OVERLAY_DIR]
 #
 # Env overrides:
-#   JAR    OEM Doctor JAR         (default: ../webosdoctorp305hstnhwifi.jar)
+#   CE_VARIANT  hp | att            (default: hp — the Wi-Fi TouchPad)
+#   JAR    OEM Doctor JAR         (default: the variant's JAR in the project root)
 #   OUT    output CE Doctor JAR   (default: ../out/webosdoctorp310hstnh-ce-<BUILDMARK>.jar
 #                                 for a full-ce overlay, else ...-ce.jar)
 #   WORK   work directory         (default: ./work)
@@ -16,8 +17,18 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-JAR="${JAR:-$HERE/../webosdoctorp305hstnhwifi.jar}"
-WORK="${WORK:-$HERE/work}"
+# OEM variant. The AT&T 3G TouchPad Doctor is the same 3.0.5 build as the Wi-Fi
+# one (see bake.py's VARIANTS block for the byte-level comparison), so it needs
+# no separate pipeline — only its own JAR, work dir and overlay tree.
+CE_VARIANT="${CE_VARIANT:-hp}"
+case "$CE_VARIANT" in
+    hp)  V_JAR="webosdoctorp305hstnhwifi.jar"; V_WORK="work";     V_NAME="webosdoctorp310hstnh-ce" ;;
+    att) V_JAR="webosdoctorp305hstnhatt.jar";  V_WORK="work-att"; V_NAME="webosdoctorp310hstnhatt-ce" ;;
+    *)   echo "ERROR: unknown CE_VARIANT=$CE_VARIANT (known: hp, att)" >&2; exit 1 ;;
+esac
+
+JAR="${JAR:-$HERE/../$V_JAR}"
+WORK="${WORK:-$HERE/$V_WORK}"
 OVERLAY="${1:-}"
 
 # Default output name carries the BUILDMARK for a full-ce build, so every JAR
@@ -35,9 +46,9 @@ OVERLAY="${1:-}"
 # a fact about it, not a choice of ours.
 if [ -z "${OUT:-}" ]; then
     if [[ "${OVERLAY:-}" == *overlays/full-ce* ]] && [ -f "$HERE/full-ce/BUILDMARK" ]; then
-        OUT="$HERE/../out/webosdoctorp310hstnh-ce-$(cat "$HERE/full-ce/BUILDMARK").jar"
+        OUT="$HERE/../out/$V_NAME-$(cat "$HERE/full-ce/BUILDMARK").jar"
     else
-        OUT="$HERE/../out/webosdoctorp310hstnh-ce.jar"
+        OUT="$HERE/../out/$V_NAME.jar"
     fi
 fi
 
@@ -65,6 +76,13 @@ if [[ "${OVERLAY:-}" == *overlays/full-ce* ]] && [ -f "$HERE/full-ce/BUILDMARK" 
     MANIFEST="$HERE/full-ce/manifests/$(cat "$HERE/full-ce/BUILDMARK").json"
     if [ -f "$MANIFEST" ]; then
         RECORDED="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("inputs_sha256",""))' "$MANIFEST")"
+        M_VARIANT="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("variant","hp"))' "$MANIFEST")"
+        if [ "$M_VARIANT" != "$CE_VARIANT" ]; then
+            echo "ERROR: BUILDMARK $(cat "$HERE/full-ce/BUILDMARK") was baked for variant" >&2
+            echo "       '$M_VARIANT', but this build is CE_VARIANT=$CE_VARIANT." >&2
+            echo "       Re-bake for this variant: CE_VARIANT=$CE_VARIANT python3 full-ce/bake.py" >&2
+            exit 1
+        fi
         CURRENT="$(cd "$HERE/full-ce" && python3 -c 'import bake; print(bake.inputs_stamp())')"
         if [ -z "$RECORDED" ]; then
             echo "WARNING: $(basename "$MANIFEST") predates the inputs stamp; cannot verify the overlay is fresh." >&2
@@ -83,6 +101,7 @@ args=(build --jar "$JAR" --out "$OUT" --work "$WORK")
 [ -n "$OVERLAY" ] && args+=(--overlay "$OVERLAY")
 [ "${REEXTRACT:-0}" = "1" ] && args+=(--reextract)
 
+echo ">>> variant : $CE_VARIANT"
 echo ">>> OEM JAR : $JAR"
 echo ">>> overlay : ${OVERLAY:-<none>}"
 echo ">>> output  : $OUT"

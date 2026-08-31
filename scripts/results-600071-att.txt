@@ -1,0 +1,126 @@
+===== webOS CE automated pass — expecting BUILDMARK=600071 — Mon Aug 31 06:35:59 PDT 2026 =====
+[PASS] id  BUILDMARK=600071
+[PASS] id  version string webOS CE 3.1.0
+[INFO] id  BUILDTIME=20260831130001
+[INFO] id  uptime: up 8 min,  0 users,  load average: 2.77, 3.21, 1.81
+[PASS] 0b  no ipkgservice respawn events
+[PASS] 0b  no 'respawning too fast'
+[PASS] 0   ipkgservice resident (Luna Restart prerequisite)
+[PASS] 0b  upstart never crashed/re-exec'd
+[PASS] 0b  no rdxd crash reports
+[PASS] 0b  LunaDownloadMgr running (pid 2270)
+[PASS] 0b  LunaDownloadMgr is the patched build
+[PASS] 0b  glibcurl restart path dead (patch holding)
+[PASS] 0b  LunaDownloadMgr no SEGV this boot
+[PASS] 1   cryptofs seed flag set
+[PASS] 1   seed verified complete
+[INFO] 1   seed log tail: Mon Aug 31 06:34:50 PDT 2026 seed verified complete on attempt 1
+[PASS] 1   flag ce-cryptofs-deshadowed
+[PASS] 1   flag ce-preloads-deshadowed
+[PASS] 1   flag ce-default-wallpaper
+[PASS] 1   flag ce-customization-media-reclaimed
+[PASS] 1   Preware feeds seeded
+[PASS] 4   com.palm.app.contacts baked, unshadowed
+[PASS] 4   com.palm.app.messaging baked, unshadowed
+[PASS] 4   com.palm.app.phone baked, unshadowed
+[PASS] 4   com.palm.app.accounts baked, unshadowed
+[INFO] 4   accounts app "version": "3.1.1"
+[PASS] 4   db8 healthy (com.palm.person:1 answers)
+[PASS] 5   synergy glibc ld-linux present
+[PASS] 5   synergy runtime dirs present
+[PASS] 5   imtransport running (pid 9346 = imlibpurpletransport)
+[PASS] 5   synergy bind mount live
+[PASS] 5   cloud-auth present
+[PASS] 5   docviewer absent (intentional)
+[PASS] 5   retired accounts (skype/yahoo) gone
+[PASS] 5   gst WebM/Opus plugins present (6/6)
+[PASS] 5   com.quickoffice.ar installed to cryptofs
+[PASS] 5   com.quickoffice.webos installed to cryptofs
+[PASS] 5   com.palm.app.photos installed to cryptofs
+[PASS] 5   QuickOffice RemoteFileService.js present (synergy patch)
+[PASS] 5   photos service patch marker present
+[PASS] 6   ipkgservice answers
+[PASS] 6   status stanza org.webosinternals.preware (1)
+[PASS] 6   status stanza org.webosinternals.govnah (1)
+[PASS] 6   status stanza com.palm.synergy.generic (1)
+[PASS] 6   com.webosarchive.usbsettings correctly absent from ipkg status
+[PASS] 6   org.webosarchive.btgamepad correctly absent from ipkg status
+[INFO] 6   feed configs: 7 enabled, 6 disabled
+[PASS] 6   webos-patches ships disabled
+[PASS] 6   webos-kernels ships disabled
+[PASS] 6   no static ipk entry (correct; registration is done at runtime)
+[PASS] 6   .ipk resolves to Preware AND is streamable (browser will hand off)
+[PASS] 6   ce-register-ipk-handler ran and verified
+[PASS] 7   novacom-at-start baked
+[INFO] 7   keyboard default: 		"x_palm_virtualkeyboard_settings": "{\"keyboard size\": -1}",
+[PASS] 7   version-prefix patch: 0 'HP webOS ' in LunaSysMgr
+[PASS] 7   Device Info account label de-branded (13 view files, 0 say 'HP webOS')
+[PASS] 8   HP preload com.palm.app.kindle absent
+[PASS] 8   HP preload com.palm.app.enyo-facebook absent
+[PASS] 8   HP preload com.palm.app.youtube absent
+[PASS] 8   ls-hubd clean (0 unlisted-service errors)
+[PASS] 8   trust store populated (190 entries)
+[PASS] 8   no crash artifacts
+[PASS] 0b  ipkgservice job intact (race has not fired since this flash)
+[PASS] 8   app-store root present (16 apps)
+[PASS] 8   no store repair needed (flash wiped the app store cleanly)
+[PASS] 8   power-off path unwrapped (reboot/poweroff/halt/telinit are the real binaries)
+[PASS] 8   Help app repointed at webosarchive
+[PASS] 9   com.palm.app.enyo-findapps not baked
+[PASS] 9   com.palm.app.enyo-findapps installed in cryptofs v6.1.2923 (1 stanza)
+[PASS] 9   com.palm.app.maps not baked
+[PASS] 9   com.palm.app.maps installed in cryptofs v4.0.1 (1 stanza)
+[PASS] 9   catalog ipk staged (com.palm.app.enyo-findapps_6.1.2923_all.ipk)
+[PASS] 9   maps ipk staged (com.palm.app.maps_4.0.1_all.ipk)
+[PASS] 9   stock 5.0.2900 ipk removed
+[PASS] 9   no mis-named appcatalog stanza
+[PASS] 9   catalog files extracted cleanly
+[PASS] 9   manifest: baked contacts/messaging dropped
+[PASS] 10  SimpleClock present and referenced
+[PASS] 10  stock clock faces retained
+[PASS] 10  GAMES localized in all 8 locales
+[PASS] 10  launcher page rename favorites->games configured
+[PASS] 10  photos exhibition clock installed (icon+CSS+JS)
+[PASS] 10b default search engine is DuckDuckGo in all 10 locale list(s)
+[PASS] 10b search URL points at the /lite/ endpoint
+[PASS] 10b universal-search DDG icon present
+[PASS] 10b browser DDG icon present
+[PASS] 10b browser fallback search is DuckDuckGo
+[PASS] 10b no google left in browser URLSearch.js
+[PASS] 11  staged customization media reclaimed
+[INFO] 11  reclaim: Mon Aug 31 06:36:26 PDT 2026 reclaimed staged media: / free 62348K -> 91444K
+[INFO] 11  rootfs: 91444K free, 84% used
+[INFO] 11  media: wallpapers=27 ringtones=40
+[PASS] 11  no orphaned .png wallpapers
+[PASS] 11  default wallpaper 22.jpg present
+[PASS] ota OTA anchor: key + verifier present
+[PASS] ota ce-ota-verify is executable
+[PASS] ota OTA key fingerprint matches the baked anchor
+[PASS] ota ce-ota-verify refuses a garbage signature
+[PASS] ota ce-ota-verify refuses a missing signature file
+[INFO] ota openssl on device: OpenSSL 0.9.8k 25 Mar 2009
+===== done =====
+
+===== ATT-variant checks (600071, not part of ce-test-full.sh) =====
+--- radio (CE PmWanDaemon gate) ---
+tokens: RadioType=1 MODEM=Y
+ 2256 ?        SLsl   0:00 /usr/bin/pmmodeminterfacelayer 6260 UMTS SINGLE 3.0
+ 2304 ?        SLsl   0:08 /usr/bin/PmWsfDaemon -c /etc/til.d/tilwsf.conf
+ 2346 ?        SLsl   0:00 /usr/bin/PmModemQxdmLogger
+ 2865 ?        SLsl   0:00 PmWsfDaemon -c /etc/wan.d/wan.conf
+--- carrier services from att.tar ---
+ 2292 ?        SLs    0:00 /usr/bin/MiniDM
+ 8198 ?        S      0:00 /bin/node_spawner --no-childstdout --no-childstderr --no-stdin --syslog --script=/usr/palm/services/jsservicelauncher/bootstrap-node.js --arg=/usr/palm/services/com.palm.service.smartcom.acmthinclient --arg=-- --arg=/dev/cpuacct/REST/BG/tasks --arg=/usr/share/ls2
+ 8252 ?        SLl    0:00 com.palm.service.smartcom.acmthinclient.js                                         
+--- thrash/crash counters ---
+respawn-limit hits: 0
+job_run_process SIGSEGV: 0
+sigsegv/segfault: 0
+rdxd reports: 0
+--- wallpaper (the ATT variant fix) ---
+{ "wallpaper": { "wallpaperThumbFile": "\/media\/internal\/.wallpapers\/thumbs\/22.jpg", "wallpaperName": "22.jpg", "wallpaperFile": "\/media\/internal\/.wallpapers\/22.jpg" }, "returnValue": true }
+                    "wallpaperName": "22.jpg",
+--- wan/wifi ---
+{"returnValue":true,"isInternetConnectionAvailable":true,"wifi":{"state":"connected","ipAddress":"192.168.10.46","interfaceName":"eth0","ssid":"Yavin","bssid":"94:2A:6F:7E:4C:64","networkConfidenceLevel":"excellent","onInternet":"yes","isWakeOnWifiEnabled":true},"wan":{"state":"disconnected"},"vpn":{"state":"disconnected"},"bridge":{"state":"disconnected"}}
+--- space ---
+                        559.1M    469.8M     89.3M  84% /

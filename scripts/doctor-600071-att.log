@@ -1,0 +1,2120 @@
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: baseBuild webOS.tar
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: customizationBuild att.tar
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: prevBaseBuild null
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: prevCustomizationBuild null
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: DeviceType: topaz
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: WcpSubmssion: 26
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: ForceModemUpdate: true
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: RecoveryToolBuildNumber: 78
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: RomBuildNumber: 600071
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: BaseBuild: webOS.tar
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: AppSubmssion: 85
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: ApprovalMikeHash: H4sIANA88k4AA+3Ouw6CQBSE4a19Cl5A3BtSGxtsaKQ3JJwQElkSwMvji5TGxgJs/q+Zk8kpJt61XSXXS34o4vE5qiXoyd77d5o00VNa562e+5lxypjEee2S1Dqlp9tYFelF1ny4DWPZR5Hq5d7Ioyql7cK3Pwl1E0T6JtRrzFpLdi7ybHty+rj59xQAAAAAAAAAAAAAAAAAwA9ep8TY0gAoAAA=
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: RecoveryToolBuildTime: 08/31/26 13:00
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: VersionStr: webOS CE 3.1.0
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: CustomizationBuild: att.tar
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: ApprovalBuildName: H4sIANA88k4AA+3OPwuCUByFYec+xR1rEe8/ozXaggabGi/5QwS18FZ+/dSpoLVa3mc5cDjDucb0Gpp2iOn50ibfkY1y56bUa5+Naawz2dzPvEm0ztfO2dxOvfZmnKvsS3/e3OMt9EolvTxqGcog7aX7tJOuqjuRvu6qX9z6lUIaCVHU9l43pTqEVpRObWrU8rjbb6zfF6eNdd6vFv9+CgAAAAAAAAAAAAAAAAB49QThepPdACgAAA==
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: LibCoreSubmssion: 149
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.ConfigFileMgr loadConfiguration
+INFO: ApprovalCharlieHash: H4sIANA88k4AA+3OOw7CMBBFUdesIisI/iZ1NkCVHkUwilxgJGMIyydACQ0ShOae5kmjKW693g05R8nbTdfX5VrU9+lZ4/19TRv0vNZ5qx/3J6+MCc5rF1rrlDah8UZV+gctL86nMuSqUlkuUab9IIdjevcnaYxJJMc0LpG1lK7vV/9uAAAAAAAAAAAAAAAAAAB87gaODqBxACgAAA==
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.CardController <init>
+INFO: +++++CardController
+Aug 31, 2026 9:11:06 AM com.palm.nova.installer.recoverytool.CardController <init>
+INFO: getLocale is : en_US
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: Java Os Name: LINUX
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: Java Os Arch: AMD64
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: Java Os version: 6.8.0-138-generic
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: java version: 17.0.17
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: java home: /home/jonwise/.sdkman/candidates/java/17.0.17-amzn
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: java tmp dir: /tmp
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: java vendor: Amazon.com Inc.
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: java vm version: 17.0.17+10-LTS
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: java vm vendor: Amazon.com Inc.
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: user lang: null
+Aug 31, 2026 9:11:34 AM com.palm.nova.installer.core.DesktopDriversMgr checkAndInstallDrivers
+INFO: -----checkAndInstallDrivers
+Aug 31, 2026 9:11:37 AM com.palm.nova.installer.recoverytool.runner.DeviceDiscoveryRunner$DeviceDiscoveryThread run
+INFO: got controller
+Aug 31, 2026 9:11:37 AM com.palm.nova.installer.recoverytool.runner.DeviceDiscoveryRunner$DeviceDiscoveryThread run
+INFO: got devices 1
+Aug 31, 2026 9:11:37 AM com.palm.nova.installer.recoverytool.CardController runnerFinished
+INFO: device runner done
+Aug 31, 2026 9:11:37 AM com.palm.nova.installer.recoverytool.BatteryCharger startJob
+INFO: Started:Battery Charger Stage
+Aug 31, 2026 9:11:38 AM com.palm.nova.installer.recoverytool.MainFlasher <init>
+INFO: +++++MainFlasher
+Aug 31, 2026 9:11:39 AM com.palm.nova.installer.recoverytool.runner.DeviceDiscoveryRunner$DeviceDiscoveryThread run
+INFO: got controller
+Aug 31, 2026 9:11:39 AM com.palm.nova.installer.recoverytool.runner.DeviceDiscoveryRunner$DeviceDiscoveryThread run
+INFO: got devices 1
+Aug 31, 2026 9:11:39 AM com.palm.nova.installer.recoverytool.MainFlasher runnerFinished
+INFO: device runner done
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.MainFlasher configureFlasherThread
+INFO: Start time 1788181900287
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.MainFlasher configureFlasherThread
+INFO: looking for /resources/webOS.tar
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.MainFlasher configureFlasherThread
+INFO: com.palm.nova.installer.recoverytool.MainFlasher is loaded from: file:/home/jonwise/Projects/webos-doctor-ce/out/webosdoctorp310hstnhatt-ce-600071.jar
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.MainFlasher configureFlasherThread
+INFO: jarFile path is: /home/jonwise/Projects/webos-doctor-ce/out/webosdoctorp310hstnhatt-ce-600071.jar
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.MainFlasher configureFlasherThread
+INFO: full path of the baseBuild file outside jar is: /home/jonwise/Projects/webos-doctor-ce/out/webOS.tar
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.MainFlasher configureFlasherThread
+INFO: full path of the customizationBuild file outside jar is: /home/jonwise/Projects/webos-doctor-ce/out/att.tar
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.MainFlasher configureFlasherThread
+INFO: found resource in jar
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.MainFlasher configureFlasherThread
+INFO: Base build file found inside jar and loaded sucessfully
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.MainFlasher configureFlasherThread
+INFO: Customization build file found inside jar and loaded sucessfully
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.BatteryCharger endJob
+INFO: Battery Charging Done
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: Battery Charger Stage
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: Battery Charger Stage
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Found DeviceType match for : topaz
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: device believed to be in bootloader, will load ramdisk
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: Loading Ramdisk
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: count is 14751797
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: update Loading Ramdisk 20
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 14751797
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 14686261
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 14424117
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 14096437
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 13834293
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 13506613
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 13244469
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 12916789
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 12654645
+
+Aug 31, 2026 9:11:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 12326965
+
+Aug 31, 2026 9:11:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 12064821
+
+Aug 31, 2026 9:11:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 11737141
+
+Aug 31, 2026 9:11:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 11474997
+
+Aug 31, 2026 9:11:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 11147317
+
+Aug 31, 2026 9:11:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 10885173
+
+Aug 31, 2026 9:11:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 10557493
+
+Aug 31, 2026 9:11:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 10295349
+
+Aug 31, 2026 9:11:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 9967669
+
+Aug 31, 2026 9:11:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 9705525
+
+Aug 31, 2026 9:11:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 9377845
+
+Aug 31, 2026 9:11:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 9115701
+
+Aug 31, 2026 9:11:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 8788021
+
+Aug 31, 2026 9:11:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 8525877
+
+Aug 31, 2026 9:11:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 8198197
+
+Aug 31, 2026 9:11:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 7936053
+
+Aug 31, 2026 9:11:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 7608373
+
+Aug 31, 2026 9:11:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 7346229
+
+Aug 31, 2026 9:11:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 7018549
+
+Aug 31, 2026 9:11:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 6756405
+
+Aug 31, 2026 9:11:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 6428725
+
+Aug 31, 2026 9:11:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 6166581
+
+Aug 31, 2026 9:11:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 5838901
+
+Aug 31, 2026 9:11:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 5576757
+
+Aug 31, 2026 9:11:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 5249077
+
+Aug 31, 2026 9:11:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 4986933
+
+Aug 31, 2026 9:11:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 4659253
+
+Aug 31, 2026 9:11:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 4397109
+
+Aug 31, 2026 9:11:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 4069429
+
+Aug 31, 2026 9:11:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 3807285
+
+Aug 31, 2026 9:11:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 3479605
+
+Aug 31, 2026 9:11:44 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 3217461
+
+Aug 31, 2026 9:11:44 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 2889781
+
+Aug 31, 2026 9:11:44 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 2627637
+
+Aug 31, 2026 9:11:44 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 2299957
+
+Aug 31, 2026 9:11:44 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 2037813
+
+Aug 31, 2026 9:11:44 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 1710133
+
+Aug 31, 2026 9:11:44 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 1447989
+
+Aug 31, 2026 9:11:45 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 1120309
+
+Aug 31, 2026 9:11:45 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 858165
+
+Aug 31, 2026 9:11:45 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 530485
+
+Aug 31, 2026 9:11:45 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: leftToWrite 268341
+
+Aug 31, 2026 9:11:45 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: Booting
+
+Aug 31, 2026 9:11:45 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: update Loading Ramdisk 50
+
+Aug 31, 2026 9:11:45 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: Waiting for device to come back
+
+Aug 31, 2026 9:12:03 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Loading Ramdisk: Ramdisk has booted!
+
+Aug 31, 2026 9:12:03 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: Loading Ramdisk
+
+Aug 31, 2026 9:12:03 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: device is in ramdisk as expected
+
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: token returned by get_token() is : ATT
+
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Found device Carrier match for :att
+
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: token returned by get_token() is : HSTNH-I30C
+
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: token returned by get_token() is : HSTNH-I30C
+
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Found device Model match for : hstnh-i30c
+
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: SaveLogsBeforeFlash
+
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: SaveLogsBeforeFlash: saving logs before flashing
+
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: looking for LVM while in installer mode
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: got lvm static, running vgscan
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: vgscan ran, running vgchange
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: MountUtils: 8 logical volume(s) in volume group "store" now active
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: lvmGroupName set to store
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Root Path: /dev/mapper/store-root
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Var Path: /dev/mapper/store-var
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Log Path: /dev/mapper/store-log
+Aug 31, 2026 9:12:04 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Media Path: /dev/mapper/store-media
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.core.MountUtils mount
+INFO: Mounting /dev/mapper/store-media to: /tmp_media
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.core.MountUtils mount
+INFO: Mounting /dev/mapper/store-log to: /tmp_log
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: SaveLogsBeforeFlash: mounted mediafs and logfs sucessfully
+
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: SaveLogsBeforeFlash: media mount exists
+
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: SaveLogsBeforeFlash: log mount exists
+
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: SaveLogsBeforeFlash: /usr/local/sbin/recovery/dumplog.sh: line 41: DbgPrint: not found
+
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: SaveLogsBeforeFlash: cp: can't stat '/tmp_log/installer.log': No such file or directory
+
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: SaveLogsBeforeFlash: Done with SaveLog stage
+
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: Unmounting /dev/mapper/store-media
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: MountUtils: unmount successful
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: Unmounting /dev/mapper/store-log
+Aug 31, 2026 9:12:05 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: MountUtils: unmount successful
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: SaveLogsBeforeFlash
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: DataPreCheckStage
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: DataPreCheckStage: running pre-checks for data migration
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: DataPreCheckStage: checking to see if saving data is possible
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: DataPreCheckStage: pid is 1930
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: DataPreCheckStage: Reading all physical volumes.  This may take a while...
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: DataPreCheckStage: Found volume group "store" using metadata type lvm2
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: DataPreCheckStage: 8 logical volume(s) in volume group "store" now active
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: DataPreCheckStage: mounting media
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: DataPreCheckStage: Files saved-data.tar.gz and saved-var.tar.gz do not exist
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: DataPreCheckStage: INFO:: Pre-check stage did not detect any restorable data. ReturnCode is: 1
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: DataPreCheckStage: Done with DataPreCheck stage
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: DataPreCheckStage
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: AppDeletion
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: AppDeletion: deleting applications folder
+
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: looking for LVM while in installer mode
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: got lvm static, running vgscan
+Aug 31, 2026 9:12:06 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: vgscan ran, running vgchange
+Aug 31, 2026 9:12:07 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: MountUtils: 8 logical volume(s) in volume group "store" now active
+Aug 31, 2026 9:12:07 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: lvmGroupName set to store
+Aug 31, 2026 9:12:07 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Root Path: /dev/mapper/store-root
+Aug 31, 2026 9:12:07 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Var Path: /dev/mapper/store-var
+Aug 31, 2026 9:12:07 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Log Path: /dev/mapper/store-log
+Aug 31, 2026 9:12:07 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Media Path: /dev/mapper/store-media
+Aug 31, 2026 9:12:07 AM com.palm.nova.installer.core.MountUtils mount
+INFO: Mounting /dev/mapper/store-media to: /tmp_mediafs
+Aug 31, 2026 9:12:07 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: AppDeletion: attempting to remove appDirectory: /tmp_mediafs/.palm
+
+Aug 31, 2026 9:12:09 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: AppDeletion: removed the appDirectory: /tmp_mediafs/.palm
+
+Aug 31, 2026 9:12:09 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: Unmounting /dev/mapper/store-media
+Aug 31, 2026 9:12:11 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: MountUtils: unmount successful
+Aug 31, 2026 9:12:12 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: AppDeletion
+
+Aug 31, 2026 9:12:13 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: Trenchcoat
+
+Aug 31, 2026 9:12:13 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Starting /sbin/trenchcoat
+
+Aug 31, 2026 9:12:13 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Starting Stream Reader
+
+Aug 31, 2026 9:12:13 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Trenchcoat version 145
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!-- Installer Rules for Topaz Hardware --><TrenchCoat>
+	<CPU type="MSM8660"/>
+	<Flash alignment="1" device="/dev/mmcblk0" reusePartitions="true" type="mmc">
+		<!-- Note: when modifying partitions, make sure to edit
+			 the corresponding xml file in bootie-images -->
+		<!-- Note: some entries marked "optional" for compatibility with older
+		     images. -->
+		<Entry align="false" size="512" type="mbr"/>
+		<Entry partition="0xc" reformat="false" size="1024KB" type="space"/>		<!-- p1, FAT (fat.bin) -->
+		<Entry partition="0x4d" reformat="false" size="500KB" type="space"/>		<!-- p2, CFG_DATA; rpmsbl.mbn -->
+		<Entry partition="0x51" reformat="false" size="1500KB" type="space"/>		<!-- p3, SPBL; spbl.mbn -->
+
+		<!-- Here begins the extended partitions (extended partition p4) -->
+		<Entry partition="0x47" reformat="false" size="500KB" type="space"/>		<!-- p5, APPSSBL; rpm.mbn -->
+		<Entry partition="0x45" reformat="false" size="500KB" type="space"/>		<!-- p6, QCSBL; ssbl.mbn -->
+		<Entry optional="true" partition="0x4e" reformat="false" size="65024KB" type="space"/>	<!-- p7, EFS2 -->
+		<Entry partition="0x4c" reformat="false" size="2500KB" type="space"/>		<!-- p8, FOTA; emmc_appsboot.mbn -->
+		<Entry file="stdin" fileSize="115484" partition="0x48" reformat="false" size="10240KB" type="bootloader"/>	<!-- p9, APPS; boot.img -->
+		<Entry partition="0x46" reformat="false" size="500KB" type="space"/>		<!-- p10, OEMSBL; tz.mbn -->
+		<Entry partition="0x4a" reformat="false" size="3072KB" type="space"/>		<!-- p11, MODEM_ST1 -->
+		<Entry optional="true" partition="0x4b" reformat="false" size="3072KB" type="space"/>	<!-- p12, MODEM_ST2 -->
+
+		<!-- Here is palm territory.  There be dragons. -->
+		<Entry reusePartition="false" size="4MB" type="nvram">						<!-- p12, NVRAM -->
+			<Section name="env" size="16KB" type="env">
+				<Val name="installer" value="trenchcoat"/>
+				<Val action="delete" name="autoboot"/>
+				<Val action="delete" name="bootfile"/>
+			<Val action="overwrite" name="checkbatt" value="1"/></Section>
+			<Section name="tokens" size="10KB" type="token">
+				<Val name="installer" value="trenchcoat"/>
+			<Val action="overwrite" name="DMSETS" value="{&quot;sets&quot;:&quot;2143&quot;,&quot;2147&quot;}"/></Section>
+			<!-- IMPORTANT: Before adding any icons to this file, make sure that they're
+			  in the bootie-images package first.  Also, make sure icons are listed
+			  in nova/palm/classes/package_installer.bbclass before adding them here.
+			  Do this for ALL releases that will be using this xml file.  Do it BEFORE
+			  adding icons to this file. -->
+			<Section file="stdin" fileSize="14046" name="logo-boot" type="image"/>
+			<Section file="stdin" fileSize="72830" name="logo-chg" type="image"/>
+			<Section file="stdin" fileSize="31710" name="logo-badchg" type="image"/>
+			<Section file="stdin" fileSize="64719" name="logo-nobatt" type="image"/>
+			<Section file="stdin" fileSize="36300" name="logo-badsys" type="image"/>
+			<Section file="stdin" fileSize="36300" name="logo-nosys" type="image"/>
+			<Section file="stdin" fileSize="52407" name="logo-sync" type="image"/>
+			<Section file="stdin" fileSize="66299" name="logo-panic" type="image"/>
+			<Section file="stdin" fileSize="68082" name="logo-disk" type="image"/>
+			<Section file="stdin" fileSize="97929" name="logo-weak" type="image"/>
+		</Entry>
+		<Entry mount="/boot" reusePartition="false" size="32MB" type="ext3"/>		<!-- p13, /boot -->
+		<Entry alignment="0x4000000" id="pv" metadatacopies="2" metadatasize="8MB" reusePartition="false" size="*" type="lvm"/> <!-- p14, LVM -->
+	</Flash>
+	<VolumeGroups>
+		<Group name="store" physicalextentsize="8MB" pv="pv">
+			<!-- Don't change the format of this next line, cust.bb parser depends on it. -->
+			<Volume id="root" mount="/" size="568MB" type="ext3"/>
+			<Volume id="var" mount="/var" size="64MB" type="ext3"/>
+			<Volume id="update" mount="/var/lib/update" size="16MB" type="ext3"/>
+			<Volume id="log" mount="/var/log" size="24MB" type="ext3"/>
+			<Volume id="mojodb" size="8G:144MB,16G:256MB,32G:256M,64G:512M" type="ext3"/>
+			<Volume id="filecache" inode_size="256" size="136MB" type="ext3"/>
+			<Volume id="media" mount="/media/internal" reformat="false" size="*" type="fat32"/>
+			<Volume id="swap" size="512MB"/>
+		</Group>
+	</VolumeGroups>
+	<Filesystem fstab="/etc/fstab">
+		<Mount device="rootfs" freq="1" mount="/" options="ro,suid,dev,exec,auto,nouser,async,noatime" passno="1" type="ext3"/>
+		<Mount freq="0" id="var" options="noatime,data=writeback" passno="0"/>
+		<Mount device="/dev/mapper/store-cryptodb" freq="0" mount="/var/db" options="noauto,noatime,data=ordered" passno="0" type="ext3"/>
+		<Mount device="/dev/mapper/store-cryptofilecache" freq="0" mount="/var/file-cache" options="noauto,noatime,user_xattr" passno="0" type="ext3"/>
+
+		<Mount freq="0" id="log" options="noatime" passno="0"/>
+		<Mount freq="0" id="update" options="noauto,noatime" passno="0"/>
+		<Mount device="proc" freq="0" mount="/proc" options="defaults" passno="0" type="proc"/>
+		<Mount device="devpts" freq="0" mount="/dev/pts" options="mode=0620,gid=5" passno="0" type="devpts"/>
+		<Mount device="tmpfs" freq="0" mount="/tmp" options="size=40M,mode=1777" passno="0" type="tmpfs"/>
+		<Mount device="tmpfs" freq="0" mount="/var/run" options="size=16M,mode=1777" passno="0" type="tmpfs"/>
+		<Mount device="tmpfs" freq="0" mount="/var/tmp" options="size=32M,mode=1777" passno="0" type="tmpfs"/>
+		<Mount device="tmpfs" freq="0" mount="/media/ram" options="defaults" passno="0" type="tmpfs"/>
+		<Mount freq="0" id="media" options="utf8,shortname=mixed,umask=0000" passno="0"/>
+	</Filesystem>
+	<Images>
+		<File file="stdin.tar.gz" fileSize="194139278" target="/"/>
+	</Images>
+	<PostInstall file="/sbin/tcpostflash.sh"/>
+</TrenchCoat>
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Wrote XML Configuration Data
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: boot-topaz.bin
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 115484 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: BootLogo.tga
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 14046 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: Charging.tga
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 72830 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: NoPower.tga
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 31710 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: NoBatt.tga
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 64719 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: BadSys.tga
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 36300 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: NoSys.tga
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 36300 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: Sync.tga
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 52407 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: Panic.tga
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 66299 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: Disk.tga
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 68082 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: Weak.tga
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 97929 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sending File: nova-cust-image-topaz.rootfs.tar.gz
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Output device /dev/mmcblk0 can hold 31908167680 bytes
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Output device has partition table with 13 entries
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> EBR block: 200fa1 - 200faa
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Fixed flash entries require 1610612736 bytes of space
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Variable sized entry gets 30230446080 bytes (0x384f000 blocks)
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> EBR block: 200fa1 - 200faa
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 0: type 1 (MBR), size 512 (1), offset 0 (0), file 0x0, part 0(p), type 0, reformat=true
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 1: type 8 (space), size 1073741824 (200000), offset 512 (1), file 0x0, part 1(p), type c, reformat=false
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 2: type 8 (space), size 512000 (3e8), offset 1073742336 (200001), file 0x0, part 2(p), type 4d, reformat=false
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 3: type 8 (space), size 1536000 (bb8), offset 1074254336 (2003e9), file 0x0, part 3(p), type 51, reformat=false
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 4: type 8 (space), size 512000 (3e8), offset 1140850688 (220000), file 0x0, part 5(s), type 47, reformat=false
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 5: type 8 (space), size 768000 (5dc), offset 1207959552 (240000), file 0x0, part 6(s), type 45, reformat=false
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 6: skipped
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 7: type 8 (space), size 2560000 (1388), offset 1275068416 (260000), file 0x0, part 7(s), type 4c, reformat=false
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 8: type 2 (Bootloader), size 10485760 (5000), offset 1342177280 (280000), file 0x828c70, part 8(s), type 48, reformat=false
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 9: type 8 (space), size 1536000 (bb8), offset 1409286144 (2a0000), file 0x0, part 9(s), type 46, reformat=false
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 10: type 8 (space), size 3145728 (1800), offset 1476395008 (2c0000), file 0x0, part 10(s), type 4a, reformat=false
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 11: type 8 (space), size 3145728 (1800), offset 1543503872 (2e0000), file 0x0, part 11(s), type 4b, reformat=false
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 12: type 3 (NVRAM), size 4194304 (2000), offset 1546649600 (2e1800), file 0x0, part 12(s), type f0, reformat=true
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 13: type 4 (ext3), size 33554432 (10000), offset 1550843904 (2e3800), file 0x0, part 13(s), type 83, reformat=true
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash Entry 14: type 7 (LVM), size 30230446080 (384f000), offset 1610612736 (300000), file 0x0, part 14(s), type 8e, reformat=true
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Using LVM
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Volume Group 0 has 30198988800 bytes (3600 extents) available
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Fixed Logical Volumes require 1652555776 bytes of space
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Volume Group 0:
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Physical Volume 0: id pv size 30230446080 (3603 extents)
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 0: name root type 4 (ext3) size 595591168 (71 extents) format 1
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 1: name var type 4 (ext3) size 67108864 (8 extents) format 1
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 2: name update type 4 (ext3) size 16777216 (2 extents) format 1
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 3: name log type 4 (ext3) size 25165824 (3 extents) format 1
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 4: name mojodb type 4 (ext3) size 268435456 (32 extents) format 1
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 5: name filecache type 4 (ext3) size 142606336 (17 extents) format 1
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 6: name media type 6 (Fat32) size 28546433024 (3403 extents) format 0
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 7: name swap type 0 (None) size 536870912 (64 extents) format 1
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> MBR found in flash entry 0
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> MSM CPU Selected
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Generating MSM MMC Image
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Disable memory protection
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Disable memory protect failed: Inappropriate ioctl for device
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> saving existing tokens
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 13 pre-existing partitions found
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> MBR found in flash entry 0
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> MBR found in flash entry 0
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Partition table not changed
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Skipping partition table write
+
+Aug 31, 2026 9:12:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Waiting for potential automounts to finish....
+
+Aug 31, 2026 9:12:19 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Unmounting everything again.
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "lvm.static vgchange -an"
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2189: sh
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: 0 logical volume(s) in volume group "store" now active
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Bootloader Load Address: 0x40800000
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Writing bootloader to offset 50000000
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Bootloader crc: 0x1506da18
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Bootloader install complete
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section offset 1546649600, size 4194304
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> existing tokens 0x82a5b8
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'env' offset 4096 len 16384
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram found existing environment section, reusing
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> overwriting existing env var 'checkbatt'
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> env write_env_val: checkbatt = '1'
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> using old value of existing env var 'installer'
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> env write_env_val: installer = 'trenchcoat'
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'tokens' offset 20480 len 10240
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> overwriting existing token 'DMSETS'
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> not overwriting existing token 'installer'
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'ProductName' to offset 0, gen 1, len 32
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'MODEM' to offset 68, gen 1, len 4
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'RAMSize' to offset 108, gen 1, len 8
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'FlashSize' to offset 152, gen 1, len 8
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'HWoRev' to offset 196, gen 2, len 2
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'BToADDR' to offset 236, gen 2, len 17
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'WIFIoADDR' to offset 292, gen 2, len 17
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'ProdSN' to offset 348, gen 2, len 10
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'ProductSKU' to offset 396, gen 2, len 12
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'RadioType' to offset 444, gen 1, len 1
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'BATToRSP' to offset 484, gen 1, len 40
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'BATToCH' to offset 560, gen 1, len 16
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMSVRoNONCE' to offset 612, gen 1, len 24
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMSVRoAUTHPW' to offset 672, gen 1, len 19
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMCLoNONCE' to offset 728, gen 1, len 24
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMCLoAUTHPW' to offset 788, gen 1, len 19
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMCLoAUTHNAME' to offset 844, gen 1, len 9
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMCARRIER' to offset 892, gen 1, len 3
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMMODEL' to offset 932, gen 1, len 10
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'GYROCAL' to offset 980, gen 1, len 46
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'ACCELCAL' to offset 1064, gen 1, len 85
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'ALSCal' to offset 1188, gen 1, len 60
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'PalmSN' to offset 1284, gen 1, len 10
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'PRODoID' to offset 1332, gen 1, len 10
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'PN' to offset 1380, gen 1, len 12
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMSETS' to offset 1428, gen 4, len 22
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'installer' to offset 1488, gen 1, len 10
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'token-backup' offset 4182016 len 10240
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'ProductName' to offset 0, gen 1, len 32
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'MODEM' to offset 68, gen 1, len 4
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'RAMSize' to offset 108, gen 1, len 8
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'FlashSize' to offset 152, gen 1, len 8
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'HWoRev' to offset 196, gen 2, len 2
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'BToADDR' to offset 236, gen 2, len 17
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'WIFIoADDR' to offset 292, gen 2, len 17
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'ProdSN' to offset 348, gen 2, len 10
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'ProductSKU' to offset 396, gen 2, len 12
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'RadioType' to offset 444, gen 1, len 1
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'BATToRSP' to offset 484, gen 1, len 40
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'BATToCH' to offset 560, gen 1, len 16
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMSVRoNONCE' to offset 612, gen 1, len 24
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMSVRoAUTHPW' to offset 672, gen 1, len 19
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMCLoNONCE' to offset 728, gen 1, len 24
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMCLoAUTHPW' to offset 788, gen 1, len 19
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMCLoAUTHNAME' to offset 844, gen 1, len 9
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMCARRIER' to offset 892, gen 1, len 3
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMMODEL' to offset 932, gen 1, len 10
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'GYROCAL' to offset 980, gen 1, len 46
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'ACCELCAL' to offset 1064, gen 1, len 85
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'ALSCal' to offset 1188, gen 1, len 60
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'PalmSN' to offset 1284, gen 1, len 10
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'PRODoID' to offset 1332, gen 1, len 10
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'PN' to offset 1380, gen 1, len 12
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'DMSETS' to offset 1428, gen 4, len 22
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> write_tokens: writing token 'installer' to offset 1488, gen 1, len 10
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'logo-boot' offset 32768 len 14046
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'logo-chg' offset 49152 len 72830
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'logo-badchg' offset 122880 len 31710
+
+Aug 31, 2026 9:12:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'logo-nobatt' offset 155648 len 64719
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'logo-badsys' offset 221184 len 36300
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'logo-nosys' offset 258048 len 36300
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'logo-sync' offset 294912 len 52407
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'logo-panic' offset 348160 len 66299
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'logo-disk' offset 417792 len 68082
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> nvram section 'logo-weak' offset 487424 len 97929
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash entry 1, type 8, no filesystem
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash entry 2, type 8, no filesystem
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash entry 3, type 8, no filesystem
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash entry 4, type 8, no filesystem
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash entry 5, type 8, no filesystem
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Skip entry 6
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash entry 7, type 8, no filesystem
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash entry 8, type 2, no filesystem
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash entry 9, type 8, no filesystem
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash entry 10, type 8, no filesystem
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Flash entry 11, type 8, no filesystem
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> /tmp/do_format_dev_mmcblk0p13.sh not found; running hardcoded stuff
+
+Aug 31, 2026 9:12:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "mke2fs -q -j -b4096 -m0 -t ext3 -L /boot /dev/mmcblk0p13 > /dev/null"
+
+Aug 31, 2026 9:12:22 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "tune2fs -i 0 /dev/mmcblk0p13 > /dev/null 2> /dev/null"
+
+Aug 31, 2026 9:12:22 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> lvm_activate store attempt 1
+
+Aug 31, 2026 9:12:22 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "lvm.static vgchange -ay store"
+
+Aug 31, 2026 9:12:22 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2196: sh
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: 8 logical volume(s) in volume group "store" now active
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "lvm.static vgchange -ay"
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2230: sh
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: 8 logical volume(s) in volume group "store" now active
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2232: sh
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2234: sh
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Current LVM configuration, 1 volume groups:
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Volume Group 0: name store physicalextentsize 8388608, 8 logical volumes
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 0: name root size 595591168 stripes 1 stripesize 0 chunksize 0
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 1: name var size 67108864 stripes 1 stripesize 0 chunksize 0
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 2: name update size 16777216 stripes 1 stripesize 0 chunksize 0
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 3: name log size 25165824 stripes 1 stripesize 0 chunksize 0
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 4: name mojodb size 150994944 stripes 1 stripesize 0 chunksize 0
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 5: name filecache size 142606336 stripes 1 stripesize 0 chunksize 0
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 6: name media size 29091692544 stripes 1 stripesize 0 chunksize 0
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO>   Logical Volume 7: name swap size 109051904 stripes 1 stripesize 0 chunksize 0
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> logical volume mojodb, current size: 150994944, stripes: 1, stripe size: 0, chunk size: 0
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> logical volume mojodb,     new size: 268435456, stripes: 1, stripe size: 0, chunk size: 0
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> LVM configuration changed
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Adjusting LVM logical volumes
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Reduce volume 'media' filesystem from 29091692544 to 28546433024 bytes
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> About to call: resizefat /dev/mapper/store-media 28546433024B
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "resizefat /dev/mapper/store-media 28546433024B"
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: dosfsck 2.11, 12 Mar 2005, FAT32, LFN
+
+Aug 31, 2026 9:12:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: /dev/mapper/store-media: 137 files, 1384/887699 clusters
+
+Aug 31, 2026 9:12:27 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "lvm.static vgchange -an store"
+
+Aug 31, 2026 9:12:27 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2240: sh
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: 0 logical volume(s) in volume group "store" now active
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Reduce volume 'media' partition from 29091692544 to 28546433024 bytes
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "lvm.static lvreduce -L 27877376K /dev/mapper/store-media"
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2271: sh
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Reducing logical volume media to 26.59 GB
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Logical volume media successfully resized
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Extend volume 'mojodb' partition from 150994944 to 268435456 bytes
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "lvm.static lvextend -L 262144K /dev/mapper/store-mojodb"
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2273: sh
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Extending logical volume mojodb to 256.00 MB
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Logical volume mojodb successfully resized
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Extend volume 'swap' partition from 109051904 to 536870912 bytes
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "lvm.static lvextend -L 524288K /dev/mapper/store-swap"
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2275: sh
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Extending logical volume swap to 512.00 MB
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Logical volume swap successfully resized
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "lvm.static vgchange -ay store"
+
+Aug 31, 2026 9:12:28 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2277: sh
+
+Aug 31, 2026 9:12:29 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: 8 logical volume(s) in volume group "store" now active
+
+Aug 31, 2026 9:12:29 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "lvm.static vgchange -ay store"
+
+Aug 31, 2026 9:12:29 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2311: sh
+
+Aug 31, 2026 9:12:29 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: 8 logical volume(s) in volume group "store" now active
+
+Aug 31, 2026 9:12:29 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Executing /tmp/do_format_dev_mapper_store-root.sh
+
+Aug 31, 2026 9:12:34 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "/sbin/fsck -a /dev/mapper/store-root"
+
+Aug 31, 2026 9:12:34 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: fsck 1.41.4 (27-Jan-2009)
+
+Aug 31, 2026 9:12:34 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: /: clean, 11/36400 files, 6503/145408 blocks
+
+Aug 31, 2026 9:12:34 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Executing /tmp/do_format_dev_mapper_store-var.sh
+
+Aug 31, 2026 9:12:35 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "/sbin/fsck -a /dev/mapper/store-var"
+
+Aug 31, 2026 9:12:35 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: fsck 1.41.4 (27-Jan-2009)
+
+Aug 31, 2026 9:12:35 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: /var: clean, 11/16384 files, 1550/16384 blocks
+
+Aug 31, 2026 9:12:35 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Executing /tmp/do_format_dev_mapper_store-update.sh
+
+Aug 31, 2026 9:12:36 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "/sbin/fsck -a /dev/mapper/store-update"
+
+Aug 31, 2026 9:12:36 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: fsck 1.41.4 (27-Jan-2009)
+
+Aug 31, 2026 9:12:36 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: /var/lib/update: clean, 11/4096 files, 1163/4096 blocks
+
+Aug 31, 2026 9:12:36 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Executing /tmp/do_format_dev_mapper_store-log.sh
+
+Aug 31, 2026 9:12:37 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "/sbin/fsck -a /dev/mapper/store-log"
+
+Aug 31, 2026 9:12:37 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: fsck 1.41.4 (27-Jan-2009)
+
+Aug 31, 2026 9:12:37 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: /var/log: clean, 11/6144 files, 1228/6144 blocks
+
+Aug 31, 2026 9:12:37 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Executing /tmp/do_format_dev_mapper_store-mojodb.sh
+
+Aug 31, 2026 9:12:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "/sbin/fsck -a /dev/mapper/store-mojodb"
+
+Aug 31, 2026 9:12:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: fsck 1.41.4 (27-Jan-2009)
+
+Aug 31, 2026 9:12:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: /dev/mapper/store-mojodb: clean, 11/65536 files, 6193/65536 blocks
+
+Aug 31, 2026 9:12:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Executing /tmp/do_format_dev_mapper_store-filecache.sh
+
+Aug 31, 2026 9:12:47 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "/sbin/fsck -a /dev/mapper/store-filecache"
+
+Aug 31, 2026 9:12:47 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: fsck 1.41.4 (27-Jan-2009)
+
+Aug 31, 2026 9:12:47 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: /dev/mapper/store-filecache: clean, 11/34816 files, 6307/34816 blocks
+
+Aug 31, 2026 9:12:47 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "resizefat -r /dev/mapper/store-media"
+
+Aug 31, 2026 9:12:47 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: dosfsck 2.11, 12 Mar 2005, FAT32, LFN
+
+Aug 31, 2026 9:12:47 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: /dev/mapper/store-media: 137 files, 1384/870953 clusters
+
+Aug 31, 2026 9:12:47 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> mount /dev/mapper/store-root on /tmp/tcmnt_2125 as ext3
+
+Aug 31, 2026 9:12:48 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "mkdir -p /tmp/tcmnt_2125/boot"
+
+Aug 31, 2026 9:12:48 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> mount /dev/mmcblk0p13 on /tmp/tcmnt_2125/boot as ext3
+
+Aug 31, 2026 9:12:48 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "mkdir -p /tmp/tcmnt_2125/var"
+
+Aug 31, 2026 9:12:48 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> mount /dev/mapper/store-var on /tmp/tcmnt_2125/var as ext3
+
+Aug 31, 2026 9:12:48 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "mkdir -p /tmp/tcmnt_2125/var/log"
+
+Aug 31, 2026 9:12:48 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> mount /dev/mapper/store-log on /tmp/tcmnt_2125/var/log as ext3
+
+Aug 31, 2026 9:12:48 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "mkdir -p /tmp/tcmnt_2125/var/lib/update"
+
+Aug 31, 2026 9:12:48 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> mount /dev/mapper/store-update on /tmp/tcmnt_2125/var/lib/update as ext3
+
+Aug 31, 2026 9:12:48 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running tar -zxf - -C /tmp/tcmnt_2125//
+
+Aug 31, 2026 9:12:48 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Starting feeder loop for tar subprocess, file=stdin.tar.gz, count=194139278
+
+Aug 31, 2026 9:12:57 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 5 percent complete
+
+Aug 31, 2026 9:13:02 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 10 percent complete
+
+Aug 31, 2026 9:13:08 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 15 percent complete
+
+Aug 31, 2026 9:13:15 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 20 percent complete
+
+Aug 31, 2026 9:13:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 25 percent complete
+
+Aug 31, 2026 9:13:34 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 30 percent complete
+
+Aug 31, 2026 9:13:43 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 35 percent complete
+
+Aug 31, 2026 9:13:46 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 40 percent complete
+
+Aug 31, 2026 9:13:53 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 45 percent complete
+
+Aug 31, 2026 9:14:09 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 50 percent complete
+
+Aug 31, 2026 9:14:14 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 55 percent complete
+
+Aug 31, 2026 9:14:21 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 60 percent complete
+
+Aug 31, 2026 9:14:27 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 65 percent complete
+
+Aug 31, 2026 9:14:30 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 70 percent complete
+
+Aug 31, 2026 9:14:35 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 75 percent complete
+
+Aug 31, 2026 9:14:45 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 80 percent complete
+
+Aug 31, 2026 9:14:52 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 85 percent complete
+
+Aug 31, 2026 9:14:57 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 90 percent complete
+
+Aug 31, 2026 9:15:05 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 95 percent complete
+
+Aug 31, 2026 9:15:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Sent 194139278 bytes
+
+Aug 31, 2026 9:15:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Waiting....
+
+Aug 31, 2026 9:15:11 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> 100 percent complete
+
+Aug 31, 2026 9:15:12 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Untarring complete, syncing file systems
+
+Aug 31, 2026 9:15:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "rm -rf /tmp/tcmnt_2125"
+
+Aug 31, 2026 9:15:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running "lvm.static vgchange -an store"
+
+Aug 31, 2026 9:15:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2456: sh
+
+Aug 31, 2026 9:15:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: 0 logical volume(s) in volume group "store" now active
+
+Aug 31, 2026 9:15:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Running /sbin/tcpostflash.sh -b 13
+
+Aug 31, 2026 9:15:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2487: /bin/sh
+
+Aug 31, 2026 9:15:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Reading all physical volumes.  This may take a while...
+
+Aug 31, 2026 9:15:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Found volume group "store" using metadata type lvm2
+
+Aug 31, 2026 9:15:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2487: /bin/sh
+
+Aug 31, 2026 9:15:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: 8 logical volume(s) in volume group "store" now active
+
+Aug 31, 2026 9:15:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: mount /dev/mmcblk0p13 as /tmp/flash/boot
+
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: File descriptor 3 (/dev/mmcblk0) leaked on lvm.static invocation. Parent PID 2487: /bin/sh
+
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: 0 logical volume(s) in volume group "store" now active
+
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: <INFO> Complete!
+
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Trenchcoat: Finished!
+
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: Trenchcoat
+
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: Modem Updater
+
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Modem Updater: Modem Update Started
+
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Modem Updater: Gathering device details...
+
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.core.DeviceInfo gatherPalmBuildInfo
+INFO: verified installer mode
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: looking for LVM while in installer mode
+Aug 31, 2026 9:15:20 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: got lvm static, running vgscan
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: vgscan ran, running vgchange
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: MountUtils: 8 logical volume(s) in volume group "store" now active
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: lvmGroupName set to store
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Root Path: /dev/mapper/store-root
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Var Path: /dev/mapper/store-var
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Log Path: /dev/mapper/store-log
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Media Path: /dev/mapper/store-media
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.MountUtils mount
+INFO: Mounting /dev/mapper/store-root to: /tmp_rootfs
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.DeviceInfo gatherPalmBuildInfo
+WARNING: palm-customization-info file not found, not expected if in ramdisk
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: Unmounting /dev/mapper/store-root
+Aug 31, 2026 9:15:21 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: MountUtils: unmount successful
+Aug 31, 2026 9:15:36 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: update Modem Updater 10
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: update Modem Updater 15
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: update Modem Updater 20
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Modem Updater: ERROR: Unable to get firmware for modem type ERICSSON, cannot flash modem.
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: Modem Updater
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: Firmware Updater
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Firmware Update Started
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Gathering device details...
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: update Firmware Updater 10
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Starting /usr/bin/PmFirmwareUpdater
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: update Firmware Updater 20
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Waiting....
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: emmc_appsboot.mbn
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: rpm.mbn
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: sbl1.mbn
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: sbl2.mbn
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: sbl3.mbn
+
+Aug 31, 2026 9:15:50 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: tz.mbn
+
+Aug 31, 2026 9:15:51 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Device already has most recent /tmp/boot-genesis/sbl1.mbn!
+
+Aug 31, 2026 9:15:53 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Device already has most recent /tmp/boot-genesis/sbl2.mbn!
+
+Aug 31, 2026 9:15:55 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Old version, updating /dev/mmcblk0p5 partition with /tmp/boot-genesis/rpm.mbn image...
+
+Aug 31, 2026 9:15:55 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: 231+1 records in
+
+Aug 31, 2026 9:15:55 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: 231+1 records out
+
+Aug 31, 2026 9:15:55 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: 118396 bytes (115.6KB) copied, 0.034824 seconds, 3.2MB/s
+
+Aug 31, 2026 9:16:05 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Old version, updating /dev/mmcblk0p6 partition with /tmp/boot-genesis/sbl3.mbn image...
+
+Aug 31, 2026 9:16:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: 1132+1 records in
+
+Aug 31, 2026 9:16:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: 1132+1 records out
+
+Aug 31, 2026 9:16:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: 579848 bytes (566.3KB) copied, 0.669544 seconds, 845.7KB/s
+
+Aug 31, 2026 9:16:15 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Device already has most recent /tmp/boot-genesis/emmc_appsboot.mbn!
+
+Aug 31, 2026 9:16:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Device already has most recent /tmp/boot-genesis/tz.mbn!
+
+Aug 31, 2026 9:16:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: $ Your device is ready for use
+
+Aug 31, 2026 9:16:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Firmware Updater: Finished!
+
+Aug 31, 2026 9:16:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: Firmware Updater
+
+Aug 31, 2026 9:16:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: Customization
+
+Aug 31, 2026 9:16:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Creating temp directory for updater files: /tmp/customization_ipkgs
+
+Aug 31, 2026 9:16:16 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: looking for LVM while in installer mode
+Aug 31, 2026 9:16:16 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: got lvm static, running vgscan
+Aug 31, 2026 9:16:16 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: vgscan ran, running vgchange
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: MountUtils: 8 logical volume(s) in volume group "store" now active
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: lvmGroupName set to store
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Root Path: /dev/mapper/store-root
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Var Path: /dev/mapper/store-var
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Log Path: /dev/mapper/store-log
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Media Path: /dev/mapper/store-media
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.core.MountUtils mount
+INFO: Mounting /dev/mapper/store-root to: /tmp_rootfs
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Opening terminal to install IPKGs (see bug NOV-28632)
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: installer.xml
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: amazonservice_1.1-7_armv7.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing amazonservice_1.1-7_armv7.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 10680
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: attwisprd_1.0.0-13_armv7.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing attwisprd_1.0.0-13_armv7.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 17116
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: palmcustomizationinfo-att_1.0-86_all.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing palmcustomizationinfo-att_1.0-86_all.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 954
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: minidm_1.0.0-26_armv7.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing minidm_1.0.0-26_armv7.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 57482
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: com.palm.app.minidm_1.0-14_armv7.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing com.palm.app.minidm_1.0-14_armv7.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 69076
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: sweatshop-attwireless-topaz_1.2-37_armv7.ipk
+
+Aug 31, 2026 9:16:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing sweatshop-attwireless-topaz_1.2-37_armv7.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 21969484
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: passthrud_1.0.9-75_armv7.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing passthrud_1.0.9-75_armv7.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 38752
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: audiod-config-non-eu_1.2-126_topaz.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing audiod-config-non-eu_1.2-126_topaz.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 2238
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: crotest-images_1.0-12_armv7.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing crotest-images_1.0-12_armv7.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 148932
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: smartcom.acmthinclient_1.0-47_armv7.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing smartcom.acmthinclient_1.0-47_armv7.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 242274
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: com.palm.service.smartcom.acmthinclient_1.0-46_all.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing com.palm.service.smartcom.acmthinclient_1.0-46_all.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 30648
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: topazumtsfw-att_1.0.0-8_armv7.ipk
+
+Aug 31, 2026 9:16:20 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing topazumtsfw-att_1.0.0-8_armv7.ipk
+
+Aug 31, 2026 9:16:23 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: written 30046386
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Closing terminal
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/amazonservice_1.1-7_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/attwisprd_1.0.0-13_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/palmcustomizationinfo-att_1.0-86_all.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/minidm_1.0.0-26_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/com.palm.app.minidm_1.0-14_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of amazonservice
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing amazonservice (1.1-7) to root...
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring amazonservice
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/attwisprd_1.0.0-13_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of attwisprd
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing attwisprd (1.0.0-13) to root...
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring attwisprd
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/palmcustomizationinfo-att_1.0-86_all.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of palmcustomizationinfo-att
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing palmcustomizationinfo-att (1.0-86) to root...
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring palmcustomizationinfo-att
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/minidm_1.0.0-26_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of minidm
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing minidm (1.0.0-26) to root...
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring minidm
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/com.palm.app.minidm_1.0-14_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/sweatshop-attwireless-topaz_1.2-37_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/passthrud_1.0.9-75_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/audiod-config-non-eu_1.2-126_topaz.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/crotest-images_1.0-12_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/smartcom.acmthinclient_1.0-47_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/com.palm.service.smartcom.acmthinclient_1.0-46_all.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of com.palm.app.minidm
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing com.palm.app.minidm (1.0-14) to root...
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring com.palm.app.minidm
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/sweatshop-attwireless-topaz_1.2-37_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of sweatshop-attwireless-topaz
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing sweatshop-attwireless-topaz (1.2-37) to root...
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/customization_ipkgs/topazumtsfw-att_1.0.0-8_armv7.ipk
+
+Aug 31, 2026 9:16:24 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: exit
+
+Aug 31, 2026 9:16:39 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring sweatshop-attwireless-topaz
+
+Aug 31, 2026 9:16:39 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: (offline root mode: not running sweatshop-attwireless-topaz.postinst)
+
+Aug 31, 2026 9:16:39 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:39 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/passthrud_1.0.9-75_armv7.ipk
+
+Aug 31, 2026 9:16:39 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of passthrud
+
+Aug 31, 2026 9:16:39 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing passthrud (1.0.9-75) to root...
+
+Aug 31, 2026 9:16:39 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring passthrud
+
+Aug 31, 2026 9:16:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/audiod-config-non-eu_1.2-126_topaz.ipk
+
+Aug 31, 2026 9:16:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of audiod-config-non-eu
+
+Aug 31, 2026 9:16:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing audiod-config-non-eu (1.2-126) to root...
+
+Aug 31, 2026 9:16:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring audiod-config-non-eu
+
+Aug 31, 2026 9:16:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/crotest-images_1.0-12_armv7.ipk
+
+Aug 31, 2026 9:16:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of crotest-images
+
+Aug 31, 2026 9:16:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing crotest-images (1.0-12) to root...
+
+Aug 31, 2026 9:16:40 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring crotest-images
+
+Aug 31, 2026 9:16:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/smartcom.acmthinclient_1.0-47_armv7.ipk
+
+Aug 31, 2026 9:16:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of smartcom.acmthinclient
+
+Aug 31, 2026 9:16:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing smartcom.acmthinclient (1.0-47) to root...
+
+Aug 31, 2026 9:16:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring smartcom.acmthinclient
+
+Aug 31, 2026 9:16:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:41 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/com.palm.service.smartcom.acmthinclient_1.0-46_all.ipk
+
+Aug 31, 2026 9:16:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of com.palm.service.smartcom.acmthinclient
+
+Aug 31, 2026 9:16:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing com.palm.service.smartcom.acmthinclient (1.0-46) to root...
+
+Aug 31, 2026 9:16:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring com.palm.service.smartcom.acmthinclient
+
+Aug 31, 2026 9:16:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# /usr/bin/ipkg -force-overwrite -o /tmp_rootfs install /tmp/
+
+Aug 31, 2026 9:16:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: customization_ipkgs/topazumtsfw-att_1.0.0-8_armv7.ipk
+
+Aug 31, 2026 9:16:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Begin installation of topazumtsfw-att
+
+Aug 31, 2026 9:16:42 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Installing topazumtsfw-att (1.0.0-8) to root...
+
+Aug 31, 2026 9:17:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: Configuring topazumtsfw-att
+
+Aug 31, 2026 9:17:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: (offline root mode: not running topazumtsfw-att.postinst)
+
+Aug 31, 2026 9:17:06 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Customization: root@webos-device:/# exit
+
+Aug 31, 2026 9:17:06 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: Unmounting /dev/mapper/store-root
+Aug 31, 2026 9:17:16 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: MountUtils: unmount successful
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: Customization
+
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: ROM Verifyer
+
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: looking for LVM while in installer mode
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: got lvm static, running vgscan
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: vgscan ran, running vgchange
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: MountUtils: 8 logical volume(s) in volume group "store" now active
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: lvmGroupName set to store
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Root Path: /dev/mapper/store-root
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Var Path: /dev/mapper/store-var
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Log Path: /dev/mapper/store-log
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Media Path: /dev/mapper/store-media
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils mount
+INFO: Mounting /dev/mapper/store-root to: /tmp_rootfs
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.core.MountUtils mount
+INFO: Mounting /dev/mmcblk0p13 to: /tmp_rootfs/boot
+Aug 31, 2026 9:17:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: ROM Verifyer: Starting Check of ROM
+
+Aug 31, 2026 9:17:57 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: ROM Verifyer: /usr/sbin/integcheck IPKG VERIFICATION SUCCEEDED
+
+Aug 31, 2026 9:17:57 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: Unmounting /dev/mmcblk0p13
+Aug 31, 2026 9:17:57 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: MountUtils: unmount successful
+Aug 31, 2026 9:17:57 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: Unmounting /dev/mapper/store-root
+Aug 31, 2026 9:17:57 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: MountUtils: unmount successful
+Aug 31, 2026 9:17:58 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: ROM Verifyer
+
+Aug 31, 2026 9:17:58 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: Touch Panel Updater
+
+Aug 31, 2026 9:17:58 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: Updating the touch panel firmware
+
+Aug 31, 2026 9:17:58 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: 'hidd' is already in stopped state
+
+Aug 31, 2026 9:17:58 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: cy8ctma395.fw needs update from installed version 14 to 15.
+
+Aug 31, 2026 9:17:58 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: retrieving ROM data...
+
+Aug 31, 2026 9:17:58 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: global idac table: 14 16 16 16 16 16 16 16 13 16 17 17 18 18 18 18 14 17 19 19 20 20 20 20 15 18 20 20 19 14 12 15 16 17 17 17 17 18 13 17 18 18 19 19 19 19 14 18 20 20 21 21 21 21 15 20 21 22 20 15 10 13 14 14 14 14 14 15 12 14 15 15 16 16 16 16 12 15 17 17 18 18 18 18 13 17 18 18 17 13 11 13 14 15 15 15 15 15 12 15 16 16 16 17 17 17 12 16 17 18 18 18 19 19 13 17 19 19 18 13 14 17 17 17 17 18 17 18 14 17 18 18 18 19 19 19 14 18 20 20 21 21 21 21 15 19 21 21 21 15
+
+Aug 31, 2026 9:17:58 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: local idac table: 24 21 20 19 19 19 18 18 18 18 18 18 18 18 19 19 18 19 18 19 18 18 19 19 18 19 19 19 19 19 21 20 20 19 19 19 19 19 18 18 18 18 18 18 19 19 18 18 18 18 18 18 18 18 18 19 18 18 19 18 20 20 20 21 20 20 20 20 19 20 20 20 20 20 20 20 20 20 19 20 19 20 20 20 19 21 20 20 20 20 17 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 17 18 18 18 18 18 13 14 14 15 14 15 15 15 14 14 14 14 14 14 14 15 14 14 14 14 14 14 14 14 14 14 14 14 14 15 13 13 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 14 13 13 14 14 14 14 14 14 14 14 13 14 14 15 14 15 15 15 14 14 14 14 14 14 15 15 15 14 14 14 14 14 14 14 14 15 14 14 15 15 11 12 12 12 12 13 13 13 12 12 12 12 12 12 13 13 13 12 12 12 12 12 12 12 12 13 12 12 12 13 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 18 17 18 17 18 17 18 18 18 18 18 18 18 17 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 17 18 17 18 17 16 16 16 15 16 16 16 15 16 15 15 16 15 15 16 16 16 16 15 16 15 15 16 16 16 15 16 15 16 15 17 17 17 17 17 17 18 17 17 17 17 17 17 17 18 18 17 17 17 18 17 17 18 18 17 17 18 17 18 17 18 18 18 18 18 18 18 17 18 17 18 18 17 18 18 18 18 18 17 18 17 18 18 18 18 17 18 17 18 18 15 15 15 14 15 15 15 14 15 14 14 15 14 14 15 15 15 15 14 15 14 14 15 15 15 14 14 14 15 15 14 14 14 13 13 14 14 13 14 13 13 13 13 13 13 14 14 13 13 13 13 13 13 14 14 13 13 13 13 13 16 16 16 16 16 16 16 15 16 15 15 16 15 15 16 16 16 16 15 16 15 15 16 16 16 15 16 15 16 16 17 16 16 16 17 17 17 16 16 16 16 17 17 17 17 17 17 17 17 18 17 17 18 18 16 16 17 17 17 16 20 20 19 20 20 20 20 19 19 19 19 20 20 20 20 20 20 20 20 20 20 20 20 20 19 19 20 20 20 19 17 17 16 17 17 17 17 17 16 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 16 17 17 17 17 16 16 16 15 16 16 16 16 16 15 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 16 15 16 15 14 14 15 15 15 14 14 14 14 15 14 15 15 15 15 15 14 14 14 14 14 14 14 14 14 15 15 14 17 16 16 16 16 17 17 16 16 16 16 16 16 16 16 16 16 16 16 16 15 16 16 16 16 15 16 16 16 16 16 16 15 16 16 16 16 15 15 15 15 16 15 16 16 16 16 16 15 16 15 15 16 16 15 15 15 16 16 15 15 15 14 15 15 15 15 14 14 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 14 15 15 15 14 16 17 17 16 16 17 17 17 17 17 17 18 18 17 17 18 17 17 17 17 17 17 16 17 17 17 17 16 17 16 17 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 19 18 19 19 18 18 18 18 18 18 18 18 17 18 18 18 18 18 18 18 18 17 18 18 18 17 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 18 17 17 17 17 17 17 17 18 17 17 17 17 18 17 17 17 18 17 18 17 18 18 17 17 17 17 17 17 18 17 17 18 18 17 17 18 18 18 17 17 17 17 18 17 17 17 18 17 18 17 18 18 17 17 18 17 17 17 18 17 14 15 15 14 14 15 15 15 15 14 14 14 15 14 14 14 15 14 15 14 14 15 14 14 15 14 14 14 14 15 14 14 14 14 14 14 14 14 14 14 14 14 14 13 14 14 15 14 14 14 14 14 14 14 14 14 13 14 14 14 13 13 13 12 12 13 13 13 13 13 13 13 13 12 13 13 13 13 13 13 13 13 12 12 13 13 12 12 13 13 18 18 19 19 19 19 20 19 18 18 18 18 19 18 19 19 19 18 18 19 18 19 19 19 18 19 19 19 18 18 16 16 16 17 17 16 17 16 16 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 17 15 15 16 16 16 16 16 16 16 16 16 16 17 16 16 16 16 16 16 17 16 16 17 17 16 16 16 17 16 16 17 17 18 18 18 17 18 18 18 18 18 18 19 18 18 18 18 18 18 19 18 18 19 19 18 18 18 19 18 18 12 12 12 12 12 12 13 12 13 12 12 12 13 12 12 12 13 12 12 12 12 12 12 12 13 12 12 12 12 12 15 14 15 15 15 14 15 14 14 14 14 14 15 14 14 14 15 14 14 14 14 14 14 14 15 14 14 14 14 15 20 18 18 18 18 17 18 17 17 17 17 18 18 17 17 18 18 18 17 18 17 17 18 18 18 18 17 18 17 18 19 17 16 16 15 15 16 15 15 15 15 15 16 15 16 16 16 16 15 16 15 16 16 16 16 16 16 16 16 17
+
+Aug 31, 2026 9:17:58 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: ~~ Flashing cy8ctma395_hssp_bridge.fw ~~
+
+Aug 31, 2026 9:18:00 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: ~~ Flashing /lib/firmware/cy8ctma375.hex ~~
+
+Aug 31, 2026 9:18:30 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: ................................................................................................................................01 07 00 00 f8 ff 17 ff 17
+
+Aug 31, 2026 9:18:30 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: read_checksum status=0x07
+
+Aug 31, 2026 9:18:30 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: checksum compare: 0xf8 0xff to 0x55 0x96
+
+Aug 31, 2026 9:18:30 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: ~~ Flashing /lib/firmware/cy8ctma395.fw version 15 ~~
+
+Aug 31, 2026 9:18:32 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Touch Panel Updater: Done updating the touch panel firmware
+
+Aug 31, 2026 9:18:32 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: Touch Panel Updater
+
+Aug 31, 2026 9:18:32 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: A6 Updater
+
+Aug 31, 2026 9:18:32 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: Starting the A6 stage
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: 
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: processing file: /lib/firmware/a6_firmware.txt.00
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: A6 device: /dev/a6_0
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: 2.13.25 (0x020d0019)
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: fw file size: 49461
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: fw file mapped at: 0x2ac63000
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: Firmware update complete
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: 
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: processing file: /lib/firmware/a6_firmware.txt.01
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: A6 device: /dev/a6_1
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: 2.7.11 (0x0207000b)
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: fw file size: 30887
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: fw file mapped at: 0x2ac63000
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: Firmware update complete
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: A6 Updater: Done with A6 stage
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: A6 Updater
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Starting: SaveFlashInfo
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: SaveFlashInfo: Write flash configuration info
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: looking for LVM while in installer mode
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: got lvm static, running vgscan
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: vgscan ran, running vgchange
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: MountUtils: 8 logical volume(s) in volume group "store" now active
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils readCurrentLvmValues
+INFO: lvmGroupName set to store
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Root Path: /dev/mapper/store-root
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils setLvmValues
+INFO: LVM Var Path: /dev/mapper/store-var
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Log Path: /dev/mapper/store-log
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils setLvmAllValues
+INFO: LVM Media Path: /dev/mapper/store-media
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils mount
+INFO: Mounting /dev/mapper/store-root to: /tmp_rootfs
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: update SaveFlashInfo 50
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: update SaveFlashInfo 100
+
+Aug 31, 2026 9:19:16 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: Unmounting /dev/mapper/store-root
+Aug 31, 2026 9:19:17 AM com.palm.nova.installer.core.MountUtils umountPart
+INFO: MountUtils: unmount successful
+Aug 31, 2026 9:19:17 AM com.palm.nova.installer.recoverytool.CardController logPrint
+INFO: Finished: SaveFlashInfo
+
+Aug 31, 2026 9:19:17 AM com.palm.nova.installer.recoverytool.CardController postFlashEvent
+INFO: Flash End time (Success)1788182357672
+
+[exited with code 0]

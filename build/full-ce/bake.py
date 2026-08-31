@@ -95,7 +95,42 @@ BUILD = os.path.dirname(HERE)                               # build
 PROJ = os.path.dirname(BUILD)                               # webos-doctor-ce
 SIBLINGS = os.path.dirname(PROJ)                            # ~/Projects
 
-ROOTFS_TGZ = os.path.join(BUILD, "work", "webos", "nova-cust-image-topaz.rootfs.tar.gz")
+# ---- OEM variant ------------------------------------------------------------
+# HP shipped two 3.0.5 TouchPad Doctors and they are the SAME BUILD, one minute
+# apart: Nova-HP-Topaz (BUILDMARK 528667, webosdoctorp305hstnhwifi.jar) and
+# Nova-ATT-Topaz (528668, ...att.jar) for the AT&T 3G TouchPad -- the device's
+# own token says ProductName=TOPAZ_3G, PRODoID=HSTNH-I30C; "4G" was marketing.
+#
+# Measured, not assumed (2026-08-31): every Java class in the two JARs is
+# byte-identical, topaz.xml (partitions + LVM) is identical, boot-topaz.bin is
+# identical, and the two rootfs tarballs carry the SAME 19085 members with 172
+# files differing -- all rebuild noise (rebuilt .so's at identical sizes,
+# gzip-stamped tarballs, the ipkg db). Nothing this file patches is among them.
+#
+# So a variant is not a fork, it is this same bake against the other JAR. What
+# really differs is payload the harness passes through untouched: att.tar's
+# carrier ipks, and a 30MB topazumtsfw.tar modem firmware where the Wi-Fi JAR
+# ships a 0-byte placeholder.
+#
+# Each variant gets its own work dir and its own overlay trees so the two never
+# overwrite each other's generated output. BUILDMARK stays a SINGLE monotonic
+# counter across variants (a mark must identify one image); the manifest records
+# which variant a mark was baked for, and build-ce-doctor.sh refuses to repack an
+# overlay whose manifest names a different one.
+VARIANTS = {
+    "hp":  {"jar": "webosdoctorp305hstnhwifi.jar", "work": "work",
+            "overlay": "full-ce",     "firstuse": "community-firstuse"},
+    "att": {"jar": "webosdoctorp305hstnhatt.jar",  "work": "work-att",
+            "overlay": "full-ce-att", "firstuse": "community-firstuse-att"},
+}
+VARIANT = os.environ.get("CE_VARIANT", "hp")
+if VARIANT not in VARIANTS:
+    sys.exit(f"ERROR: unknown CE_VARIANT={VARIANT!r} "
+             f"(known: {', '.join(sorted(VARIANTS))})")
+_V = VARIANTS[VARIANT]
+WORK = os.path.join(BUILD, _V["work"])
+OEM_JAR = os.environ.get("CE_OEM_JAR") or os.path.join(PROJ, _V["jar"])
+ROOTFS_TGZ = os.path.join(WORK, "webos", "nova-cust-image-topaz.rootfs.tar.gz")
 LUNACE = os.path.join(SIBLINGS, "LunaCE")
 
 ATI = os.path.join(PROJ, "AddToImage")
@@ -219,8 +254,8 @@ FIRSTUSE_IPKS = {
 # org.webosinternals.mojomail-imap-tagfix*: the fix is a one-byte patch to the
 # stock binary (md5 table below) — the ipk's payload is never read.
 
-CF_OVERLAY = os.path.join(BUILD, "overlays", "community-firstuse")
-OUT = os.path.join(BUILD, "overlays", "full-ce")
+CF_OVERLAY = os.path.join(BUILD, "overlays", _V["firstuse"])
+OUT = os.path.join(BUILD, "overlays", _V["overlay"])
 OUT_ROOT = os.path.join(OUT, "rootfs")
 
 CE_PACKAGE = "org.webosarchive.ce-files"
@@ -706,7 +741,10 @@ def cert_fingerprint(b):
 # ---- main -------------------------------------------------------------------
 
 def main():
-    for req in (ROOTFS_TGZ, os.path.join(LUNACE, "bin", "LunaSysMgr-LunaCE-topaz"),
+    log(f"variant: {VARIANT} ({os.path.basename(OEM_JAR)})")
+    if not os.path.exists(OEM_JAR):
+        sys.exit(f"ERROR: missing OEM Doctor JAR for variant {VARIANT}: {OEM_JAR}")
+    for req in (os.path.join(LUNACE, "bin", "LunaSysMgr-LunaCE-topaz"),
                 *IPK.values(), *OVERWRITE_IPKS.values()):
         if not os.path.exists(req):
             sys.exit(f"ERROR: missing required input: {req}")
@@ -741,15 +779,19 @@ def main():
     # the CE rootfs over work/'s base (harness cmd_build), so a prior build leaves
     # the base already-patched; the community patches would then fail to re-apply.
     log("re-extracting pristine OEM rootfs")
-    jar = os.path.join(PROJ, "webosdoctorp305hstnhwifi.jar")
+    jar = OEM_JAR
     subprocess.run([sys.executable, os.path.join(BUILD, "harness.py"),
-                    "extract", "--jar", jar, "--work", os.path.join(BUILD, "work")],
+                    "extract", "--jar", jar, "--work", WORK],
                    check=True, stdout=subprocess.DEVNULL)
+    if not os.path.exists(ROOTFS_TGZ):
+        sys.exit(f"ERROR: extract produced no rootfs at {ROOTFS_TGZ}")
 
     # 1) base = the community first-use overlay (regenerate from pristine rootfs)
     log("regenerating community-firstuse overlay (base layer)")
     subprocess.run([os.path.join(BUILD, "community-firstuse", "make-overlay.sh")],
-                   check=True, stdout=subprocess.DEVNULL)
+                   check=True, stdout=subprocess.DEVNULL,
+                   env=dict(os.environ, CE_ROOTFS_TGZ=ROOTFS_TGZ,
+                            CE_CF_OVERLAY=CF_OVERLAY))
     if os.path.exists(OUT):
         shutil.rmtree(OUT)
     shutil.copytree(CF_OVERLAY, OUT, symlinks=True)
@@ -3089,12 +3131,14 @@ def main():
     log(f"  {mn} media files staged for first-boot copy to /media/internal")
 
     # 17b) first-boot tweaks job: default wallpaper + cryptofs de-shadowing.
-    # (a) Default wallpaper: hp.tar's customization.json (laid down at the flash
-    # custo stage — we can't overlay it) imports and sets 01.jpg. This job seds
+    # (a) Default wallpaper: the customization payload's customization.json (laid
+    # down at the flash custo stage — we can't overlay it) imports and sets the
+    # factory wallpaper: 01.jpg from hp.tar, 02.jpg from att.tar. This job seds
     # it to one of OUR wallpapers before com.palm.service.customization consumes
     # it (same early trigger as ce-remove-preloads, which is proven to win that
     # race). Renaming our files can't work: sweatshop extracts its own 01-11.jpg
-    # over the same copy_binaries tree AFTER the rootfs lands.
+    # over the same copy_binaries tree AFTER the rootfs lands — which is also why
+    # CE's wallpapers are numbered from 12 and never collide with either payload.
     # (b) cryptofs de-shadow: /media/cryptofs SURVIVES Doctor flashes, so a
     # device upgrading from stock/older CE can carry a stale cryptofs copy of an
     # app we now bake (seen live: Maps 3.0.1 shadowing baked 4.0.1). Once per
@@ -3165,14 +3209,20 @@ def main():
         log(f"tier: first-boot tweaks (default wallpaper {default_wp} + cryptofs de-shadow)")
         wp_block = (
             "    CUSTO=/usr/lib/luna/customization/customization.json\n"
-            "    if [ -f \"$CUSTO\" ] && grep -q 'wallpapers/01.jpg' \"$CUSTO\"; then\n"
+            "    # The factory wallpaper name is VARIANT-SPECIFIC: hp.tar's\n"
+            "    # customization.json sets 01.jpg, att.tar's sets 02.jpg. Derive it\n"
+            "    # from the file rather than hardcoding, or this silently no-ops on\n"
+            "    # any payload but the one it was written against.\n"
+            "    FACT=\"\"\n"
+            "    [ -f \"$CUSTO\" ] && FACT=$(sed -n \'s|.*/media/internal/wallpapers/\\([^\"]*\\)\".*|\\1|p\' \"$CUSTO\" | head -1)\n"
+            f"    if [ -n \"$FACT\" ] && [ \"$FACT\" != \"{default_wp}\" ]; then\n"
             "        # ce-remove-preloads fires on this same event and also flips /\n"
             "        # rw->ro; take the shared lock so neither remounts under the other.\n"
             "        L=/tmp/.ce-rootfs-rw.lock\n"
             "        n=0\n"
             "        while ! mkdir $L 2>/dev/null && [ $n -lt 60 ]; do sleep 1; n=$((n+1)); done\n"
             "        mount -o remount,rw / 2>/dev/null || true\n"
-            f"        sed -i 's|/01\\.jpg|/{default_wp}|g; s|\"01\\.jpg\"|\"{default_wp}\"|g' \"$CUSTO\"\n"
+            f"        sed -i \"s|/$FACT|/{default_wp}|g; s|\\\"$FACT\\\"|\\\"{default_wp}\\\"|g\" \"$CUSTO\"\n"
             "        mount -o remount,ro / 2>/dev/null || true\n"
             "        rmdir $L 2>/dev/null || true\n"
             f"        grep -q '{default_wp}' \"$CUSTO\" \\\n"
@@ -3183,8 +3233,8 @@ def main():
         log("tier: first-boot tweaks (cryptofs de-shadow; no wallpapers found)")
     tweaks_job = (
         "# ce-firstboot-tweaks — webOS CE: (a) point the default-wallpaper entries in\n"
-        "# hp.tar's customization.json at a CE wallpaper before the customization\n"
-        "# service runs them; (b) once per flash, drop stale /media/cryptofs copies of\n"
+        "# the customization payload's customization.json at a CE wallpaper before the\n"
+        "# customization service runs them; (b) once per flash, drop stale /media/cryptofs copies of\n"
         "# apps this image bakes into the rootfs (cryptofs survives Doctor flashes and\n"
         "# a stale copy shadows the baked app).\n"
         "#\n"
@@ -3360,9 +3410,9 @@ def main():
     # configurator`, upstart order between them is undefined — the race was
     # LOST on a real flash). This job wins regardless: on the first boot AFTER
     # first use (custo's nonloc pass long done), if the wallpaper pref is still
-    # the factory 01.jpg, import ours and set it via the same systemservice
-    # calls customization.json uses. One-shot per flash; a user-chosen
-    # wallpaper (anything but 01.jpg) is never touched. luna-send calls use the
+    # the factory one, import ours and set it via the same systemservice calls
+    # customization.json uses. One-shot per flash; a user-chosen wallpaper
+    # (anything but the factory name) is never touched. luna-send calls use the
     # background+kill pattern — luna-send -n 1 blocks forever if the service
     # never answers.
     if default_wp:
@@ -3371,7 +3421,8 @@ def main():
                    f'"wallpaperThumbFile":"/media/internal/.wallpapers/thumbs/{default_wp}"}}}}')
         wp_job = (
             "# ce-default-wallpaper — webOS CE: make the CE wallpaper the out-of-box\n"
-            "# default. Only replaces the factory 01.jpg; any user choice is left alone.\n"
+            "# default. Only replaces the factory wallpaper (01.jpg on hp.tar, 02.jpg on\n"
+            "# att.tar, read from customization.json); any user choice is left alone.\n"
             "# Triggers BOTH per boot and at first-use completion: the OOBE finishes\n"
             "# without a reboot (markFirstUseDone + LunaSysMgr respawn), so a job that\n"
             "# only ran on 'stopped finish' fired before first use and then never again\n"
@@ -3419,10 +3470,21 @@ def main():
             "        log \"systemservice never answered -- retrying on the next trigger\"\n"
             "        exit 0\n"
             "    fi\n"
-            "    if ! echo \"$R\" | grep -q '\"01.jpg\"'; then\n"
-            "        # not the factory default: either we already ran, or the user chose\n"
-            "        # their own. Either way leave it alone and stop asking.\n"
-            "        log \"wallpaper is not the factory 01.jpg -- leaving it alone\"\n"
+            f"    if echo \"$R\" | grep -q \'\"{default_wp}\"\'; then\n"
+            f"        log \"wallpaper is already {default_wp} -- nothing to do\"\n"
+            "        mkdir -p /var/luna/preferences && touch \"$FLAG\"\n"
+            "        exit 0\n"
+            "    fi\n"
+            "    # Still at the FACTORY default? That name is variant-specific (hp.tar\n"
+            "    # 01.jpg, att.tar 02.jpg), so read it from the customization payload\n"
+            "    # instead of hardcoding one. ce-firstboot-tweaks may already have\n"
+            "    # rewritten that file to ours, which the branch above has covered.\n"
+            "    FACT=$(sed -n \'s|.*/media/internal/wallpapers/\\([^\"]*\\)\".*|\\1|p\' /usr/lib/luna/customization/customization.json 2>/dev/null | head -1)\n"
+            "    [ -n \"$FACT\" ] || FACT=01.jpg\n"
+            "    if ! echo \"$R\" | grep -q \"\\\"$FACT\\\"\"; then\n"
+            "        # not the factory default: the user chose their own. Leave it\n"
+            "        # alone and stop asking.\n"
+            "        log \"wallpaper is not the factory $FACT -- leaving it alone\"\n"
             "        mkdir -p /var/luna/preferences && touch \"$FLAG\"\n"
             "        exit 0\n"
             "    fi\n"
@@ -3463,7 +3525,8 @@ def main():
     log("tier: remove HP preloads (kindle / enyo-facebook / youtube)")
     preload_job = (
         "# ce-remove-preloads — webOS CE: HP preloads we don't ship.\n"
-        "# Staged by sweatshop-hp-topaz into /usr/lib/luna/customization/apps and\n"
+        "# Staged by the sweatshop customization ipk (hp AND att stage the same three)\n"
+        "# into /usr/lib/luna/customization/apps and\n"
         "# installed to /media/cryptofs/apps on first boot by com.palm.service.customization.\n"
         "# Delete the staged ipks before that install runs; also clear any cryptofs copy\n"
         "# already placed by an earlier flash/boot (cryptofs survives Doctor flashes).\n"
@@ -4001,6 +4064,7 @@ def main():
     lunace_bin = os.path.join(LUNACE, "bin", "LunaSysMgr-LunaCE-topaz")
     manifest = {
         "buildmark": mark,
+        "variant": VARIANT,
         "buildtime": buildtime,
         "git": gitrev,                       # taken before this run wrote anything
         # sha256 over every file under AddToImage/ + the LunaCE binary;

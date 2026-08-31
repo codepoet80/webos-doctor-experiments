@@ -1,0 +1,32 @@
+===== stock baseline: Mon Aug 31 09:03:20 EDT 2026 =====
+[BASE] build: PRODUCT_VERSION_STRING=HP webOS 3.0.0 BUILDMARK=462818 
+[BASE] rootfs: 102804K free, 82% used
+[BASE] / device: /dev/mapper/store-root
+--- the two apps CE will replace ---
+[BASE] com.palm.app.enyo-findapps: PRESENT in cryptofs, version=3.0.3900, 22MB
+[BASE] com.palm.app.maps: absent from cryptofs (unexpected on a stock-lineage device)
+--- ipkg status stanzas (what an upgrade must supersede) ---
+  [com.palm.app.enyo-findapps]
+    Package: com.palm.app.enyo-findapps
+    Version: 3.0.3900
+    Status: install user installed
+    Architecture: all
+    Description: This is a webOS application.
+    Maintainer: N/A <nobody@example.com>
+    Section: misc
+    Size: 2846618
+    Installed-Size: 4177
+    Installed-Time: 1391527507
+    
+  [com.palm.app.maps]
+--- staged preloads on the stock rootfs (CE replaces these) ---
+  2846618 com.palm.app.enyo-findapps_3.0.3900_all.ipk
+  6311 findapps-icon.png
+--- media that survives the flash (wallpaper accumulation baseline) ---
+[BASE] wallpapers: 11 files, 7MB
+[BASE] ringtones:  38 files, 15MB
+[BASE] wallpaper names: 01.jpg 02.jpg 03.jpg 04.jpg 05.jpg 06.jpg 07.jpg 08.jpg 09.jpg 10.jpg 11.jpg 
+--- staged customization media on stock (what the reclaim job will free) ---
+  15	/usr/lib/luna/customization/copy_binaries/media/internal/ringtones
+  7	/usr/lib/luna/customization/copy_binaries/media/internal/wallpapers
+===== end baseline =====

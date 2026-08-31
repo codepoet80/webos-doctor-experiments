@@ -33,8 +33,11 @@ TLSIPKS="${TLSIPKS:-$BUILD/../../OpenSSL-legacyWebOS/ipks}"
 # host's bundle made the image's trust store depend on whatever
 # ca-certificates version that machine had installed.
 CA_BUNDLE="${CA_BUNDLE:-$HERE/ca-certificates.crt}"
-ROOTFS_TGZ="$BUILD/work/webos/nova-cust-image-topaz.rootfs.tar.gz"
-OUT="$BUILD/overlays/community-firstuse"
+# Variant-aware (see bake.py's VARIANTS): bake.py hands us the OEM variant's
+# work dir and overlay path. Defaults are the hp (Wi-Fi) build, so a standalone
+# run behaves exactly as before.
+ROOTFS_TGZ="${CE_ROOTFS_TGZ:-$BUILD/work/webos/nova-cust-image-topaz.rootfs.tar.gz}"
+OUT="${CE_CF_OVERLAY:-$BUILD/overlays/community-firstuse}"
 # assembled here first, moved to $OUT only when COMPLETE: a mid-run failure
 # used to leave a half-built $OUT (changes.json is written last), which
 # harness.py accepts as a valid overlay and turns into a flashable JAR

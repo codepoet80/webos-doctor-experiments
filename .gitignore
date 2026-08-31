@@ -4,3 +4,11 @@ out/
 *.ce.tar.gz
 __pycache__/
 webosdoctorp305hstnhwifi.jar
+webosdoctorp305hstnhatt.jar
+build/work-att/
+
+# The att-variant overlays are GENERATED output (CE_VARIANT=att bake.py).
+# Unlike overlays/full-ce, they are NOT tracked: ~117MB for a variant very
+# few people build. Re-bake before repacking -- see ATT-VARIANT.md section 2.
+build/overlays/full-ce-att/
+build/overlays/community-firstuse-att/

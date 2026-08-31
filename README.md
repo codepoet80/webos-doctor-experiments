@@ -15,7 +15,7 @@ and built all new apps. This release has two goals:
 
 ## Supported Devices
 
-At the time of this writing, *only* **Topaz WiFi** is supported. These are the most common Touchpad devices, without a cellular radio, at 9.7" screen size.
+This document, and the main release are for *only* **Topaz WiFi**. The Topaz 4G does have a release, but read about [support for the 4G Touchpad](ATT-VARIANT.md) here. These are the most common Touchpad devices, without a cellular radio, at 9.7" screen size.
 
 Do not attempt to install on the 4G-equipped Touchpad, or the smaller Touchpad Go prototypes.
 
