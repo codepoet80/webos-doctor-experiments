@@ -33,6 +33,9 @@ webOS CE 3.1.0 includes features not available in the final commercial release..
 - Remove icons from a group by opening the group and pressing and holding the icon
 - Rename the group by opening it and tapping on the name
 
+<a href="Screenshots/Group-1.jpg"><img src="Screenshots/Group-1.jpg" width="256">
+<a href="Screenshots/Group-2.jpg"><img src="Screenshots/Group-2.jpg" width="256">
+
 #### Tab Management
 
 - Launcher tabs can now be renamed: press and hold a tab to enter a new name
