@@ -178,7 +178,8 @@ Install Drivers appropriate for your Operating System.
 
 ### Download the Doctor to your PC
 
-The Releases section includes a pre-built Doctor image.
+The [Releases section](https://github.com/webOSArchive/webOS-Community-Edition/releases)
+includes pre-built Doctor images — one for the Wi-Fi TouchPad, one for the AT&T/4G TouchPad.
 
 Building the image is out-of-scope for this document and will be covered elsewhere.
 
@@ -217,7 +218,7 @@ Building the image is out-of-scope for this document and will be covered elsewhe
 
 ## Problems and Support
 
-- Report Issues in this GitHub Repo
+- [Report an issue](https://github.com/webOSArchive/webOS-Community-Edition/issues) in this GitHub repo
 - Community chat can provide help, visit [docs.webosarchive.org/community](https://docs.webosarchive.org/community/) to find links to join the conversation
 
 ## For Developers
