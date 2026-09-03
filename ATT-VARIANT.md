@@ -5,7 +5,7 @@ TouchPad, built from HP's `webosdoctorp305hstnhatt.jar` the same way the Wi-Fi
 image is built from `...wifi.jar`. Flashed and tested on hardware 2026-08-31:
 **90 PASS / 0 FAIL**, the same score the Wi-Fi 600070 run gets.
 
-Read `4G-TOUCHPAD.md` first — it records what the Wi-Fi image assumes about a
+Read `Docs/4G-TOUCHPAD.md` first — it records what the Wi-Fi image assumes about a
 radio. This doc is what happened when we actually built for one.
 
 ## The device
@@ -162,7 +162,7 @@ have state to act on.
 
 ## 6. The radio, under CE's gate
 
-`4G-TOUCHPAD.md` predicted the PmWanDaemon pre-start gate would pass on a radio
+`Docs/4G-TOUCHPAD.md` predicted the PmWanDaemon pre-start gate would pass on a radio
 device and was explicit that it was untested. It passes:
 
 ```

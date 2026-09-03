@@ -1,7 +1,7 @@
 # webOS CE 3.1 Flash Test Plan
 
-**600070 is the FINAL RELEASE CANDIDATE — shipped as
-`webosdoctorp310hstnh-ce-600070-frc.jar`.** Automated: 90 PASS / 0 FAIL on
+**600070 IS THE RELEASE — shipped as
+`webosdoctorp310hstnh-ce-600070.jar`.** Automated: 90 PASS / 0 FAIL on
 **two independent devices**, the first fully clean runs of the 3.1 cycle, with
 the first-boot ipkgservice race not firing on either flash. Reboot soak: 7
 cycles, 112 PASS / 0 FAIL. Restore onto the flashed image: clean, 11/11 services
@@ -13,10 +13,10 @@ check is for, not what happened here.
 
 ```
 Build under test:  BUILDMARK 600070
-                   jar out/webosdoctorp310hstnh-ce-600070-frc.jar
+                   jar out/webosdoctorp310hstnh-ce-600070.jar
                    sha256 392f2122e3bd95f6f6b4f89acff2e8038508746a6fdeac7f4c5716834178e65a
-                   (the -frc suffix is a rename only; byte-identical to the
-                    -600070.jar every result below was produced against)
+                   (released under this name; the -frc candidate file is
+                    byte-identical, so every result below stands unchanged)
                    Flashed:  2026-08-30          Automated run: 90 PASS / 0 FAIL / 0 WARN
                    Results:  scripts/results-600070.txt          (device 1, c37f7a34…)
                              scripts/results-600070-device2.txt  (device 2, cb7077b7…,

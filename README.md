@@ -210,8 +210,8 @@ Building the image is out-of-scope for this document and will be covered elsewhe
 - The firstrun will walk you through the Out of Box Experience on-device: join a WiFi network, and create or sign-in to a webOS Community account (or Skip Account Creation)
 - Luna will restart
 - Give it about 90 seconds to finish first-boot housekeeping (Preware's feeds and
-  the IM runtime are seeded then). RC2 needed a full reboot at this point; RC3
-  does not.
+  the IM runtime are seeded then). No reboot is needed — if Preware looks empty
+  or the IM transport is missing right after setup, give it a minute.
 
 ---
 
@@ -219,3 +219,8 @@ Building the image is out-of-scope for this document and will be covered elsewhe
 
 - Report Issues in this GitHub Repo
 - Community chat can provide help, visit [docs.webosarchive.org/community](https://docs.webosarchive.org/community/) to find links to join the conversation
+
+## For Developers
+
+Build notes, design documents and the verification record are in
+**[Docs/](Docs/)** — start with [Docs/PLAN.md](Docs/PLAN.md), which indexes them.

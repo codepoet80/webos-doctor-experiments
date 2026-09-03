@@ -1,5 +1,5 @@
 #!/bin/sh
-# webOS CE full automated test pass — everything in TEST-PLAN.md that a shell can
+# webOS CE full automated test pass — everything in Docs/TEST-PLAN.md that a shell can
 # decide. Anything needing eyes or hands is NOT here; those stay [Human] in the plan.
 #
 #   sh ce-test-full.sh [EXPECTED_BUILDMARK]      (default 600029)

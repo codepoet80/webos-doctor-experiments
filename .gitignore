@@ -3,8 +3,7 @@ build/work/
 out/
 *.ce.tar.gz
 __pycache__/
-webosdoctorp305hstnhwifi.jar
-webosdoctorp305hstnhatt.jar
+webosdoctor*.jar
 build/work-att/
 
 # The att-variant overlays are GENERATED output (CE_VARIANT=att bake.py).

@@ -2130,7 +2130,7 @@ def main():
     # the daemon, the bridge service, the patched Updates UI -- can arrive via
     # Preware afterwards and be authenticated BY this key.
     # (OTA project: OTA-IMAGE-INTEGRATION.md rev2 §1 + §11 option A;
-    #  here: OTA-STRATEGY.md §5.)
+    #  here: Docs/OTA-STRATEGY.md §5.)
     #
     # The verifier deliberately uses the STOCK /usr/bin/openssl (0.9.8k, 2009),
     # which this image does not replace -- the TLS tier adds /usr/lib/ssl11 and
@@ -3936,7 +3936,7 @@ def main():
     # a 4G TouchPad flashed with this image must keep working. No radio -> the
     # job never reaches `running`, so there is nothing to respawn; radio
     # present -> untouched stock behaviour, respawn included. See
-    # docs/4G-TOUCHPAD.md.
+    # Docs/4G-TOUCHPAD.md.
     log("tier: PmWanDaemon pre-start radio gate (stops the respawn thrash)")
     wan = sdata("./etc/event.d/PmWanDaemon").decode("utf-8")
     wan = sure_replace(

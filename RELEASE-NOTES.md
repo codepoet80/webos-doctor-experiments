@@ -1,35 +1,54 @@
 # webOS CE 3.1.0 — Release Notes
 
-**Final release candidate — BUILDMARK 600070** (2026-08-30)
+**Release — BUILDMARK 600070** (2026-09-03)
 
-| | |
-|---|---|
-| Asset | `webosdoctorp310hstnh-ce-600070-frc.jar` |
-| Size | 242,920,348 bytes (232 MB) |
-| sha256 | `392f2122e3bd95f6f6b4f89acff2e8038508746a6fdeac7f4c5716834178e65a` |
-| md5 | `d804b15312428e29172e27a17a7493f1` |
+A Doctor to restore/update the **HP TouchPad** to webOS 3.1.0 Community Edition.
+This was built by repacking the OEM HP webOS 3.0.5 Doctor with 14 years of community
+work baked directly into the rootfs.
+Flashing it wipes the device, exactly like the OEM Doctor.
+
+Two images ship. Flash the one that matches your device — they are *not*
+interchangeable.
+
+| | TouchPad Wi-Fi (`topaz`) | TouchPad 4G / AT&T (`topaz4g`) |
+|---|---|---|
+| Asset | `webosdoctorp310hstnh-ce-600070.jar` | `webosdoctorp310hstnhatt-ce-600071.jar` |
+| BUILDMARK | 600070 | 600071 |
+| Size | 242,920,348 bytes (232 MB) | 304,001,097 bytes (290 MB) |
+| md5 | `d804b15312428e29172e27a17a7493f1` | `2685615b097d923d6844dbfd01d58aa4` |
 
 Verify before flashing:
 
 ```
-sha256sum webosdoctorp310hstnh-ce-600070-frc.jar
+sha256sum webosdoctorp310hstnh-ce-600070.jar
+392f2122e3bd95f6f6b4f89acff2e8038508746a6fdeac7f4c5716834178e65a
+
+sha256sum webosdoctorp310hstnhatt-ce-600071.jar
+12514f5f0569fbc7dec784476709f4036f10dd23dd134b5fb98a338af837f621
 ```
 
-*The `-frc` suffix is a rename only. The file is byte-identical to the
-`webosdoctorp310hstnh-ce-600070.jar` that every test below was run against —
-same size, same sha256 — so the results carry over unchanged.*
+*Nothing was rebuilt to make this a release.* The Wi-Fi asset is the final
+release candidate under its final name: byte-identical to both
+`webosdoctorp310hstnh-ce-600070-frc.jar` and the `...-600070.jar` every test
+below was run against — same size, same sha256 — so every result carries over
+unchanged. No new issues were found during the candidate soak.
+
+**The AT&T image is a separate build, not a variant flag.** HP shipped the 4G
+TouchPad with its own Doctor, so CE's is repacked from
+`webosdoctorp305hstnhatt.jar` the same way the Wi-Fi image is repacked from
+`...wifi.jar`. It carries its own BUILDMARK because it is a separate repack of a
+different input, not because it contains different CE work. Flashed and tested on
+AT&T hardware on 2026-08-31: **90 PASS / 0 FAIL**, the same suite and the same
+score as the Wi-Fi run. Full account in
+**[Docs/ATT-VARIANT.md](Docs/ATT-VARIANT.md)**.
 
 **The asset name changed** during the candidate series. Earlier candidates were
 `webosdoctorp305hstnh-3.1CE-<mark>.jar`, carrying HP's `p305` product code for
 the 3.0.5 Doctor this is repacked from. This is 3.1.0, so it is named for what it
-is. The input JAR keeps its own name — that is HP's file.
+is. The input JARs keep their own names — those are HP's files.
 
 *(RC3 was 600067, 2026-08-29, sha256 `eadd365f…`; RC2 was 600056, 2026-08-23,
 sha256 `cea207df…`; RC1 was 600024.)*
-
-A community Doctor for the **HP TouchPad** (`topaz`, Wi-Fi), built by repacking
-the OEM HP webOS 3.0.5 Doctor with 14 years of community work baked directly
-into the rootfs. Flashing it wipes the device, exactly like the OEM Doctor.
 
 ---
 
@@ -110,7 +129,7 @@ to check the signature on it.
 
 Verified on the flashed image with the real offline key: a signed manifest
 verifies, and a single flipped byte, a truncated signature, or the wrong key are
-all refused. Design notes are in `OTA-STRATEGY.md` §5.
+all refused. Design notes are in `Docs/OTA-STRATEGY.md` §5.
 
 ---
 
@@ -203,7 +222,7 @@ group again, rather than groups nested inside a group.
 respawn-thrashed until upstart stopped it, and jobs starting in that same moment
 died with SIGSEGV. Harmless in effect — the affected jobs had already done their
 work — but it produced a crash report on every boot and every Luna Restart. See
-`4G-TOUCHPAD.md`.
+`Docs/4G-TOUCHPAD.md`.
 
 **Preware reports CE's baked packages honestly**, including the TLS and
 root-certificate updates, so it no longer offers them as fresh installs and a
@@ -230,9 +249,11 @@ root-certificate updates, so it no longer offers them as fresh installs and a
 
 ---
 
-## How this build was tested
+## How this release was tested
 
 Numbers, so you can judge the coverage rather than take "tested" on faith.
+Everything below was measured on the exact bytes being released — the promotion
+from candidate to release changed the filename and nothing else.
 
 **Automated: 90 checks, 0 failures — on two different TouchPads.** The first
 fully clean runs of the 3.1 series, with nothing downgraded by judgement. They
@@ -241,6 +262,11 @@ package state, the un-baking of App Catalog and Maps, Exhibition, search,
 storage, and both additions above. Kept in `scripts/results-600070.txt` and
 `scripts/results-600070-device2.txt`; the suite itself is
 `scripts/ce-test-full.sh`, so you can re-run it on your own device.
+
+**The AT&T image ran the same suite on AT&T hardware: 90 checks, 0 failures**
+(2026-08-31, `scripts/results-600071-att.txt`), against a stock AT&T baseline
+captured first so the comparison is with that device's own OEM state rather than
+the Wi-Fi one. The flash log is kept as `scripts/doctor-600071-att.log`.
 
 **Two independent flashes, two OOBE languages.** The second device was flashed
 from scratch and set up in French (Canada), which exercises the nested
@@ -260,6 +286,11 @@ the fault that dogged RC2 fired roughly one boot in six, so a single clean boot
 proves very little; the gate is repeated boots rather than one lucky one.
 *(`scripts/ce-reboot-soak.sh`, results in `scripts/results-600070-soak.txt`.)*
 
+**A week of community use before promotion.** The final candidate was in the
+hands of testers on their own devices for a week. No show-stopper was reported,
+and no new issue was found — which is why it ships unchanged rather than
+respun.
+
 **The flash itself is checked, not assumed.** The Doctor reports success whether
 or not its app-deletion stage worked, so both markers are read from its log
 afterwards, and the device is separately asked whether its app store had to be
@@ -272,7 +303,7 @@ case that used to restore as a tile that launches and does nothing.
 
 What is *not* covered: the remaining hands-on items — Bluetooth pairing, an IM
 account actually connecting, and the Exhibition faces — are tracked in
-`TEST-PLAN.md` rather than claimed here. Bus-reachable proves a service launched,
+`Docs/TEST-PLAN.md` rather than claimed here. Bus-reachable proves a service launched,
 not that its UI works.
 
 ---
@@ -305,7 +336,7 @@ Full detail, with evidence and what a fix would have to do, is in
   authenticate them, and nothing else — see "New in 600070". Updates will arrive
   through Preware when the client is ready.
 
-## Notes for testers
+## Notes for flashing
 
 - The Doctor is **unsigned** and the OEM flash gate is patched off, so your
   Java runtime may warn about the missing signature.

@@ -1,8 +1,8 @@
 # Full CE overlay
 
-> Current release candidate and what ships in it:
+> The current release and what ships in it:
 > **[../../RELEASE-NOTES.md](../../RELEASE-NOTES.md)** ·
-> verification status: **[../../TEST-PLAN.md](../../TEST-PLAN.md)**
+> verification status: **[../../Docs/TEST-PLAN.md](../../Docs/TEST-PLAN.md)**
 
 The complete CE Doctor: the community first-use swap **plus** every CE
 component, all **baked into the rootfs at final paths at build time**. Nothing
@@ -161,7 +161,7 @@ Tier order matters only for the ssl11 stack (browser first). Highlights:
   600042/600049/600050. They were not: they were the other jobs on that event.
   A `pre-start` gate applies the job's own radio test as a start condition, so
   with no modem it never reaches `running` and there is nothing to respawn; with
-  a modem it behaves exactly as stock. See `../../4G-TOUCHPAD.md`.
+  a modem it behaves exactly as stock. See `../../Docs/4G-TOUCHPAD.md`.
 - **Job scripts live outside the job** — every `ce-*` body is written to
   `/usr/palm/ce-seed/jobs/<name>.sh` and the job becomes one `exec sh -e` line.
   This was added chasing the crash above and did **not** fix it (the cause was

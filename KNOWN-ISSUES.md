@@ -1,12 +1,13 @@
-# webOS CE 3.1.0 — Known Issues (600070 FRC; last hardware run 2026-08-30)
+# webOS CE 3.1.0 — Known Issues (600070 release; last hardware run 2026-08-30)
 
 Everything below is reproduced, measured, or traced to a specific line. Each
 entry says what it costs a user, what is actually known, and what a fix would
 have to do. Nothing here is speculation dressed as a diagnosis.
 
-Ordered by what should be solved before the final release.
+Ordered by what should be solved first. None of these blocked the release; they
+carry forward to the next one.
 
-**Status on 600070 (FRC).** Automated: 90 checks, 0 failures on **two
+**Status on 600070 (released).** Automated: 90 checks, 0 failures on **two
 independent devices** — the first fully clean runs of the cycle, with nothing
 downgraded by judgement. Reboot soak: 7 cycles × 5 minutes, 112 checks, 0
 failures. Restore onto the flashed image: 0 errors, 11/11 services back on the
@@ -758,7 +759,7 @@ is documented so a stack trace in the log is not mistaken for a real failure.
 
 ## How these were found
 
-`scripts/ce-test-full.sh` decides ~100 checks a shell can decide; results land in `scripts/results-<BUILDMARK>.txt` and are marked into `TEST-PLAN.md`. Comparing runs across builds is what surfaced #1 — the check had passed in four prior runs and failed in the fifth, which is the only reason it was recognised as new rather than assumed to be longstanding.
+`scripts/ce-test-full.sh` decides ~100 checks a shell can decide; results land in `scripts/results-<BUILDMARK>.txt` and are marked into `Docs/TEST-PLAN.md`. Comparing runs across builds is what surfaced #1 — the check had passed in four prior runs and failed in the fifth, which is the only reason it was recognised as new rather than assumed to be longstanding.
 
 `scripts/ce-reboot-soak.sh` reboots the device N times and re-runs the check set after each boot; results land in `scripts/results-<BUILDMARK>-soak.txt`. It exists because #1 fires roughly one boot in six, so a single clean boot is not evidence. One design note worth keeping: `/var/log/messages` rotates at ~2 MB, which on this device is every ~13 minutes, so any counter read as a since-flash total can be silently reset mid-soak — a rotation would then read as an improvement. Per-boot counters are scoped to the current boot's slice of the log, and reboots are proved with `/proc/uptime`, which cannot rotate.
 

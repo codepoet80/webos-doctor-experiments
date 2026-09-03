@@ -32,7 +32,7 @@ one failed earlier in boot with `Could not resolve host: appcatalog.webosarchive
 **It is currently harmless.** The account is created and persists, `listAccounts`
 returns it, db8 answers, and both sign-out and sign-in complete. The lines are
 logged at `user.info`, not error level; the shouty banner is just how that stock
-code formats itself. It is documented in the image's `KNOWN-ISSUES.md` as #12
+code formats itself. It is documented in `KNOWN-ISSUES.md` as #12
 purely so nobody greps the log after an unrelated bug and thinks they have found
 the cause.
 

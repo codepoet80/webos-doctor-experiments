@@ -26,10 +26,15 @@ support a one-time **bootstrap OTA** that carries stock OEM 3.0.5 devices up to 
 | **[TEARDOWN.md](TEARDOWN.md)** | Full analysis of the OEM 3.0.5 Doctor JAR: structure, signing, the "TrenchCoat" flash recipe, and the webOS rootfs (security posture, stack, secrets). The starting point. |
 | **[SCOPE-3.1-CE.md](SCOPE-3.1-CE.md)** | The CE Doctor build: feasibility (repack + integrity gates), the tiered feature set, branding/identity, size budget, integration risks, assembly recipe, the **locked decisions**, and a phased effort estimate. |
 | **[OTA-STRATEGY.md](OTA-STRATEGY.md)** | How devices reach and stay on CE: the **bootstrap OTA** (OEM 3.0.5 → CE 3.1, incl. the TLS chicken-and-egg and the chained two-session upgrade), **ongoing 3.1+ OTAs**, the server-side design, and payload signing. |
-| **[RELEASE-NOTES.md](RELEASE-NOTES.md)** | What ships in the current release candidate, what changed, and the known issues. Start here if you are testing a build. |
-| **KNOWN-ISSUE-*.md** | Per-issue notes written for testers: what you'd see, whether it matters, and exactly which logs to capture. Currently: [empty launcher](KNOWN-ISSUE-EMPTY-LAUNCHER.md), [random reboot](KNOWN-ISSUE-RANDOM-REBOOT.md), [.ipk prompt](KNOWN-ISSUE-IPK-BROWSER-PROMPT.md). |
+| **[RELEASE-NOTES.md](../RELEASE-NOTES.md)** | What ships in the current release candidate, what changed, and the known issues. Start here if you are testing a build. |
+| **[KNOWN-ISSUES.md](../KNOWN-ISSUES.md)** | Every issue reproduced but not yet fixed, ordered by what should be solved first: what it costs a user, what is actually known, and what a fix would have to do. |
 | **[TEST-PLAN.md](TEST-PLAN.md)** | The verification run for the current build: what has been checked, what still needs a human, and how to capture evidence when something misbehaves. |
-| **[build/README.md](build/README.md)** | The **Phase 0 repack harness** (built): unpack → overlay → md5-regen → `integcheck` dry-run → repack + gate-patch. Run `build/build-ce-doctor.sh`. |
+| **[build/README.md](../build/README.md)** | The **Phase 0 repack harness** (built): unpack → overlay → md5-regen → `integcheck` dry-run → repack + gate-patch. Run `build/build-ce-doctor.sh`. |
+| **[4G-TOUCHPAD.md](4G-TOUCHPAD.md)** | What the Wi-Fi image assumes about a device with no cellular radio, and the one place CE behaves differently when one is present. |
+| **[ATT-VARIANT.md](../ATT-VARIANT.md)** | The AT&T (`topaz4g`) CE build: how it is derived from HP's AT&T Doctor, what differs from Wi-Fi, and its hardware test result. |
+| **[BACKUP-RESTORE.md](../BACKUP-RESTORE.md)** | Moving a woce-backup store between devices, and the stale state that makes a good backup fail with misleading errors. |
+| **[GAMEPAD-INPUT-JAIL.md](GAMEPAD-INPUT-JAIL.md)** | Design doc (not built): exposing `/dev/input` to jailed PDK apps OS-wide instead of per-app postinst edits. |
+| **[unimplemented-accounts.method.md](unimplemented-accounts.method.md)** | Handover to the account-server project: `getPreferences` is unimplemented server-side. Not a system-image issue. |
 
 ## Source projects (siblings)
 
@@ -37,10 +42,10 @@ The CE image and OTA payload are assembled from work in adjacent repos:
 
 | Project | Contributes |
 |---------|-------------|
-| `../OpenSSL-legacyWebOS` | Modern TLS 1.1.1w stack (browser, download mgr, **mail**), env wrappers, `ntpdate-sync`, CA bundle |
-| `../LunaCE` | LunaSysMgr launcher replacement (app groups, tabs, wave launcher, stability) |
-| `../webos-hardware-tests` | Bluetooth gamepad shim, USB OTG/power/mass-storage (all userspace) |
-| `../webos-update-exploration` | OTA mechanism + server, Updates reroute / OTA Ready, fingerprint/baseline model, rdxd fix |
+| `OpenSSL-legacyWebOS` | Modern TLS 1.1.1w stack (browser, download mgr, **mail**), env wrappers, `ntpdate-sync`, CA bundle |
+| `LunaCE` | LunaSysMgr launcher replacement (app groups, tabs, wave launcher, stability) |
+| `webos-hardware-tests` | Bluetooth gamepad shim, USB OTG/power/mass-storage (all userspace) |
+| `webos-update-exploration` | OTA mechanism + server, Updates reroute / OTA Ready, fingerprint/baseline model, rdxd fix |
 | `AddToImage/` | Every ipk baked into the image (the statement of intent for image contents) — App Catalog, core apps, Synergy, Preware, Govnah, kernel, TLS tiers |
 
 ## Locked decisions (see SCOPE §9)
@@ -66,11 +71,11 @@ verified by a full rootfs diff of the two JARs (9 files, all accounted for).
 with **102 installed, 0 failed**, counts reconciling 115/115, and both
 previously-failing games recovered. Service registration for the 11 restored
 cryptofs services is written and pending its reboot.
-See **[KNOWN-ISSUES.md](KNOWN-ISSUES.md)** — the first-boot ipkgservice race is
+See **[KNOWN-ISSUES.md](../KNOWN-ISSUES.md)** — the first-boot ipkgservice race is
 the one to solve before final.
-See **[RELEASE-NOTES.md](RELEASE-NOTES.md)** for what ships,
+See **[RELEASE-NOTES.md](../RELEASE-NOTES.md)** for what ships,
 **[TEST-PLAN.md](TEST-PLAN.md)** for the current verification run, and
-**[KNOWN-ISSUES.md](KNOWN-ISSUES.md)** for everything reproduced but not yet
+**[KNOWN-ISSUES.md](../KNOWN-ISSUES.md)** for everything reproduced but not yet
 solved — the first-boot ipkgservice race is the one to fix before final.
 
 The full CE Doctor is built, flash-tested and working on real `topaz` hardware.
@@ -116,7 +121,8 @@ Remaining before release is soak time and manual use, not code.
 
 ## RC3 work log
 
-RC2 field feedback is in `RC2-Issues.txt`; the reproduced/diagnosed items live in
+RC2 field feedback (since removed from the repo) drove this list; the
+reproduced/diagnosed items live in
 `KNOWN-ISSUES.md`. State as of 2026-08-29:
 
 1. **Power menu Shut Down rebooted the device** — KNOWN-ISSUES #8. **Fixed,
@@ -162,7 +168,7 @@ RC2 field feedback is in `RC2-Issues.txt`; the reproduced/diagnosed items live i
    renames **Favorites** to Games, not Downloads.
 
 5. **Atlas grabbed every local media file** — RC2-Issues #4, **fixed in
-   `../atlas-browser-app`, nothing to change here.** Its `appinfo.json` claimed
+   `atlas-browser-app`, nothing to change here.** Its `appinfo.json` claimed
    `{"urlPattern": "^file:"}`, which `ApplicationDescription` registers as a
    non-scheme redirect handler — and `ApplicationManagerService` resolves
    redirect handlers *before* mime and extension handlers, so one claim
@@ -285,11 +291,12 @@ will simply build with the old behaviour. Re-bake after touching it.
 ## Working artifacts
 
 - `webosdoctorp305hstnhwifi.jar` — the OEM 3.0.5 Doctor (the repack base; not in git).
-- `out/webosdoctorp310hstnh-ce-600070-frc.jar` — **the final release candidate**,
+- `out/webosdoctorp310hstnh-ce-600070.jar` — **the release** (2026-09-03),
   sha256 `392f2122…`. 600067 plus two additions: the Device Info account label
   ("HP webOS Account" -> "webOS Account", 13 view files) and the **CE OTA trust
-  anchor** (signing public key + `ce-ota-verify`). The `-frc` suffix is a rename
-  only — byte-identical to the `-600070.jar` all testing was done against.
+  anchor** (signing public key + `ce-ota-verify`). Promoted from the `-frc`
+  candidate file with no rebuild — the two are byte-identical, and a week of
+  community use surfaced no show-stopper.
   **Tested on two devices: 90 PASS / 0 FAIL each**, a 7-cycle reboot soak at
   112/0, a clean restore, a German factory reset and a French (Canada) fresh
   flash. See `TEST-PLAN.md`.
