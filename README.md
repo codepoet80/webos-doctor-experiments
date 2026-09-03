@@ -137,6 +137,7 @@ More details can be found on the [LunaCE Wiki](https://webos-ports.org/wiki/Abou
 
 <a href="Screenshots/AppCatalog.jpg"><img src="Screenshots/AppCatalog.jpg" width="256">
 <a href="Screenshots/Maps.jpg"><img src="Screenshots/Maps.jpg" width="256">
+<a href="Screenshots/Backup.jpg"><img src="Screenshots/Backup.jpg" width="256">
 
 ---
 
