@@ -6,7 +6,7 @@ Building a community webOS Doctor and update path for the **HP TouchPad**
 gamepad and USB support, a working App Catalog, modern mail — delivered both as a
 **clean-flash Doctor** and as an **over-the-air upgrade** from stock devices.
 
-**Trying it out:** Download the pre-built Doctor .jar from the latest [Release](https://github.com/codepoet80/webos-doctor-experiments/releases).
+**Trying it out:** Download the pre-built Doctor .jar from the latest [Release](https://github.com/webOSArchive/webOS-Community-Edition/releases).
 Read how to run a Doctor: [docs.webosarchive.org/doctor/#running-the-doctor](https://docs.webosarchive.org/doctor/#running-the-doctor)
 
 ## The plan in one paragraph
