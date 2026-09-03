@@ -1,4 +1,4 @@
-# webOS Community Edition 3.1
+# webOS Community Edition 3.1.0
 
 This release represents 15 years of cummulative effort to preserve, restore, improve and maintain Palm and HP's mobile webOS. 
 
