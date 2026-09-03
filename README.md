@@ -43,6 +43,9 @@ webOS CE 3.1.0 includes features not available in the final commercial release..
 - New Launcher tabs can now be added: press and hold the empty space next to existing tabs to add a new one
 - User-added Launcher tabs can be removed: press and hold the tab, then tap the Trash icon to remove the tab
 
+<a href="Screenshots/TabEdit-1.jpg"><img src="Screenshots/TabEdit-1.jpg" width="256">
+<a href="Screenshots/TabEdit-2.jpg"><img src="Screenshots/TabEdit-2.jpg" width="256">
+
 #### LunaCE Improvements
 
 All improvements introduced in 2013's LunaCE release are also in webOS CE, including:
@@ -55,9 +58,14 @@ All improvements introduced in 2013's LunaCE release are also in webOS CE, inclu
 
 More details can be found on the [LunaCE Wiki](https://webos-ports.org/wiki/About_LunaCE#Feature_Description)
 
+<a href="Screenshots/Tweaks.jpg"><img src="Screenshots/Tweaks.jpg" width="256">
+<a href="Screenshots/JustType-Keyboard-DDG.jpg"><img src="Screenshots/JustType-Keyboard-DDG.jpg" width="256">
+
 #### Power Control
 
 - Advanced Reset options is now built-in, adding Luna Restart and Reboot options to the Power menu (Shut Down is still present)
+
+<a href="Screenshots/PowerOptions.jpg"><img src="Screenshots/PowerOptions.jpg" width="256">
 
 ### Exhibition, Screen and Sounds
 
@@ -65,12 +73,17 @@ More details can be found on the [LunaCE Wiki](https://webos-ports.org/wiki/Abou
 - **Photo**'s Exhibition mode now persists preferences and provides an optional time and date overlay
 - New wallpapers and the Treo ringtone have been added
 
+<a href="Screenshots/Exhibition-Clock.jpg"><img src="Screenshots/Exhibition-Clock.jpg" width="256">
+<a href="Screenshots/Exhibition-Photos.jpg"><img src="Screenshots/Exhibition-Photos.jpg" width="256">
+
 ### Platform Improvements
 
 #### UberKernel
 
 - The stock kernel has been replaced with the community-created **UberKernel**, with the default profile enabled
 - Govnah is now pre-installed to allow over-clocking (which has proven safe over the past 15 years)
+
+<a href="Screenshots/UberKernel.jpg"><img src="Screenshots/UberKernel.jpg" width="256">
 
 #### TLS 1.3 and Web
 
@@ -82,6 +95,8 @@ More details can be found on the [LunaCE Wiki](https://webos-ports.org/wiki/Abou
 - NTP sync has been fixed
 - Modern VPN plug-ins can be found in the **App Catalog**, restoring the built-in VPN app
 - **Preware** includes alternate browsers with more modern rendering engines
+
+<a href="Screenshots/TLS-Preloaded.jpg"><img src="Screenshots/TLS-Preloaded.jpg" width="256">
 
 #### Bluetooth Device Support
 
@@ -98,12 +113,17 @@ More details can be found on the [LunaCE Wiki](https://webos-ports.org/wiki/Abou
 - Previous USB updates in **Preware** will not show as available or compatible, and are not needed
 - Future USB updates in **Preware** will be separately tested and marked for compatibility with 3.1.0
 
+<a href="Screenshots/USBSettings.png"><img src="Screenshots/USBSettings.png" width="256">
+
 #### Accounts and Synergy Revival
 
 - The required HP Account has been replaced with an *optional* **webOS Community Account**
 - **Activation via deviceTool is no longer required** -- the firstuse out-of-box experience (OOBE) has been repaired, account creation is skippable
 - Modernized Synergy components, including libpurple, are pre-installed and enable connectors to modern services
 - Find new tested and compatible Synergy plug-ins in **Preware**
+
+<a href="Screenshots/Synergy.jpg"><img src="Screenshots/Synergy.jpg" width="256">
+<a href="Screenshots/OOBE.jpg"><img src="Screenshots/OOBE.jpg" width="256">
 
 ### Pre-loaded Apps
 
@@ -114,6 +134,9 @@ More details can be found on the [LunaCE Wiki](https://webos-ports.org/wiki/Abou
 - **Help** has been largely repaired, loading content from webOS Archive
 - **Photos** now shows a filename for an opened photo
 - **Mail** adds support for modern EAS servers
+
+<a href="Screenshots/AppCatalog.jpg"><img src="Screenshots/AppCatalog.jpg" width="256">
+<a href="Screenshots/Maps.jpg"><img src="Screenshots/Maps.jpg" width="256">
 
 ---
 
