@@ -1,7 +1,36 @@
-> **DESIGN DOC — the OTA path is not built yet.** The clean-flash Doctor is the
-> shipping artifact (see RELEASE-NOTES.md, currently BUILDMARK 600024). Component
-> versions named below are as-planned and have moved on — the shipped image
-> carries App Catalog 6.1.2901 and reports `webOS CE 3.1.0`.
+> **SUPERSEDED IN PART — read this with `OTA-3.1.0.md` beside it.**
+>
+> This is the original CE-side design doc. It is still the best statement of the
+> *shape* of the problem — the on-device machinery inventory (§0), the dual
+> delivery rule (§1), the bootstrap transport analysis (§2), and the constraints
+> in §6 all hold. But it was written before 600070 shipped and its status claims
+> are stale.
+>
+> **The authoritative document is `OTA-3.1.0.md` in the `webos-update-exploration`
+> repo** (see `PLAN.md` §"Related projects"). Anything about what exists today,
+> what is blocked, or what ships next belongs there, not here.
+>
+> Corrections to this document's premises, as of build 600070:
+>
+> - **"the OTA path is not built yet" is wrong.** `org.webosarchive.otaready`
+>   1.2.0 is deployed to users today — the readiness app, its root daemon, and a
+>   `com.palm.app.updates` reroute that renders our offer in the native updater,
+>   working end to end on hardware. It restores onto CE 3.1.0 with its service on
+>   the bus (`TEST-PLAN.md:461`). The planned **OTA Ready v2** is the
+>   bootstrapper, and it reaches those users as an ordinary app update — the one
+>   manual install §2.2 treats as unavoidable has **already been spent**.
+> - **The shipping build is 600070, not 600024.** The image reports
+>   `webOS CE 3.1.0` and carries App Catalog 6.1.2901.
+> - **What 600070 actually bakes for OTA is the trust anchor and nothing else** —
+>   `/usr/share/ce-ota/keys/ce-ota-signing.pub` and `/usr/bin/ce-ota-verify`
+>   (option A in `OTA-3.1.0.md`). §5's pinned-key model is therefore live; the
+>   client half of §4 is not in the image.
+> - **Two open items gate the first real OTA**, both tracked in `OTA-3.1.0.md`
+>   §"Open items": #5, no real payload exists (the server hosts only a
+>   placeholder offer), and #4, the armed flash — `arm-install` ->
+>   `make-update-uimage` -> ramdisk -> reboot — is unverified on hardware.
+>   `Docs/USB-SETTINGS-HOTFIX.md` proposes the USB Settings fix as a candidate
+>   for #5.
 
 # webOS CE — OTA Strategy
 

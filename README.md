@@ -112,6 +112,7 @@ More details can be found on the [LunaCE Wiki](https://webos-ports.org/wiki/Abou
 - While the OS does not include a mouse pointer, USB mice are supported if a game or app provides a software mouse-pointer
 - Previous USB updates in **Preware** will not show as available or compatible, and are not needed
 - Future USB updates in **Preware** will be separately tested and marked for compatibility with 3.1.0
+- **Known issue:** on a freshly flashed device the app can report *"Helper not running"* even though it is. Plug in your OTG cable, or flip **High-power devices** on and back off — either one clears it for good. A proper fix will follow through **Preware**
 
 <a href="Screenshots/USBSettings.png"><img src="Screenshots/USBSettings.png" width="256">
 

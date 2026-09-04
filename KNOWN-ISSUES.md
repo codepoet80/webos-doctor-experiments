@@ -14,8 +14,9 @@ failures. Restore onto the flashed image: 0 errors, 11/11 services back on the
 bus. **#1 and #1b did not fire on either flash**, nor on any of the seven
 reboots.
 
-Nothing below is a new fault found on 600070. #12 and #13 are log noise that was
-always there and had simply never been written down; #4 recurred and is
+#14 is a new fault, found on hardware *after* the release went out and not
+caught by any check in the suite. Of the rest, #12 and #13 are log noise that
+was always there and had simply never been written down; #4 recurred and is
 explicitly accepted for the release.
 
 *What the clean runs do and do not settle:* #1 fires during the first-use preload
@@ -23,6 +24,114 @@ pass, which runs **once per flash**, so reboots cannot exercise it. 600070 has
 two clean flashes on different hardware — the first flashes in the cycle to be
 measured this way — which is evidence, not closure. #4 fires per **OOBE**, and
 600070 saw three OOBEs with one hit.
+
+---
+
+## 14. USB Settings reports "Helper not running" on every fresh flash — DIAGNOSED ON HARDWARE (600070), NOT FIXED
+
+**Severity: high — it is the first thing a user sees in a shipped app, and it is
+wrong.** Listed first because it should be solved first; the numbering is
+append-only so that the cross-references in older entries keep pointing at what
+they were written about.
+
+Opening USB Settings on a device flashed onto a clean media partition shows
+"Helper not running. Install via Preware and reboot." The helper *is* running.
+Nothing is missing from the image.
+
+**What is actually wrong.** `usbctl-watchd` starts at ~3 s of uptime (`start on
+stopped rcS`); `/media/internal`, where all of its IPC lives, does not mount
+until ~2 min in. Its first `write_status` therefore fails silently against the
+read-only root — but the suppression cache is latched *before* the write it
+suppresses (`usbctl-watchd.sh:299-303`):
+
+```sh
+    [ "$s" = "$LAST_STATUS" ] && return
+    LAST_STATUS="$s"                                    # <-- set before the write
+    echo "$s" > "$STATUS.tmp" 2>/dev/null && mv -f "$STATUS.tmp" "$STATUS" 2>/dev/null
+```
+
+`LAST_STATUS` now holds a JSON string that was never written, so the 1 Hz loop
+early-returns forever and `/media/internal/.usbctl-status` is never created. On an
+idle device that string never changes, so nothing ever breaks the tie.
+`GetStatusAssistant.js` returns `daemon:false` when it cannot read that file,
+which is the warning row.
+
+Measured on a broken device (600070, booted 05:39):
+
+```
+usbctl-watchd            pid 164, started at 3.09 s uptime   (/proc/164/stat)
+/media/internal mounted  12:41:01  = ~2 min into boot        (messages.0)
+/tmp/usbctl-watchd.log   no "started (pid 164)" line         <- even /tmp write failed
+.usbctl-status           absent
+.usbctl-state            absent
+```
+
+The JS service, the ls2 role, the D-Bus launcher on both buses, the upstart job
+and the daemon itself are all present and correct. `getStatus` is answered
+normally throughout — the log is full of it. Only the status *file* is missing.
+
+**Why the release testing did not catch it.** `.usbctl-status` lives on
+`/media/internal`, which a normal Doctor run does not wipe. Every development
+device had exercised USB at some point under an earlier build, written the file
+once, and carried it across every reflash since. This was read as "USB Settings
+works" for the whole cycle. It was found only on two devices flashed onto media
+partitions with no history. **Every CE 3.1.0 device is born with this fault**;
+the working ones were healed by an event nobody recorded.
+
+Confirmed on the reference device that does work: its `.usbctl-status` is dated
+`Sep 3 16:48`, thirty-one hours into a boot that began Sep 2 — matching
+`16:48:09 usbctl: mounted /dev/sda1 at /media/usb` in the daemon log. Its
+`/tmp/usbctl-watchd.log` is *also* missing the startup line. That device failed
+the same boot-time write; a USB stick rescued it a day later.
+
+**What heals it.** Any change to the status JSON breaks the poisoned cache and
+lets the write through:
+
+- **Flipping High-power on and back off, inside the app.** `power` is part of the
+  JSON, and `togglePower` has no guard on the warning state. Verified by writing
+  `power-on` to the control file (both files appeared within 3 s), then
+  independently reproduced from the UI on a second device.
+- **Plugging in the OTG Y-cable — nothing attached to it.** Verified on a device
+  wiped to bare partitions with the toolkit and re-flashed, so no `.usbctl-*`
+  state survived from an earlier build. Registering the host controller is enough
+  on its own: `otg` goes to `host` the moment `/sys/bus/usb/devices/usb1` appears.
+- **Plugging in USB storage** — the same `otg` flip, plus `storage.present`.
+
+The cable paths need the port to have armed at boot, which `arm_otg_once` skips
+while `host_connected = 1`. A device that has sat on a PC connection since boot
+can only be healed from the app.
+
+Once written, the file persists across reboots and across a re-Doctor, so any of
+these is a permanent fix for that media partition.
+
+**What a fix has to do.** Latch `LAST_STATUS` only on a successful write, and
+move the `$STATE` seed into the loop so it retries once `/media/internal`
+arrives. The edits belong in the `com.webosarchive.usbsettings` ipk, not in the
+generated overlay.
+
+Because 600070 is released, the field fix has to come through Preware. The care
+needed is on the CE side: the image bakes the app and seeds no ipkg status stanza
+for it, so a same-id 1.1.10 would install into `/media/cryptofs/apps` as a fresh
+package, and its service directory would claim `com.webosarchive.usbsettings.service`
+dynamically against the baked static claim — a clash ls-hubd resolves by dropping
+both, which would make the warning permanent and kill the toggle workaround with
+it. Three candidate shapes (a CE-aware postinst, a separate CE-only package, or
+the first community OTA payload), the recommendation, and the hardware test that
+decides between them: `Docs/USB-SETTINGS-HOTFIX.md`.
+
+**Candidate first OTA payload.** The OTA project's blocking open item #5 is that
+no real payload exists — the server hosts only a placeholder offer — while
+`org.webosarchive.otaready` 1.2.0 is already deployed to users and OTA Ready v2
+would reach them as an ordinary app update. A one-file signed hotpatch of
+`/usr/bin/usbctl-watchd` fits that gap, and 600070 already bakes the trust anchor
+that would verify it. Note it would *not* exercise their open item #4, the
+unverified armed flash — a benign payload bounds a failed apply, not a broken
+flash path. Authoritative OTA status lives in `OTA-3.1.0.md` in the
+`webos-update-exploration` repo, not in our stale `Docs/OTA-STRATEGY.md`.
+
+`state_save` has the same write-then-latch shape and fails identically, so
+`armed=yes` never persists and the OTG controller is re-armed every boot.
+Harmless, same root cause, same fix.
 
 ---
 
